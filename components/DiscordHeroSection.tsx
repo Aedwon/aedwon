@@ -142,9 +142,6 @@ export default function DiscordHeroSection() {
                 {/* Pinned Welcome Message */}
                 <DiscordMessage author={BRANDING.name} avatar={BRANDING.name[0]} timestamp="Today at 12:00 PM" isPinned>
                     <p className="text-gray-300">
-                        Hey! <span className="discord-mention">@everyone</span> 👋
-                    </p>
-                    <p className="text-gray-300 mt-2">
                         A brand sells twice: once to the stranger, once to the regular.
                         <span className="font-semibold text-white"> I build for both sales.</span>
                     </p>
@@ -153,7 +150,6 @@ export default function DiscordHeroSection() {
                         title="What I do"
                         description={HERO.subtitle}
                         fields={[
-                            { name: "Stack", value: "Next.js • React • TypeScript • Node.js • Discord.py", inline: false },
                             { name: "Bots in production", value: String(STATS.BOT_COUNT), inline: true },
                             { name: "Members moderated", value: STATS.MODERATED_MEMBERS, inline: true },
                         ]}

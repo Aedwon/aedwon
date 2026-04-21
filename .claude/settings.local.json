@@ -11,7 +11,15 @@
       "Bash(git rm *)",
       "Bash(git mv *)",
       "WebFetch(domain:qr-code.aedwon.com)",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(git -C \"/Users/aedwon/Documents/Dev Projects/aedwon-portfolio-minimalist\" remote -v)",
+      "Bash(git -C \"/Users/aedwon/Documents/Dev Projects/aedwon-portfolio-minimalist\" status)",
+      "Bash(git -C \"/Users/aedwon/Documents/Dev Projects/aedwon-portfolio-minimalist\" log --oneline -5)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git *)",
+      "Bash(gh api *)",
+      "Bash(ssh-keygen -F github.com)"
     ]
   }
 }

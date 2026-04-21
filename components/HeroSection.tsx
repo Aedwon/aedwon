@@ -51,9 +51,6 @@ export default function HeroSection() {
                 ${theme === 'neubrutalist' ? 'border-b-[3px] border-black bg-[#FFFDF5]' : 'border-b border-theme bg-background'}
             `}>
                 <motion.div>
-                    <h2 className="text-xl md:text-2xl font-bold mb-4 font-theme opacity-80">
-                        Hey, I&apos;m Aedwon
-                    </h2>
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-theme tracking-tight mb-6 max-w-4xl">
                         A brand sells twice.<br />
                         Once to the <span className="text-accent underline decoration-4 underline-offset-4">stranger</span>,<br />
@@ -63,22 +60,6 @@ export default function HeroSection() {
                     <p className="text-base md:text-lg lg:text-xl opacity-70 max-w-2xl mx-auto mb-8 px-4 md:px-0">
                         {HERO.subtitle}
                     </p>
-
-                    {/* Tech Ticker / Capabilities */}
-                    <div className={`
-                        inline-flex items-center gap-3 md:gap-6 px-4 md:px-6 py-2 md:py-3 rounded-full text-xs md:text-sm font-bold opacity-60 flex-wrap justify-center
-                        ${theme === 'neubrutalist' ? 'bg-white border-2 border-black text-black opacity-100' : ''}
-                    `}>
-                        <span>Next.js</span>
-                        <span className="hidden sm:inline">•</span>
-                        <span>React</span>
-                        <span className="hidden sm:inline">•</span>
-                        <span>TypeScript</span>
-                        <span className="hidden md:inline">•</span>
-                        <span className="hidden md:inline">Node.js</span>
-                        <span className="hidden md:inline">•</span>
-                        <span className="hidden md:inline">Discord.js</span>
-                    </div>
                 </motion.div>
             </div>
 
