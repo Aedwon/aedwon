@@ -1,13 +1,54 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import { useTheme } from "@/components/ThemeContext";
 import { Send, ChevronDown, Calendar, Mail } from "lucide-react";
 import { StateLabel } from "@/components/StateLabel";
 import { SectionMarker } from "@/components/SectionMarker";
 import { CONTACT } from "@/lib/portfolio";
 
+type FormStatus = "idle" | "submitting" | "success" | "error";
+
+const FORM_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT.email}`;
+
 export default function ContactPage() {
     const { theme } = useTheme();
+    const [status, setStatus] = useState<FormStatus>("idle");
+
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (status === "submitting") return;
+        setStatus("submitting");
+        const form = e.currentTarget;
+        const data = new FormData(form);
+        const payload: Record<string, string> = {
+            _subject: `New inquiry from ${(data.get("name") as string) || "contact form"}`,
+            _template: "table",
+        };
+        data.forEach((value, key) => {
+            payload[key] = value.toString();
+        });
+        try {
+            const res = await fetch(FORM_ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error("Request failed");
+            setStatus("success");
+            form.reset();
+        } catch {
+            setStatus("error");
+        }
+    }
+
+    const submitting = status === "submitting";
+    const statusMessage =
+        status === "success"
+            ? "Thanks — message received. I'll reply within two business days."
+            : status === "error"
+                ? "Something went wrong. Try again, or email me directly."
+                : null;
 
     if (theme === 'minimalist') {
         return (
@@ -47,12 +88,14 @@ export default function ContactPage() {
                             {CONTACT.form.helper}
                         </p>
 
-                        <form className="flex flex-col gap-8">
+                        <form className="flex flex-col gap-8" onSubmit={handleSubmit} noValidate>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <label className="flex flex-col gap-2">
                                     <span className="font-mono text-micro tracking-widest uppercase opacity-70">{CONTACT.form.nameLabel}</span>
                                     <input
                                         type="text"
+                                        name="name"
+                                        required
                                         className="w-full py-3 bg-transparent border-b border-rule focus:border-ink outline-none transition-colors"
                                     />
                                 </label>
@@ -60,6 +103,8 @@ export default function ContactPage() {
                                     <span className="font-mono text-micro tracking-widest uppercase opacity-70">{CONTACT.form.emailLabel}</span>
                                     <input
                                         type="email"
+                                        name="email"
+                                        required
                                         placeholder="you@domain.com"
                                         className="w-full py-3 bg-transparent border-b border-rule focus:border-ink outline-none placeholder:opacity-30 transition-colors"
                                     />
@@ -69,7 +114,10 @@ export default function ContactPage() {
                             <label className="flex flex-col gap-2">
                                 <span className="font-mono text-micro tracking-widest uppercase opacity-70">{CONTACT.form.projectLabel}</span>
                                 <div className="relative">
-                                    <select className="w-full py-3 bg-transparent border-b border-rule focus:border-ink outline-none appearance-none cursor-pointer transition-colors">
+                                    <select
+                                        name="project"
+                                        className="w-full py-3 bg-transparent border-b border-rule focus:border-ink outline-none appearance-none cursor-pointer transition-colors"
+                                    >
                                         {CONTACT.form.projectOptions.map((opt) => (
                                             <option key={opt}>{opt}</option>
                                         ))}
@@ -84,6 +132,8 @@ export default function ContactPage() {
                                 <span className="font-mono text-micro tracking-widest uppercase opacity-70">{CONTACT.form.goalLabel}</span>
                                 <textarea
                                     rows={5}
+                                    name="goal"
+                                    required
                                     placeholder={CONTACT.form.goalPlaceholder}
                                     aria-describedby="reply-time-note"
                                     className="w-full py-3 bg-transparent border-b border-rule focus:border-ink outline-none resize-none placeholder:opacity-30 transition-colors"
@@ -91,12 +141,22 @@ export default function ContactPage() {
                                 <span id="reply-time-note" className="text-micro opacity-60 mt-1">{CONTACT.replyPromise}</span>
                             </label>
 
-                            <div className="flex justify-end">
+                            <div className="flex items-center justify-between gap-4">
+                                {statusMessage && (
+                                    <p
+                                        role="status"
+                                        aria-live="polite"
+                                        className={`text-micro ${status === "error" ? "text-red-600" : "opacity-70"}`}
+                                    >
+                                        {statusMessage}
+                                    </p>
+                                )}
                                 <button
                                     type="submit"
-                                    className="inline-flex items-center gap-2 text-body font-medium hover:text-accent transition-colors"
+                                    disabled={submitting}
+                                    className="ml-auto inline-flex items-center gap-2 text-body font-medium hover:text-accent transition-colors disabled:opacity-50"
                                 >
-                                    {CONTACT.form.submit} <Send className="w-4 h-4" aria-hidden="true" />
+                                    {submitting ? "Sending…" : CONTACT.form.submit} <Send className="w-4 h-4" aria-hidden="true" />
                                 </button>
                             </div>
                         </form>
@@ -201,12 +261,14 @@ export default function ContactPage() {
                         {CONTACT.form.helper}
                     </p>
 
-                    <form className="flex flex-col gap-4">
+                    <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-2">
                                 <label className={`text-xs font-bold uppercase tracking-wider ${theme === 'discord' ? 'text-[#b9bbbe]' : 'opacity-70'}`}>{CONTACT.form.nameLabel}</label>
                                 <input
                                     type="text"
+                                    name="name"
+                                    required
                                     placeholder={theme === 'discord' ? "username#0000" : "John Doe"}
                                     className={`
                                         w-full p-3 outline-none transition-all text-sm
@@ -219,6 +281,8 @@ export default function ContactPage() {
                                 <label className={`text-xs font-bold uppercase tracking-wider ${theme === 'discord' ? 'text-[#b9bbbe]' : 'opacity-70'}`}>{CONTACT.form.emailLabel}</label>
                                 <input
                                     type="email"
+                                    name="email"
+                                    required
                                     placeholder="you@domain.com"
                                     className={`
                                         w-full p-3 outline-none transition-all text-sm
@@ -232,7 +296,9 @@ export default function ContactPage() {
                         <div className="flex flex-col gap-2">
                             <label className={`text-xs font-bold uppercase tracking-wider ${theme === 'discord' ? 'text-[#b9bbbe]' : 'opacity-70'}`}>{CONTACT.form.projectLabel}</label>
                             <div className="relative">
-                                <select className={`
+                                <select
+                                    name="project"
+                                    className={`
                                     w-full p-3 appearance-none outline-none cursor-pointer text-sm
                                     ${theme === 'neubrutalist' ? 'bg-white border-2 border-black focus:border-accent' : ''}
                                     ${theme === 'discord' ? 'bg-[#40444b] rounded-md text-gray-200' : ''}
@@ -251,6 +317,8 @@ export default function ContactPage() {
                             <label className={`text-xs font-bold uppercase tracking-wider ${theme === 'discord' ? 'text-[#b9bbbe]' : 'opacity-70'}`}>{CONTACT.form.goalLabel}</label>
                             <textarea
                                 rows={4}
+                                name="goal"
+                                required
                                 placeholder={CONTACT.form.goalPlaceholder}
                                 aria-describedby="reply-time-note"
                                 className={`
@@ -262,14 +330,23 @@ export default function ContactPage() {
                             <span id="reply-time-note" className={`text-xs mt-1 ${theme === 'discord' ? 'text-[#b9bbbe]' : 'opacity-60'}`}>{CONTACT.replyPromise}</span>
                         </div>
 
-                        <div className="mt-2">
-                            <button type="submit" className={`
-                                inline-flex items-center gap-2 px-6 py-3 text-sm font-bold transition-all
+                        <div className="mt-2 flex flex-wrap items-center gap-4">
+                            <button type="submit" disabled={submitting} className={`
+                                inline-flex items-center gap-2 px-6 py-3 text-sm font-bold transition-all disabled:opacity-60
                                 ${theme === 'neubrutalist' ? 'bg-accent text-black border-[3px] border-black shadow-[4px_4px_0px_#000] hover:shadow-[2px_2px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]' : ''}
                                 ${theme === 'discord' ? 'bg-accent hover:opacity-90 text-white rounded-md' : ''}
                             `}>
-                                {CONTACT.form.submit} <Send className="w-4 h-4" aria-hidden="true" />
+                                {submitting ? "Sending…" : CONTACT.form.submit} <Send className="w-4 h-4" aria-hidden="true" />
                             </button>
+                            {statusMessage && (
+                                <p
+                                    role="status"
+                                    aria-live="polite"
+                                    className={`text-xs ${status === "error" ? "text-red-500" : theme === "discord" ? "text-[#b9bbbe]" : "opacity-70"}`}
+                                >
+                                    {statusMessage}
+                                </p>
+                            )}
                         </div>
                     </form>
                 </section>
