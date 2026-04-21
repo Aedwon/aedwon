@@ -15,10 +15,10 @@ export const BRANDING = {
 } as const;
 
 export const NAV_LINKS = [
-    { label: "Home", href: "/" },
-    { label: "Web Solutions", href: "/web-solutions" },
-    { label: "Community Solutions", href: "/community-solutions" },
-    { label: "The Process", href: "/process" },
+    { label: "Home", href: "/", isCTA: false },
+    { label: "Web Solutions", href: "/web-solutions", isCTA: false },
+    { label: "Community Solutions", href: "/community-solutions", isCTA: false },
+    { label: "The Process", href: "/process", isCTA: false },
     { label: "Book a call", href: "/contact", isCTA: true },
 ] as const;
 

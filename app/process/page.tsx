@@ -103,7 +103,7 @@ export default function ProcessPage() {
                                         `}>
                                             <strong>Outcome:</strong> {step.outcome}
                                         </div>
-                                        {step.footnote && (
+                                        {"footnote" in step && step.footnote && (
                                             <p className="mt-3 text-xs italic opacity-60 leading-relaxed">
                                                 {step.footnote}
                                             </p>
