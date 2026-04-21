@@ -149,10 +149,6 @@ export default function DiscordHeroSection() {
                         color="#5865F2"
                         title="What I do"
                         description={HERO.subtitle}
-                        fields={[
-                            { name: "Bots in production", value: String(STATS.BOT_COUNT), inline: true },
-                            { name: "Members moderated", value: STATS.MODERATED_MEMBERS, inline: true },
-                        ]}
                         footer="Pick a channel on the left to see the work →"
                     />
                 </DiscordMessage>
