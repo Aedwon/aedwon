@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { track, setPersonProperty } from "@/lib/analytics";
 
 // Updated Theme types to match new specs
 export type Theme = "minimalist" | "neubrutalist" | "discord";
@@ -21,6 +22,7 @@ export const THEME_LABELS: Record<Theme, string> = {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Defaulting to "minimalist" (Agency)
   const [theme, setTheme] = useState<Theme>("minimalist");
+  const previousTheme = useRef<Theme | null>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
@@ -31,16 +33,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Determine the data-theme value
-    // For minimalist (default root), we can technically leave it empty or set a specific one if our CSS expects it.
-    // Based on globals.css, minimalist is default on :root, but setting data-theme='minimalist' doesn't hurt if we want to be explicit later.
-    // However, our globals.css defines non-root themes via [data-theme='...'].
-    // So 'minimalist' should probably remove the attribute or set it to 'minimalist' if we had a selector for it.
-    // The prompt implied :root is minimalist.
-    // Let's set the attribute anyway so other components can key off it easily.
-
     document.body.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
+
+    const previous = previousTheme.current;
+    if (previous === null) {
+      track("theme_initialized", { theme, label: THEME_LABELS[theme] });
+    } else if (previous !== theme) {
+      track("theme_changed", {
+        from: previous,
+        to: theme,
+        label: THEME_LABELS[theme],
+      });
+    }
+    setPersonProperty("preferred_theme", theme);
+    previousTheme.current = theme;
   }, [theme]);
 
   return (

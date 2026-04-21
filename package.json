@@ -12,11 +12,14 @@
   },
   "dependencies": {
     "@next/font": "^14.2.15",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "autoprefixer": "^10.4.19",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "postcss": "^8.4.38",
+    "posthog-js": "^1.369.4",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

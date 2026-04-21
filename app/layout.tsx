@@ -35,6 +35,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 import Footer from "@/components/Footer";
 import ConsoleEffect from "@/components/ConsoleEffect";
+import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
   title: "Aedwon — A studio of one.",
@@ -68,6 +69,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

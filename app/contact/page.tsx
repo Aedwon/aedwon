@@ -6,6 +6,7 @@ import { Send, ChevronDown, Calendar, Mail } from "lucide-react";
 import { StateLabel } from "@/components/StateLabel";
 import { SectionMarker } from "@/components/SectionMarker";
 import { CONTACT } from "@/lib/portfolio";
+import { track } from "@/lib/analytics";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -23,6 +24,10 @@ export default function ContactPage() {
         data.forEach((value, key) => {
             payload[key] = value.toString();
         });
+        track("contact_form_submitted", {
+            theme,
+            project: payload.project ?? "",
+        });
         try {
             const res = await fetch("/api/contact", {
                 method: "POST",
@@ -31,9 +36,11 @@ export default function ContactPage() {
             });
             if (!res.ok) throw new Error("Request failed");
             setStatus("success");
+            track("contact_form_succeeded", { theme, project: payload.project ?? "" });
             form.reset();
         } catch {
             setStatus("error");
+            track("contact_form_failed", { theme });
         }
     }
 
