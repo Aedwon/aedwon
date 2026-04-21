@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(npm test *)",
+      "Bash(npx eslint *)",
+      "Bash(git rm *)",
+      "Bash(git mv *)",
+      "WebFetch(domain:qr-code.aedwon.com)",
+      "Bash(echo \"exit: $?\")"
+    ]
+  }
+}

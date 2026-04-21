@@ -1,0 +1,257 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default: Minimalist Theme — editorial, ink-on-paper */
+  --background: #FAFAF7;          /* warm paper */
+  --foreground: #111111;          /* near-black ink */
+  --accent: #C7361A;              /* muted terracotta */
+  --accent-secondary: #F2F0E9;    /* quiet paper fold — replaces light gray */
+  --border-color: color-mix(in srgb, #111111 15%, transparent);
+  --border-width: 1px;
+  --radius: 0.125rem;             /* quieter corners — was 0.5rem */
+  --shadow: none;                 /* Minimalist has no shadow — was drop shadow */
+  --font-main: var(--font-inter);
+  --nav-height: 64px;
+
+  /* Minimalist-specific extended tokens */
+  --color-ink: #111111;
+  --color-paper: #FAFAF7;
+  --color-rule: color-mix(in srgb, #111111 15%, transparent);
+  --color-accent-mono: #C7361A;
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-source-serif);
+  --font-mono: var(--font-ibm-plex-mono);
+
+  /* Type scale — shared across all themes (1.25 modular ratio) */
+  --fs-micro: 0.6875rem;   /* 11px */
+  --fs-small: 0.875rem;    /* 14px */
+  --fs-body: 1rem;         /* 16px */
+  --fs-h3: 1.5rem;         /* 24px */
+  --fs-h2: 2.25rem;        /* 36px */
+  --fs-h1: 3.375rem;       /* 54px */
+  --fs-display: 5rem;      /* 80px */
+
+  /* Rhythm — shared */
+  --rule-hairline: 1px;
+  --space-baseline: 0.5rem;
+}
+
+[data-theme='neubrutalist'] {
+  /* Neubrutalist Theme */
+  --background: #FFFDF5;
+  /* Off-white/Cream */
+  --foreground: #000000;
+  /* Pitch Black */
+  --accent: #FF6B6B;
+  /* Vibrant Red/Pink */
+  --accent-secondary: #FCA311;
+  /* Mustard */
+  --border-color: #000000;
+  --border-width: 3px;
+  --radius: 0px;
+  /* Sharp corners */
+  --shadow: 5px 5px 0px 0px #000000;
+  /* Hard shadow */
+  --font-main: var(--font-space-mono);
+
+  /* Neubrutalist keeps its existing aesthetic tokens — override only where Minimalist extended */
+  --color-ink: #000000;
+  --color-paper: #FFFDF5;
+  --color-rule: #000000;
+  --color-accent-mono: #FF6B6B;
+  --font-sans: var(--font-space-mono);
+  --font-serif: var(--font-space-mono);
+  --font-mono: var(--font-space-mono);
+}
+
+[data-theme='discord'] {
+  /* DiscordOS Theme */
+  --background: #36393f;
+  /* Discord Dark Grey */
+  --foreground: #dcddde;
+  /* Discord Light Text */
+  --accent: #5865F2;
+  /* Blurple */
+  --accent-secondary: #2f3136;
+  /* Sidebar Grey */
+  --border-color: #202225;
+  /* Darker divider */
+  --border-width: 1px;
+  /* Subtle or 0px, keeping 1px for structure */
+  --radius: 8px;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --font-main: var(--font-inter);
+  --nav-height: 48px;
+
+  /* Discord keeps its existing aesthetic tokens — override only where Minimalist extended */
+  --color-ink: #dcddde;
+  --color-paper: #36393f;
+  --color-rule: #202225;
+  --color-accent-mono: #5865F2;
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-inter);
+  --font-mono: var(--font-inter);
+}
+
+/* Discord Layout Layout Fixes */
+[data-theme='discord'] body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Force root layout div to fit screen and not scroll */
+[data-theme='discord'] body>div {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Accessibility: Focus visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Accessibility: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Accessibility: Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@layer utilities {
+  .border-theme {
+    border-color: var(--border-color);
+    border-width: var(--border-width);
+  }
+
+  .rounded-theme {
+    border-radius: var(--radius);
+  }
+
+  .shadow-theme {
+    box-shadow: var(--shadow);
+  }
+
+  .font-theme {
+    font-family: var(--font-main);
+  }
+
+  /* Discord-specific utilities */
+  .discord-embed {
+    background: #2f3136;
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+
+  .discord-message {
+    padding: 0.5rem 1rem;
+    margin: 0 1rem;
+    border-radius: 4px;
+  }
+
+  .discord-message:hover {
+    background: rgba(4, 4, 5, 0.07);
+  }
+
+  .discord-ping {
+    background: rgba(88, 101, 242, 0.3);
+    color: #dee0fc;
+    padding: 0 2px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+
+  .discord-mention {
+    background: rgba(88, 101, 242, 0.3);
+    color: #c9cdfb;
+    padding: 0 2px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .discord-mention:hover {
+    background: #5865F2;
+    color: white;
+  }
+
+  .discord-code {
+    background: #2f3136;
+    border: 1px solid #202225;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+
+  .discord-divider {
+    height: 1px;
+    background: #42464d;
+    margin: 1rem 0;
+  }
+
+  .discord-timestamp {
+    color: #72767d;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+  }
+}
+
+/* Discord scrollbar styling */
+[data-theme='discord'] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme='discord'] ::-webkit-scrollbar-track {
+  background: #2f3136;
+  border-radius: 4px;
+}
+
+[data-theme='discord'] ::-webkit-scrollbar-thumb {
+  background: #202225;
+  border-radius: 4px;
+}
+
+[data-theme='discord'] ::-webkit-scrollbar-thumb:hover {
+  background: #1a1b1e;
+}
+
+/* Hide footer in Discord theme */
+[data-theme='discord'] footer {
+  display: none;
+}
