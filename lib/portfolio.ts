@@ -217,9 +217,9 @@ export const WEB_PROJECTS: WebProject[] = [
         id: 4,
         title: "Kiosk survey (offline-first)",
         description:
-            "Tablet app for a live event. PWA that works without signal, syncs later, and stays up through a full day in a room full of real people.",
+            "Touchscreen Android TV app for a live event. Works without signal, syncs later, and stays up through a full day in a room full of real people.",
         metric: "Field-tested",
-        tags: ["Next.js", "PWA", "Offline"],
+        tags: ["Flutter", "Offline"],
         category: "Tool",
         url: "https://kiosk-survey-three.vercel.app",
     },
@@ -271,9 +271,9 @@ export const COMMUNITY_BOTS: CommunityBot[] = [
     },
     {
         title: "Kiosk survey (offline-first)",
-        labels: ["LIVE", "FIELD-TESTED", "Next/PWA"],
+        labels: ["LIVE", "FIELD-TESTED", "Flutter"],
         description:
-            "Tablet app for a live event. Same shape of problem as community software — systems for rooms full of real people.",
+            "Touchscreen Android TV app for a live event. Same shape of problem as community software — systems for rooms full of real people.",
         url: "https://kiosk-survey-three.vercel.app",
     },
 ];
