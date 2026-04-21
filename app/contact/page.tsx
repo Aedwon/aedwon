@@ -9,8 +9,6 @@ import { CONTACT } from "@/lib/portfolio";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-const FORM_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT.email}`;
-
 export default function ContactPage() {
     const { theme } = useTheme();
     const [status, setStatus] = useState<FormStatus>("idle");
@@ -21,15 +19,12 @@ export default function ContactPage() {
         setStatus("submitting");
         const form = e.currentTarget;
         const data = new FormData(form);
-        const payload: Record<string, string> = {
-            _subject: `New inquiry from ${(data.get("name") as string) || "contact form"}`,
-            _template: "table",
-        };
+        const payload: Record<string, string> = {};
         data.forEach((value, key) => {
             payload[key] = value.toString();
         });
         try {
-            const res = await fetch(FORM_ENDPOINT, {
+            const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Accept: "application/json" },
                 body: JSON.stringify(payload),
