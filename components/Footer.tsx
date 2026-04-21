@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "./ThemeContext";
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 import Link from "next/link";
 
 import Logo from "./Logo";
@@ -38,11 +38,8 @@ export default function Footer() {
                                 <Link href="https://github.com/Aedwon" target="_blank" rel="noopener noreferrer" aria-label="Visit GitHub profile" className="hover:text-accent transition-colors">
                                     <Github className="w-5 h-5" aria-hidden="true" />
                                 </Link>
-                                <Link href="https://linkedin.com/in/aedwon" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile" className="hover:text-accent transition-colors">
+                                <Link href="https://www.linkedin.com/in/aedwon/" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile" className="hover:text-accent transition-colors">
                                     <Linkedin className="w-5 h-5" aria-hidden="true" />
-                                </Link>
-                                <Link href="https://twitter.com/aedwon" target="_blank" rel="noopener noreferrer" aria-label="Visit Twitter profile" className="hover:text-accent transition-colors">
-                                    <Twitter className="w-5 h-5" aria-hidden="true" />
                                 </Link>
                             </nav>
                         </div>
@@ -79,11 +76,8 @@ export default function Footer() {
                             <Link href="https://github.com/Aedwon" target="_blank" rel="noopener noreferrer" aria-label="Visit GitHub profile" className="hover:text-accent transition-colors">
                                 <Github className="w-5 h-5" aria-hidden="true" />
                             </Link>
-                            <Link href="https://linkedin.com/in/aedwon" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile" className="hover:text-accent transition-colors">
+                            <Link href="https://www.linkedin.com/in/aedwon/" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile" className="hover:text-accent transition-colors">
                                 <Linkedin className="w-5 h-5" aria-hidden="true" />
-                            </Link>
-                            <Link href="https://twitter.com/aedwon" target="_blank" rel="noopener noreferrer" aria-label="Visit Twitter profile" className="hover:text-accent transition-colors">
-                                <Twitter className="w-5 h-5" aria-hidden="true" />
                             </Link>
                         </nav>
 
