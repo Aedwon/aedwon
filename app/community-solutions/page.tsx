@@ -55,6 +55,7 @@ export default function CommunitySolutions() {
                                     labels={bot.labels}
                                     description={bot.description}
                                     url={bot.url}
+                                    image={bot.image}
                                 />
                             ))}
                         </div>
@@ -285,6 +286,15 @@ export default function CommunitySolutions() {
                                     ${theme === 'discord' ? `bg-[#36393f] rounded-lg border-l-4 border-l-accent ${bot.url ? 'hover:bg-[#40444b]' : ''}` : ''}
                                 `}
                             >
+                                {bot.image && (
+                                    <div className="relative w-full h-40 -mt-6 -mx-6 mb-4 overflow-hidden rounded-t-[inherit]">
+                                        <img
+                                            src={bot.image}
+                                            alt={bot.title}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                    </div>
+                                )}
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="flex flex-wrap gap-2">
                                         {bot.labels.map((label) => (

@@ -50,6 +50,7 @@ export default function WebSolutions() {
                                     labels={[project.metric, ...project.tags]}
                                     description={project.description}
                                     url={project.url}
+                                    image={project.image}
                                 />
                             ))}
                         </div>
@@ -193,6 +194,7 @@ export default function WebSolutions() {
                                 tags={project.tags}
                                 category={project.category}
                                 url={project.url}
+                                image={project.image}
                             />
                         ))}
                     </AnimatePresence>

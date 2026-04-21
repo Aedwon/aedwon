@@ -144,6 +144,7 @@ export type FeaturedProject = {
     description: string;
     href: string;
     url?: string;
+    image?: string;
 };
 
 export const FEATURED_PROJECTS: FeaturedProject[] = [
@@ -154,6 +155,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
             "Site redesign for Moonton Student Leaders PH. Faster, cleaner, and easier to maintain than the template it replaced.",
         href: "/web-solutions",
         url: "https://msl2026.vercel.app",
+        image: "/projects/msl-2026.webp",
     },
     {
         title: "The MSL Network Discord",
@@ -169,6 +171,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
             "Customizable QR generator with gradients, logo embedding, and SVG/PNG/JPEG export. All processing stays in the browser.",
         href: "/web-solutions",
         url: "https://qr-code.aedwon.com",
+        image: "/projects/qr-studio.webp",
     },
 ];
 
@@ -180,6 +183,7 @@ export type WebProject = {
     tags: string[];
     category: "E-Commerce" | "Corporate" | "SaaS" | "Redesign" | "Tool";
     url?: string;
+    image?: string;
 };
 
 export const WEB_PROJECTS: WebProject[] = [
@@ -192,6 +196,7 @@ export const WEB_PROJECTS: WebProject[] = [
         tags: ["Next.js", "Tailwind", "Redesign"],
         category: "Redesign",
         url: "https://msl2026.vercel.app",
+        image: "/projects/msl-2026.webp",
     },
     {
         id: 2,
@@ -202,6 +207,7 @@ export const WEB_PROJECTS: WebProject[] = [
         tags: ["Next.js", "Tailwind", "Redesign"],
         category: "Redesign",
         url: "https://lakambini-redesign.vercel.app",
+        image: "/projects/lakambini-events.webp",
     },
     {
         id: 3,
@@ -212,6 +218,7 @@ export const WEB_PROJECTS: WebProject[] = [
         tags: ["Next.js", "Canvas", "Tool"],
         category: "Tool",
         url: "https://qr-code.aedwon.com",
+        image: "/projects/qr-studio.webp",
     },
     {
         id: 4,
@@ -222,6 +229,7 @@ export const WEB_PROJECTS: WebProject[] = [
         tags: ["Flutter", "Offline"],
         category: "Tool",
         url: "https://kiosk-survey-three.vercel.app",
+        image: "/projects/kiosk-survey.webp",
     },
 ];
 
@@ -236,6 +244,7 @@ export type CommunityBot = {
     labels: string[];
     description: string;
     url?: string;
+    image?: string;
 };
 
 export const COMMUNITY_BOTS: CommunityBot[] = [
@@ -275,6 +284,7 @@ export const COMMUNITY_BOTS: CommunityBot[] = [
         description:
             "Touchscreen Android TV app for a live event. Same shape of problem as community software — systems for rooms full of real people.",
         url: "https://kiosk-survey-three.vercel.app",
+        image: "/projects/kiosk-survey.webp",
     },
 ];
 
@@ -282,6 +292,7 @@ export type CommunityOp = {
     title: string;
     labels: string[];
     description: string;
+    image?: string;
 };
 
 export const COMMUNITY_OPS: CommunityOp[] = [
@@ -325,7 +336,7 @@ export const WEB_TIERS: Tier[] = [
     {
         name: "Audit",
         tagline: "Start with a plan",
-        price: "$800",
+        price: "$200",
         priceSuffix: "USD",
         description:
             "Two weeks. I look at what you have. I write up what's broken, what's working, and what I'd build next. You get a plan you can give to anyone — me, a hire, or nobody.",
@@ -339,7 +350,7 @@ export const WEB_TIERS: Tier[] = [
     {
         name: "Build",
         tagline: "Fixed-scope build",
-        price: "$4,500",
+        price: "$1,000",
         pricePrefix: "From",
         priceSuffix: "USD",
         description:
@@ -355,7 +366,7 @@ export const WEB_TIERS: Tier[] = [
     {
         name: "Care Plan",
         tagline: "Monthly maintenance",
-        price: "$450",
+        price: "$300",
         pricePrefix: "From",
         priceSuffix: "/ mo",
         description:
@@ -373,7 +384,7 @@ export const COMMUNITY_TIERS: Tier[] = [
     {
         name: "Audit",
         tagline: "Start with a plan",
-        price: "$800",
+        price: "$200",
         priceSuffix: "USD",
         description:
             "Two weeks. I join, I watch, I write up what's broken and what to build. You get a plan you can give to anyone — me, a hire, or nobody.",
@@ -387,7 +398,7 @@ export const COMMUNITY_TIERS: Tier[] = [
     {
         name: "Automaton",
         tagline: "Bespoke bot dev",
-        price: "$3,500",
+        price: "$2,000",
         pricePrefix: "From",
         priceSuffix: "USD",
         description:

@@ -27,6 +27,7 @@ export default function FeaturedProjects() {
                                     labels={project.labels}
                                     description={project.description}
                                     cta={project.href === "/community-solutions" ? "See community work →" : "See web work →"}
+                                    image={project.image}
                                 />
                             </Link>
                         ))}
@@ -66,6 +67,15 @@ export default function FeaturedProjects() {
                                 ${theme === 'discord' ? 'bg-[#2f3136] rounded-lg border-l-4 border-l-accent hover:bg-[#32353b]' : ''}
                             `}
                         >
+                            {project.image && (
+                                <div className="relative w-full h-40 -mt-6 -mx-6 mb-4 overflow-hidden border-b border-theme rounded-t-[inherit]">
+                                    <img
+                                        src={project.image}
+                                        alt={project.title}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                </div>
+                            )}
                             <div className="flex flex-wrap gap-2">
                                 {project.labels.map((label) => (
                                     <span

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeContext";
 import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 interface ProjectCardProps {
     title: string;
@@ -20,6 +21,7 @@ export default function LegacyProjectCard({
     metric,
     tags,
     url,
+    image,
 }: ProjectCardProps) {
     const { theme } = useTheme();
 
@@ -42,12 +44,24 @@ export default function LegacyProjectCard({
         ${theme === 'neubrutalist' ? 'hover:shadow-[8px_8px_0px_0px_var(--border-color)] hover:-translate-y-1' : 'hover:border-accent'}
       `}
         >
-            {/* Placeholder Image Area */}
+            {/* Image Area */}
             <div className={`
             relative w-full h-48 bg-accent-secondary flex items-center justify-center overflow-hidden border-b border-theme
         `}>
-                <div className="absolute inset-0 bg-gradient-to-br from-accent-secondary to-background opacity-50" />
-                <span className="text-foreground opacity-50 font-theme font-bold uppercase tracking-widest">Preview</span>
+                {image ? (
+                    <Image
+                        src={image}
+                        alt={title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                ) : (
+                    <>
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent-secondary to-background opacity-50" />
+                        <span className="text-foreground opacity-50 font-theme font-bold uppercase tracking-widest">Preview</span>
+                    </>
+                )}
             </div>
 
             <div className="p-6 flex flex-col gap-4 flex-grow">
