@@ -149,13 +149,13 @@ export type FeaturedProject = {
 
 export const FEATURED_PROJECTS: FeaturedProject[] = [
     {
-        title: "MSL 2026",
+        title: "Lakambini Events",
         labels: ["LIVE", "WEB · REDESIGN", "Next"],
         description:
-            "Site redesign for Moonton Student Leaders PH. Faster, cleaner, and easier to maintain than the template it replaced.",
+            "Site redesign for an events studio. Simpler navigation, fewer clicks to book, and copy rewritten so the offer reads in ten seconds.",
         href: "/web-solutions",
-        url: "https://msl2026.vercel.app",
-        image: "/projects/msl-2026.webp",
+        url: "https://lakambini-redesign.vercel.app",
+        image: "/projects/lakambini-events.webp",
     },
     {
         title: "The MSL Network Discord",
@@ -163,6 +163,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
         description:
             "The Philippines hub for Mobile Legends: Bang Bang players. Currently running it — structure, rituals, growth.",
         href: "/community-solutions",
+        image: "/projects/msl-network-discord.webp",
     },
     {
         title: "QR Studio",
@@ -284,7 +285,6 @@ export const COMMUNITY_BOTS: CommunityBot[] = [
         description:
             "Touchscreen Android TV app for a live event. Same shape of problem as community software — systems for rooms full of real people.",
         url: "https://kiosk-survey-three.vercel.app",
-        image: "/projects/kiosk-survey.webp",
     },
 ];
 

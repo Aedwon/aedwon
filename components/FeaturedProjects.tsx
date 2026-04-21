@@ -62,13 +62,13 @@ export default function FeaturedProjects() {
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
                             className={`
-                                group relative p-6 flex flex-col gap-4 transition-all
+                                group relative flex flex-col transition-all overflow-hidden
                                 ${theme === 'neubrutalist' ? 'bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000]' : ''}
                                 ${theme === 'discord' ? 'bg-[#2f3136] rounded-lg border-l-4 border-l-accent hover:bg-[#32353b]' : ''}
                             `}
                         >
                             {project.image && (
-                                <div className="relative w-full h-40 -mt-6 -mx-6 mb-4 overflow-hidden border-b border-theme rounded-t-[inherit]">
+                                <div className="relative w-full h-44 overflow-hidden">
                                     <img
                                         src={project.image}
                                         alt={project.title}
@@ -76,38 +76,39 @@ export default function FeaturedProjects() {
                                     />
                                 </div>
                             )}
-                            <div className="flex flex-wrap gap-2">
-                                {project.labels.map((label) => (
-                                    <span
-                                        key={label}
-                                        className={`
-                                            text-xs font-bold uppercase tracking-wider px-2 py-1
-                                            ${theme === 'neubrutalist' ? 'bg-black text-white' : ''}
-                                            ${theme === 'discord' ? 'bg-accent/20 text-accent rounded-sm' : ''}
-                                        `}
-                                    >
-                                        {label}
+                            <div className="p-6 flex flex-col gap-4 flex-grow">
+                                <div className="flex flex-wrap gap-2">
+                                    {project.labels.map((label) => (
+                                        <span
+                                            key={label}
+                                            className={`
+                                                text-xs font-bold uppercase tracking-wider px-2 py-1
+                                                ${theme === 'neubrutalist' ? 'bg-black text-white' : ''}
+                                                ${theme === 'discord' ? 'bg-accent/20 text-accent rounded-sm' : ''}
+                                            `}
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <h3 className="text-xl font-bold font-theme">
+                                    {project.title}
+                                </h3>
+
+                                <p className="text-sm opacity-80 flex-grow">
+                                    {project.description}
+                                </p>
+
+                                <Link href={project.href} className="mt-2" aria-label={`View details for ${project.title}`}>
+                                    <span className={`
+                                        inline-flex items-center gap-1 text-sm font-bold group-hover:gap-2 transition-all
+                                        ${theme === 'discord' ? 'text-accent' : 'text-foreground'}
+                                    `}>
+                                        {project.href === "/community-solutions" ? "See community work →" : "See web work →"}
                                     </span>
-                                ))}
+                                </Link>
                             </div>
-
-                            <h3 className="text-xl font-bold font-theme">
-                                {project.title}
-                            </h3>
-
-                            <p className="text-sm opacity-80 flex-grow">
-                                {project.description}
-                            </p>
-
-                            <Link href={project.href} className="mt-2" aria-label={`View details for ${project.title}`}>
-                                <span className={`
-                                    inline-flex items-center gap-1 text-sm font-bold group-hover:gap-2 transition-all
-                                    ${theme === 'discord' ? 'text-accent' : 'text-foreground'}
-                                `}>
-                                    {project.href === "/community-solutions" ? "See community work →" : "See web work →"}
-                                    {/* <ArrowUpRight className="w-4 h-4" /> */}
-                                </span>
-                            </Link>
                         </motion.div>
                     ))}
                 </div>
