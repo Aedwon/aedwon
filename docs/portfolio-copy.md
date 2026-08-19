@@ -1,16 +1,17 @@
 # Portfolio Copy Reference (Single Source of Truth)
 
-> Working copy reference for Aedwon's personal portfolio. 
-> Edit this document directly to refine content, project summaries, and case study notes.
+> Working copy reference for Aerol's (Aedwon) personal portfolio.
+> Grounded in real data from `CV Professional Aerol.pdf`, `github.com/Aedwon`, and local workspaces in `Projects/`.
+> Edit this document directly to refine text, project notes, and case study details.
 
 ---
 
 ## 1. Homepage (`/`)
 
-### 1.1 Intro / Hero
+### 1.1 Intro
 ```markdown
 I'm Aerol (Aedwon).
-I study Computer Science at UP Diliman and build software for gaming communities, civic tech, and offline environments.
+I study Computer Science at UP Diliman and build tooling for student esports leagues. Most of my work is split between web apps in TypeScript and event automation in Python.
 ```
 
 ### 1.2 Featured Projects
@@ -18,36 +19,40 @@ I study Computer Science at UP Diliman and build software for gaming communities
 Projects
 
 • Pantas
-  Flutter mobile reviewer for Philippine exam prep (Civil Service & UPCAT). Features a custom spaced repetition engine, OMR-style mock exam sheets, and 9:16 progress recap cards.
+  Mobile exam prep app for the Philippine Civil Service Exam and UPCAT. Built with Flutter. Uses a custom spaced repetition schedule and physical OMR-style mock answer sheets.
   Links: [pantas.app ↗] · [Build notes →]
 
-• QR Studio
-  In-browser QR code builder. Generates styled vector/PNG QR codes with gradients and embedded logos client-side with zero server uploads.
-  Links: [Try tool ↗] · [Build notes →]
-
 • Genshin DPS Calculator
-  Client-side team rotation calculator built with React 19 and Zustand. Enforces KeqingMains (KQMS) calculation standards for artifact substats with zero backend dependencies.
+  In-browser team rotation and damage calculator built with React 19 and Zustand. Enforces KeqingMains (KQMS) artifact substat standards with zero backend dependencies.
   Links: [Open tool ↗] · [Build notes →]
 
 • Norala SB Transparency Portal
-  Searchable legislative portal built for the municipal council of Norala, South Cotabato. Republishes public ordinances and resolutions in a mobile-first interface.
+  Municipal legislative portal for the municipal council of Norala, South Cotabato. Republishes public ordinances and resolutions for phone-friendly reading.
   Links: [Demo ↗] · [Build notes →]
 
+• QR Studio
+  Client-side QR code generator with gradient rendering and SVG export. Runs entirely in the browser using HTML5 Canvas with no backend.
+  Links: [Try tool ↗] · [Build notes →]
+
 • Kiosk Survey
-  Touchscreen survey app for Android TV. Ran through an 8-hour live event without Wi-Fi, queuing survey submissions locally and syncing once network was restored.
+  Android TV touchscreen survey app built for on-site events. Kept running for an 8-hour live event without Wi-Fi, queuing survey submissions locally and syncing once network returned.
   Links: [Build notes →]
 
 • MSL Network Discord Bot
-  Automated onboarding and management for a 5,000+ member gaming community. Verifies student identity via Google Sheets, automates event queues, and tracks seasonal points.
+  Verification and community automation bot for a 5,000+ member gaming hub. Connects Discord with Google Sheets for student verification and seasonal event leaderboards.
   Links: [Build notes →]
 
-• WebP Unli
-  Batch image converter that encodes images to WebP locally in the browser with no file size limits or server processing.
-  Links: [Tool ↗] · [Build notes →]
+• MSL Collegiate Cup Bot
+  Tournament management bot for 3,271 collegiate competitors across 180+ universities. Automates match check-ins and support tickets.
+  Links: [Build notes →]
 
 • Lakambini Events
-  Website redesign for an event styling business. Rebuilt the booking flow so clients can see pricing and contact details in fewer clicks.
+  Web redesign for an event styling business. Rebuilt the booking path so clients find packages in fewer clicks.
   Links: [Live site ↗] · [Build notes →]
+
+• WebP Unli
+  Browser-based image converter for batch WebP encoding with zero server uploads.
+  Links: [Tool ↗] · [Build notes →]
 ```
 
 ### 1.3 Secondary Projects & Tooling
@@ -55,27 +60,28 @@ Projects
 Other work & experiments
 
 • BetterGov PH — Open-source contributor to civic tech initiatives modernizing Philippine government web services.
-• MCC S2 Match Explorer — Standings and bracket explorer for the Moonton Collegiate Cup.
-• MLBB Post-Game Extractor — Parses scoreboard screenshots into structured match statistics.
-• ISFE Bot — Tournament logistics bot for Ilocos Sur Festival Esports.
+• MCC S2 Match Explorer — Standings and bracket viewer for the Moonton Collegiate Cup Season 2.
+• MLBB Post-Game Extractor — Script that parses scoreboard screenshots into structured match statistics.
+• ISFE Bot — Tournament logistics bot syncing Discord registrations with Challonge brackets for Ilocos Sur Festival Esports.
 ```
 
-### 1.4 Background & Experience
+### 1.4 Experience & Community Operations
 ```markdown
-Experience & Community Systems
+Experience
 
-• Head of League Operations, MSL Collegiate Cup — Managed operations for 3,000+ student competitors across 180+ universities. Built the Discord bot that automated match check-ins, cutting admin overhead by 90%.
-• Discord Moderator, miHoYo — Moderated official community server with 100,000+ members.
-• Co-Head for Logistics & Security, UP Fair 2024 — Co-led venue logistics, procurement, and crowd safety for a week-long festival with 90,000+ attendees.
-• Database Manager, Moonton Student Leaders PH — Maintained the nationwide member database for 10,000+ students and automated reporting via Google Apps Scripts for 70+ partner organizations.
+• Head of League Operations, MSL Collegiate Cup — Directed tournament operations for 3,000+ student players across 180+ universities. Wrote a custom Discord bot that automated match check-ins, cutting admin overhead by 90%.
+• Discord Moderator, miHoYo — Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
+• Co-Head for Logistics & Security, UP Fair 2024 — Co-led venue logistics and crowd safety for a week-long festival with 90,000+ attendees.
+• National Admin for Partnerships, Moonton Student Leaders PH — Maintained a centralized database for 10,000+ student members and wrote Google Apps Scripts pipelines to automate reporting for 70+ partner organizations.
+• Community Manager, Blue Protocol: Star Resonance — Handled announcements, event cadences, and dispute mediation across a 60,000+ member global server.
 
 About
 
-I started out organizing grassroots tournaments and managing gaming servers in high school. When updating brackets, handling player verifications, and cross-referencing spreadsheets for hundreds of teams became impossible to do by hand, I started writing Python scripts and bots to automate the repetitive work. 
+I started organizing grassroots tournaments and managing gaming communities in high school. When updating brackets, verifying student IDs, and cross-referencing spreadsheets for hundreds of teams became too slow by hand, I taught myself Python to automate the work.
 
-That push led me toward software engineering and studying Computer Science at UP Diliman as a DOST Scholar. 
+That led me to study Computer Science at UP Diliman as a DOST Scholar.
 
-Besides coding, I also work on event operations. I've co-led logistics and security for UP Fair and managed project timelines for esports broadcasts.
+Outside of software, I run logistics and operations for on-ground events. I've co-led crowd security for UP Fair and managed project schedules for esports broadcasts.
 ```
 
 ### 1.5 Contact
@@ -85,49 +91,48 @@ Contact
 If you want to talk about community systems, have an interesting project, or just want to say hi:
 
 • Email: aerol.balayon@gmail.com
-• GitHub: @Aedwon
+• GitHub: github.com/Aedwon
 • Discord: @aedwon
 • LinkedIn: linkedin.com/in/aerol-balayon
 ```
 
 ---
 
-## 2. Case Study Content Outlines (`/work/[slug]`)
+## 2. Case Study Outlines (`/work/[slug]`)
 
 ### 2.1 Pantas (`/work/pantas`)
 - **Category:** Mobile App / EdTech
-- **Stack:** Flutter, Dart, SQLite, Local Storage
-- **The Spark:** Prepping for Philippine civil service and university entrance exams often relies on bulky paper reviewers or poorly formatted PDF dumps. Built a mobile reviewer that adapts to what you get wrong.
-- **Constraints & Research:** Mobile-first, low battery footprint, offline capability. Tested question parsing engines for complex math and science formulas.
-- **Key Decisions:** Built a custom spaced repetition algorithm scheduling reviews right before the predicted forgetting curve. Added physical OMR-style answer sheets for realistic exam practice.
+- **Stack:** Flutter, Dart, SQLite
+- **The Spark:** Civil Service Exam and UPCAT preparation often relies on bulky paper reviewers or poorly formatted PDF dumps. Built a mobile reviewer that adapts to what you get wrong.
+- **Constraints & Research:** Mobile-first, low battery footprint, offline capability. Tested question parsing engines for math and science formulas.
+- **Key Decisions:** Custom spaced repetition algorithm scheduling reviews right before the predicted forgetting curve. Added physical OMR-style answer sheets for realistic exam practice.
 - **Outcome:** Support for Civil Service Exam & UPCAT with shareable 9:16 progress recap cards.
 
-### 2.2 QR Studio (`/work/qr-studio`)
-- **Category:** Client-Side Tool
-- **Stack:** HTML5 Canvas, JavaScript, TypeScript
-- **The Spark:** Most web QR code generators are bloated with ads, require accounts, or send sensitive data to backend servers.
-- **Constraints & Research:** Must run 100% in the client browser with zero network requests after initial load.
-- **Key Decisions:** Used HTML5 Canvas for real-time raster rendering and SVG generation for vector exports. Added custom color ramps and logo centering logic.
-- **Outcome:** Fast, private, zero-backend tool.
-
-### 2.3 Genshin DPS Calculator (`/work/gi-calculator`)
+### 2.2 Genshin DPS Calculator (`/work/gi-calculator`)
 - **Category:** Theorycrafting Tool
 - **Stack:** React 19, Vite, Zustand, TypeScript
 - **The Spark:** Existing web calculators are either overly simplistic or require complex desktop setups. Wanted a clean web tool strictly enforcing KeqingMains Calculation Standards (KQMS).
 - **Key Decisions:** Client-side state management with Zustand, local persistence via `localStorage`, and JSON build import/export for sharing team configurations.
 - **Outcome:** Rapid rotation simulations running with zero server costs.
 
-### 2.4 Norala SB Transparency Portal (`/work/norala-sb`)
+### 2.3 Norala SB Transparency Portal (`/work/norala-sb`)
 - **Category:** Civic Tech
 - **Stack:** Next.js 16, Tailwind CSS v4, `next-intl`
-- **The Spark:** Municipal ordinances and resolutions are often stored in scanned PDFs or filing cabinets that citizens cannot easily search.
+- **The Spark:** Municipal ordinances and resolutions are often stored in physical filing cabinets that citizens cannot easily search.
 - **Key Decisions:** Built as a free student proof-of-concept for LGU donation. Mobile-first search index and bilingual support.
-- **Outcome:** Fast, accessible public legislative records accessible on mobile.
+- **Outcome:** Public legislative records accessible on mobile.
+
+### 2.4 QR Studio (`/work/qr-studio`)
+- **Category:** Client-Side Tool
+- **Stack:** HTML5 Canvas, JavaScript, TypeScript
+- **The Spark:** Most web QR code generators are bloated with ads, require accounts, or send sensitive data to backend servers.
+- **Key Decisions:** Used HTML5 Canvas for real-time raster rendering and SVG generation for vector exports.
+- **Outcome:** Fast, private, zero-backend tool.
 
 ### 2.5 Kiosk Survey (`/work/kiosk-survey`)
 - **Category:** Offline Event Tool
 - **Stack:** Flutter / Dart, Android TV, SQLite
-- **The Spark:** Gathering live attendee feedback at event venues where mobile reception drops or Wi-Fi drops under crowd load.
+- **The Spark:** Gathering live attendee feedback at event venues where mobile reception drops or Wi-Fi fails under crowd load.
 - **Key Decisions:** Built for Android TV touchscreens. Local SQLite queue persisting every survey submission to the device immediately, syncing to cloud database in batches only when connection is detected.
 - **Outcome:** Ran 8 continuous hours on-site with zero dropped submissions and zero crashes.
 
