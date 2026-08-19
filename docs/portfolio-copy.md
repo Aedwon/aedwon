@@ -108,7 +108,29 @@ miHoYo
 
 Blue Protocol: Star Resonance
 • Community Manager (2022 – 2023): Handled public communications and dispute resolution across a 60,000+ member global server.
+```
 
+### 1.5 Affiliations & Organizations
+*(Note: Rendered as a dedicated logo gallery with hover tooltips.)*
+
+```markdown
+Affiliations
+
+• Philippine Society of Youth Science Clubs (PSYSC)
+• MOONTON Games (Moonton Student Leaders)
+• Dark League Studios
+• miHoYo (HoYoverse)
+• University of the Philippines Diliman
+• UP Esports Varsity Team
+• UP Fair
+• UP Kugihan
+• Department of Science and Technology (DOST-SEI)
+• Philippine Science High School (PSHS)
+• Bandai Namco (Blue Protocol)
+```
+
+### 1.6 About
+```markdown
 About
 
 I've been a government STEM scholar since 2014, graduating with high honors from Philippine Science High School (PSHS-SRC) before studying Computer Science at UP Diliman as a DOST Merit Scholar.
@@ -118,7 +140,7 @@ I got into engineering by running tournaments and gaming communities. When updat
 Today, I split my focus between building practical software (mobile reviewers and client-side utilities) and running community infrastructure for student gaming ecosystems across the country.
 ```
 
-### 1.5 Contact
+### 1.7 Contact
 ```markdown
 Contact
 
