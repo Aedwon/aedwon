@@ -1,8 +1,8 @@
-# Agent Guidelines & Writing Guardrails
+# Agent Guidelines & Writing Guardrails (Unslop Standard)
 
 ## Core Tone & Voice: Human, Grounded, Technical
 
-All website copy, case studies, and documentation in this repository must sound like an authentic engineer/builder writing directly to peers—not an AI marketing assistant.
+All website copy, case studies, documentation, and agent responses in this repository must sound like an authentic engineer/builder writing directly to peers—not an AI marketing assistant.
 
 Reference model: Hiroki Osame ([`docs/tone-reference.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/tone-reference.md)).
 
@@ -10,41 +10,49 @@ Reference model: Hiroki Osame ([`docs/tone-reference.md`](file:///Users/aedwon/D
 
 ## Strict Rules: AI Patterns to Actively Avoid
 
-### 1. Ban the "Rule of Three" (Tricolons & Symmetrical Triplets)
-- **Problem:** AI obsessively groups verbs, nouns, and adjectives into sets of three (e.g., *"I build web apps, offline tools, and Discord bots"*, *"fast, reliable, and accessible"*, *"loads instantly, works offline, and respects privacy"*).
-- **Rule:** Break the symmetry. Use 1, 2, or 4+ items when describing tasks or features. Vary the cadence naturally. Do not structure bullet lists with exactly 3 parallel items in every section.
+### 1. Ban Sycophancy & Affirmation Fillers
+- **Never use:** *"Great question!"*, *"Certainly!"*, *"I'd be happy to help"*, *"Absolutely!"*, *"That's a fantastic idea!"*, *"Sure!"*
+- Start directly with the answer or action.
 
-### 2. Ban False Parallelism & Predictable Openers
-- **Avoid:** *"Whether you are looking for X, need Y, or want to Z..."*
-- **Avoid:** *"In today's fast-paced digital world..."*
-- **Avoid:** *"I'm Aedwon, a passionate developer dedicated to..."*
-- **Instead:** State facts directly. *"I run community tooling for student esports leagues and write web apps in TypeScript."*
+### 2. Ban the "Rule of Three" (Tricolons & Symmetrical Triplets)
+- **Problem:** AI obsessively groups verbs, nouns, adjectives, or bullet points into sets of three (e.g., *"web apps, offline tools, and bots"*, *"fast, reliable, and accessible"*, *"loads instantly, works offline, and respects privacy"*).
+- **Rule:** Break symmetry. Use 1, 2, or 4+ items. Vary cadence. Never stack 3-item lists in consecutive sections.
 
-### 3. Ban Em-Dash Abuse
-- **Problem:** AI relies on `—` in almost every sentence as a dramatic conversational crutch.
-- **Rule:** Use regular punctuation (periods, commas, parentheses, colons) instead of peppering em-dashes throughout every paragraph.
+### 3. Ban Hedging Stacks & Softener Residue
+- **Never use:** *"It's important to note that"*, *"It's worth mentioning"*, *"Generally speaking"*, *"In essence"*, *"At its core"*, *"It should be noted that"*, *"Furthermore"*, *"Moreover"*.
+- State claims directly without preamble.
 
-### 4. Ban AI Buzzwords & Marketing Fluff
+### 4. Ban AI Stock Vocabulary & Buzzwords
 Never use these words or their variants:
-- *tapestry, delve, testament, spearhead, leverage, empower, bespoke, curated, meticulous, seamless, robust, vibrant, realm, holistic, foster, elevate, revolutionize, passionate.*
+- *delve, tapestry, testament, navigate (figurative), embark, journey (figurative), pivotal, paramount, nuanced (as filler), robust (as filler), seamless, leverage (when "use" works), holistic, comprehensive (when "complete" works), realm, landscape (figurative), cutting-edge, state-of-the-art, spearhead, empower, bespoke, curated, meticulous, vibrant, foster, elevate, revolutionize, passionate.*
 
-### 5. Sentence Length & Rhythm (Burstiness)
-- Mix short, blunt sentences with longer explanatory ones.
+### 5. Ban Performative Balance & Symmetrical Formulas
+- Avoid following every statement with an automatic *"However..."*, *"On the other hand..."*, or *"That being said..."*.
+- Avoid formulaic openers: *"Whether you are looking for X, need Y, or want to Z..."*, *"In today's fast-paced digital world..."*.
+
+### 6. Ban Em-Dash Abuse & Bullet-Soup
+- **Em-dashes:** Hard cap of at most 1–2 per document. Use periods, commas, colons, or parentheses instead.
+- **Bullet-Soup:** Avoid repetitive `- **Label:** Description` bullet stacks where every line has identical word count. Merge repetitive bullets into natural prose sentences.
+
+### 7. Sentence Length, Burstiness & Rhythm
+- Engineer burstiness: mix short blunt sentences with longer explanatory ones.
 - Avoid uniform 15-to-20 word sentences.
-- Avoid summarizing every section with a moralizing or inspirational concluding sentence.
+- Avoid tidy 5-paragraph essay structures and moralizing/inspirational concluding sentences.
 
-### 6. Concrete Numbers & Real Context
-- Use Aerol's actual background: UP Diliman BS Computer Science, Moonton Student Leaders (180+ universities, 10k+ member database, 3k+ tournament competitors), miHoYo Discord moderation (100k+ server), UP Fair logistics (90k attendees).
-- Let the facts and constraints carry the weight without embellishment.
+### 8. Voice-Match Principles (Subtract, Don't Add)
+- **Subtract slop:** Do not "warm up" text with fake empathy, polite cheerleading, or customer-service tone.
+- **Contraction rate:** Use natural contractions (*I'm, don't, wasn't, it's*) matching real speech.
+- **Concrete nouns over abstract ones:** Specific examples, real constraints, and exact technical tools over vague categories.
+- **Calibrated uncertainty:** Use honest phrasing (*"I think"*, *"probably"*, *"seems to"*) when something isn't certain rather than asserting false robotic confidence.
 
-### 7. Living Copy Reference File
-- All active copy, project descriptions, and case study notes must be maintained in [`docs/portfolio-copy.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/portfolio-copy.md).
-- Edit that file directly when refining text rather than dumping walls of copy into conversation.
-
-### 8. Primary Ground Truth Sources (Always Check for Accuracy)
+### 9. Concrete Numbers & Ground Truth Sources
 Before writing or revising any portfolio copy, project descriptions, or stats, cross-reference these ground truth sources:
 - **Resume & Background:** [`CV Professional Aerol.pdf`](file:///Users/aedwon/Documents/Projects/aedwon/CV Professional Aerol.pdf) (in repo root)
 - **LinkedIn:** [`linkedin.com/in/aedwon`](https://www.linkedin.com/in/aedwon/)
 - **GitHub Repositories:** [`github.com/Aedwon`](https://github.com/Aedwon)
 - **Local Sister Workspaces:** `~/Documents/Projects/` (e.g. `Pantas`, `gi_damage_calculator`, `SB`, `BetterGov`, `Discord-Bot`)
 - **Tone Model:** [`docs/tone-reference.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/tone-reference.md) (Hiroki Osame model)
+
+### 10. Living Copy Reference File
+- All active copy, project descriptions, and case study notes must be maintained in [`docs/portfolio-copy.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/portfolio-copy.md).
+- Edit that file directly when refining text rather than dumping walls of copy into conversation.
