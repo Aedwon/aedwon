@@ -11,13 +11,7 @@
 ### 1.1 Intro
 ```markdown
 I'm Aerol (Aedwon).
-I'm a computer science student at UP Diliman and a continuous STEM scholar since Philippine Science High School.
-
-My work spans software development, national STEM academic competitions, and community systems:
-• Software: Building mobile exam reviewers (Pantas), client-side browser utilities, and civic tech portals.
-• Academic competitions: Authoring competition engines and question sets for national science olympiads under PSYSC, evaluating 4,000+ student participants nationwide.
-• Community infrastructure: Founding and scaling gaming ecosystems from scratch, including The MSL Network (5,000+ members) and its custom tournament automation.
-• Event operations: Running logistics, crowd safety, and technical infrastructure for major live events, including UP Fair (90,000+ attendees) and national esports tournaments.
+I study Computer Science at UP Diliman on a continuous STEM scholarship since Philippine Science High School. Most of my work sits between building software and running student operations at scale.
 ```
 
 ### 1.2 Featured Projects
