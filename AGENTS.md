@@ -56,3 +56,7 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 ### 10. Living Copy Reference File
 - All active copy, project descriptions, and case study notes must be maintained in [`docs/portfolio-copy.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/portfolio-copy.md).
 - Edit that file directly when refining text rather than dumping walls of copy into conversation.
+
+### 11. Skill Evaluation & User Confirmation Gate
+- For every user request, actively evaluate if a specialized skill applies (e.g. Visual Companion for UI brainstorming, Prototype for interactive exploration, TDD for feature code, Subagent-Driven Development for execution).
+- Proactively tell the user which skill fits the task and ask for their confirmation before launching or proceeding.
