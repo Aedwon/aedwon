@@ -1,7 +1,7 @@
 # Portfolio Copy Reference (Single Source of Truth)
 
 > Working copy reference for Aerol's (Aedwon) personal portfolio.
-> Grounded in real data from `CV Professional Aerol.pdf`, `github.com/Aedwon`, LinkedIn, and local workspaces in `Projects/`.
+> Grounded in real primary data from `CV Professional Aerol.pdf`, LinkedIn, `github.com/Aedwon`, and local workspaces in `Projects/`.
 > Edit this document directly to refine text, project notes, and case study details.
 
 ---
@@ -91,15 +91,20 @@ Philippine Society of Youth Science Clubs (PSYSC)
 • Science Olympiad Core, National Science Club Month 2024 (May 2024 – Jul 2024): Co-authored 500+ questions and engineered the automated scoring model evaluating 4,000+ competitors across regional and national elimination rounds.
 • Competitions Core, STEM Expo 2024 (Mar 2024 – Jun 2024): Managed logistical schedules and bracket workflows across 5 distinct STEM contest categories.
 
-Moonton Student Leaders PH
-• Head of League Operations, MSL Collegiate Cup (2023 – May 2026): Directed tournament operations for 3,000+ collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
-• National Admin for Partnerships (2023 – May 2026): Maintained a central database for 10,000+ student members and wrote Google Apps Scripts pipelines to automate reporting for 70+ partner organizations.
+Moonton Student Leaders Philippines (Sep 2020 – May 2026)
+• Tournament Director, MSL Collegiate Cup (Feb 2024 – May 2026): Directed tournament operations for 3,271 collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
+• Head of Partnerships & Network Development (Jan 2024 – May 2026): Founded The MSL Network (5,000+ members), acquired 15 collegiate esports organization partners, and delivered nationwide MOONTON campus marketing campaigns across Luzon, Visayas, and Mindanao.
+• Database Manager & Administrative Assistant (Feb 2022 – Aug 2022): Built automated data compilation workflows cutting processing time by 90% and pioneered execution policies for the Scholarship Program Department.
 
-University of the Philippines Diliman
+Dark League Studios
+• Project Manager (Sep 2024 – Jun 2025): Led on-site tournament operations for the inaugural season of Estudyante Esports National Championships, PBA Esports Bakbakan (Dota 2 and Tekken 8), and the OPPO Smooth Legend Cup Philippine Leg.
+
+UP Esports Varsity Team & UP Diliman
+• Vice Chairman & Head of Marketing, UP Esports (Aug 2024 – May 2025): Secured brand sponsorships with Converge, MSI, and Hotel101 while directing varsity team operations.
 • Co-Head for Logistics & Security, UP Fair 2024 (2024): Co-led venue logistics, procurement, and crowd safety for a week-long festival with 90,000+ attendees.
 
 miHoYo
-• Discord Moderator, Genshin Impact SEA (2021 – 2023): Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
+• Discord Moderator, Genshin Impact SEA (Oct 2023 – Dec 2024): Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
 
 Blue Protocol: Star Resonance
 • Community Manager (2022 – 2023): Handled public communications and dispute resolution across a 60,000+ member global server.
