@@ -86,12 +86,23 @@ Other work & experiments
 ```markdown
 Experience
 
-• Competitions Core & Regional Head, PSYSC (National Science Club Month & STEM Expo, 2024–Present): Co-authored 500+ questions and designed the automated scoring engine for the National Science Olympiad, evaluating 4,000+ competitors nationwide. Directed elimination rounds across Northern Luzon and NCR with a 30-person volunteer team, securing ₱800,000+ in corporate event sponsorships.
-• Head of League Operations, MSL Collegiate Cup (2023–Present): Directed tournament operations for 3,000+ student players across 180+ universities. Wrote a custom Discord bot that automated match check-ins, cutting admin overhead by 90%.
-• Discord Moderator, miHoYo (2021–2023): Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
-• Co-Head for Logistics & Security, UP Fair 2024: Co-led venue logistics and crowd safety for a week-long music festival with 90,000+ attendees.
-• National Admin for Partnerships, Moonton Student Leaders PH (2023–Present): Maintained a central database for 10,000+ student members and wrote Google Apps Scripts pipelines to automate reporting for 70+ partner organizations.
-• Community Manager, Blue Protocol: Star Resonance (2022–2023): Handled public communications and dispute resolution across a 60,000+ member global server.
+Philippine Society of Youth Science Clubs (PSYSC)
+• Marketing Associate (Feb 2024 – Present): Secured corporate sponsorships generating ₱800,000+ in funding for national science initiatives.
+• Science Olympiad Core, National Science Club Month 2024 (May 2024 – Jul 2024): Co-authored 500+ questions and engineered the automated scoring model evaluating 4,000+ competitors across regional and national elimination rounds.
+• Competitions Core, STEM Expo 2024 (Mar 2024 – Jun 2024): Managed logistical schedules and bracket workflows across 5 distinct STEM contest categories.
+
+Moonton Student Leaders PH
+• Head of League Operations, MSL Collegiate Cup (2023 – May 2026): Directed tournament operations for 3,000+ collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
+• National Admin for Partnerships (2023 – May 2026): Maintained a central database for 10,000+ student members and wrote Google Apps Scripts pipelines to automate reporting for 70+ partner organizations.
+
+University of the Philippines Diliman
+• Co-Head for Logistics & Security, UP Fair 2024 (2024): Co-led venue logistics, procurement, and crowd safety for a week-long festival with 90,000+ attendees.
+
+miHoYo
+• Discord Moderator, Genshin Impact SEA (2021 – 2023): Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
+
+Blue Protocol: Star Resonance
+• Community Manager (2022 – 2023): Handled public communications and dispute resolution across a 60,000+ member global server.
 
 About
 
