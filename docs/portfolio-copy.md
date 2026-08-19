@@ -23,7 +23,7 @@ Affiliations & Partners
 
 Organizations, leagues, and brand partners I've built tools, run operations, or delivered campaigns with:
 
-Organizations & Leagues
+Institutions, Leagues & LGUs
 • Philippine Society of Youth Science Clubs (PSYSC)
 • MOONTON Games (Moonton Student Leaders)
 • Dark League Studios
@@ -34,8 +34,11 @@ Organizations & Leagues
 • UP Kugihan
 • Department of Science and Technology (DOST-SEI)
 • Philippine Science High School (PSHS)
+• Provincial Government of Ilocos Sur
+• Municipality of Norala, South Cotabato
 
 Event & Brand Partners
+• Smart Communications (Smart Giga Arena)
 • Converge ICT Solutions
 • MSI (Micro-Star International)
 • Hotel101 Group
