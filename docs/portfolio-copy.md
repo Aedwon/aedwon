@@ -93,7 +93,7 @@ If you want to talk about community systems, have an interesting project, or jus
 • Email: aerol.balayon@gmail.com
 • GitHub: github.com/Aedwon
 • Discord: @aedwon
-• LinkedIn: linkedin.com/in/aerol-balayon
+• LinkedIn: linkedin.com/in/aedwon
 ```
 
 ---
