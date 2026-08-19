@@ -38,6 +38,8 @@ Institutions, Leagues & LGUs
 • Municipality of Norala, South Cotabato
 
 Event & Brand Partners
+• Ayala Malls (Circuit Makati)
+• SM Supermalls (SM City Manila & SM City Butuan)
 • Smart Communications (Smart Giga Arena)
 • Converge ICT Solutions
 • MSI (Micro-Star International)
