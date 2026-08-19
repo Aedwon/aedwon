@@ -151,9 +151,9 @@ Contact
 Get in touch for software projects or community infrastructure:
 
 • Email: aerol.balayon@gmail.com
-• GitHub: github.com/Aedwon
+• GitHub: /Aedwon
 • Discord: @aedwon
-• LinkedIn: linkedin.com/in/aedwon
+• LinkedIn: /in/aedwon
 ```
 
 ---
