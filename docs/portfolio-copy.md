@@ -11,7 +11,13 @@
 ### 1.1 Intro
 ```markdown
 I'm Aerol (Aedwon).
-I study Computer Science at UP Diliman and have been a continuous scholar since Philippine Science High School. I build practical software—like mobile exam reviewers and client-side tools—and run community infrastructure for student gaming leagues.
+I'm a computer science student at UP Diliman and a continuous STEM scholar since Philippine Science High School.
+
+My work spans software development, national STEM academic competitions, and community systems:
+• Software: Building mobile exam reviewers (Pantas), client-side browser utilities, and civic tech portals.
+• Academic competitions: Authoring competition engines and question sets for national science olympiads under PSYSC, evaluating 4,000+ student participants nationwide.
+• Community infrastructure: Founding and scaling gaming ecosystems from scratch, including The MSL Network (5,000+ members) and its custom tournament automation.
+• Event operations: Running logistics, crowd safety, and technical infrastructure for major live events, including UP Fair (90,000+ attendees) and national esports tournaments.
 ```
 
 ### 1.2 Featured Projects
@@ -28,6 +34,11 @@ Projects
 • The MSL Network & Bot
   Summary: Planned and built the Philippine student gaming hub from scratch to 5,000+ members, powered by custom Discord bots for Google Sheets verification and automated event quests.
   Stack: [Python, Discord.py, MySQL, Google Sheets API]
+  Links: [Build notes →]
+
+• PSYSC National Science Olympiad Scoring Engine
+  Summary: Co-authored 500+ questions and developed the national scoring mechanics used to evaluate 4,000+ student competitors across regional and national elimination rounds.
+  Stack: [Google Apps Script, Data Analysis, Competition Ops]
   Links: [Build notes →]
 
 • Genshin DPS Calculator
@@ -80,9 +91,10 @@ Other work & experiments
 ```markdown
 Experience
 
+• Competitions Core & Regional Head, PSYSC (National Science Club Month & STEM Expo) — Co-authored 500+ questions and designed the scoring engine for the National Science Olympiad (evaluating 4,000+ student competitors nationwide). Managed regional elimination rounds across Region I, Region II, and NCR with 30+ staff, and secured ₱800,000+ in corporate event sponsorships.
 • Head of League Operations, MSL Collegiate Cup — Directed tournament operations for 3,000+ student players across 180+ universities. Wrote a custom Discord bot that automated match check-ins, cutting admin overhead by 90%.
 • Discord Moderator, miHoYo — Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
-• Co-Head for Logistics & Security, UP Fair 2024 — Co-led venue logistics and crowd safety for a week-long festival with 90,000+ attendees.
+• Co-Head for Logistics & Security, UP Fair 2024 — Co-led venue logistics, procurement, and crowd safety for a week-long festival with 90,000+ attendees.
 • National Admin for Partnerships, Moonton Student Leaders PH — Maintained a centralized database for 10,000+ student members and wrote Google Apps Scripts pipelines to automate reporting for 70+ partner organizations.
 • Community Manager, Blue Protocol: Star Resonance — Handled announcements, event cadences, and dispute mediation across a 60,000+ member global server.
 
@@ -90,16 +102,16 @@ About
 
 I've been a government STEM scholar since 2014, graduating with high honors from Philippine Science High School (PSHS-SRC) before studying Computer Science at UP Diliman as a DOST Merit Scholar.
 
-I got into engineering by running tournaments and gaming communities. When managing brackets and verifying player rosters across spreadsheets became too slow by hand, I started writing Python scripts and bots to automate the operations.
+My background sits at the intersection of technical engineering, large-scale event logistics, and national academic competitions. I've designed question banks and scoring systems for thousands of science olympiad competitors under PSYSC, built community infrastructure and automation for collegiate gaming leagues, and managed venue logistics for festivals with 90,000+ attendees.
 
-Today, I split my focus between building practical software (like mobile apps and browser tools) and leading community infrastructure for student gaming ecosystems across the country.
+When I run into repetitive administrative bottlenecks or missing tools, I build the software to fix them—whether that's an offline mobile reviewer, a custom Discord bot, or a client-side utility.
 ```
 
 ### 1.5 Contact
 ```markdown
 Contact
 
-If you want to talk about community systems, have an interesting project, or just want to say hi:
+If you want to talk about community systems, academic projects, or have an interesting software challenge:
 
 • Email: aerol.balayon@gmail.com
 • GitHub: github.com/Aedwon
@@ -119,35 +131,42 @@ If you want to talk about community systems, have an interesting project, or jus
 - **Key Decisions:** Custom spaced repetition algorithm scheduling reviews right before the predicted forgetting curve. Added physical OMR-style answer sheets for realistic exam practice.
 - **Outcome:** Support for Civil Service Exam & UPCAT with shareable 9:16 progress recap cards.
 
-### 2.2 The MSL Network & Bot (`/work/msl-network`)
+### 2.2 PSYSC National Science Olympiad Scoring Engine (`/work/psysc-olympiad`)
+- **Category:** Academic Systems & Competition Ops
+- **Stack:** Google Apps Script, Data Pipelines, Competition Mechanics
+- **The Spark:** Evaluating 4,000+ students across multiple regional hubs manually created scoring delays and data entry risks during national eliminations.
+- **Key Decisions:** Authored 500+ standardized questions across scientific disciplines and created an automated scoring model for tie-breakers and difficulty weights.
+- **Outcome:** Smooth execution across Region I, II, NCR, and the National Finals with standardized evaluation.
+
+### 2.3 The MSL Network & Bot (`/work/msl-network`)
 - **Category:** High-Scale Community & Automation
 - **Stack:** Python, Discord.py, MySQL, Google Sheets API
 - **The Spark:** Built the community from scratch to unite competitive MLBB student players nationwide, requiring automated operations as headcount scaled into the thousands.
 - **Key Decisions:** Designed channel architecture and onboarding rituals. Engineered a Discord bot bridging Google Sheets registration data with cached MySQL tables for instant student verification and seasonal quest leaderboards.
 - **Outcome:** Grew to 5,000+ active members with automated daily operations and tournament support.
 
-### 2.3 Genshin DPS Calculator (`/work/gi-calculator`)
+### 2.4 Genshin DPS Calculator (`/work/gi-calculator`)
 - **Category:** Theorycrafting Tool
 - **Stack:** React 19, Vite, Zustand, TypeScript
 - **The Spark:** Existing web calculators are either overly simplistic or require complex desktop setups. Wanted a clean web tool strictly enforcing KeqingMains Calculation Standards (KQMS).
 - **Key Decisions:** Client-side state management with Zustand, local persistence via `localStorage`, and JSON build import/export for sharing team configurations.
 - **Outcome:** Rapid rotation simulations running with zero server costs.
 
-### 2.4 Norala SB Transparency Portal (`/work/norala-sb`)
+### 2.5 Norala SB Transparency Portal (`/work/norala-sb`)
 - **Category:** Civic Tech
 - **Stack:** Next.js 16, Tailwind CSS v4, `next-intl`
 - **The Spark:** Municipal ordinances and resolutions are often stored in physical filing cabinets that citizens cannot easily search.
 - **Key Decisions:** Built as a free student proof-of-concept for LGU donation. Mobile-first search index and bilingual support.
 - **Outcome:** Public legislative records accessible on mobile.
 
-### 2.5 QR Studio (`/work/qr-studio`)
+### 2.6 QR Studio (`/work/qr-studio`)
 - **Category:** Client-Side Tool
 - **Stack:** HTML5 Canvas, JavaScript, TypeScript
 - **The Spark:** Most web QR code generators are bloated with ads, require accounts, or send sensitive data to backend servers.
 - **Key Decisions:** Used HTML5 Canvas for real-time raster rendering and SVG generation for vector exports.
 - **Outcome:** Fast, private, zero-backend tool.
 
-### 2.6 Kiosk Survey (`/work/kiosk-survey`)
+### 2.7 Kiosk Survey (`/work/kiosk-survey`)
 - **Category:** Offline Event Tool
 - **Stack:** Flutter / Dart, Android TV, SQLite
 - **The Spark:** Gathering live attendee feedback at event venues where mobile reception drops or Wi-Fi fails under crowd load.
