@@ -12,7 +12,7 @@
 ```markdown
 I'm Aerol. You might also know me as Aedwon.
 
-I study Computer Science at UP Diliman on a DOST Merit Scholarship, following high school at Philippine Science High School. I like building things :)
+I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following high school at Philippine Science High School. I like building things :)
 ```
 
 ### 1.2 Featured Projects
