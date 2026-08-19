@@ -15,14 +15,15 @@ I'm Aerol. You might also know me as Aedwon.
 I study Computer Science at UP Diliman, continuing my interests in tech and DOST Merit Scholarship from Philippine Science High School. I like building things :)
 ```
 
-### 1.2 Affiliations & Organizations
-*(Note: Placed right above Projects. Rendered as a dedicated logo gallery with hover tooltips.)*
+### 1.2 Affiliations & Partners
+*(Note: Placed right above Projects. Rendered as two clean rows of avatar badges with hover tooltips.)*
 
 ```markdown
-Affiliations
+Affiliations & Partners
 
-Organizations and student leagues I've built tools or run operations for:
+Organizations, leagues, and brand partners I've built tools, run operations, or delivered campaigns with:
 
+Organizations & Leagues
 • Philippine Society of Youth Science Clubs (PSYSC)
 • MOONTON Games (Moonton Student Leaders)
 • Dark League Studios
@@ -33,6 +34,14 @@ Organizations and student leagues I've built tools or run operations for:
 • UP Kugihan
 • Department of Science and Technology (DOST-SEI)
 • Philippine Science High School (PSHS)
+
+Event & Brand Partners
+• Converge ICT Solutions
+• MSI (Micro-Star International)
+• Hotel101 Group
+• OPPO
+• BenQ ZOWIE
+• Chronos Athletics
 ```
 
 ### 1.3 Featured Projects
