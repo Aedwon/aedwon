@@ -141,7 +141,9 @@ About
 
 I spend around 80% of any project upfront on research and planning before writing code.
 
-I obsess over hyper-optimization. When designing an architecture or workflow, I'm constantly asking if something is the most optimal choice for the problem. Cutting unnecessary network requests and structuring clean local schemas early prevents messy rewrites later.
+I obsess over hyper-optimization. When designing an architecture or workflow, I'm constantly asking if something is the most optimal choice for the problem.
+
+My current toolkit for research, agentic workflows, and development includes Claude Code, Codex, the using-superpowers skill framework, Matt Pocock's engineering skills, and Gemini's Deep Research.
 ```
 
 ### 1.7 Contact
