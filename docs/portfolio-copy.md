@@ -106,7 +106,7 @@ Experience
    • Tournament Director, MSL Collegiate Cup (Feb 2024 to May 2026)
      Directed tournament operations for 3,271 collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
    • National Admin for Partnerships & Network Head (Jan 2024 to May 2026)
-     Founded The MSL Network (10,000+ members), partnered with 30+ collegiate esports organizations, and ran nationwide campus marketing campaigns.
+     Founded The MSL Network (10,000+ members), partnered with 80+ collegiate esports organizations, and ran nationwide campus marketing campaigns.
    • Administrative Assistant & Database Manager (Feb 2022 to Nov 2023)
      Maintained centralized records for 10,000+ student members nationwide and automated reporting workflows to cut manual processing time by 70%.
    • UP Diliman Community Manager (Sep 2020 to Feb 2022)
@@ -124,7 +124,7 @@ Experience
 
 4. Dark League Studios
    • Project Manager (Oct 2024 to Jun 2025)
-     Led on-site tournament operations for Estudyante Esports (₱1.5M+ funding/prizes), PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
+     Directed end-to-end execution for Estudyante Esports: The National Championships (₱1.5M+ in funding across 4 game titles), coordinating across game publishers, venue suppliers, sponsors, and broadcast crews. Co-managed 100+ on-site volunteers while running live staging for PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
 
 5. UP Fair 2024 (UP Diliman)
    • Co-Head for Logistics & Security (Nov 2023 to Feb 2024)
