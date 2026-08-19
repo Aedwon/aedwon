@@ -21,6 +21,8 @@ I study Computer Science at UP Diliman, continuing my interests in tech and DOST
 ```markdown
 Affiliations
 
+Organizations and student leagues I've built tools or run operations for:
+
 • Philippine Society of Youth Science Clubs (PSYSC)
 • MOONTON Games (Moonton Student Leaders)
 • Dark League Studios
@@ -34,10 +36,10 @@ Affiliations
 ```
 
 ### 1.3 Featured Projects
-*(Note: Exactly 4 featured projects. Arrows placed on bottom-right of card. Case study links route to `/work/[slug]`.)*
+*(Note: Exactly 4 featured projects. Arrows placed on bottom-right of card. Top-right link routes to all builds. Case study links route to `/work/[slug]`.)*
 
 ```markdown
-Featured projects
+Featured projects [See all projects →]
 
 • Pantas
   Summary: Mobile exam reviewer for Philippine civil service and university entrance tests, featuring adaptive spaced repetition and OMR-style mock exam sheets.
@@ -58,8 +60,6 @@ Featured projects
   Summary: Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.
   Stack: [Flutter, Dart, Android TV, SQLite]
   Link: [View case study →]
-
-+ 5 more projects in archive (Genshin DPS Calc, Norala SB Transparency, WebP Unli, Lakambini, MSL Bots)
 ```
 
 ### 1.4 Open Source Contributions & Additional Projects
