@@ -139,11 +139,9 @@ Experience
 ```markdown
 About
 
-I've been a government STEM scholar since 2014, graduating with high honors from Philippine Science High School before studying Computer Science at UP Diliman on a DOST Merit Scholarship.
+I spend around 80% of any project upfront on research and planning before writing code.
 
-I got into engineering by running tournaments and gaming communities. When updating brackets across spreadsheets became too slow by hand, I started writing bots and automation scripts to handle the work.
-
-Today, I split my time between writing software (mobile reviewers and web tools) and running community infrastructure for student gaming leagues.
+I obsess over hyper-optimization. When designing an architecture or workflow, I'm constantly asking if something is the most optimal choice for the problem. Cutting unnecessary network requests and structuring clean local schemas early prevents messy rewrites later.
 ```
 
 ### 1.7 Contact
