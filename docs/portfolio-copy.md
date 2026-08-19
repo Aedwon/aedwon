@@ -124,11 +124,11 @@ Experience
 
 4. Dark League Studios
    • Project Manager (Oct 2024 to Jun 2025)
-     Directed end-to-end execution for Estudyante Esports: The National Championships (₱1.5M+ in funding across 4 game titles), coordinating across game publishers, venue suppliers, sponsors, and broadcast crews. Co-managed 100+ on-site volunteers while running live staging for PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
+     Directed end-to-end execution for Estudyante Esports: The National Championships (₱1.5M+ in funding across 4 game titles), coordinating across game publishers, venue suppliers, sponsors, and broadcast crews. Ran live staging for PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
 
 5. UP Fair 2024 (UP Diliman)
    • Co-Head for Logistics & Security (Nov 2023 to Feb 2024)
-     Co-led venue logistics and crowd safety for a week-long music festival with 90,000+ attendees.
+     Co-led venue logistics and safety for a week-long music festival with 90,000+ attendees, co-managing 100+ on-site volunteers and security personnel across entry control and stage zones.
 
 6. miHoYo (HoYoverse)
    • Discord Moderator, Genshin Impact SEA (Oct 2023 to Dec 2024)
