@@ -102,25 +102,33 @@ Experience
    • Competitions Core, STEM Expo 2024 (Mar 2024 to Jun 2024)
      Managed logistical schedules and bracket workflows across 5 STEM contest categories.
 
-2. Moonton Student Leaders Philippines
+2. Moonton Student Leaders Philippines (Sep 2020 to May 2026)
    • Tournament Director, MSL Collegiate Cup (Feb 2024 to May 2026)
      Directed tournament operations for 3,271 collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
-   • Head of Partnerships & Network Development (Jan 2024 to May 2026)
-     Founded The MSL Network (10,000+ members), partnered with 15 collegiate esports organizations, and ran nationwide campus marketing campaigns.
-   • Database Manager & Administrative Assistant (Feb 2022 to Aug 2022)
-     Built automated data compilation workflows to cut manual processing time by 90%.
+   • National Admin for Partnerships & Network Head (Jan 2024 to May 2026)
+     Founded The MSL Network (10,000+ members), partnered with 30+ collegiate esports organizations, and ran nationwide campus marketing campaigns.
+   • Administrative Assistant & Database Manager (Feb 2022 to Nov 2023)
+     Maintained centralized records for 10,000+ student members nationwide and automated reporting workflows to cut manual processing time by 70%.
+   • UP Diliman Community Manager (Sep 2020 to Feb 2022)
+     Organized 30+ campus tournaments and community events for 400+ student players.
 
-3. Dark League Studios
-   • Project Manager (Sep 2024 to Jun 2025)
-     Led on-site tournament operations for Estudyante Esports, PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
+3. UP Fighting Maroons (UP Esports Varsity Team)
+   • Vice Chairman (Oct 2024 to May 2025)
+     Directed organizational operations and represented the varsity team in official university and external partner engagements.
+   • Head of Marketing (Aug 2024 to May 2025)
+     Secured varsity brand sponsorships with Converge, MSI, Hotel101, and Chronos Athletics. Directed team merchandising generating ₱150,000+ in profit from 200+ jersey units.
+   • Team Manager, Mobile Legends: Bang Bang (Oct 2024 to May 2025)
+     Coordinated team scrimmages, practice schedules, and tournament participation.
+   • Head Analyst, UP Oblation Esports (Nov 2022 to Jul 2024)
+     Built analytical player performance tracking tools and led opponent video review.
 
-4. UP Fighting Maroons (UP Esports Varsity Team)
-   • Vice Chairman & Head of Marketing (Aug 2024 to May 2025)
-     Secured varsity sponsorships with Converge, MSI, Hotel101, and Chronos Athletics while directing team operations.
+4. Dark League Studios
+   • Project Manager (Oct 2024 to Jun 2025)
+     Led on-site tournament operations for Estudyante Esports (₱1.5M+ funding/prizes), PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
 
 5. UP Fair 2024 (UP Diliman)
-   • Co-Head for Logistics & Security (2024)
-     Co-led venue logistics and crowd safety for a week-long festival with 90,000+ attendees.
+   • Co-Head for Logistics & Security (Nov 2023 to Feb 2024)
+     Co-led venue logistics and crowd safety for a week-long music festival with 90,000+ attendees.
 
 6. miHoYo (HoYoverse)
    • Discord Moderator, Genshin Impact SEA (Oct 2023 to Dec 2024)
