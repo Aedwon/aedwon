@@ -31,7 +31,6 @@ Affiliations
 • UP Kugihan
 • Department of Science and Technology (DOST-SEI)
 • Philippine Science High School (PSHS)
-• Bandai Namco (Blue Protocol)
 ```
 
 ### 1.3 Featured Projects
@@ -124,9 +123,6 @@ UP Esports Varsity Team & UP Diliman
 
 miHoYo
 • Discord Moderator, Genshin Impact SEA (Oct 2023 – Dec 2024): Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
-
-Blue Protocol: Star Resonance
-• Community Manager (2022 – 2023): Handled public communications and dispute resolution across a 60,000+ member global server.
 ```
 
 ### 1.6 About
