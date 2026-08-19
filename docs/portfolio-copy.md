@@ -88,41 +88,43 @@ Event & Brand Partners
 • Chronos Athletics
 ```
 
-### 1.5 Experience (Tabbed Entity Dossier)
-*(Note: Rendered as an interactive tabbed inspector on the left and a clean impact pane on the right. No tag pills.)*
+### 1.5 Experience (Seamless Tabbed Dossier with Distinct Roles)
+*(Note: Multi-role organizations list each distinct role cleanly stacked inside the dossier pane. No em-dashes, no filler.)*
 
 ```markdown
 Experience
 
 1. Philippine Society of Youth Science Clubs (PSYSC)
-   Role: Marketing Associate & Science Olympiad Core
-   Timeline: Feb 2024 — Present
-   Impact: Secured corporate sponsorships generating ₱800,000+ in funding for national youth science initiatives. Engineered the automated scoring model evaluating 4,000+ student competitors across regional and national elimination rounds.
+   • Marketing Associate (Feb 2024 to Present)
+     Secured corporate sponsorships generating ₱800,000+ in funding for national youth science initiatives.
+   • Science Olympiad Core, National Science Club Month 2024 (May 2024 to Jul 2024)
+     Co-authored 500+ questions and built the automated scoring model evaluating 4,000+ competitors across regional and national elimination rounds.
+   • Competitions Core, STEM Expo 2024 (Mar 2024 to Jun 2024)
+     Managed logistical schedules and bracket workflows across 5 STEM contest categories.
 
 2. Moonton Student Leaders Philippines
-   Role: Tournament Director & Head of Partnerships
-   Timeline: Sep 2020 — May 2026
-   Impact: Founded The MSL Network (10,000+ student members) and directed tournament operations for 3,271 collegiate competitors across 180+ universities. Built custom Discord check-in bots that cut manual admin overhead by 90%.
+   • Tournament Director, MSL Collegiate Cup (Feb 2024 to May 2026)
+     Directed tournament operations for 3,271 collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
+   • Head of Partnerships & Network Development (Jan 2024 to May 2026)
+     Founded The MSL Network (10,000+ members), partnered with 15 collegiate esports organizations, and ran nationwide campus marketing campaigns.
+   • Database Manager & Administrative Assistant (Feb 2022 to Aug 2022)
+     Built automated data compilation workflows to cut manual processing time by 90%.
 
 3. Dark League Studios
-   Role: Project Manager
-   Timeline: Sep 2024 — Jun 2025
-   Impact: Led on-site broadcast and tournament operations for Estudyante Esports National Championships, PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
+   • Project Manager (Sep 2024 to Jun 2025)
+     Led on-site tournament operations for Estudyante Esports, PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
 
 4. UP Fighting Maroons (UP Esports Varsity Team)
-   Role: Vice Chairman & Head of Marketing
-   Timeline: Aug 2024 — May 2025
-   Impact: Secured varsity brand sponsorships with Converge, MSI, Hotel101, and Chronos Athletics while directing collegiate varsity esports operations.
+   • Vice Chairman & Head of Marketing (Aug 2024 to May 2025)
+     Secured varsity sponsorships with Converge, MSI, Hotel101, and Chronos Athletics while directing team operations.
 
 5. UP Fair 2024 (UP Diliman)
-   Role: Co-Head for Logistics & Security
-   Timeline: 2024
-   Impact: Co-led venue logistics, procurement, and crowd safety for a week-long music festival with 90,000+ attendees.
+   • Co-Head for Logistics & Security (2024)
+     Co-led venue logistics and crowd safety for a week-long festival with 90,000+ attendees.
 
 6. miHoYo (HoYoverse)
-   Role: Discord Moderator, Genshin Impact SEA
-   Timeline: Oct 2023 — Dec 2024
-   Impact: Moderated the official 100,000+ member Southeast Asia Discord server for Genshin Impact.
+   • Discord Moderator, Genshin Impact SEA (Oct 2023 to Dec 2024)
+     Moderated the official 100,000+ member Southeast Asia server for Genshin Impact.
 ```
 
 ### 1.6 About
