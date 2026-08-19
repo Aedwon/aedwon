@@ -15,7 +15,26 @@ I'm Aerol. You might also know me in the gaming space as Aedwon.
 I study Computer Science at UP Diliman, continuing my interests in tech and DOST Merit Scholarship from Philippine Science High School. I like building things :)
 ```
 
-### 1.2 Featured Projects
+### 1.2 Affiliations & Organizations
+*(Note: Placed right above Projects. Rendered as a dedicated logo gallery with hover tooltips.)*
+
+```markdown
+Affiliations
+
+• Philippine Society of Youth Science Clubs (PSYSC)
+• MOONTON Games (Moonton Student Leaders)
+• Dark League Studios
+• miHoYo (HoYoverse)
+• University of the Philippines Diliman
+• UP Esports Varsity Team
+• UP Fair
+• UP Kugihan
+• Department of Science and Technology (DOST-SEI)
+• Philippine Science High School (PSHS)
+• Bandai Namco (Blue Protocol)
+```
+
+### 1.3 Featured Projects
 *(Note: Tech stacks render as icons in the UI; descriptions are strictly 1-sentence summaries.)*
 
 ```markdown
@@ -72,7 +91,7 @@ Projects
   Links: [Build notes →]
 ```
 
-### 1.3 Secondary Projects & Tooling
+### 1.4 Secondary Projects & Tooling
 ```markdown
 Other work & experiments
 
@@ -82,7 +101,7 @@ Other work & experiments
 • ISFE Bot: Tournament logistics bot syncing Discord registrations with Challonge brackets for Ilocos Sur Festival Esports.
 ```
 
-### 1.4 Experience & Community Operations
+### 1.5 Experience & Community Operations
 ```markdown
 Experience
 
@@ -108,25 +127,6 @@ miHoYo
 
 Blue Protocol: Star Resonance
 • Community Manager (2022 – 2023): Handled public communications and dispute resolution across a 60,000+ member global server.
-```
-
-### 1.5 Affiliations & Organizations
-*(Note: Rendered as a dedicated logo gallery with hover tooltips.)*
-
-```markdown
-Affiliations
-
-• Philippine Society of Youth Science Clubs (PSYSC)
-• MOONTON Games (Moonton Student Leaders)
-• Dark League Studios
-• miHoYo (HoYoverse)
-• University of the Philippines Diliman
-• UP Esports Varsity Team
-• UP Fair
-• UP Kugihan
-• Department of Science and Technology (DOST-SEI)
-• Philippine Science High School (PSHS)
-• Bandai Namco (Blue Protocol)
 ```
 
 ### 1.6 About
