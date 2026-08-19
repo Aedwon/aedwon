@@ -89,7 +89,7 @@ Event & Brand Partners
 ```
 
 ### 1.5 Experience (Seamless Tabbed Dossier with Distinct Roles)
-*(Note: Multi-role organizations list each distinct role cleanly stacked inside the dossier pane. No em-dashes, no filler.)*
+*(Note: Multi-role organizations list each distinct role cleanly stacked inside the dossier pane. No em-dashes, no triplets, no filler.)*
 
 ```markdown
 Experience
@@ -106,7 +106,7 @@ Experience
    • Tournament Director, MSL Collegiate Cup (Feb 2024 to May 2026)
      Directed tournament operations for 3,271 collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
    • National Admin for Partnerships & Network Head (Jan 2024 to May 2026)
-     Founded The MSL Network (10,000+ members), partnered with 80+ collegiate esports organizations, and ran nationwide campus marketing campaigns.
+     Founded The MSL Network (10,000+ members) across 80+ partner student esports orgs, running campus campaigns nationwide.
    • Administrative Assistant & Database Manager (Feb 2022 to Nov 2023)
      Maintained centralized records for 10,000+ student members nationwide and automated reporting workflows to cut manual processing time by 70%.
    • UP Diliman Community Manager (Sep 2020 to Feb 2022)
@@ -116,15 +116,15 @@ Experience
    • Vice Chairman (Oct 2024 to May 2025)
      Directed organizational operations and represented the varsity team in official university and external partner engagements.
    • Head of Marketing (Aug 2024 to May 2025)
-     Secured varsity brand sponsorships with Converge, MSI, Hotel101, and Chronos Athletics. Directed team merchandising generating ₱150,000+ in profit from 200+ jersey units.
+     Secured varsity sponsorships with Converge, MSI, Hotel101, and Chronos Athletics, while directing jersey merchandising that generated ₱150,000+ in profit from 200+ units. Managed team social media channels to reach 1,000 followers in 3 days (~2,000 by season end) with multimedia support from UPOU Esports.
    • Team Manager, Mobile Legends: Bang Bang (Oct 2024 to May 2025)
-     Coordinated team scrimmages, practice schedules, and tournament participation.
+     Coordinated player scrimmage schedules and official tournament participation.
    • Head Analyst, UP Oblation Esports (Nov 2022 to Jul 2024)
      Built analytical player performance tracking tools and led opponent video review.
 
 4. Dark League Studios
    • Project Manager (Oct 2024 to Jun 2025)
-     Directed end-to-end execution for Estudyante Esports: The National Championships (₱1.5M+ in funding across 4 game titles), coordinating across game publishers, venue suppliers, sponsors, and broadcast crews. Ran live staging for PBA Esports Bakbakan, OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night.
+     Directed tournament operations for Estudyante Esports: The National Championships (₱1.5M+ funding across 4 game titles), managing publisher relations, venue vendors, and sponsor commitments. Ran live stage operations for PBA Esports Bakbakan, OPPO Smooth Legend Cup, ZOWIE Perfect Play Night, and Estudyante Esports qualifiers.
 
 5. UP Fair 2024 (UP Diliman)
    • Co-Head for Logistics & Security (Nov 2023 to Feb 2024)
@@ -150,7 +150,7 @@ Today, I split my time between writing software (mobile reviewers and web tools)
 ```markdown
 Contact
 
-Get in touch for software projects, community infrastructure, or a quick hello:
+Get in touch for software projects or community infrastructure:
 
 • Email: aerol.balayon@gmail.com
 • GitHub: github.com/Aedwon
