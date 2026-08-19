@@ -15,8 +15,47 @@ I'm Aerol. You might also know me as Aedwon.
 I study Computer Science at UP Diliman, continuing my interests in tech and DOST Merit Scholarship from Philippine Science High School. I like building things :)
 ```
 
-### 1.2 Affiliations & Partners
-*(Note: Placed right above Projects. Rendered as two clean rows of avatar badges with hover tooltips.)*
+### 1.2 Featured Projects
+*(Note: Exactly 4 featured projects. Arrows placed on bottom-right of card. Top-right link routes to all builds. Case study links route to `/work/[slug]`.)*
+
+```markdown
+Featured projects [See all projects →]
+
+• Pantas
+  Summary: Mobile exam reviewer for Philippine civil service and university entrance tests, featuring adaptive spaced repetition and OMR-style mock exam sheets.
+  Stack: [Flutter, Dart, SQLite]
+  Link: [View case study →]
+
+• The MSL Network
+  Summary: Planned and built the Philippine student gaming hub to 10,000+ members, powered by custom Discord bots for Google Sheets verification and automated event quests.
+  Stack: [Python, Discord.py, MySQL, Google Sheets API]
+  Link: [View case study →]
+
+• QR Studio
+  Summary: In-browser QR code builder with gradient customization and SVG export that runs entirely client-side with no server uploads.
+  Stack: [TypeScript, HTML5 Canvas, Vite, Tailwind CSS]
+  Link: [View case study →]
+
+• Kiosk Survey
+  Summary: Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.
+  Stack: [Flutter, Dart, Android TV, SQLite]
+  Link: [View case study →]
+```
+
+### 1.3 Open Source
+*(Note: Positioned directly under Featured Projects and above Affiliations. Matched card anatomy.)*
+
+```markdown
+Open source
+
+• BetterGov PH
+  Summary: Contributor to civic tech initiatives modernizing Philippine government web services, digital public goods, and open data access.
+  Stack: [TypeScript, Next.js, Tailwind CSS]
+  Link: [bettergov.ph ↗ / github.com/bettergovph ↗]
+```
+
+### 1.4 Affiliations & Partners
+*(Note: Rendered as two clean rows of avatar badges with hover tooltips.)*
 
 ```markdown
 Affiliations & Partners
@@ -47,43 +86,6 @@ Event & Brand Partners
 • OPPO
 • BenQ ZOWIE
 • Chronos Athletics
-```
-
-### 1.3 Featured Projects
-*(Note: Exactly 4 featured projects. Arrows placed on bottom-right of card. Top-right link routes to all builds. Case study links route to `/work/[slug]`.)*
-
-```markdown
-Featured projects [See all projects →]
-
-• Pantas
-  Summary: Mobile exam reviewer for Philippine civil service and university entrance tests, featuring adaptive spaced repetition and OMR-style mock exam sheets.
-  Stack: [Flutter, Dart, SQLite]
-  Link: [View case study →]
-
-• The MSL Network
-  Summary: Planned and built the Philippine student gaming hub to 10,000+ members, powered by custom Discord bots for Google Sheets verification and automated event quests.
-  Stack: [Python, Discord.py, MySQL, Google Sheets API]
-  Link: [View case study →]
-
-• QR Studio
-  Summary: In-browser QR code builder with gradient customization and SVG export that runs entirely client-side with no server uploads.
-  Stack: [TypeScript, HTML5 Canvas, Vite, Tailwind CSS]
-  Link: [View case study →]
-
-• Kiosk Survey
-  Summary: Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.
-  Stack: [Flutter, Dart, Android TV, SQLite]
-  Link: [View case study →]
-```
-
-### 1.4 Open Source Contributions & Additional Projects
-```markdown
-Open source contributions
-
-• BetterGov PH: Open-source contributor to civic tech initiatives modernizing Philippine government web services and public data access.
-• MLBB Post-Game Extractor: Python script that parses scoreboard screenshots into structured match statistics.
-• MCC S2 Match Explorer: Standings and match bracket viewer for the Moonton Collegiate Cup Season 2.
-• ISFE Bot: Tournament logistics bot syncing Discord registrations with Challonge brackets for Ilocos Sur Festival Esports.
 ```
 
 ### 1.5 Experience & Community Operations
