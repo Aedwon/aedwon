@@ -10,7 +10,7 @@
 
 ### 1.1 Intro
 ```markdown
-I'm Aerol. You might also know me in the gaming space as Aedwon.
+I'm Aerol. You might also know me as Aedwon.
 
 I study Computer Science at UP Diliman, continuing my interests in tech and DOST Merit Scholarship from Philippine Science High School. I like building things :)
 ```
