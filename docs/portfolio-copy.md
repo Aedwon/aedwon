@@ -1,7 +1,7 @@
 # Portfolio Copy Reference (Single Source of Truth)
 
 > Working copy reference for Aerol's (Aedwon) personal portfolio.
-> Grounded in real data from `CV Professional Aerol.pdf`, `github.com/Aedwon`, and local workspaces in `Projects/`.
+> Grounded in real data from `CV Professional Aerol.pdf`, `github.com/Aedwon`, LinkedIn, and local workspaces in `Projects/`.
 > Edit this document directly to refine text, project notes, and case study details.
 
 ---
@@ -11,47 +11,58 @@
 ### 1.1 Intro
 ```markdown
 I'm Aerol (Aedwon).
-I study Computer Science at UP Diliman and build tooling for student esports leagues. Most of my work is split between web apps in TypeScript and event automation in Python.
+I study Computer Science at UP Diliman and have been a continuous scholar since Philippine Science High School. I build practical software—like mobile exam reviewers and client-side tools—and run community infrastructure for student gaming leagues.
 ```
 
 ### 1.2 Featured Projects
+*(Note: Tech stacks will render as icons in the UI; descriptions are strictly 1-sentence summaries.)*
+
 ```markdown
 Projects
 
 • Pantas
-  Mobile exam prep app for the Philippine Civil Service Exam and UPCAT. Built with Flutter. Uses a custom spaced repetition schedule and physical OMR-style mock answer sheets.
+  Summary: Mobile exam reviewer for Philippine civil service and university entrance tests, featuring adaptive spaced repetition and OMR-style mock exam sheets.
+  Stack: [Flutter, Dart, SQLite]
   Links: [pantas.app ↗] · [Build notes →]
 
+• The MSL Network & Bot
+  Summary: Planned and built the Philippine student gaming hub from scratch to 5,000+ members, powered by custom Discord bots for Google Sheets verification and automated event quests.
+  Stack: [Python, Discord.py, MySQL, Google Sheets API]
+  Links: [Build notes →]
+
 • Genshin DPS Calculator
-  In-browser team rotation and damage calculator built with React 19 and Zustand. Enforces KeqingMains (KQMS) artifact substat standards with zero backend dependencies.
+  Summary: Client-side team rotation and damage calculator strictly enforcing KeqingMains (KQMS) calculation standards with zero server dependencies.
+  Stack: [React, Zustand, TypeScript, Vite]
   Links: [Open tool ↗] · [Build notes →]
 
 • Norala SB Transparency Portal
-  Municipal legislative portal for the municipal council of Norala, South Cotabato. Republishes public ordinances and resolutions for phone-friendly reading.
+  Summary: Municipal legislative portal republishing public ordinances and resolutions for clean mobile reading in Norala, South Cotabato.
+  Stack: [Next.js, Tailwind CSS, TypeScript]
   Links: [Demo ↗] · [Build notes →]
 
+• Kiosk Survey
+  Summary: Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.
+  Stack: [Flutter, Android TV, SQLite]
+  Links: [Build notes →]
+
 • QR Studio
-  Client-side QR code generator with gradient rendering and SVG export. Runs entirely in the browser using HTML5 Canvas with no backend.
+  Summary: In-browser QR code builder with gradient customization and SVG export that runs entirely client-side with no server uploads.
+  Stack: [HTML5 Canvas, TypeScript]
   Links: [Try tool ↗] · [Build notes →]
 
-• Kiosk Survey
-  Android TV touchscreen survey app built for on-site events. Kept running for an 8-hour live event without Wi-Fi, queuing survey submissions locally and syncing once network returned.
-  Links: [Build notes →]
-
-• MSL Network Discord Bot
-  Verification and community automation bot for a 5,000+ member gaming hub. Connects Discord with Google Sheets for student verification and seasonal event leaderboards.
-  Links: [Build notes →]
-
 • MSL Collegiate Cup Bot
-  Tournament management bot for 3,271 collegiate competitors across 180+ universities. Automates match check-ins and support tickets.
+  Summary: Tournament operations bot automating match check-ins and support tickets for 3,271 collegiate competitors across 180+ universities.
+  Stack: [Python, Discord.py, Google Sheets API]
   Links: [Build notes →]
 
 • Lakambini Events
-  Web redesign for an event styling business. Rebuilt the booking path so clients find packages in fewer clicks.
+  Summary: Event styling studio redesign cutting down booking friction so clients can find package details and pricing in fewer clicks.
+  Stack: [Next.js, Tailwind CSS, TypeScript]
   Links: [Live site ↗] · [Build notes →]
 
 • WebP Unli
-  Browser-based image converter for batch WebP encoding with zero server uploads.
+  Summary: Browser-based batch image converter that encodes images to WebP locally in the browser with no file size limits.
+  Stack: [TypeScript, Canvas]
   Links: [Tool ↗] · [Build notes →]
 ```
 
@@ -60,7 +71,7 @@ Projects
 Other work & experiments
 
 • BetterGov PH — Open-source contributor to civic tech initiatives modernizing Philippine government web services.
-• MCC S2 Match Explorer — Standings and bracket viewer for the Moonton Collegiate Cup Season 2.
+• MCC S2 Match Explorer — Standings and match bracket viewer for the Moonton Collegiate Cup Season 2.
 • MLBB Post-Game Extractor — Script that parses scoreboard screenshots into structured match statistics.
 • ISFE Bot — Tournament logistics bot syncing Discord registrations with Challonge brackets for Ilocos Sur Festival Esports.
 ```
@@ -77,11 +88,11 @@ Experience
 
 About
 
-I started organizing grassroots tournaments and managing gaming communities in high school. When updating brackets, verifying student IDs, and cross-referencing spreadsheets for hundreds of teams became too slow by hand, I taught myself Python to automate the work.
+I've been a government STEM scholar since 2014, graduating with high honors from Philippine Science High School (PSHS-SRC) before studying Computer Science at UP Diliman as a DOST Merit Scholar.
 
-That led me to study Computer Science at UP Diliman as a DOST Scholar.
+I got into engineering by running tournaments and gaming communities. When managing brackets and verifying player rosters across spreadsheets became too slow by hand, I started writing Python scripts and bots to automate the operations.
 
-Outside of software, I run logistics and operations for on-ground events. I've co-led crowd security for UP Fair and managed project schedules for esports broadcasts.
+Today, I split my focus between building practical software (like mobile apps and browser tools) and leading community infrastructure for student gaming ecosystems across the country.
 ```
 
 ### 1.5 Contact
@@ -108,37 +119,37 @@ If you want to talk about community systems, have an interesting project, or jus
 - **Key Decisions:** Custom spaced repetition algorithm scheduling reviews right before the predicted forgetting curve. Added physical OMR-style answer sheets for realistic exam practice.
 - **Outcome:** Support for Civil Service Exam & UPCAT with shareable 9:16 progress recap cards.
 
-### 2.2 Genshin DPS Calculator (`/work/gi-calculator`)
+### 2.2 The MSL Network & Bot (`/work/msl-network`)
+- **Category:** High-Scale Community & Automation
+- **Stack:** Python, Discord.py, MySQL, Google Sheets API
+- **The Spark:** Built the community from scratch to unite competitive MLBB student players nationwide, requiring automated operations as headcount scaled into the thousands.
+- **Key Decisions:** Designed channel architecture and onboarding rituals. Engineered a Discord bot bridging Google Sheets registration data with cached MySQL tables for instant student verification and seasonal quest leaderboards.
+- **Outcome:** Grew to 5,000+ active members with automated daily operations and tournament support.
+
+### 2.3 Genshin DPS Calculator (`/work/gi-calculator`)
 - **Category:** Theorycrafting Tool
 - **Stack:** React 19, Vite, Zustand, TypeScript
 - **The Spark:** Existing web calculators are either overly simplistic or require complex desktop setups. Wanted a clean web tool strictly enforcing KeqingMains Calculation Standards (KQMS).
 - **Key Decisions:** Client-side state management with Zustand, local persistence via `localStorage`, and JSON build import/export for sharing team configurations.
 - **Outcome:** Rapid rotation simulations running with zero server costs.
 
-### 2.3 Norala SB Transparency Portal (`/work/norala-sb`)
+### 2.4 Norala SB Transparency Portal (`/work/norala-sb`)
 - **Category:** Civic Tech
 - **Stack:** Next.js 16, Tailwind CSS v4, `next-intl`
 - **The Spark:** Municipal ordinances and resolutions are often stored in physical filing cabinets that citizens cannot easily search.
 - **Key Decisions:** Built as a free student proof-of-concept for LGU donation. Mobile-first search index and bilingual support.
 - **Outcome:** Public legislative records accessible on mobile.
 
-### 2.4 QR Studio (`/work/qr-studio`)
+### 2.5 QR Studio (`/work/qr-studio`)
 - **Category:** Client-Side Tool
 - **Stack:** HTML5 Canvas, JavaScript, TypeScript
 - **The Spark:** Most web QR code generators are bloated with ads, require accounts, or send sensitive data to backend servers.
 - **Key Decisions:** Used HTML5 Canvas for real-time raster rendering and SVG generation for vector exports.
 - **Outcome:** Fast, private, zero-backend tool.
 
-### 2.5 Kiosk Survey (`/work/kiosk-survey`)
+### 2.6 Kiosk Survey (`/work/kiosk-survey`)
 - **Category:** Offline Event Tool
 - **Stack:** Flutter / Dart, Android TV, SQLite
 - **The Spark:** Gathering live attendee feedback at event venues where mobile reception drops or Wi-Fi fails under crowd load.
 - **Key Decisions:** Built for Android TV touchscreens. Local SQLite queue persisting every survey submission to the device immediately, syncing to cloud database in batches only when connection is detected.
 - **Outcome:** Ran 8 continuous hours on-site with zero dropped submissions and zero crashes.
-
-### 2.6 MSL Network & Tournament Automation (`/work/msl-bots`)
-- **Category:** High-Scale Community Systems
-- **Stack:** Python, Discord.py, MySQL, Google Sheets API
-- **The Spark:** Managing 3,000+ tournament players and 5,000+ community members manually creates massive administrative bottlenecks.
-- **Key Decisions:** Discord bot bridging Google Sheets registration data with cached MySQL tables for fast role provisioning, automated match check-ins, and seasonal quest tracking.
-- **Outcome:** 90% reduction in manual admin workload during live tournament operations.
