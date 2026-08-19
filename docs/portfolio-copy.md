@@ -10,8 +10,9 @@
 
 ### 1.1 Intro
 ```markdown
-I'm Aerol (Aedwon).
-I study Computer Science at UP Diliman on a continuous STEM scholarship since Philippine Science High School. Most of my work sits between building software and running student operations at scale.
+I'm Aerol. You might also know me in the gaming space as Aedwon.
+
+I study Computer Science at UP Diliman, continuing my interests in tech and DOST Merit Scholarship from Philippine Science High School. I like building things :)
 ```
 
 ### 1.2 Featured Projects
