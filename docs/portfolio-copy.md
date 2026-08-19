@@ -26,7 +26,7 @@ Affiliations
 • Dark League Studios
 • miHoYo (HoYoverse)
 • University of the Philippines Diliman
-• UP Esports Varsity Team
+• UP Fighting Maroons (UP Esports Varsity Team)
 • UP Fair
 • UP Kugihan
 • Department of Science and Technology (DOST-SEI)
@@ -117,8 +117,8 @@ Moonton Student Leaders Philippines (Sep 2020 – May 2026)
 Dark League Studios
 • Project Manager (Sep 2024 – Jun 2025): Led on-site tournament operations for the inaugural season of Estudyante Esports National Championships, PBA Esports Bakbakan (Dota 2 and Tekken 8), and the OPPO Smooth Legend Cup Philippine Leg.
 
-UP Esports Varsity Team & UP Diliman
-• Vice Chairman & Head of Marketing, UP Esports (Aug 2024 – May 2025): Secured brand sponsorships with Converge, MSI, and Hotel101 while directing varsity team operations.
+UP Fighting Maroons (UP Esports Varsity Team) & UP Diliman
+• Vice Chairman & Head of Marketing, UP Fighting Maroons Esports (Aug 2024 – May 2025): Secured brand sponsorships with Converge, MSI, and Hotel101 while directing varsity team operations.
 • Co-Head for Logistics & Security, UP Fair 2024 (2024): Co-led venue logistics, procurement, and crowd safety for a week-long festival with 90,000+ attendees.
 
 miHoYo
