@@ -1,454 +1,183 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useTheme, THEME_LABELS } from "./ThemeContext";
-import { Briefcase, Zap, Gamepad2, Menu, X, ChevronDown, Home, Hash, Mail } from "lucide-react";
-
-import Logo from "./Logo";
-import { BRANDING, NAV_LINKS } from "@/lib/portfolio";
+import { usePathname } from "next/navigation";
+import { useTheme } from "./ThemeContext";
+import {
+  Palette,
+  Monitor,
+  Sun,
+  Moon,
+  Circle,
+  Square,
+} from "lucide-react";
 
 export default function Navbar() {
-    const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
+  const { theme, mode, setTheme, setMode } = useTheme();
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
-
-    // Trigger attention animation every 5 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIsAnimating(true);
-            // Stop animation after 1.5 seconds
-            setTimeout(() => setIsAnimating(false), 1500);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    // Get animation class based on current theme
-    const getAnimationClass = () => {
-        if (!isAnimating) return '';
-        switch (theme) {
-            case 'minimalist':
-                return 'theme-toggle-pulse-minimalist';
-            case 'neubrutalist':
-                return 'theme-toggle-wiggle';
-            case 'discord':
-                return 'theme-toggle-bounce-discord';
-            default:
-                return '';
-        }
+  const handleModeChange = (
+    newMode: "system" | "light" | "dark",
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const origin = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
     };
+    setMode(newMode, origin);
+  };
 
-    // Discord theme renders a simplified title bar (navigation is in sidebar)
-    if (theme === 'discord') {
-        return (
-            <>
-                <style jsx global>{`
-                    @keyframes bounceDiscord {
-                        0%, 100% { 
-                            transform: translateY(0);
-                            box-shadow: 0 0 0 0 rgba(88, 101, 242, 0);
-                        }
-                        10%, 30%, 50% { 
-                            transform: translateY(-4px);
-                            box-shadow: 0 4px 20px 4px rgba(88, 101, 242, 0.4);
-                        }
-                        20%, 40% { 
-                            transform: translateY(0);
-                            box-shadow: 0 0 10px 2px rgba(88, 101, 242, 0.2);
-                        }
-                        60% {
-                            transform: translateY(-2px);
-                            box-shadow: 0 2px 10px 2px rgba(88, 101, 242, 0.3);
-                        }
-                        70% {
-                            transform: translateY(0);
-                        }
-                    }
-                    
-                    .theme-toggle-bounce-discord {
-                        animation: bounceDiscord 1.5s ease-in-out;
-                    }
-                `}</style>
-                {/* Navbar starts after the server sidebar */}
-                <nav className="fixed top-0 left-[72px] right-0 z-50 hidden md:flex h-12 items-center bg-[#202225] border-b border-[#1a1b1e]">
-                    {/* Server Name Section - matches channel sidebar width */}
-                    <div className="flex w-60 h-full items-center px-4 shrink-0 border-r border-[#1a1b1e] bg-[#2f3136]">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            {/* Server Badge/Icon */}
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-[#4752c4] flex items-center justify-center shrink-0">
-                                <Logo className="w-5 h-5" forceWhite={true} />
-                            </div>
-                            <div className="flex flex-col min-w-0">
-                                <span className="font-semibold text-white text-sm truncate">{BRANDING.name}</span>
-                                <span className="text-[10px] text-gray-400 uppercase tracking-wide">Portfolio Server</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Spacer + Controls */}
-                    <div className="flex-1 flex items-center justify-end px-4 gap-3">
-                        {/* Theme Switcher */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-[#36393f] hover:bg-[#404449] text-gray-200 rounded transition-all ${isAnimating ? 'theme-toggle-bounce-discord' : ''}`}
-                            >
-                                <Gamepad2 className="w-3.5 h-3.5" />
-                                <span>{THEME_LABELS.discord}</span>
-                            </button>
-
-                            {isDropdownOpen && (
-                                <>
-                                    <div
-                                        className="fixed inset-0 z-10"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    />
-                                    <div className="absolute right-0 top-full mt-2 w-48 bg-[#18191c] shadow-xl rounded-md p-1.5 z-20 border border-[#1a1b1e]">
-                                        <button
-                                            onClick={() => { setTheme('minimalist'); setIsDropdownOpen(false); }}
-                                            className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-[#36393f] rounded text-gray-200"
-                                        >
-                                            <Briefcase className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.minimalist}
-                                        </button>
-                                        <button
-                                            onClick={() => { setTheme('neubrutalist'); setIsDropdownOpen(false); }}
-                                            className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-[#36393f] rounded text-gray-200"
-                                        >
-                                            <Zap className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.neubrutalist}
-                                        </button>
-                                        <button
-                                            onClick={() => { setTheme('discord'); setIsDropdownOpen(false); }}
-                                            className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-[#36393f] rounded text-gray-200 bg-[#36393f] text-white"
-                                        >
-                                            <Gamepad2 className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.discord}
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Window Controls (decorative) */}
-                        <div className="flex items-center gap-2 ml-2">
-                            <div className="w-3 h-3 rounded-full bg-[#3ba55c] opacity-60 hover:opacity-100 cursor-pointer transition-opacity" />
-                            <div className="w-3 h-3 rounded-full bg-[#faa61a] opacity-60 hover:opacity-100 cursor-pointer transition-opacity" />
-                            <div className="w-3 h-3 rounded-full bg-[#ed4245] opacity-60 hover:opacity-100 cursor-pointer transition-opacity" />
-                        </div>
-                    </div>
-                </nav>
-
-                {/* Mobile navbar - full width */}
-                <nav className="fixed top-0 left-0 right-0 z-50 flex md:hidden h-16 items-center bg-[#202225] border-b border-[#1a1b1e] px-4" aria-label="Mobile navigation">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
-                            <Logo className="w-6 h-6" forceWhite={true} />
-                        </div>
-                        <span className="font-bold text-white text-base">{BRANDING.name}</span>
-                    </div>
-
-                    <div className="flex-1 flex justify-end gap-4">
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                aria-expanded={isDropdownOpen}
-                                aria-haspopup="true"
-                                aria-label="Theme selector"
-                                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium bg-[#36393f] hover:bg-[#404449] text-gray-200 rounded transition-all ${isAnimating ? 'theme-toggle-bounce-discord' : ''}`}
-                            >
-                                <Gamepad2 className="w-4 h-4" aria-hidden="true" />
-                            </button>
-
-                            {isDropdownOpen && (
-                                <>
-                                    <div
-                                        className="fixed inset-0 z-10"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    />
-                                    <div className="absolute right-0 top-full mt-2 w-48 bg-[#18191c] shadow-xl rounded-md p-1.5 z-20 border border-[#1a1b1e]">
-                                        <button
-                                            onClick={() => { setTheme('minimalist'); setIsDropdownOpen(false); }}
-                                            className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-[#36393f] rounded text-gray-200"
-                                        >
-                                            <Briefcase className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.minimalist}
-                                        </button>
-                                        <button
-                                            onClick={() => { setTheme('neubrutalist'); setIsDropdownOpen(false); }}
-                                            className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-[#36393f] rounded text-gray-200"
-                                        >
-                                            <Zap className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.neubrutalist}
-                                        </button>
-                                        <button
-                                            onClick={() => { setTheme('discord'); setIsDropdownOpen(false); }}
-                                            className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-[#36393f] rounded text-gray-200 bg-[#36393f] text-white"
-                                        >
-                                            <Gamepad2 className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.discord}
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            aria-expanded={isMobileMenuOpen}
-                            aria-label="Toggle navigation menu"
-                            className="p-2 hover:bg-[#404449] rounded transition-colors"
-                        >
-                            {isMobileMenuOpen ? (
-                                <X className="w-5 h-5 text-gray-200" aria-hidden="true" />
-                            ) : (
-                                <Menu className="w-5 h-5 text-gray-200" aria-hidden="true" />
-                            )}
-                        </button>
-                    </div>
-                </nav>
-
-                {/* Mobile Menu Panel */}
-                {isMobileMenuOpen && (
-                    <>
-                        <div
-                            className="fixed inset-0 z-30 bg-black/60"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            aria-hidden="true"
-                        />
-                        <nav
-                            aria-label="Mobile channel navigation"
-                            className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-[#2f3136] overflow-y-auto"
-                        >
-                            {/* Channels */}
-                            <div className="p-3 pt-4">
-                                {/* Portfolio Section */}
-                                <div className="mb-4">
-                                    <div className="flex items-center gap-1 px-2 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                                        <ChevronDown className="w-3 h-3" />
-                                        PORTFOLIO
-                                    </div>
-                                    {NAV_LINKS.filter(l => !l.isCTA).map((link) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-2 px-3 py-2.5 rounded text-gray-300 hover:bg-[#42464d] hover:text-white"
-                                        >
-                                            <Hash className="w-5 h-5 opacity-70" />
-                                            <span>{link.label}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-
-                                {/* Contact Section */}
-                                <div className="mb-4">
-                                    <div className="flex items-center gap-1 px-2 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                                        <ChevronDown className="w-3 h-3" />
-                                        CONTACT
-                                    </div>
-                                    {NAV_LINKS.filter(l => l.isCTA).map((link) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-2 px-3 py-2.5 rounded text-gray-300 hover:bg-[#42464d] hover:text-white"
-                                        >
-                                            <Mail className="w-5 h-5 opacity-70" />
-                                            <span>{link.label}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* User Panel at Bottom */}
-                            <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#292b2f] px-4 flex items-center gap-3 border-t border-[#202225]">
-                                <div className="relative">
-                                    <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-white font-bold">
-                                        A
-                                    </div>
-                                    <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#3ba55c] rounded-full border-[3px] border-[#292b2f]" />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="text-sm font-medium text-white">{BRANDING.name}</div>
-                                    <div className="text-xs text-gray-400">Online</div>
-                                </div>
-                            </div>
-                        </nav>
-                    </>
-                )}
-            </>
-        );
+  // Close popover when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setPopoverOpen(false);
+      }
     }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    // Default navbar for Minimalist and Neubrutalist themes
-    return (
-        <>
-            <style jsx global>{`
-                @keyframes pulseMinimalist {
-                    0%, 100% { 
-                        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-                        transform: scale(1);
-                        background-color: inherit;
-                    }
-                    15%, 45% { 
-                        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);
-                        transform: scale(1.08);
-                    }
-                    30% { 
-                        box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.1);
-                        transform: scale(1.05);
-                    }
-                    60% {
-                        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
-                        transform: scale(1.03);
-                    }
-                }
-                
-                @keyframes wiggleNeubrutalist {
-                    0%, 100% { transform: rotate(0deg); }
-                    10% { transform: rotate(-3deg) scale(1.05); }
-                    20% { transform: rotate(3deg) scale(1.05); }
-                    30% { transform: rotate(-3deg) scale(1.05); }
-                    40% { transform: rotate(3deg) scale(1.05); }
-                    50% { transform: rotate(-2deg); }
-                    60% { transform: rotate(2deg); }
-                    70% { transform: rotate(-1deg); }
-                    80% { transform: rotate(1deg); }
-                    90% { transform: rotate(0deg); }
-                }
-                
-                .theme-toggle-pulse-minimalist {
-                    animation: pulseMinimalist 1.5s ease-in-out;
-                }
-                
-                .theme-toggle-wiggle {
-                    animation: wiggleNeubrutalist 1.5s ease-in-out;
-                }
-            `}</style>
-            <nav className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-theme bg-background px-6 transition-colors duration-300">
-                <div className="flex items-center gap-2">
-                    <Logo className="w-8 h-8 md:w-10 md:h-10" />
-                    <div className={`text-xl font-bold tracking-tight hidden md:block ${theme === 'minimalist' ? 'font-serif' : 'font-theme'}`}>
-                        {BRANDING.name}
-                    </div>
+  const navItems = [
+    { label: "Home", href: "/", isActive: pathname === "/" },
+    { label: "Projects", href: "/projects", isActive: pathname.startsWith("/projects") },
+    { label: "Blogs", href: "/blogs", isActive: pathname.startsWith("/blogs") },
+  ];
+
+  return (
+    <header className="sticky top-4 sm:top-6 z-40 flex justify-center mb-8 sm:mb-10 pointer-events-none transition-all">
+      <div className="pointer-events-auto inline-flex items-center gap-3 sm:gap-4 px-3.5 sm:px-4 py-1.5 rounded-full bg-[var(--bg-card)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-[0_12px_36px_rgba(0,0,0,0.35)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all">
+        
+        {/* Brand Mark */}
+        <Link
+          href="/"
+          className="font-mono text-[13px] sm:text-[13.5px] font-semibold text-[var(--text-primary)] hover:opacity-85 active:scale-[0.95] transition-all cursor-pointer select-none pl-1"
+        >
+          &lt;/aedwon&gt;
+        </Link>
+
+        {/* Segmented Navigation Capsule */}
+        <nav className="flex items-center bg-black/[0.04] dark:bg-black/35 p-0.5 rounded-full border border-black/[0.03] dark:border-white/[0.04]">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`px-3 py-1 rounded-full text-[12px] sm:text-[12.5px] transition-all duration-150 active:scale-[0.94] select-none ${
+                item.isActive
+                  ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-semibold shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04] font-medium border border-transparent"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Chameleon Trigger & Icons-Only Popover */}
+        <div className="relative" ref={popoverRef}>
+          <button
+            onClick={() => setPopoverOpen(!popoverOpen)}
+            className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.08] active:scale-[0.92]"
+            aria-label="Theme settings"
+          >
+            <Palette className="w-3.5 h-3.5" />
+          </button>
+
+          {popoverOpen && (
+            <div
+              data-testid="theme-popover"
+              className="absolute top-[calc(100%+8px)] right-0 w-[146px] bg-[var(--bg-card)] shadow-2xl rounded-xl p-1.5 z-50 flex flex-col gap-1.5 border border-[var(--border-subtle)] animate-in fade-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Row 1: Mode (Icons Only) */}
+              {theme !== "discord" ? (
+                <div className="grid grid-cols-3 gap-0.5 bg-black/[0.04] dark:bg-black/30 p-0.5 rounded-[9px]">
+                  <button
+                    onClick={(e) => handleModeChange("system", e)}
+                    data-tooltip="System"
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                      mode === "system"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => handleModeChange("light", e)}
+                    data-tooltip="Light"
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                      mode === "light"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Sun className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => handleModeChange("dark", e)}
+                    data-tooltip="Dark"
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                      mode === "dark"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Moon className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-
-                <div className="hidden md:flex items-center gap-10 font-theme text-sm font-medium text-foreground opacity-80">
-                    {NAV_LINKS.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`
-                                hover:text-accent transition-colors
-                                ${link.isCTA && theme === 'minimalist' ? 'inline-flex items-center gap-1 border border-ink px-3 py-1.5 hover:bg-ink hover:text-paper' : ''}
-                                ${link.isCTA && theme === 'neubrutalist' ? 'px-4 py-2 bg-accent text-black border-2 border-black shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000]' : ''}
-                            `}
-                        >
-                            {link.label}{link.isCTA && theme === 'minimalist' && " →"}
-                        </Link>
-                    ))}
+              ) : (
+                <div className="py-1.5 px-2 bg-black/20 rounded-[8px] text-center text-[10.5px] font-mono text-[var(--text-dim)]">
+                  Dark mode only
                 </div>
+              )}
 
-                <div className="flex items-center gap-4">
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            aria-expanded={isDropdownOpen}
-                            aria-haspopup="true"
-                            aria-label={`Skin selector, current skin: ${THEME_LABELS[theme]}`}
-                            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border border-theme rounded-theme hover:bg-accent-secondary transition-all ${getAnimationClass()}`}
-                        >
-                            <span>{THEME_LABELS[theme]}</span>
-                        </button>
-
-                        {isDropdownOpen && (
-                            <>
-                                <div
-                                    className="fixed inset-0 z-10"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                    aria-hidden="true"
-                                />
-                                <div className="absolute right-0 top-full mt-2 w-48 border border-theme bg-background shadow-theme rounded-theme p-2 z-20 transition-all">
-                                    <button
-                                        onClick={() => { setTheme('minimalist'); setIsDropdownOpen(false); }}
-                                        className={`flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-accent-secondary rounded-theme ${theme === 'minimalist' ? 'bg-accent-secondary font-bold' : ''}`}
-                                    >
-                                        <Briefcase className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.minimalist}
-                                    </button>
-                                    <button
-                                        onClick={() => { setTheme('neubrutalist'); setIsDropdownOpen(false); }}
-                                        className={`flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-accent-secondary rounded-theme ${theme === 'neubrutalist' ? 'bg-accent-secondary font-bold' : ''}`}
-                                    >
-                                        <Zap className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.neubrutalist}
-                                    </button>
-                                    <button
-                                        onClick={() => { setTheme('discord'); setIsDropdownOpen(false); }}
-                                        className="flex items-center w-full gap-2 px-3 py-2 text-sm hover:bg-accent-secondary rounded-theme"
-                                    >
-                                        <Gamepad2 className="w-4 h-4" aria-hidden="true" /> {THEME_LABELS.discord}
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Mobile Menu Button */}
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        aria-expanded={isMobileMenuOpen}
-                        aria-label="Toggle mobile menu"
-                        className={`
-                            md:hidden p-2 rounded-theme
-                            ${theme === 'minimalist' ? 'hover:bg-accent-secondary' : ''}
-                            ${theme === 'neubrutalist' ? 'border-2 border-black hover:bg-accent' : ''}
-                        `}
-                    >
-                        {isMobileMenuOpen ? (
-                            <X className="w-6 h-6" aria-hidden="true" />
-                        ) : (
-                            <Menu className="w-6 h-6" aria-hidden="true" />
-                        )}
-                    </button>
-                </div>
-            </nav>
-
-            {/* Mobile Menu Overlay */}
-            {isMobileMenuOpen && (
-                <>
-                    <div
-                        className="fixed inset-0 z-40 bg-black/50 md:hidden"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        aria-hidden="true"
-                    />
-                    <nav
-                        aria-label="Mobile navigation"
-                        className={`
-                            fixed top-16 left-0 right-0 z-50 md:hidden
-                            border-b border-theme
-                            ${theme === 'minimalist' ? 'bg-background' : ''}
-                            ${theme === 'neubrutalist' ? 'bg-[#FFFDF5] border-b-[3px] border-black' : ''}
-                        `}
-                    >
-                        <div className="flex flex-col p-4 gap-2">
-                            {NAV_LINKS.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`
-                                        px-4 py-3 font-medium rounded-theme transition-colors
-                                        ${theme === 'minimalist' ? 'hover:bg-accent-secondary' : ''}
-                                        ${theme === 'neubrutalist' ? 'hover:bg-accent border-2 border-black' : ''}
-                                        ${link.isCTA && theme === 'minimalist' ? 'bg-foreground text-background font-bold mt-2' : ''}
-                                        ${link.isCTA && theme === 'neubrutalist' ? 'bg-accent text-black border-[3px] border-black shadow-[2px_2px_0px_#000] font-bold mt-2' : ''}
-                                    `}
-                                >
-                                    {link.label}{link.isCTA && theme === 'minimalist' && " →"}
-                                </Link>
-                            ))}
-                        </div>
-                    </nav>
-                </>
-            )}
-        </>
-    );
+              {/* Row 2: Theme Style (Icons Only) */}
+              <div className="grid grid-cols-3 gap-0.5 bg-black/[0.04] dark:bg-black/30 p-0.5 rounded-[9px]">
+                <button
+                  onClick={() => setTheme("default")}
+                  data-tooltip="Default"
+                  className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                    theme === "default"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <Circle className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setTheme("neobrutalist")}
+                  data-tooltip="Brutalist"
+                  className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                    theme === "neobrutalist"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <Square className="w-3.5 h-3.5 fill-current" />
+                </button>
+                <button
+                  onClick={() => setTheme("discord")}
+                  data-tooltip="Discord"
+                  className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                    theme === "discord"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
 }
