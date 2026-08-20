@@ -44,7 +44,7 @@ html[data-theme="default"][data-mode="light"] body {
 /* Neobrutalist Theme - Light Mode Only */
 [data-theme="neobrutalist"],
 html[data-theme="neobrutalist"] body {
-  --bg-canvas: #FEF08A;
+  --bg-canvas: #FFFDF5;
   --bg-card: #FFFFFF;
   --bg-card-hover: #FEF9C3;
   --text-primary: #000000;

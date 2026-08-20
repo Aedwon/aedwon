@@ -249,7 +249,7 @@ export default function ProjectCard({
               data-tooltip={tech.name}
               className={`has-tooltip tech-badge h-[26px] w-[26px] flex items-center justify-center transition-all ${
                 isNeobrutalist
-                  ? "rounded-none bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000000] hover:bg-[#FFE600] active:translate-x-[1px] active:translate-y-[1px]"
+                  ? "rounded-none bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000000] hover:bg-black hover:text-white active:translate-x-[1px] active:translate-y-[1px]"
                   : "rounded-[6px] bg-black/[0.04] dark:bg-white/[0.05] hover:bg-black/[0.09] dark:hover:bg-white/[0.12] border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.12] hover:-translate-y-0.5"
               }`}
             >
@@ -260,7 +260,7 @@ export default function ProjectCard({
         <span
           className={`text-[14px] transition-all group-hover:translate-x-1 ${
             isNeobrutalist
-              ? "font-black text-black px-2.5 py-0.5 border-2 border-black bg-[#FFE600] shadow-[2px_2px_0px_#000000]"
+              ? "font-black text-black px-2.5 py-0.5 border-2 border-black bg-white shadow-[2px_2px_0px_#000000] group-hover:bg-black group-hover:text-white"
               : "text-[var(--text-arrow)] group-hover:text-[var(--text-primary)]"
           }`}
         >

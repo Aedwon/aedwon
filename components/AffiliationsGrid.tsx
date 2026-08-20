@@ -179,7 +179,7 @@ export default function AffiliationsGrid() {
             <div
               className={`text-[11px] uppercase tracking-wider mb-2.5 ${
                 isNeobrutalist
-                  ? "text-black font-black bg-[#FFE600] inline-block px-2 py-0.5 border border-black shadow-[1.5px_1.5px_0px_#000000]"
+                  ? "text-white font-black bg-black inline-block px-2.5 py-0.5 border border-black shadow-[1.5px_1.5px_0px_#000000]"
                   : "font-mono font-semibold text-[var(--text-dim)]"
               }`}
             >
@@ -202,7 +202,7 @@ export default function AffiliationsGrid() {
         <div
           className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap transition-opacity duration-150 ${
             isNeobrutalist
-              ? "rounded-none border-2 border-black bg-[#FFE600] text-black font-black shadow-[2.5px_2.5px_0px_#000000]"
+              ? "rounded-none border-2 border-black bg-black text-white font-black shadow-[2.5px_2.5px_0px_rgba(0,0,0,0.5)]"
               : "font-mono font-semibold rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
           }`}
           style={{
