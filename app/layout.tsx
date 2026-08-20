@@ -1,77 +1,61 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeContext";
-import Navbar from "@/components/Navbar";
 import DiscordLayout from "@/components/DiscordLayout";
-
-// Font configurations
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const spaceMono = Space_Mono({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-space-mono",
-  display: "swap",
-});
-
-const sourceSerif = Source_Serif_4({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-source-serif",
-  display: "swap",
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  weight: ["400", "500"],
-  subsets: ["latin"],
-  variable: "--font-ibm-plex-mono",
-  display: "swap",
-});
-
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ConsoleEffect from "@/components/ConsoleEffect";
-import Analytics from "@/components/Analytics";
+import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
-  title: "Aedwon — A studio of one.",
-  description: "Web solutions and community systems. A brand sells twice — once to the stranger, once to the regular. I build for both sales.",
+  title: "Aerol (Aedwon) — Software Engineer & Builder",
+  description: "Computer Science at UP Diliman on a DOST Merit Scholarship. Software builds, client-side tools, and platforms.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${spaceMono.variable} ${sourceSerif.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" data-theme="default" data-mode="dark" suppressHydrationWarning>
+      <head>
+        {/* Anti-Flash Theme Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('aedwon-theme') || 'default';
+                  const mode = localStorage.getItem('aedwon-mode') || 'dark';
+                  const effectiveMode = mode === 'system' 
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : mode;
+                  document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.setAttribute('data-mode', effectiveMode);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body>
         <ThemeProvider>
-          <div className="min-h-screen bg-background text-foreground font-theme transition-colors duration-300 flex flex-col">
-            {/* Skip to main content link for keyboard users */}
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-white focus:rounded"
+          <DiscordLayout>
+            <div
+              id="portfolio-main-surface"
+              className="max-w-[860px] mx-auto px-6 sm:px-8 pt-8 min-h-screen flex flex-col justify-between transition-transform"
             >
-              Skip to main content
-            </a>
-            <ConsoleEffect />
-            <Navbar />
-            <main id="main-content" className="pt-[var(--nav-height)] flex-grow" role="main">
-              <DiscordLayout>
-                {children}
-              </DiscordLayout>
-            </main>
-            <Footer />
-          </div>
+              <div>
+                <Navbar />
+                <main>
+                  <PageTransition>{children}</PageTransition>
+                </main>
+              </div>
+              <Footer />
+            </div>
+          </DiscordLayout>
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );
 }
-
