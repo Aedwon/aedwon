@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from "../ThemeContext";
 import HeroSection from "../HeroSection";
 import ProjectCard from "../ProjectCard";
 import ExperienceDossier from "../ExperienceDossier";
+import { PROJECTS } from "@/lib/data/projects";
 
 function ThemeConsumer() {
   const { theme, setTheme, mode, setMode } = useTheme();
@@ -55,22 +56,7 @@ describe("Neobrutalist Theme Integration", () => {
   });
 
   it("renders ProjectCard with neobrutalist styling when theme is neobrutalist", () => {
-    const testProject = {
-      slug: "pantas",
-      title: "Pantas — Offline Kiosk",
-      tagline: "Touchscreen survey engine",
-      summary: "Touchscreen survey engine running SQLite offline.",
-      role: "Lead Engineer",
-      period: "2024",
-      platforms: [{ name: "Android", icon: "android" }],
-      stack: [{ name: "React" }, { name: "SQLite" }],
-      problem: "Offline requirement.",
-      architecture: [{ title: "Local DB", description: "SQLite sync" }],
-      results: "Deployed.",
-      featured: true,
-      glowColor: "blue",
-      brandColor: "#2563EB",
-    };
+    const testProject = PROJECTS[0];
 
     render(
       <ThemeProvider>
@@ -84,7 +70,7 @@ describe("Neobrutalist Theme Integration", () => {
     const btn = screen.getByText("Set Brutalist");
     fireEvent.click(btn);
 
-    const cardTitle = screen.getByText("Pantas — Offline Kiosk");
+    const cardTitle = screen.getByText("Pantas");
     const cardContainer = cardTitle.closest("a");
     expect(cardContainer).toBeDefined();
     expect(cardContainer?.className).toContain("border-black");
