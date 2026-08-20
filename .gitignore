@@ -44,3 +44,5 @@ next-env.d.ts
 /scratch
 /archive
 .superpowers/brainstorm/
+public/*.html
+docs/superpowers/specs/*.html
