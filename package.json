@@ -21,7 +21,8 @@
     "postcss": "^8.4.38",
     "posthog-js": "^1.369.4",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "simple-icons": "^16.28.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -32,7 +33,10 @@
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "imagetracerjs": "^1.2.6",
     "jsdom": "^29.0.2",
+    "potrace": "^2.1.8",
+    "svgo": "^4.0.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "vitest": "^4.1.4"
