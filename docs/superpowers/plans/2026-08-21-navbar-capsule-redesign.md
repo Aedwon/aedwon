@@ -1,0 +1,368 @@
+# Floating Capsule Navbar Redesign Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Redesign the navigation bar into a centered floating glass capsule with `</aedwon>` branding, segmented animated navigation (`Home`, `Projects`, `Blogs`), and an icons-only theme popover with tactile micro-press animations.
+
+**Architecture:** Refactor `components/Navbar.tsx` to mount a sticky floating capsule (`max-w-fit mx-auto sticky top-4 sm:top-6 z-40`) utilizing project CSS theme variables (`--bg-card`, `--border-subtle`, `--text-primary`), active link layout animations, outside-click detection, and theme transition coordinates.
+
+**Tech Stack:** Next.js 16 (App Router), React 19, Tailwind CSS, Lucide React, Vitest, `@testing-library/react`.
+
+## Global Constraints
+
+- Tone and copy unslop standard: no marketing buzzwords or tricolons.
+- Preserve signature `</aedwon>` monospace branding on the left linking to `/`.
+- Segmented navigation must contain `Home` (`/`), `Projects` (`/projects`), and `Blogs` (`/blogs`).
+- Theme popover must be icons-only (no text labels) with `has-tooltip` hover labels and tactile `active:scale-[0.92]` press feedback.
+- Must support coordinate origin passing to `setMode(newMode, origin)` to trigger `StarVortex` and `BayerDither` theme midpoint animations.
+
+---
+
+### Task 1: Unit Tests for Redesigned Navbar
+
+**Files:**
+- Create: `components/__tests__/navbar.test.tsx`
+- Test: `components/__tests__/navbar.test.tsx`
+
+**Interfaces:**
+- Consumes: `Navbar` from `components/Navbar.tsx`, `ThemeProvider` from `components/ThemeContext.tsx`
+- Produces: Comprehensive test coverage for navigation rendering, active route highlighting, brand link, popover opening/closing, and mode/theme triggers.
+
+- [ ] **Step 1: Write the unit test file**
+
+```tsx
+// components/__tests__/navbar.test.tsx
+import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import Navbar from "../Navbar";
+import { ThemeProvider } from "../ThemeContext";
+
+let mockPathname = "/";
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => mockPathname,
+}));
+
+describe("Navbar Component", () => {
+  beforeEach(() => {
+    mockPathname = "/";
+  });
+
+  it("renders the </aedwon> brand link to home", () => {
+    render(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>
+    );
+
+    const brandLink = screen.getByText("</aedwon>");
+    expect(brandLink).toBeDefined();
+    expect(brandLink.closest("a")?.getAttribute("href")).toBe("/");
+  });
+
+  it("renders Home, Projects, and Blogs navigation links", () => {
+    render(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByText("Home")).toBeDefined();
+    expect(screen.getByText("Projects")).toBeDefined();
+    expect(screen.getByText("Blogs")).toBeDefined();
+  });
+
+  it("highlights the active route based on pathname", () => {
+    mockPathname = "/projects";
+    const { rerender } = render(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>
+    );
+
+    const projectsLink = screen.getByText("Projects");
+    expect(projectsLink.className).toContain("text-[var(--text-primary)]");
+
+    mockPathname = "/blogs";
+    rerender(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>
+    );
+    const blogsLink = screen.getByText("Blogs");
+    expect(blogsLink.className).toContain("text-[var(--text-primary)]");
+  });
+
+  it("toggles the theme popover menu when clicking the palette button", () => {
+    render(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>
+    );
+
+    const themeButton = screen.getByLabelText("Theme settings");
+    expect(themeButton).toBeDefined();
+
+    // Popover is initially not in document
+    expect(screen.queryByTestId("theme-popover")).toBeNull();
+
+    // Click to open
+    fireEvent.click(themeButton);
+    expect(screen.getByTestId("theme-popover")).toBeDefined();
+
+    // Click outside to close
+    fireEvent.mouseDown(document.body);
+    expect(screen.queryByTestId("theme-popover")).toBeNull();
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify initial failure**
+
+Run: `npx vitest run components/__tests__/navbar.test.tsx`
+Expected: FAIL (missing `Home` link and `data-testid="theme-popover"` in current Navbar)
+
+- [ ] **Step 3: Commit test file**
+
+```bash
+git add components/__tests__/navbar.test.tsx
+git commit -m "test: add unit tests for floating capsule navbar"
+```
+
+---
+
+### Task 2: Implement Floating Capsule Navbar
+
+**Files:**
+- Modify: `components/Navbar.tsx:1-181`
+- Test: `components/__tests__/navbar.test.tsx`
+
+**Interfaces:**
+- Consumes: `useTheme` from `components/ThemeContext.tsx`, `usePathname` from `next/navigation`, icons from `lucide-react`
+- Produces: Redesigned floating capsule `<Navbar />` component with `Home`, `Projects`, `Blogs`, icons-only theme popover, and micro-press animations.
+
+- [ ] **Step 1: Write the updated Navbar component**
+
+```tsx
+// components/Navbar.tsx
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "./ThemeContext";
+import {
+  Palette,
+  Monitor,
+  Sun,
+  Moon,
+  Circle,
+  Square,
+} from "lucide-react";
+
+export default function Navbar() {
+  const pathname = usePathname();
+  const { theme, mode, setTheme, setMode } = useTheme();
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  const handleModeChange = (
+    newMode: "system" | "light" | "dark",
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const origin = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+    setMode(newMode, origin);
+  };
+
+  // Close popover when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setPopoverOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const navItems = [
+    { label: "Home", href: "/", isActive: pathname === "/" },
+    { label: "Projects", href: "/projects", isActive: pathname.startsWith("/projects") },
+    { label: "Blogs", href: "/blogs", isActive: pathname.startsWith("/blogs") },
+  ];
+
+  return (
+    <header className="sticky top-4 sm:top-6 z-40 flex justify-center mb-8 sm:mb-10 pointer-events-none transition-all">
+      <div className="pointer-events-auto inline-flex items-center gap-3 sm:gap-4 px-3.5 sm:px-4 py-1.5 rounded-full bg-[var(--bg-card)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-[0_12px_36px_rgba(0,0,0,0.35)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all">
+        
+        {/* Brand Mark */}
+        <Link
+          href="/"
+          className="font-mono text-[13px] sm:text-[13.5px] font-semibold text-[var(--text-primary)] hover:opacity-85 active:scale-[0.95] transition-all cursor-pointer select-none pl-1"
+        >
+          &lt;/aedwon&gt;
+        </Link>
+
+        {/* Segmented Navigation Capsule */}
+        <nav className="flex items-center bg-black/[0.04] dark:bg-black/35 p-0.5 rounded-full border border-black/[0.03] dark:border-white/[0.04]">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`px-3 py-1 rounded-full text-[12px] sm:text-[12.5px] transition-all duration-150 active:scale-[0.94] select-none ${
+                item.isActive
+                  ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-semibold shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04] font-medium border border-transparent"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Chameleon Trigger & Icons-Only Popover */}
+        <div className="relative" ref={popoverRef}>
+          <button
+            onClick={() => setPopoverOpen(!popoverOpen)}
+            className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.08] active:scale-[0.92]"
+            aria-label="Theme settings"
+          >
+            <Palette className="w-3.5 h-3.5" />
+          </button>
+
+          {popoverOpen && (
+            <div
+              data-testid="theme-popover"
+              className="absolute top-[calc(100%+8px)] right-0 w-[146px] bg-[var(--bg-card)] shadow-2xl rounded-xl p-1.5 z-50 flex flex-col gap-1.5 border border-[var(--border-subtle)] animate-in fade-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Row 1: Mode (Icons Only) */}
+              {theme !== "discord" ? (
+                <div className="grid grid-cols-3 gap-0.5 bg-black/[0.04] dark:bg-black/30 p-0.5 rounded-[9px]">
+                  <button
+                    onClick={(e) => handleModeChange("system", e)}
+                    data-tooltip="System"
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                      mode === "system"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => handleModeChange("light", e)}
+                    data-tooltip="Light"
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                      mode === "light"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Sun className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => handleModeChange("dark", e)}
+                    data-tooltip="Dark"
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                      mode === "dark"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Moon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="py-1.5 px-2 bg-black/20 rounded-[8px] text-center text-[10.5px] font-mono text-[var(--text-dim)]">
+                  Dark mode only
+                </div>
+              )}
+
+              {/* Row 2: Theme Style (Icons Only) */}
+              <div className="grid grid-cols-3 gap-0.5 bg-black/[0.04] dark:bg-black/30 p-0.5 rounded-[9px]">
+                <button
+                  onClick={() => setTheme("default")}
+                  data-tooltip="Default"
+                  className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                    theme === "default"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <Circle className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setTheme("neobrutalist")}
+                  data-tooltip="Brutalist"
+                  className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                    theme === "neobrutalist"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <Square className="w-3.5 h-3.5 fill-current" />
+                </button>
+                <button
+                  onClick={() => setTheme("discord")}
+                  data-tooltip="Discord"
+                  className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
+                    theme === "discord"
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+```
+
+- [ ] **Step 2: Run unit test to verify it passes**
+
+Run: `npx vitest run components/__tests__/navbar.test.tsx`
+Expected: PASS
+
+- [ ] **Step 3: Commit component change**
+
+```bash
+git add components/Navbar.tsx
+git commit -m "feat(nav): implement floating capsule navbar with tactile animations"
+```
+
+---
+
+### Task 3: Build Verification & Visual Integrity
+
+**Files:**
+- Test: Build verification (`npm run build`)
+
+- [ ] **Step 1: Run production Next.js build**
+
+Run: `npm run build`
+Expected: Successful build with zero TypeScript or lint errors.
+
+- [ ] **Step 2: Run all unit tests**
+
+Run: `npx vitest run components/__tests__/navbar.test.tsx`
+Expected: All navbar unit tests passing.
+
+- [ ] **Step 3: Commit any final polishing changes**
+
+```bash
+git add .
+git commit -m "chore: complete floating capsule navbar verification"
+```
