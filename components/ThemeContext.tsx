@@ -161,6 +161,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       {activeTransition && activeTransition.theme === "default" && (
         <StarVortexTransition
           origin={activeTransition.origin}
+          targetMode={activeTransition.targetMode}
+          sourceMode={activeTransition.sourceMode}
           onFlipTheme={handleMidpointFlip}
           onComplete={handleTransitionComplete}
         />
