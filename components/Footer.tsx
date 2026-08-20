@@ -25,11 +25,11 @@ export default function Footer() {
         <h2
           className={`text-[17px] font-semibold mb-2 font-[var(--font-heading)] ${
             isNeobrutalist
-              ? "font-mono font-extrabold text-black dark:text-white uppercase"
+              ? "font-mono font-extrabold text-black dark:text-white"
               : "text-[var(--text-primary)]"
           }`}
         >
-          {isNeobrutalist ? "/// Contact & Direct Channels" : "Contact"}
+          Contact
         </h2>
         <p
           className={`text-[14.5px] mb-5 ${
@@ -45,7 +45,7 @@ export default function Footer() {
             href="mailto:aerol.balayon@gmail.com"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-white dark:bg-zinc-900 border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -61,7 +61,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-white dark:bg-zinc-900 border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -79,7 +79,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-white dark:bg-zinc-900 border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -97,7 +97,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-white dark:bg-zinc-900 border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >

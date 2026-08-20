@@ -30,10 +30,10 @@ export default function ExperienceDossier() {
     <section id="experience">
       <h2
         className={`text-[18px] font-semibold mb-4 font-[var(--font-heading)] ${
-          isNeobrutalist ? "text-black dark:text-white uppercase font-extrabold" : "text-[var(--text-primary)]"
+          isNeobrutalist ? "text-black dark:text-white font-extrabold" : "text-[var(--text-primary)]"
         }`}
       >
-        {isNeobrutalist ? "/// Experience Dossier" : "Experience"}
+        Experience
       </h2>
 
       {/* Dossier Container */}
@@ -52,22 +52,20 @@ export default function ExperienceDossier() {
               : "bg-transparent border-b md:border-b-0 md:border-r border-[var(--border-subtle)]"
           }`}
         >
-          {EXPERIENCES.map((entity, idx) => {
+          {EXPERIENCES.map((entity) => {
             const isActive = activeEntityId === entity.id;
-            const indexNumber = String(idx + 1).padStart(2, "0");
 
             if (isNeobrutalist) {
               return (
                 <button
                   key={entity.id}
                   onClick={() => handleTabChange(entity.id)}
-                  className={`text-left px-2.5 py-2 text-[12.5px] font-mono transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none ${
+                  className={`text-left px-3 py-2 text-[13px] font-mono transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none ${
                     isActive
-                      ? "bg-[#FFE600] dark:bg-white text-black font-extrabold border-2 border-black shadow-[2px_2px_0px_#000000] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
+                      ? "bg-[#FFE600] text-black font-extrabold border-2 border-black dark:border-white shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
                       : "bg-white dark:bg-zinc-900/80 text-black dark:text-zinc-300 font-bold border-2 border-black/50 dark:border-white/30 hover:bg-[#FEF08A] hover:text-black rounded-none"
                   }`}
                 >
-                  <span className="opacity-70 mr-1.5 font-normal">[{indexNumber}]</span>
                   {entity.shortName}
                 </button>
               );

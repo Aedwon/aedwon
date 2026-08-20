@@ -22,22 +22,6 @@ const NEOBRUTALIST_LIGHT_COLORS: Record<string, string> = {
   "ai-agent-framework": "#FBCFE8", // pink
 };
 
-// High-Voltage Dark Mode Neon Shadow & Border Accents per Project
-const NEOBRUTALIST_DARK_ACCENTS: Record<string, { border: string; shadow: string }> = {
-  pantas: { border: "#FFE600", shadow: "#FFE600" },
-  "msl-network": { border: "#4ADE80", shadow: "#4ADE80" },
-  "qr-studio": { border: "#FB7185", shadow: "#FB7185" },
-  "kiosk-survey": { border: "#C084FC", shadow: "#C084FC" },
-  "norala-sb-portal": { border: "#38BDF8", shadow: "#38BDF8" },
-  "bettergov-ph": { border: "#FB923C", shadow: "#FB923C" },
-  "pso-scoring-model": { border: "#FFE600", shadow: "#FFE600" },
-  "msl-collegiate-cup-bot": { border: "#818CF8", shadow: "#818CF8" },
-  "ilocos-sur-esports-bot": { border: "#38BDF8", shadow: "#38BDF8" },
-  "oppo-legend-cup-bot": { border: "#FB923C", shadow: "#FB923C" },
-  "gi-damage-calculator": { border: "#38BDF8", shadow: "#38BDF8" },
-  "ai-agent-framework": { border: "#FB7185", shadow: "#FB7185" },
-};
-
 export function ProjectArt({ slug, brandColor }: { slug: string; brandColor: string }) {
   let isLight = false;
   let isNeobrutalist = false;
@@ -232,11 +216,6 @@ export default function ProjectCard({
     ? NEOBRUTALIST_LIGHT_COLORS[project.slug] || "#FEF08A"
     : "#18181B";
 
-  const neobrutalistAccent = NEOBRUTALIST_DARK_ACCENTS[project.slug] || {
-    border: "#FFE600",
-    shadow: "#FFE600",
-  };
-
   const content = (
     <>
       {/* 1. Art Stage */}
@@ -253,9 +232,7 @@ export default function ProjectCard({
       {/* 2. Card Title */}
       <h3
         className={`text-[16.5px] font-semibold mb-1.5 font-[var(--font-heading)] tracking-[-0.01em] ${
-          isNeobrutalist
-            ? "text-black dark:text-white font-extrabold uppercase"
-            : "text-[var(--text-primary)]"
+          isNeobrutalist ? "text-[var(--text-primary)] font-extrabold" : "text-[var(--text-primary)]"
         }`}
       >
         {project.title}
@@ -264,9 +241,7 @@ export default function ProjectCard({
       {/* 3. Card Description */}
       <p
         className={`text-[13px] leading-[1.5] mb-[18px] flex-grow ${
-          isNeobrutalist
-            ? "text-black/85 dark:text-zinc-300 font-mono"
-            : "text-[var(--text-muted)]"
+          isNeobrutalist ? "text-[var(--text-muted)] font-mono" : "text-[var(--text-muted)]"
         }`}
       >
         {project.summary}
@@ -281,7 +256,7 @@ export default function ProjectCard({
               data-tooltip={tech.name}
               className={`has-tooltip tech-badge h-[26px] w-[26px] flex items-center justify-center transition-all ${
                 isNeobrutalist
-                  ? "rounded-none bg-white text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_#000000] hover:bg-[#FFE600]"
+                  ? "rounded-none bg-[var(--bg-card)] text-[var(--text-primary)] border-[1.5px] border-black dark:border-white shadow-[1.5px_1.5px_0px_#000000] dark:shadow-[1.5px_1.5px_0px_#FFE600] hover:bg-[#FFE600] hover:text-black"
                   : "rounded-[6px] bg-black/[0.04] dark:bg-white/[0.05] hover:bg-black/[0.09] dark:hover:bg-white/[0.12] border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.12] hover:-translate-y-0.5"
               }`}
             >
@@ -292,7 +267,7 @@ export default function ProjectCard({
         <span
           className={`text-[14px] transition-all group-hover:translate-x-1 ${
             isNeobrutalist
-              ? "font-mono font-bold text-black dark:text-[#FFE600] px-2 py-0.5 border border-black dark:border-white/40 bg-white dark:bg-black"
+              ? "font-mono font-bold text-[var(--text-primary)] px-2 py-0.5 border border-black dark:border-white bg-[var(--bg-card)]"
               : "text-[var(--text-arrow)] group-hover:text-[var(--text-primary)]"
           }`}
         >
@@ -303,7 +278,7 @@ export default function ProjectCard({
   );
 
   const containerClasses = isNeobrutalist
-    ? `group flex flex-col p-[24px_22px_20px] rounded-none border-[3px] border-black dark:border-white/80 transition-all duration-150 relative hover:z-20 cursor-pointer ${
+    ? `group flex flex-col p-[24px_22px_20px] rounded-none border-[3px] border-black dark:border-white transition-all duration-150 relative hover:z-20 cursor-pointer ${
         isLight
           ? "shadow-[5px_5px_0px_#000000] hover:shadow-[7px_7px_0px_#000000] hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_#000000]"
           : "shadow-[5px_5px_0px_#FFE600] hover:shadow-[7px_7px_0px_#FFFFFF] hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_#FFE600]"

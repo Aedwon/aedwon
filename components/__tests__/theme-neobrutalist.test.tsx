@@ -34,8 +34,8 @@ describe("Neobrutalist Theme Integration", () => {
     expect(document.documentElement.getAttribute("data-theme")).toBe("neobrutalist");
   });
 
-  it("renders status stickers in HeroSection under neobrutalist theme", () => {
-    const { HeroSectionWithTheme } = render(
+  it("renders HeroSection under neobrutalist theme with exact copy and brutalist frame", () => {
+    render(
       <ThemeProvider>
         <div>
           <ThemeConsumer />
@@ -47,9 +47,11 @@ describe("Neobrutalist Theme Integration", () => {
     const btn = screen.getByText("Set Brutalist");
     fireEvent.click(btn);
 
-    expect(screen.getByText("STATUS: OPEN FOR WORK")).toBeDefined();
-    expect(screen.getByText("UP DILIMAN CS")).toBeDefined();
-    expect(screen.getByText("DOST SCHOLAR")).toBeDefined();
+    const heading = screen.getByText("I'm Aerol. You might also know me as Aedwon.");
+    expect(heading).toBeDefined();
+    const container = heading.closest("section");
+    expect(container?.className).toContain("border-[3px]");
+    expect(container?.className).toContain("rounded-none");
   });
 
   it("renders ProjectCard with neobrutalist styling when theme is neobrutalist", () => {
@@ -86,9 +88,10 @@ describe("Neobrutalist Theme Integration", () => {
     const cardContainer = cardTitle.closest("a");
     expect(cardContainer).toBeDefined();
     expect(cardContainer?.className).toContain("border-black");
+    expect(cardContainer?.className).toContain("rounded-none");
   });
 
-  it("renders ExperienceDossier with brutalist index stamps and tabs", () => {
+  it("renders ExperienceDossier with brutalist styling and exact copy", () => {
     render(
       <ThemeProvider>
         <div>
@@ -101,7 +104,9 @@ describe("Neobrutalist Theme Integration", () => {
     const btn = screen.getByText("Set Brutalist");
     fireEvent.click(btn);
 
-    expect(screen.getByText("/// Experience Dossier")).toBeDefined();
-    expect(screen.getByText("[01]")).toBeDefined();
+    expect(screen.getByText("Experience")).toBeDefined();
+    const upButton = screen.getByText("UP Fighting Maroons");
+    expect(upButton).toBeDefined();
+    expect(upButton.className).toContain("rounded-none");
   });
 });

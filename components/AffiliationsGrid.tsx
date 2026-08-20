@@ -69,7 +69,7 @@ function AffiliationRow({
               onMouseLeave={onLeaveBadge}
               className={`h-[80px] flex items-center justify-center p-[6px] transition-all cursor-pointer relative shrink-0 ${
                 isNeobrutalist
-                  ? "rounded-none border-2 border-black dark:border-white/50 bg-white/90 dark:bg-zinc-900 shadow-[2.5px_2.5px_0px_#000000] dark:shadow-[2.5px_2.5px_0px_#FFE600] hover:shadow-[4px_4px_0px_#000000] dark:hover:shadow-[4px_4px_0px_#FFFFFF] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px]"
+                  ? "rounded-none border-2 border-black dark:border-white bg-[var(--bg-card)] shadow-[2.5px_2.5px_0px_#000000] dark:shadow-[2.5px_2.5px_0px_#FFE600] hover:shadow-[4px_4px_0px_#000000] dark:hover:shadow-[4px_4px_0px_#FFFFFF] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px]"
                   : "transition-transform duration-150 hover:-translate-y-0.5"
               }`}
               style={{
@@ -152,11 +152,11 @@ export default function AffiliationsGrid() {
       <h2
         className={`text-[18px] font-semibold mb-1 font-[var(--font-heading)] ${
           isNeobrutalist
-            ? "font-mono font-extrabold text-black dark:text-white uppercase"
+            ? "font-mono font-extrabold text-black dark:text-white"
             : "text-[var(--text-primary)]"
         }`}
       >
-        {isNeobrutalist ? "/// Affiliations & Brand Partners" : "Affiliations & Partners"}
+        Affiliations &amp; Partners
       </h2>
       <p
         className={`text-[13.5px] mb-5 ${
@@ -195,7 +195,7 @@ export default function AffiliationsGrid() {
         <div
           className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 font-mono text-[11px] font-semibold whitespace-nowrap transition-opacity duration-150 ${
             isNeobrutalist
-              ? "rounded-none border-2 border-black bg-[#FFE600] text-black font-extrabold shadow-[2px_2px_0px_#000000]"
+              ? "rounded-none border-2 border-black dark:border-white bg-[#FFE600] text-black font-extrabold shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600]"
               : "rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
           }`}
           style={{
