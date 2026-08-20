@@ -3,6 +3,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider, useTheme } from "../ThemeContext";
 import HeroSection from "../HeroSection";
+import ProjectCard from "../ProjectCard";
 
 function ThemeConsumer() {
   const { theme, setTheme, mode, setMode } = useTheme();
@@ -48,5 +49,41 @@ describe("Neobrutalist Theme Integration", () => {
     expect(screen.getByText("STATUS: OPEN FOR WORK")).toBeDefined();
     expect(screen.getByText("UP DILIMAN CS")).toBeDefined();
     expect(screen.getByText("DOST SCHOLAR")).toBeDefined();
+  });
+
+  it("renders ProjectCard with neobrutalist styling when theme is neobrutalist", () => {
+    const testProject = {
+      slug: "pantas",
+      title: "Pantas — Offline Kiosk",
+      tagline: "Touchscreen survey engine",
+      summary: "Touchscreen survey engine running SQLite offline.",
+      role: "Lead Engineer",
+      period: "2024",
+      platforms: [{ name: "Android", icon: "android" }],
+      stack: [{ name: "React" }, { name: "SQLite" }],
+      problem: "Offline requirement.",
+      architecture: [{ title: "Local DB", description: "SQLite sync" }],
+      results: "Deployed.",
+      featured: true,
+      glowColor: "blue",
+      brandColor: "#2563EB",
+    };
+
+    render(
+      <ThemeProvider>
+        <div>
+          <ThemeConsumer />
+          <ProjectCard project={testProject} />
+        </div>
+      </ThemeProvider>
+    );
+
+    const btn = screen.getByText("Set Brutalist");
+    fireEvent.click(btn);
+
+    const cardTitle = screen.getByText("Pantas — Offline Kiosk");
+    const cardContainer = cardTitle.closest("a");
+    expect(cardContainer).toBeDefined();
+    expect(cardContainer?.className).toContain("border-black");
   });
 });
