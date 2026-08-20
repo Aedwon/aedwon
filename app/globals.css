@@ -2,256 +2,269 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   HIROKI OSAME CHAMELEON DESIGN SYSTEM & THEME TOKENS
+   ========================================================= */
+
 :root {
-  /* Default: Minimalist Theme — editorial, ink-on-paper */
-  --background: #FAFAF7;          /* warm paper */
-  --foreground: #111111;          /* near-black ink */
-  --accent: #C7361A;              /* muted terracotta */
-  --accent-secondary: #F2F0E9;    /* quiet paper fold — replaces light gray */
-  --border-color: color-mix(in srgb, #111111 15%, transparent);
-  --border-width: 1px;
-  --radius: 0.125rem;             /* quieter corners — was 0.5rem */
-  --shadow: none;                 /* Minimalist has no shadow — was drop shadow */
-  --font-main: var(--font-inter);
-  --nav-height: 64px;
-
-  /* Minimalist-specific extended tokens */
-  --color-ink: #111111;
-  --color-paper: #FAFAF7;
-  --color-rule: color-mix(in srgb, #111111 15%, transparent);
-  --color-accent-mono: #C7361A;
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-source-serif);
-  --font-mono: var(--font-ibm-plex-mono);
-
-  /* Type scale — shared across all themes (1.25 modular ratio) */
-  --fs-micro: 0.6875rem;   /* 11px */
-  --fs-small: 0.875rem;    /* 14px */
-  --fs-body: 1rem;         /* 16px */
-  --fs-h3: 1.5rem;         /* 24px */
-  --fs-h2: 2.25rem;        /* 36px */
-  --fs-h1: 3.375rem;       /* 54px */
-  --fs-display: 5rem;      /* 80px */
-
-  /* Rhythm — shared */
-  --rule-hairline: 1px;
-  --space-baseline: 0.5rem;
+  /* Default: Dark Mode */
+  --bg-canvas: #0C0C0E;
+  --bg-card: #161619;
+  --bg-card-hover: #1C1C20;
+  --text-primary: #F4F4F5;
+  --text-muted: #8E8E93;
+  --text-dim: #52525B;
+  --text-arrow: #71717A;
+  --card-radius: 16px;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --card-hover-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+  --accent: #60A5FA;
+  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --border-subtle: rgba(255, 255, 255, 0.05);
 }
 
-[data-theme='neubrutalist'] {
-  /* Neubrutalist Theme */
-  --background: #FFFDF5;
-  /* Off-white/Cream */
-  --foreground: #000000;
-  /* Pitch Black */
-  --accent: #FF6B6B;
-  /* Vibrant Red/Pink */
-  --accent-secondary: #FCA311;
-  /* Mustard */
-  --border-color: #000000;
-  --border-width: 3px;
-  --radius: 0px;
-  /* Sharp corners */
-  --shadow: 5px 5px 0px 0px #000000;
-  /* Hard shadow */
-  --font-main: var(--font-space-mono);
-
-  /* Neubrutalist keeps its existing aesthetic tokens — override only where Minimalist extended */
-  --color-ink: #000000;
-  --color-paper: #FFFDF5;
-  --color-rule: #000000;
-  --color-accent-mono: #FF6B6B;
-  --font-sans: var(--font-space-mono);
-  --font-serif: var(--font-space-mono);
-  --font-mono: var(--font-space-mono);
+/* Default Theme - Light Mode */
+[data-theme="default"][data-mode="light"],
+html[data-theme="default"][data-mode="light"] body {
+  --bg-canvas: #F4F4F6;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FFFFFF;
+  --text-primary: #111827;
+  --text-muted: #4B5563;
+  --text-dim: #6B7280;
+  --text-arrow: #6B7280;
+  --card-radius: 16px;
+  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 2px 8px -2px rgba(0, 0, 0, 0.06), 0 8px 24px -4px rgba(0, 0, 0, 0.04);
+  --card-hover-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 12px 32px -4px rgba(0, 0, 0, 0.09), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  --accent: #2563EB;
+  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --border-subtle: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme='discord'] {
-  /* DiscordOS Theme */
-  --background: #36393f;
-  /* Discord Dark Grey */
-  --foreground: #dcddde;
-  /* Discord Light Text */
+/* Neobrutalist Theme - Dark Mode */
+[data-theme="neobrutalist"][data-mode="dark"],
+html[data-theme="neobrutalist"][data-mode="dark"] body {
+  --bg-canvas: #121212;
+  --bg-card: #1E1E1E;
+  --bg-card-hover: #262626;
+  --text-primary: #FFFFFF;
+  --text-muted: #D4D4D8;
+  --text-dim: #A1A1AA;
+  --text-arrow: #FFE600;
+  --card-radius: 0px;
+  --card-shadow: 4px 4px 0px #FFFFFF;
+  --card-hover-shadow: 6px 6px 0px #FFE600;
+  --accent: #FFE600;
+  --font-heading: ui-monospace, "SF Mono", monospace;
+  --border-subtle: rgba(255, 255, 255, 0.15);
+}
+
+/* Neobrutalist Theme - Light Mode */
+[data-theme="neobrutalist"][data-mode="light"],
+html[data-theme="neobrutalist"][data-mode="light"] body {
+  --bg-canvas: #FEF08A;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FEF9C3;
+  --text-primary: #000000;
+  --text-muted: #27272A;
+  --text-dim: #52525B;
+  --text-arrow: #000000;
+  --card-radius: 0px;
+  --card-shadow: 4px 4px 0px #000000;
+  --card-hover-shadow: 6px 6px 0px #000000;
+  --accent: #000000;
+  --font-heading: ui-monospace, "SF Mono", monospace;
+  --border-subtle: rgba(0, 0, 0, 0.2);
+}
+
+/* Discord Theme - Dark Mode */
+[data-theme="discord"][data-mode="dark"],
+html[data-theme="discord"][data-mode="dark"] body {
+  --bg-canvas: #1E1F22;
+  --bg-card: #2B2D31;
+  --bg-card-hover: #313338;
+  --text-primary: #F2F3F5;
+  --text-muted: #949BA4;
+  --text-dim: #80848E;
+  --text-arrow: #5865F2;
+  --card-radius: 12px;
+  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --card-hover-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
   --accent: #5865F2;
-  /* Blurple */
-  --accent-secondary: #2f3136;
-  /* Sidebar Grey */
-  --border-color: #202225;
-  /* Darker divider */
-  --border-width: 1px;
-  /* Subtle or 0px, keeping 1px for structure */
-  --radius: 8px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
-  --font-main: var(--font-inter);
-  --nav-height: 48px;
-
-  /* Discord keeps its existing aesthetic tokens — override only where Minimalist extended */
-  --color-ink: #dcddde;
-  --color-paper: #36393f;
-  --color-rule: #202225;
-  --color-accent-mono: #5865F2;
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-inter);
-  --font-mono: var(--font-inter);
+  --font-heading: -apple-system, BlinkMacSystemFont, sans-serif;
+  --border-subtle: rgba(255, 255, 255, 0.06);
 }
 
-/* Discord Layout Layout Fixes */
-[data-theme='discord'] body {
-  height: 100vh;
-  overflow: hidden;
+/* Discord Theme - Light Mode */
+[data-theme="discord"][data-mode="light"],
+html[data-theme="discord"][data-mode="light"] body {
+  --bg-canvas: #F2F3F5;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #E3E5E8;
+  --text-primary: #060607;
+  --text-muted: #4E5058;
+  --text-dim: #80848E;
+  --text-arrow: #5865F2;
+  --card-radius: 12px;
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --card-hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  --accent: #5865F2;
+  --font-heading: -apple-system, BlinkMacSystemFont, sans-serif;
+  --border-subtle: rgba(0, 0, 0, 0.08);
 }
 
-/* Force root layout div to fit screen and not scroll */
-[data-theme='discord'] body>div {
-  height: 100vh;
-  min-height: 0;
-  overflow: hidden;
-}
-
+/* Global Reset & Base */
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-main);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
 }
 
-/* Accessibility: Focus visible styles for keyboard navigation */
-*:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+/* Subtle Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Remove focus outline for mouse users */
-*:focus:not(:focus-visible) {
-  outline: none;
+/* Ambient Radial Glows for Hiroki Cards */
+.glow-blue { background: radial-gradient(circle at 50% 35%, rgba(59, 130, 246, 0.14) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+.glow-purple { background: radial-gradient(circle at 50% 35%, rgba(139, 92, 246, 0.16) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+.glow-pink { background: radial-gradient(circle at 50% 35%, rgba(244, 63, 94, 0.14) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+.glow-violet { background: radial-gradient(circle at 50% 35%, rgba(168, 85, 247, 0.14) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+.glow-green { background: radial-gradient(circle at 50% 35%, rgba(16, 185, 129, 0.14) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+.glow-amber { background: radial-gradient(circle at 50% 35%, rgba(245, 158, 11, 0.14) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+.glow-cyan { background: radial-gradient(circle at 50% 35%, rgba(6, 182, 212, 0.14) 0%, rgba(22, 22, 25, 0) 70%), var(--bg-card); }
+
+[data-mode="light"] .glow-blue { background: radial-gradient(circle at 50% 32%, rgba(59, 130, 246, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+[data-mode="light"] .glow-purple { background: radial-gradient(circle at 50% 32%, rgba(139, 92, 246, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+[data-mode="light"] .glow-pink { background: radial-gradient(circle at 50% 32%, rgba(244, 63, 94, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+[data-mode="light"] .glow-violet { background: radial-gradient(circle at 50% 32%, rgba(168, 85, 247, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+[data-mode="light"] .glow-green { background: radial-gradient(circle at 50% 32%, rgba(16, 185, 129, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+[data-mode="light"] .glow-amber { background: radial-gradient(circle at 50% 32%, rgba(245, 158, 11, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+[data-mode="light"] .glow-cyan { background: radial-gradient(circle at 50% 32%, rgba(6, 182, 212, 0.09) 0%, rgba(255, 255, 255, 0) 70%), var(--bg-card); }
+
+/* Experience Dossier Bottom Gradient Mask */
+.dossier-scroll-viewport {
+  mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
 }
 
-/* Accessibility: Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+/* Tooltip Micro-Interactions */
+.has-tooltip {
+  position: relative;
 }
-
-/* Accessibility: Screen reader only utility */
-.sr-only {
+.has-tooltip::after {
+  content: attr(data-tooltip);
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #FFFFFF;
+  color: #09090B;
+  font-size: 11px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
   white-space: nowrap;
-  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+}
+.has-tooltip:hover {
+  z-index: 60;
+}
+.has-tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
-@layer utilities {
-  .border-theme {
-    border-color: var(--border-color);
-    border-width: var(--border-width);
-  }
-
-  .rounded-theme {
-    border-radius: var(--radius);
-  }
-
-  .shadow-theme {
-    box-shadow: var(--shadow);
-  }
-
-  .font-theme {
-    font-family: var(--font-main);
-  }
-
-  /* Discord-specific utilities */
-  .discord-embed {
-    background: #2f3136;
-    border-left: 4px solid var(--accent);
-    border-radius: 4px;
-    padding: 1rem;
-  }
-
-  .discord-message {
-    padding: 0.5rem 1rem;
-    margin: 0 1rem;
-    border-radius: 4px;
-  }
-
-  .discord-message:hover {
-    background: rgba(4, 4, 5, 0.07);
-  }
-
-  .discord-ping {
-    background: rgba(88, 101, 242, 0.3);
-    color: #dee0fc;
-    padding: 0 2px;
-    border-radius: 3px;
-    font-weight: 500;
-  }
-
-  .discord-mention {
-    background: rgba(88, 101, 242, 0.3);
-    color: #c9cdfb;
-    padding: 0 2px;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-
-  .discord-mention:hover {
-    background: #5865F2;
-    color: white;
-  }
-
-  .discord-code {
-    background: #2f3136;
-    border: 1px solid #202225;
-    border-radius: 4px;
-    padding: 0.5rem;
-    font-family: monospace;
-    font-size: 0.875rem;
-  }
-
-  .discord-divider {
-    height: 1px;
-    background: #42464d;
-    margin: 1rem 0;
-  }
-
-  .discord-timestamp {
-    color: #72767d;
-    font-size: 0.75rem;
-    margin-left: 0.5rem;
-  }
+[data-mode="light"] .has-tooltip::after {
+  background: #09090B;
+  color: #FAFAFA;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Discord scrollbar styling */
-[data-theme='discord'] ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Subtle Muted Tech Stack Icons with Hover Brand Color Reveal */
+.tech-badge {
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-theme='discord'] ::-webkit-scrollbar-track {
-  background: #2f3136;
-  border-radius: 4px;
+.tech-badge .tech-stack-icon {
+  color: var(--text-dim, #71717A);
+  opacity: 0.65;
+  transition: all 0.2s ease;
 }
 
-[data-theme='discord'] ::-webkit-scrollbar-thumb {
-  background: #202225;
-  border-radius: 4px;
+.tech-badge:hover .tech-stack-icon {
+  color: var(--brand-color, var(--text-primary));
+  opacity: 1;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
 }
 
-[data-theme='discord'] ::-webkit-scrollbar-thumb:hover {
-  background: #1a1b1e;
+[data-mode="light"] .tech-badge .tech-stack-icon {
+  color: #64748B;
+  opacity: 0.75;
 }
 
-/* Hide footer in Discord theme */
-[data-theme='discord'] footer {
+[data-mode="light"] .tech-badge:hover .tech-stack-icon {
+  color: var(--brand-color, #0F172A);
+  opacity: 1;
+}
+
+/* Affiliation & Partner Adaptive Logos */
+html[data-mode="dark"] .logo-adaptive,
+html:not([data-mode="light"]) .logo-adaptive,
+[data-mode="dark"] .logo-adaptive {
+  filter: brightness(0) invert(1);
+}
+
+html[data-mode="light"] .logo-adaptive,
+[data-mode="light"] .logo-adaptive {
+  filter: none;
+}
+
+/* Hide scrollbar utility for clean horizontal logo strips */
+.no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Feathered edge fade for horizontal scrolling tracks */
+.scroll-fade-edges {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0px,
+    black 24px,
+    black calc(100% - 32px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0px,
+    black 24px,
+    black calc(100% - 32px),
+    transparent 100%
+  );
 }
