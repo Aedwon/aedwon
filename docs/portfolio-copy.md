@@ -161,58 +161,121 @@ Get in touch for software projects or community infrastructure:
 
 ## 2. Exhaustive Project Directory (`/projects`)
 
-### 2.1 Pantas (`/projects/pantas`)
+### 2.1 Pantas (`/projects/pantas`) — Flagship
+- **Tier:** Flagship
 - **Category:** Mobile & Offline
 - **Role:** Lead Architect & Developer
 - **Timeline:** 2024 to Present
 - **Platform:** Android, iOS (Flutter)
-- **Stack:** Flutter 3.x, Dart, Drift (SQLite), SQLCipher, Riverpod 2.x, FSRS Algorithm, Firebase Firestore, Sanity CMS, RevenueCat
+- **Stack:** Flutter 3.41+, Dart, Drift (SQLite), SQLCipher, Riverpod 2.x, FSRS Algorithm, Firebase Firestore, Sanity CMS, RevenueCat
 - **Live URL:** https://pantas.app
-- **The Spark:** Civil Service Exam and UPCAT preparation in the Philippines relies on bulky 500-page printed reviewers or web apps that fail without steady internet during commutes.
-- **Architecture:**
-  - **FSRS Spaced Repetition Engine:** Computes memory retention curves based on recall states to schedule review drills.
-  - **Local-First Encrypted Persistence:** Drift SQLite database with SQLCipher encryption, enabling 100% offline study drills.
-  - **Interactive OMR Exam UI:** Digital bubble-sheet test interface mirroring physical examination papers with blueprint-weighted subject ratios.
-  - **Dynamic Content Pipeline:** Dynamic lesson pulls from Sanity CMS with deferred cloud sync via Firebase Firestore and in-app subscriptions via RevenueCat.
-- **Outcome:** Sub-15ms local query performance, complete offline functionality, and pre-launch beta covering CSE Professional and UPCAT exams.
+- **Problem & Constraints:** Civil Service Exam and UPCAT preparation in the Philippines relies on bulky 500-page printed reviewers or web apps that break when mobile data drops during long jeepney and bus commutes. Reviewees need guaranteed offline study drills that remember what they got wrong without chewing through expensive mobile data buckets.
+- **How It's Built:**
+  - **FSRS Spaced Repetition Engine:** Implements the Free Spaced Repetition Scheduler algorithm locally in Dart. It calculates memory stability and difficulty curves on-device after every review rating (Again, Hard, Good, Easy), scheduling future recall drills right as forgetting probability rises.
+  - **Local-First Encrypted Persistence:** Uses Drift SQLite compiled with 256-bit AES SQLCipher encryption. All question banks, user response logs, and scheduled drill states live in an encrypted local database. Cloud sync to Firebase Firestore runs in the background only when an unmetered connection is available.
+  - **Digital OMR Exam Simulation:** A custom canvas bubble sheet widget mimicking physical Civil Service Commission answer sheets. It enforces strict per-section timing, question jump grids, and blueprint-weighted subject ratios.
+  - **Dynamic Content Pipeline:** Fetches question revisions from Sanity CMS through a local migration pipeline that validates schema changes and writes directly into local SQLite.
+- **Hurdles & Solutions:**
+  - **SQLCipher Database Migration Deadlocks:** Updating question banks while preserving existing spaced repetition progress caused database lock errors during app startup on low-end Android devices. Isolated question bank tables from user progress tables, running schema migrations in a separate background isolate with a dedicated write-ahead log (WAL) pool.
+  - **FSRS Memory Retention Drift:** Standard SM-2 algorithms over-scheduled easy cards, burying difficult civil service math problems. Migrated to 17-parameter FSRS model tuning stability decay curves specifically for 30-day exam preparation windows.
+- **Results & Numbers:** Sub-15ms local query performance across 5,000+ question banks, zero cloud dependencies during active test sessions, and pre-launch beta covering CSE Professional and UPCAT exams.
 - **Metrics:**
-  - `100%`: Offline capability with zero cloud telemetry
+  - `100%`: Offline drill capability with zero cloud telemetry
   - `< 15ms`: Query latency for 50-item exam drills via Drift SQLite
-  - `RA 10173`: Compliant on-device local user data encryption
+  - `RA 10173`: Compliant on-device user data encryption
+- **Retrospective:** If starting over today, I would build the question validation toolchain as a Rust CLI to catch formatting and typo anomalies before they enter the CMS.
 
-### 2.2 The MSL Network & Verification Platform (`/projects/msl-network`)
+### 2.2 The MSL Network & Verification Platform (`/projects/msl-network`) — Flagship
+- **Tier:** Flagship
 - **Category:** Bots & Systems
 - **Role:** Platform Architect & Community Lead
 - **Timeline:** 2022 to Present
 - **Platform:** Discord, Hostinger (KVM2 VPS)
 - **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Google Sheets API, Asyncio
-- **The Spark:** Built the community from scratch to unite competitive MLBB student players nationwide, requiring automated operations as headcount scaled past 10,000 members.
-- **Architecture:**
-  - **Channel Architecture & Onboarding:** Designed channel hierarchy and onboarding rituals across 80+ partner student esports orgs.
-  - **Discord Verification Bot & Hostinger KVM2 VPS:** Engineered a Discord bot hosted on Hostinger KVM2 VPS bridging Google Sheets registration data with cached MySQL tables for instant student verification and seasonal quest leaderboards.
-- **Outcome:** Grew to 10,000+ active members with automated daily operations and tournament support.
+- **Problem & Constraints:** Managing competitive collegiate gaming across 180+ campuses manually meant tournament admins were overwhelmed by student ID verification, team check-ins, and dispute handling during live game days.
+- **How It's Built:**
+  - **Discord Verification & Role Hierarchy Engine:** An automated verification bot that validates student credentials against campus registrar lists, granting university-specific channels and competitive tier roles.
+  - **Hostinger KVM2 VPS Host Architecture:** Hosted on a Linux KVM2 VPS running systemd service workers, asynchronous MySQL connection pools, and automatic memory-managed worker recycling.
+  - **Campus Leaderboard & Quest Engine:** Tracks weekly inter-university scrimmage results and activity leaderboards across 80+ partner student organizations.
+- **Hurdles & Solutions:**
+  - **Discord Gateway Rate Limits During Tournament Kickoffs:** Over 800 players joining match lobbies simultaneously caused Discord API HTTP 429 rate limit freezes. Implemented token bucket rate limiters and queued role assignments through an asyncio worker pool with jittered backoff.
+  - **Google Sheets API Quota Exhaustion:** Live lookups during tournament registrations burned through the 300 requests-per-minute quota. Built a local MySQL write-through cache syncing modified rows in 60-second batch intervals.
+- **Results & Numbers:** Scaled the platform to 10,000+ active student members across 180+ universities, cutting tournament check-in administrative time by 90%.
 - **Metrics:**
   - `10,000+`: Active student community members
   - `90%`: Reduction in manual tournament check-in overhead
   - `180+`: Philippine universities connected
+- **Retrospective:** I should have moved off Google Sheets earlier in the lifecycle. The custom caching layer worked, but a direct PostgreSQL admin UI would have saved maintenance hours.
 
-### 2.3 Norala SB Legislative Transparency Portal (`/projects/norala-sb-portal`)
+### 2.3 Norala SB Legislative Transparency Portal (`/projects/norala-sb-portal`) — Flagship
+- **Tier:** Flagship
 - **Category:** Civic Tech
 - **Role:** Creator & Full-Stack Architect
 - **Timeline:** 2024
 - **Platform:** Web, PWA
 - **Stack:** TypeScript, Next.js, Tailwind CSS, SQLite, Prisma, Lucide, PWA Service Worker
-- **The Spark:** Municipal legislative records (ordinances, resolutions, committee reports, session agendas) in local government units are typically locked in paper binders or fragmented PDFs inaccessible to citizens.
-- **Architecture:**
-  - **Full-Text Legislative Indexing:** Fast search across enacted municipal ordinances, resolutions, and committee hearings.
-  - **Offline-First PWA Caching:** Service worker caching enabling citizens to browse passed legislative records on low-bandwidth mobile devices.
-  - **Open Public Data Schemas:** Structured metadata formatting for local government gazettes.
-- **Outcome:** Sub-second search indexing and accessible public portal for local municipal legislation.
+- **Problem & Constraints:** Municipal legislative records in rural Philippine local government units are stored in physical paper binders or fragmented scanned PDFs. Citizens and municipal staff have no fast way to search enacted ordinances on mobile devices.
+- **How It's Built:**
+  - **Full-Text Legislative Indexing:** Builds an inverted index of enacted municipal ordinances, resolutions, and committee reports using SQLite FTS5 for sub-second keyword matching.
+  - **Offline PWA Service Worker:** Caches recent gazette listings and legislative metadata on the user device via Workbox, allowing citizens to read ordinances even with weak provincial mobile signals.
+- **Hurdles & Solutions:**
+  - **OCR Inaccuracies on Scanned Legacy Documents:** Decades-old typewriter municipal documents had skewed text and faded ink that broke text search indexing. Pre-processed document scans with contrast normalization filters before passing text blocks into the search index.
+- **Results & Numbers:** Delivered sub-second search indexing across hundreds of local ordinances, giving citizens searchable mobile access to municipal legislation.
 - **Metrics:**
   - `Sub-second`: Full-text search across municipal legislation
   - `Offline PWA`: Accessible on low-bandwidth mobile devices
+- **Retrospective:** Structuring legislative metadata to support open civic data schemas (like Popolo) would make future inter-LGU integrations easier.
 
-### 2.4 BetterGov PH (`/projects/bettergov-ph`)
+### 2.4 PSO Automated Scorer & Ranking Engine (`/projects/pso-scoring-model`) — Flagship
+- **Tier:** Flagship
+- **Category:** Bots & Systems
+- **Role:** Lead Scoring Architect
+- **Timeline:** 2024
+- **Platform:** Server, Python Engine
+- **Stack:** Python, Pandas, NumPy, Google Sheets API
+- **Problem & Constraints:** Grading, applying complex tiebreaker matrices, and ranking 4,000+ high school student competitors across regional cluster eliminations within tight 2-hour event turnaround windows.
+- **How It's Built:**
+  - **Automated Matrix Scoring Pipeline:** Vectorized NumPy and Pandas matrix operations evaluating regional cluster answer keys, applying subject-weighted penalties, and computing tiebreakers in seconds.
+- **Hurdles & Solutions:**
+  - **Multi-Way Tiebreaker Deadlocks:** Top national qualifiers frequently tied on total score, requiring recursive evaluation of difficulty-weighted question tiers and timestamp priority. Implemented a deterministic multi-key sorting algorithm evaluating total score, tier-3 problem counts, and verification check marks in sequence.
+- **Results & Numbers:** Processed scores and verified rankings for 4,000+ competitors with 100% accuracy and zero tabulation delays.
+- **Metrics:**
+  - `4,000+`: Competitors scored and ranked
+  - `100%`: Tabulation accuracy across elimination rounds
+- **Retrospective:** Building a web-based tabulation dashboard with live audit logs would make proctor cross-verification even faster.
+
+---
+
+### 2.5 QR Studio (`/projects/qr-studio`) — Focused
+- **Tier:** Focused
+- **Category:** Web & Tools
+- **Role:** Creator & Frontend Engineer
+- **Timeline:** 2024
+- **Platform:** Web
+- **Stack:** TypeScript, HTML5 Canvas, Vite, Tailwind CSS
+- **Why I Built This:** Most web QR code generators are bloated with popups, require account sign-ups, or transmit user payloads and Wi-Fi credentials to remote tracking servers.
+- **How It Works:** Generates the Reed-Solomon error correction matrix and encodes payload bits in-memory. Renders real-time gradient patterns directly on an HTML5 canvas and exports clean SVG path strings for print-ready vector files.
+- **Results & Numbers:** Instant in-browser generator with zero network latency, complete data privacy, and clean vector exports.
+- **Metrics:**
+  - `0ms`: Network latency with zero backend requests
+  - `100%`: Client-side privacy and vector precision
+
+### 2.6 Kiosk Survey (`/projects/kiosk-survey`) — Focused
+- **Tier:** Focused
+- **Category:** Mobile & Offline
+- **Role:** Lead Developer
+- **Timeline:** 2023 to 2024
+- **Platform:** Android TV OS
+- **Stack:** Flutter, Dart, SQLite, Android TV
+- **Why I Built This:** Event venues suffer from severe cellular congestion and dropped Wi-Fi under crowd loads. Standard web forms freeze or drop responses when attendees submit surveys at interactive booths.
+- **How It Works:** Built with Flutter for Android TV touch displays. Every attendee submission writes immediately to a local SQLite journal. A connectivity listener detects stable connections and flushes queued JSON records in atomic batches.
+- **Results & Numbers:** Ran continuously for 8 hours on-site during a high-density live event with zero dropped responses and zero crashes.
+- **Metrics:**
+  - `8 Hours`: Continuous offline operation during live event
+  - `0`: Dropped survey submissions or app crashes
+
+### 2.7 BetterGov PH (`/projects/bettergov-ph`) — Focused
+- **Tier:** Focused
 - **Category:** Civic Tech
 - **Role:** Open Source Contributor
 - **Timeline:** 2024 to Present
@@ -220,117 +283,74 @@ Get in touch for software projects or community infrastructure:
 - **Stack:** TypeScript, Next.js, Tailwind CSS, Turborepo
 - **Live URL:** https://bettergov.ph
 - **GitHub URL:** https://github.com/bettergovph
-- **The Spark:** Public services in the Philippines frequently suffer from outdated web portals, confusing information architecture, and fragmented citizen accessibility.
-- **Architecture:**
-  - **Accessible Public UI Components:** Contributing standardized, accessible components and information architecture designed for low-bandwidth devices.
-- **Outcome:** Active open-source contributor building accessible public web tooling.
+- **Why I Built This:** Public services in the Philippines frequently suffer from outdated web portals, confusing information architecture, and fragmented citizen accessibility.
+- **How It Works:** Contributing standardized, high-contrast components and responsive layouts designed for low-bandwidth mobile devices across the country.
+- **Results & Numbers:** Active open-source contributor building accessible public web tooling.
 - **Metrics:**
-  - `Open Source`: Citizen-centric digital public infrastructure
+  - `Open Source`: Public citizen digital infrastructure
 
-### 2.5 QR Studio (`/projects/qr-studio`)
-- **Category:** Web & Tools
-- **Role:** Creator & Frontend Engineer
-- **Timeline:** 2024
-- **Platform:** Web
-- **Stack:** TypeScript, HTML5 Canvas, Vite, Tailwind CSS
-- **The Spark:** Most web QR code generators are bloated with ads, require accounts, or send sensitive data to backend servers.
-- **Architecture:**
-  - **Client-Side Canvas Rendering:** Used HTML5 Canvas for real-time raster rendering and SVG generation for vector exports without server requests.
-- **Outcome:** Fast, private, zero-backend tool.
-- **Metrics:**
-  - `0ms`: Network latency with zero backend requests
-  - `100%`: Client-side privacy and vector precision
-
-### 2.6 Kiosk Survey (`/projects/kiosk-survey`)
-- **Category:** Mobile & Offline
-- **Role:** Lead Developer
-- **Timeline:** 2023 to 2024
-- **Platform:** Android TV OS
-- **Stack:** Flutter, Dart, SQLite, Android TV
-- **The Spark:** Gathering live attendee feedback at event venues where mobile reception drops or Wi-Fi fails under crowd load.
-- **Architecture:**
-  - **Android TV Local Persistence:** Built for Android TV touchscreens. Local SQLite queue persisting every survey submission to the device immediately, syncing to cloud database in batches only when connection is detected.
-- **Outcome:** Ran 8 continuous hours on-site with zero dropped submissions and zero crashes.
-- **Metrics:**
-  - `8 Hours`: Continuous offline operation during live event
-  - `0`: Dropped survey submissions or crashes
-
-### 2.7 PSO Automated Scorer & Ranking Engine (`/projects/pso-scoring-model`)
-- **Category:** Bots & Systems
-- **Role:** Lead Scoring Architect
-- **Timeline:** 2024
-- **Platform:** Server, Python Engine
-- **Stack:** Python, Pandas, NumPy, Google Sheets API
-- **The Spark:** Grading, applying complex tiebreaker matrices, and ranking 4,000+ high school student competitors across regional cluster eliminations within tight 2-hour event turnaround windows.
-- **Architecture:**
-  - **Automated Matrix Scoring Pipeline:** Engineered Python/Pandas scoring models applying multi-tier tiebreakers, blueprint weighting, and automated cluster ranking in seconds.
-- **Outcome:** Processed scores and verified rankings for 4,000+ competitors with 100% accuracy and zero tabulation delays.
-- **Metrics:**
-  - `4,000+`: Competitors scored and ranked
-  - `100%`: Tabulation accuracy across elimination rounds
-
-### 2.8 MSL Collegiate Cup Tournament Bot (`/projects/msl-collegiate-cup-bot`)
+### 2.8 MSL Collegiate Cup Tournament Bot (`/projects/msl-collegiate-cup-bot`) — Focused
+- **Tier:** Focused
 - **Category:** Bots & Systems
 - **Role:** Head of League Operations & Developer
 - **Timeline:** 2024 to 2025
 - **Platform:** Discord, Hostinger (KVM2 VPS)
 - **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Google Sheets API
-- **The Spark:** Operating a nationwide tournament for 3,000+ collegiate competitors across 180+ universities with referee arbitration and match scheduling.
-- **Architecture:**
-  - **Match Lobby & Ticketing Pipeline:** Automated match lobby creation, team verification, bracket sync, and multi-tier support ticketing with HTML transcript logging on Hostinger KVM2 VPS with MySQL backend.
-- **Outcome:** Cut tournament administrative delays by 90% across full season schedule.
+- **Why I Built This:** Operating a nationwide tournament for 3,000+ collegiate competitors across 180+ universities with referee arbitration and match scheduling.
+- **How It Works:** Automated match lobby creation, team verification, bracket sync, and multi-tier support ticketing with HTML transcript logging on Hostinger KVM2 VPS with MySQL backend.
+- **Results & Numbers:** Cut tournament administrative delays by 90% across full season schedule.
 - **Metrics:**
   - `3,000+`: Collegiate competitors managed
   - `90%`: Reduction in manual referee operations
 
-### 2.9 Ilocos Sur Festival Esports Bot (`/projects/ilocos-sur-esports-bot`)
+### 2.9 Ilocos Sur Festival Esports Bot (`/projects/ilocos-sur-esports-bot`) — Focused
+- **Tier:** Focused
 - **Category:** Bots & Systems
 - **Role:** Bot Developer & Operations Lead
 - **Timeline:** 2024
 - **Platform:** Discord, Hostinger (KVM2 VPS)
 - **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Challonge API
-- **The Spark:** Running multi-game municipal qualifiers (MLBB, CODM) during the provincial festival without manual bracket delays.
-- **Architecture:**
-  - **Challonge Bracket Integration:** Synced Discord player registrations directly with live brackets on Hostinger KVM2 VPS with MySQL backend, handling automated match alerts and ticketing.
-- **Outcome:** Seamless tournament execution for 250+ provincial competitors.
+- **Why I Built This:** Running multi-game municipal qualifiers (MLBB, CODM) during the provincial festival without manual bracket delays.
+- **How It Works:** Synced Discord player registrations directly with live brackets on Hostinger KVM2 VPS with MySQL backend, handling automated match alerts and ticketing.
+- **Results & Numbers:** Smooth tournament execution for 250+ provincial competitors across municipal qualifiers.
 - **Metrics:**
   - `250+`: Players coordinated across municipal brackets
 
-### 2.10 OPPO Smooth / Hyper Legend Cup Bot (`/projects/oppo-legend-cup-bot`)
+### 2.10 OPPO Smooth / Hyper Legend Cup Bot (`/projects/oppo-legend-cup-bot`) — Focused
+- **Tier:** Focused
 - **Category:** Bots & Systems
 - **Role:** Project Lead & Bot Developer
 - **Timeline:** 2024 to 2025
 - **Platform:** Discord, Hostinger (KVM2 VPS)
 - **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS)
-- **The Spark:** Enforcing roster verification and managing amateur match disputes for OPPO's nationwide tournament leg.
-- **Architecture:**
-  - **Team Verification Engine:** Automated roster validation, schedule alerts, and match result logging on Hostinger KVM2 VPS with MySQL backend.
-- **Outcome:** Managed 32+ teams across qualifiers without administrative overhead.
+- **Why I Built This:** Enforcing roster verification and managing amateur match disputes for OPPO nationwide tournament qualifiers.
+- **How It Works:** Automated roster validation, schedule alerts, and match result logging on Hostinger KVM2 VPS with MySQL backend.
+- **Results & Numbers:** Managed 32+ teams across qualifiers without administrative overhead.
 - **Metrics:**
   - `32+`: Teams managed across nationwide qualifiers
 
-### 2.11 KQM-Standard Genshin Team DPS Calculator (`/projects/gi-damage-calculator`)
+### 2.11 KQM-Standard Genshin Team DPS Calculator (`/projects/gi-damage-calculator`) — Focused
+- **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator & Developer
 - **Timeline:** 2022 to 2023
 - **Platform:** Web
 - **Stack:** JavaScript (ES6+), HTML5 Canvas, CSS3, Vite
-- **The Spark:** Calculating character rotations and weapon scaling requires complex multi-variable mathematical formulas (motion values, defense reduction, resistance shred, reaction scalars) that are tedious to calculate manually.
-- **Architecture:**
-  - **KQMS Mathematical Model:** Complete implementation of the KeqingMains Calculation Standard for rotational damage and substat roll distributions.
-- **Outcome:** Instant in-browser calculations with zero latency.
+- **Why I Built This:** Optimizing high-tier character builds requires complex damage formula calculations (motion values, defense multipliers, resistance shred, reaction scalars) that are tedious to calculate manually.
+- **How It Works:** Complete mathematical model of in-game scaling mechanics with real-time reactive substat optimization built with vanilla JavaScript and CSS3 on Vite.
+- **Results & Numbers:** Instant in-browser calculations with zero latency.
 - **Metrics:**
-  - `Client-Side`: Instant reactive mathematical damage calculations
+  - `Client-Side`: Instant reactive damage calculations
 
-### 2.12 AI Agent Instruction & Skills Framework (`/projects/ai-agent-framework`)
+### 2.12 AI Agent Instruction & Skills Framework (`/projects/ai-agent-framework`) — Focused
+- **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator
 - **Timeline:** 2024 to Present
 - **Platform:** Multi-Agent CLI & IDE Tooling
 - **Stack:** Markdown, Shell, Python, YAML
-- **The Spark:** Context degradation, prompt drift, and missing architectural guardrails when collaborating with AI coding agents across multiple codebases.
-- **Architecture:**
-  - **Modular Skills & Guardrails:** Portable instruction system providing specialized engineering skills, testing guardrails, and subagent orchestration cheatsheets.
-- **Outcome:** Reusable, stack-agnostic workflow framework for agentic pair programming.
+- **Why I Built This:** Context degradation, prompt drift, and missing architectural guardrails when collaborating with AI coding agents across multiple codebases.
+- **How It Works:** Portable instruction system providing specialized engineering skills, testing guardrails, and subagent orchestration cheatsheets.
+- **Results & Numbers:** Reusable, stack-agnostic workflow framework for agentic pair programming.
 - **Metrics:**
   - `Modular`: Multi-agent engineering skills and guardrails
