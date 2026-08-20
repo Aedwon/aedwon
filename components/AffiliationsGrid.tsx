@@ -1,0 +1,211 @@
+"use client";
+
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { AFFILIATION_GROUPS, AffiliationBadge } from "@/lib/data/affiliations";
+import { useTheme } from "@/components/ThemeContext";
+
+interface AffiliationRowProps {
+  items: AffiliationBadge[];
+  getLogoSrc: (badge: AffiliationBadge) => string;
+  onHoverBadge: (e: React.MouseEvent<HTMLDivElement>, tooltip: string) => void;
+  onLeaveBadge: () => void;
+  isNeobrutalist: boolean;
+}
+
+function AffiliationRow({
+  items,
+  getLogoSrc,
+  onHoverBadge,
+  onLeaveBadge,
+  isNeobrutalist,
+}: AffiliationRowProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 3);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 3);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const handleResize = () => checkScroll();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [checkScroll]);
+
+  return (
+    <div className="relative group/track w-full">
+      {/* Left Edge Blur Overlay - Only in default theme */}
+      {!isNeobrutalist && (
+        <div
+          className={`absolute left-0 top-0 bottom-0 w-8 sm:w-12 bg-gradient-to-r from-[var(--bg-canvas)] to-transparent pointer-events-none z-10 transition-opacity duration-200 ${
+            canScrollLeft ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Horizontal scrollable track */}
+      <div
+        ref={scrollRef}
+        onScroll={checkScroll}
+        className={`flex flex-nowrap items-center gap-[12px] overflow-x-auto no-scrollbar scroll-smooth py-1 ${
+          isNeobrutalist ? "gap-[14px]" : ""
+        }`}
+      >
+        {items.map((badge, bIdx) => {
+          const w = badge.width || 82;
+          const src = getLogoSrc(badge);
+
+          return (
+            <div
+              key={bIdx}
+              onMouseEnter={(e) => onHoverBadge(e, badge.tooltip)}
+              onMouseLeave={onLeaveBadge}
+              className={`h-[80px] flex items-center justify-center p-[6px] transition-all cursor-pointer relative shrink-0 ${
+                isNeobrutalist
+                  ? "rounded-none border-2 border-black dark:border-white/50 bg-white/90 dark:bg-zinc-900 shadow-[2.5px_2.5px_0px_#000000] dark:shadow-[2.5px_2.5px_0px_#FFE600] hover:shadow-[4px_4px_0px_#000000] dark:hover:shadow-[4px_4px_0px_#FFFFFF] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px]"
+                  : "transition-transform duration-150 hover:-translate-y-0.5"
+              }`}
+              style={{
+                width: `${w + (isNeobrutalist ? 16 : 0)}px`,
+              }}
+              title={badge.tooltip}
+            >
+              <img
+                src={src}
+                alt={badge.name}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                className={`max-w-full max-h-full object-contain transition-all duration-200 ${
+                  badge.adaptive ? "logo-adaptive" : ""
+                }`}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Right Edge Blur Overlay - Only in default theme */}
+      {!isNeobrutalist && (
+        <div
+          className={`absolute right-0 top-0 bottom-0 w-8 sm:w-12 bg-gradient-to-l from-[var(--bg-canvas)] to-transparent pointer-events-none z-10 transition-opacity duration-200 ${
+            canScrollRight ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        />
+      )}
+    </div>
+  );
+}
+
+export default function AffiliationsGrid() {
+  const { theme, resolvedMode } = useTheme();
+  const isNeobrutalist = theme === "neobrutalist";
+
+  const [hoveredBadge, setHoveredBadge] = useState<{
+    text: string;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const handleMouseEnter = (
+    e: React.MouseEvent<HTMLDivElement>,
+    tooltip: string
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoveredBadge({
+      text: tooltip,
+      x: rect.left + rect.width / 2,
+      y: rect.top - 8,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredBadge(null);
+  };
+
+  const getLogoSrc = (badge: AffiliationBadge) => {
+    const isDark = resolvedMode === "dark";
+    if (badge.name === "MOONTON") {
+      return isDark ? "/logos/moonton-dark.svg" : "/logos/moonton-light.svg";
+    }
+    if (badge.name === "Dark League Studios") {
+      return isDark ? "/logos/dls-dark.svg" : "/logos/dls-light.svg";
+    }
+    if (badge.name === "Estudyante Esports") {
+      return isDark
+        ? "/logos/estudyante-esports-dark.svg"
+        : "/logos/estudyante-esports-light.svg";
+    }
+    return badge.logo;
+  };
+
+  return (
+    <section id="affiliations" className="relative">
+      <h2
+        className={`text-[18px] font-semibold mb-1 font-[var(--font-heading)] ${
+          isNeobrutalist
+            ? "font-mono font-extrabold text-black dark:text-white uppercase"
+            : "text-[var(--text-primary)]"
+        }`}
+      >
+        {isNeobrutalist ? "/// Affiliations & Brand Partners" : "Affiliations & Partners"}
+      </h2>
+      <p
+        className={`text-[13.5px] mb-5 ${
+          isNeobrutalist ? "font-mono text-black/80 dark:text-zinc-300" : "text-[var(--text-muted)]"
+        }`}
+      >
+        Entities and brand partners I&apos;ve built software or run operations for:
+      </p>
+
+      <div className="space-y-6">
+        {AFFILIATION_GROUPS.map((group, idx) => (
+          <div key={idx}>
+            <div
+              className={`text-[11px] font-mono font-semibold uppercase tracking-wider mb-2 ${
+                isNeobrutalist
+                  ? "text-black dark:text-[#FFE600] font-extrabold"
+                  : "text-[var(--text-dim)]"
+              }`}
+            >
+              {group.category}
+            </div>
+
+            <AffiliationRow
+              items={group.items}
+              getLogoSrc={getLogoSrc}
+              onHoverBadge={handleMouseEnter}
+              onLeaveBadge={handleMouseLeave}
+              isNeobrutalist={isNeobrutalist}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Unclipped Global Floating Tooltip */}
+      {hoveredBadge && (
+        <div
+          className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 font-mono text-[11px] font-semibold whitespace-nowrap transition-opacity duration-150 ${
+            isNeobrutalist
+              ? "rounded-none border-2 border-black bg-[#FFE600] text-black font-extrabold shadow-[2px_2px_0px_#000000]"
+              : "rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
+          }`}
+          style={{
+            left: `${hoveredBadge.x}px`,
+            top: `${hoveredBadge.y}px`,
+          }}
+        >
+          {hoveredBadge.text}
+        </div>
+      )}
+    </section>
+  );
+}

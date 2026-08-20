@@ -301,3 +301,20 @@ html[data-mode="light"] .logo-adaptive,
     transparent 100%
   );
 }
+
+/* Neobrutalist Case Studies, Code Snippets, and Technical Content */
+[data-theme="neobrutalist"] pre {
+  border: 2.5px solid #000000;
+  border-radius: 0px !important;
+  box-shadow: 4px 4px 0px #000000;
+  background: #09090B !important;
+}
+
+[data-theme="neobrutalist"][data-mode="dark"] pre {
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 4px 4px 0px #FFE600;
+}
+
+[data-theme="neobrutalist"] code {
+  font-family: ui-monospace, "SF Mono", Monaco, "Cascadia Code", monospace;
+}
