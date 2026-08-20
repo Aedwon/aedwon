@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { useTheme } from "./ThemeContext";
 import {
   Palette,
@@ -60,19 +61,34 @@ export default function Navbar() {
           &lt;/aedwon&gt;
         </Link>
 
-        {/* Segmented Navigation Capsule */}
-        <nav className="flex items-center bg-black/[0.04] dark:bg-black/35 p-0.5 rounded-full border border-black/[0.03] dark:border-white/[0.04]">
+        {/* Segmented Navigation Capsule with Sliding Pill */}
+        <nav className="relative flex items-center bg-black/[0.04] dark:bg-black/35 p-0.5 rounded-full border border-black/[0.03] dark:border-white/[0.04]">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`px-3 py-1 rounded-full text-[12px] sm:text-[12.5px] transition-all duration-150 active:scale-[0.94] select-none ${
-                item.isActive
-                  ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-semibold shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04] font-medium border border-transparent"
-              }`}
+              className="relative px-3 py-1 rounded-full text-[12px] sm:text-[12.5px] select-none transition-colors duration-150 active:scale-[0.94]"
             >
-              {item.label}
+              {item.isActive && (
+                <motion.span
+                  layoutId="navbar-active-pill"
+                  className="absolute inset-0 rounded-full bg-[var(--bg-card)] border border-black/[0.04] dark:border-white/[0.08] shadow-xs"
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 32,
+                  }}
+                />
+              )}
+              <span
+                className={`relative z-10 transition-colors duration-150 ${
+                  item.isActive
+                    ? "text-[var(--text-primary)] font-semibold"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium"
+                }`}
+              >
+                {item.label}
+              </span>
             </Link>
           ))}
         </nav>
