@@ -27,13 +27,64 @@ interface StarVortexTransitionProps {
   starCount?: number;
 }
 
+/**
+ * Creates an offscreen cached sprite canvas with halo and 4-point star core.
+ * Avoids recalculating gradients and 8-point vector paths per particle per frame.
+ */
+function createStarSprite(
+  coreColor: string,
+  halo0: string,
+  halo1: string,
+  halo2: string,
+  spriteDim: number = 64
+): HTMLCanvasElement | null {
+  if (typeof document === "undefined") return null;
+  const offCanvas = document.createElement("canvas");
+  offCanvas.width = spriteDim;
+  offCanvas.height = spriteDim;
+  const offCtx = offCanvas.getContext("2d");
+  if (!offCtx) return null;
+
+  const center = spriteDim / 2;
+  const haloRadius = spriteDim / 2;
+  const coreRadius = spriteDim * 0.25;
+  const innerRadius = coreRadius * 0.22;
+
+  // 1. Soft diffuse starlight halo
+  const grad = offCtx.createRadialGradient(center, center, 0, center, center, haloRadius);
+  grad.addColorStop(0, halo0);
+  grad.addColorStop(0.5, halo1);
+  grad.addColorStop(1, halo2);
+  offCtx.fillStyle = grad;
+  offCtx.beginPath();
+  offCtx.arc(center, center, haloRadius, 0, Math.PI * 2);
+  offCtx.fill();
+
+  // 2. Sharp 4-Point Starlight Core
+  const spikes = 4;
+  offCtx.beginPath();
+  for (let i = 0; i < spikes * 2; i++) {
+    const r = i % 2 === 0 ? coreRadius : innerRadius;
+    const angle = (i / (spikes * 2)) * Math.PI * 2;
+    const px = center + Math.cos(angle) * r;
+    const py = center + Math.sin(angle) * r;
+    if (i === 0) offCtx.moveTo(px, py);
+    else offCtx.lineTo(px, py);
+  }
+  offCtx.closePath();
+  offCtx.fillStyle = coreColor;
+  offCtx.fill();
+
+  return offCanvas;
+}
+
 export default function StarVortexTransition({
   origin,
   targetMode = "dark",
   onFlipTheme,
   onComplete,
   duration = 720,
-  starCount = 160,
+  starCount = 140,
 }: StarVortexTransitionProps) {
   const onFlipRef = useRef(onFlipTheme);
   const onCompleteRef = useRef(onComplete);
@@ -45,6 +96,11 @@ export default function StarVortexTransition({
   const flippedRef = useRef(false);
 
   useEffect(() => {
+    // Disable background CSS transitions while canvas animation is running
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.add("is-theme-transitioning");
+    }
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -67,20 +123,36 @@ export default function StarVortexTransition({
 
     const isDarkTarget = targetMode === "dark";
 
-    // Phase 1 (Gathering) Colors: match target mode being collected
+    // Phase 1 (Gathering) Colors
     const gatherStarColor = isDarkTarget ? "#000000" : "#FFFFFF";
     const gatherHaloStop0 = isDarkTarget ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.45)";
     const gatherHaloStop1 = isDarkTarget ? "rgba(20, 20, 24, 0.2)" : "rgba(228, 228, 231, 0.15)";
     const gatherHaloStop2 = isDarkTarget ? "rgba(20, 20, 24, 0)" : "rgba(228, 228, 231, 0)";
 
-    // Phase 2 (Explosion) Colors: contrast against the NEW flipped background
+    // Phase 2 (Explosion) Colors
     const burstStarColor = isDarkTarget ? "#FFFFFF" : "#09090B";
     const burstHaloStop0 = isDarkTarget ? "rgba(255, 255, 255, 0.6)" : "rgba(9, 9, 11, 0.4)";
     const burstHaloStop1 = isDarkTarget ? "rgba(212, 212, 216, 0.2)" : "rgba(39, 39, 42, 0.15)";
     const burstHaloStop2 = isDarkTarget ? "rgba(212, 212, 216, 0)" : "rgba(39, 39, 42, 0)";
     const shockwaveColor = isDarkTarget ? "rgba(255, 255, 255," : "rgba(0, 0, 0,";
 
-    // Directional Starlight with Velocity Stretch (Squash & Stretch principle)
+    // Offscreen cached sprites (Zero per-frame allocation)
+    const gatherSprite = createStarSprite(
+      gatherStarColor,
+      gatherHaloStop0,
+      gatherHaloStop1,
+      gatherHaloStop2,
+      64
+    );
+    const burstSprite = createStarSprite(
+      burstStarColor,
+      burstHaloStop0,
+      burstHaloStop1,
+      burstHaloStop2,
+      64
+    );
+
+    // Fast drawStarlight blitting from cached sprite
     const drawStarlight = (
       x: number,
       y: number,
@@ -92,6 +164,7 @@ export default function StarVortexTransition({
       stretchAngle: number = 0
     ) => {
       if (alpha <= 0.01) return;
+      const sprite = isPhase2 ? burstSprite : gatherSprite;
 
       ctx.save();
       ctx.translate(x, y);
@@ -105,47 +178,18 @@ export default function StarVortexTransition({
 
       ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
 
-      const halo0 = isPhase2 ? burstHaloStop0 : gatherHaloStop0;
-      const halo1 = isPhase2 ? burstHaloStop1 : gatherHaloStop1;
-      const halo2 = isPhase2 ? burstHaloStop2 : gatherHaloStop2;
-      const coreColor = isPhase2 ? burstStarColor : gatherStarColor;
-
-      // Soft diffuse starlight halo
-      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.0);
-      grad.addColorStop(0, halo0);
-      grad.addColorStop(0.5, halo1);
-      grad.addColorStop(1, halo2);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(0, 0, size * 2.0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Sharp 4-Point Starlight Core
-      const spikes = 4;
-      const outerR = size;
-      const innerR = size * 0.22;
-
-      ctx.beginPath();
-      for (let i = 0; i < spikes * 2; i++) {
-        const r = i % 2 === 0 ? outerR : innerR;
-        const angle = (i / (spikes * 2)) * Math.PI * 2;
-        const px = Math.cos(angle) * r;
-        const py = Math.sin(angle) * r;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
+      const drawSize = size * 4.0;
+      if (sprite) {
+        ctx.drawImage(sprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
       }
-      ctx.closePath();
-      ctx.fillStyle = coreColor;
-      ctx.fill();
-
       ctx.restore();
     };
 
-    // Generate stars with tiered physical properties (Mass, Ejection Speeds, Radius)
+    // Generate stars with tiered physical properties
     const stars: StarParticle[] = Array.from({ length: starCount }, () => {
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.random() * (maxDim * 0.42) + 40;
-      const mass = Math.random() * 0.8 + 0.6; // Heavy stars travel slower; light sparks blast far
+      const mass = Math.random() * 0.8 + 0.6;
       return {
         angle,
         radius,
@@ -163,7 +207,7 @@ export default function StarVortexTransition({
     });
 
     const startTime = performance.now();
-    const splitPoint = 0.44; // 44% gathering, 56% explosion & deceleration
+    const splitPoint = 0.44;
 
     const render = (now: number) => {
       const elapsed = now - startTime;
@@ -172,12 +216,10 @@ export default function StarVortexTransition({
       ctx.clearRect(0, 0, width, height);
 
       if (progress < splitPoint) {
-        // PHASE 1: Gravitational Inward Condensation & Singularity Accumulation
+        // PHASE 1: Gravitational Inward Condensation
         const pull = progress / splitPoint;
-        // Cubic acceleration with anticipation compression
         const easePull = pull * pull * pull;
 
-        // Singularity core glow growing at center
         const coreSize = 12 * Math.sin(pull * Math.PI * 0.5);
         if (coreSize > 1) {
           const coreGrad = ctx.createRadialGradient(originX, originY, 0, originX, originY, coreSize * 2.5);
@@ -210,21 +252,17 @@ export default function StarVortexTransition({
           );
         });
       } else {
-        // PHASE 2: Supernova Detonation with Quintic Easing & Shockwave Wavefront
+        // PHASE 2: Supernova Detonation & Shockwave
         if (!flippedRef.current) {
           flippedRef.current = true;
           onFlipRef.current();
         }
 
         const explode = (progress - splitPoint) / (1 - splitPoint);
-
-        // Quintic Ease-Out (Explosive initial impulse + viscous drag deceleration)
         const easeExplode = 1 - Math.pow(1 - explode, 4);
-
-        // Instantaneous expansion velocity for velocity stretch (1 at start -> 0 at end)
         const velocity = Math.pow(1 - explode, 2.5);
 
-        // 1. Expanding Delicate Shockwave Wavefront
+        // Expanding Shockwave
         const shockRadius = easeExplode * maxDim * 0.75;
         const shockAlpha = (1 - explode) * (1 - explode) * 0.35;
         if (shockAlpha > 0.01) {
@@ -235,7 +273,6 @@ export default function StarVortexTransition({
           ctx.strokeStyle = `${shockwaveColor} ${shockAlpha})`;
           ctx.stroke();
 
-          // Soft shockwave glow ring
           const ringGrad = ctx.createRadialGradient(
             originX,
             originY,
@@ -252,20 +289,17 @@ export default function StarVortexTransition({
           ctx.restore();
         }
 
-        // 2. Outward Ejected Starlight Particles with Inertia & Directional Stretch
+        // Outward Starlight Particles
         stars.forEach((s) => {
           s.rotAngle += s.rotSpeed * (1 + velocity * 1.5);
 
-          // Radial distance driven by quintic ease and individual particle ejectSpeed
-          const distance = (12 + s.ejectSpeed * maxDim * 0.55 * easeExplode);
+          const distance = 12 + s.ejectSpeed * maxDim * 0.55 * easeExplode;
           const px = originX + Math.cos(s.angle) * distance;
           const py = originY + Math.sin(s.angle) * distance;
 
-          // Velocity-dependent stretch along trajectory angle
           const stretch = 1 + velocity * s.ejectSpeed * 2.2;
           const stretchAngle = s.angle;
 
-          // Smooth exponential fade-out (no sudden pop)
           const twinkle = 0.6 + 0.4 * Math.sin(now * s.twinkleSpeed * 2.0 + s.twinklePhase);
           const alpha = s.baseAlpha * twinkle * Math.pow(1 - explode, 1.6);
 
@@ -286,6 +320,9 @@ export default function StarVortexTransition({
         animRef.current = requestAnimationFrame(render);
       } else {
         ctx.clearRect(0, 0, width, height);
+        if (typeof document !== "undefined") {
+          document.documentElement.classList.remove("is-theme-transitioning");
+        }
         onCompleteRef.current();
       }
     };
@@ -294,6 +331,9 @@ export default function StarVortexTransition({
 
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
+      if (typeof document !== "undefined") {
+        document.documentElement.classList.remove("is-theme-transitioning");
+      }
     };
   }, [duration, starCount, origin, targetMode]);
 

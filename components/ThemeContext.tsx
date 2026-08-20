@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import StarVortexTransition from "./ThemeTransitions/StarVortexTransition";
+import { scheduleIdlePrewarm } from "@/lib/utils/asset-prewarmer";
 
 export type ThemeStyle = "default" | "neobrutalist" | "discord";
 export type ThemeMode = "system" | "light" | "dark";
@@ -65,6 +66,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     setMounted(true);
+    scheduleIdlePrewarm(1000);
   }, []);
 
   const applyThemeMode = useCallback((targetEffective: "light" | "dark", targetModeSetting: ThemeMode) => {

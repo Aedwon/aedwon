@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeContext";
+import { prewarmThemeAssets } from "@/lib/utils/asset-prewarmer";
 import {
   Palette,
   Monitor,
@@ -125,7 +126,12 @@ export default function Navbar() {
         {/* Chameleon Trigger & Icons-Only Popover */}
         <div className="relative" ref={popoverRef}>
           <button
-            onClick={() => setPopoverOpen(!popoverOpen)}
+            onClick={() => {
+              prewarmThemeAssets();
+              setPopoverOpen(!popoverOpen);
+            }}
+            onMouseEnter={() => prewarmThemeAssets()}
+            onFocus={() => prewarmThemeAssets()}
             className={`w-7 h-7 sm:w-7.5 sm:h-7.5 flex items-center justify-center transition-all cursor-pointer ${
               isNeobrutalist
                 ? "rounded-none bg-[#FFE600] text-black border-2 border-black shadow-[2px_2px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] font-bold"
