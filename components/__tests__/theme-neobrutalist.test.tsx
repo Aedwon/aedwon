@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider, useTheme } from "../ThemeContext";
 import HeroSection from "../HeroSection";
 import ProjectCard from "../ProjectCard";
+import ExperienceDossier from "../ExperienceDossier";
 
 function ThemeConsumer() {
   const { theme, setTheme, mode, setMode } = useTheme();
@@ -85,5 +86,22 @@ describe("Neobrutalist Theme Integration", () => {
     const cardContainer = cardTitle.closest("a");
     expect(cardContainer).toBeDefined();
     expect(cardContainer?.className).toContain("border-black");
+  });
+
+  it("renders ExperienceDossier with brutalist index stamps and tabs", () => {
+    render(
+      <ThemeProvider>
+        <div>
+          <ThemeConsumer />
+          <ExperienceDossier />
+        </div>
+      </ThemeProvider>
+    );
+
+    const btn = screen.getByText("Set Brutalist");
+    fireEvent.click(btn);
+
+    expect(screen.getByText("/// Experience Dossier")).toBeDefined();
+    expect(screen.getByText("[01]")).toBeDefined();
   });
 });
