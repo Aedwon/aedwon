@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import DiscordEmbedCard from "./DiscordEmbedCard";
 import DiscordButton from "./DiscordButton";
 import { EXPERIENCES } from "@/lib/data/experience";
-import { AFFILIATION_GROUPS } from "@/lib/data/affiliations";
 
 interface DiscordHomeFeedProps {
   onOpenThread?: (parent: string, slug: string, title?: string) => void;
@@ -25,28 +24,6 @@ export default function DiscordHomeFeed({
   onOpenThread,
   onSwitchChannel,
 }: DiscordHomeFeedProps) {
-  const [hoveredBadge, setHoveredBadge] = useState<{
-    text: string;
-    x: number;
-    y: number;
-  } | null>(null);
-
-  const handleMouseEnter = (
-    e: React.MouseEvent<HTMLDivElement>,
-    tooltip: string
-  ) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setHoveredBadge({
-      text: tooltip,
-      x: rect.left + rect.width / 2,
-      y: rect.top - 8,
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredBadge(null);
-  };
-
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -190,60 +167,7 @@ export default function DiscordHomeFeed({
         </div>
       </div>
 
-      {/* 4. Affiliations & Partners */}
-      <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-        <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-          A
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-              Aerol (Aedwon)
-            </span>
-            <span className="text-[11px] text-[#949ba4]">Today at 12:03 PM</span>
-          </div>
-
-          <h2 className="text-[16px] font-bold text-white mb-1">
-            Affiliations &amp; Partners
-          </h2>
-          <p className="text-xs text-[#949ba4] mb-3">
-            Entities and brand partners I've built software or run operations for:
-          </p>
-
-          <div className="space-y-4 max-w-2xl">
-            {AFFILIATION_GROUPS.map((group, gIdx) => (
-              <div
-                key={gIdx}
-                className="bg-[#2b2d31] rounded-[4px] border-l-4 border-[#5865F2] p-3 shadow-sm"
-              >
-                <div className="text-[11px] font-bold text-[#949ba4] uppercase tracking-wider mb-2">
-                  {group.category}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {group.items.map((badge, bIdx) => (
-                    <div
-                      key={bIdx}
-                      onMouseEnter={(e) => handleMouseEnter(e, badge.tooltip)}
-                      onMouseLeave={handleMouseLeave}
-                      className="h-10 px-2.5 py-1 bg-[#1e1f22] hover:bg-[#35373c] rounded border border-white/5 flex items-center justify-center cursor-pointer transition-colors"
-                      title={badge.tooltip}
-                    >
-                      <img
-                        src={badge.logo}
-                        alt={badge.name}
-                        className="max-h-6 max-w-[120px] object-contain"
-                        loading="lazy"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Complete Experience Dossier (All 7 Entities & 18 Roles from EXPERIENCES) */}
+      {/* 4. Complete Experience Dossier (All 7 Entities & 18 Roles from EXPERIENCES) */}
       <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
         <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
           A
@@ -296,7 +220,7 @@ export default function DiscordHomeFeed({
         </div>
       </div>
 
-      {/* 6. About (1:1 copy from AboutSection) */}
+      {/* 5. About (1:1 copy from AboutSection) */}
       <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
         <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
           A
@@ -321,7 +245,7 @@ export default function DiscordHomeFeed({
         </div>
       </div>
 
-      {/* 7. Footer System Message */}
+      {/* 6. Footer System Message */}
       <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
         <div className="w-10 h-10 rounded-full bg-[#202225] flex items-center justify-center text-gray-400 font-mono text-xs font-bold shrink-0 mt-0.5 border border-white/5">
           &lt;/&gt;
@@ -339,19 +263,6 @@ export default function DiscordHomeFeed({
           </p>
         </div>
       </div>
-
-      {/* Tooltip */}
-      {hoveredBadge && (
-        <div
-          className="fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap transition-opacity duration-150 font-mono font-semibold rounded bg-[#09090B] text-[#FAFAFA] shadow-xl border border-white/10"
-          style={{
-            left: `${hoveredBadge.x}px`,
-            top: `${hoveredBadge.y}px`,
-          }}
-        >
-          {hoveredBadge.text}
-        </div>
-      )}
     </div>
   );
 }

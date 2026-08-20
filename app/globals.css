@@ -244,12 +244,13 @@ body {
 /* Affiliation & Partner Adaptive Logos */
 html[data-mode="dark"] .logo-adaptive,
 html:not([data-mode="light"]) .logo-adaptive,
-[data-mode="dark"] .logo-adaptive {
+[data-mode="dark"] .logo-adaptive,
+[data-theme="discord"] .logo-adaptive {
   filter: brightness(0) invert(1);
 }
 
-html[data-mode="light"] .logo-adaptive,
-[data-mode="light"] .logo-adaptive {
+html[data-theme="default"][data-mode="light"] .logo-adaptive,
+[data-theme="default"][data-mode="light"] .logo-adaptive {
   filter: none;
 }
 
