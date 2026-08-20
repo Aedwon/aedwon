@@ -62,8 +62,28 @@ html[data-theme="neobrutalist"] body {
   font-family: ui-monospace, "SF Mono", "Space Mono", Monaco, "Cascadia Code", Menlo, monospace;
 }
 
-[data-theme="neobrutalist"] * {
+[data-theme="neobrutalist"] button,
+[data-theme="neobrutalist"] input,
+[data-theme="neobrutalist"] select,
+[data-theme="neobrutalist"] textarea,
+[data-theme="neobrutalist"] pre,
+[data-theme="neobrutalist"] code {
   font-family: ui-monospace, "SF Mono", "Space Mono", Monaco, "Cascadia Code", Menlo, monospace;
+}
+
+/* Suppress CSS transitions during canvas transition to prevent compositor thrashing */
+.is-theme-transitioning,
+.is-theme-transitioning body,
+.is-theme-transitioning * {
+  transition: none !important;
+}
+
+/* DOM Containment for heavy offscreen sections to optimize theme style recalcs */
+#affiliations,
+#experience,
+#about {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 /* Neobrutalist Global Overrides */
