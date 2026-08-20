@@ -4,6 +4,8 @@ import React from "react";
 import { BLOG_POSTS } from "@/lib/data/blogs";
 import DiscordEmbedCard from "./DiscordEmbedCard";
 
+import DiscordBotFooter from "./DiscordBotFooter";
+
 interface DiscordBlogsFeedProps {
   onOpenThread?: (parent: string, slug: string, title?: string) => void;
 }
@@ -66,6 +68,9 @@ export default function DiscordBlogsFeed({
           </div>
         </div>
       </div>
+
+      {/* Footer System Message */}
+      <DiscordBotFooter />
     </div>
   );
 }

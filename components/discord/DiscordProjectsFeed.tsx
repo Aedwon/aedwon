@@ -3,6 +3,8 @@
 import React from "react";
 import DiscordEmbedCard from "./DiscordEmbedCard";
 
+import DiscordBotFooter from "./DiscordBotFooter";
+
 interface DiscordProjectsFeedProps {
   onOpenThread?: (parent: string, slug: string, title?: string) => void;
 }
@@ -163,6 +165,9 @@ export default function DiscordProjectsFeed({
           </div>
         </div>
       </div>
+
+      {/* Footer System Message */}
+      <DiscordBotFooter />
     </div>
   );
 }

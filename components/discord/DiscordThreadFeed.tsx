@@ -3,6 +3,7 @@
 import React from "react";
 import { PROJECTS, ProjectItem } from "@/lib/data/projects";
 import { BLOG_POSTS, BlogPost } from "@/lib/data/blogs";
+import DiscordBotFooter from "./DiscordBotFooter";
 
 interface DiscordThreadFeedProps {
   thread: {
@@ -243,6 +244,9 @@ export default function DiscordThreadFeed({
             </div>
           </div>
         </div>
+
+        {/* Footer System Message */}
+        <DiscordBotFooter />
       </div>
     );
   }
@@ -303,6 +307,9 @@ export default function DiscordThreadFeed({
           </div>
         </div>
       </div>
+
+      {/* Footer System Message */}
+      <DiscordBotFooter />
     </div>
   );
 }
