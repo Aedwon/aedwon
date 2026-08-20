@@ -7,12 +7,14 @@ interface StarParticle {
   radius: number;
   baseRadius: number;
   speed: number;
+  ejectSpeed: number;
   size: number;
   rotAngle: number;
   rotSpeed: number;
   twinkleSpeed: number;
   twinklePhase: number;
   baseAlpha: number;
+  mass: number;
 }
 
 interface StarVortexTransitionProps {
@@ -30,8 +32,8 @@ export default function StarVortexTransition({
   targetMode = "dark",
   onFlipTheme,
   onComplete,
-  duration = 640,
-  starCount = 140,
+  duration = 720,
+  starCount = 160,
 }: StarVortexTransitionProps) {
   const onFlipRef = useRef(onFlipTheme);
   const onCompleteRef = useRef(onComplete);
@@ -51,6 +53,7 @@ export default function StarVortexTransition({
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const width = window.innerWidth;
     const height = window.innerHeight;
+    const maxDim = Math.hypot(width, height);
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -63,34 +66,58 @@ export default function StarVortexTransition({
     const originY = origin?.y ?? height / 2;
 
     const isDarkTarget = targetMode === "dark";
-    const starColor = isDarkTarget ? "#000000" : "#FFFFFF";
-    const haloStop0 = isDarkTarget ? "rgba(0, 0, 0, 0.45)" : "rgba(255, 255, 255, 0.45)";
-    const haloStop1 = isDarkTarget ? "rgba(20, 20, 24, 0.18)" : "rgba(228, 228, 231, 0.15)";
-    const haloStop2 = isDarkTarget ? "rgba(20, 20, 24, 0)" : "rgba(228, 228, 231, 0)";
 
-    // Fast, GPU-friendly 4-Point Concave Starlight Renderer (Zero shadowBlur overhead for locked 120 FPS)
-    const draw4PointStarlight = (
+    // Phase 1 (Gathering) Colors: match target mode being collected
+    const gatherStarColor = isDarkTarget ? "#000000" : "#FFFFFF";
+    const gatherHaloStop0 = isDarkTarget ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.45)";
+    const gatherHaloStop1 = isDarkTarget ? "rgba(20, 20, 24, 0.2)" : "rgba(228, 228, 231, 0.15)";
+    const gatherHaloStop2 = isDarkTarget ? "rgba(20, 20, 24, 0)" : "rgba(228, 228, 231, 0)";
+
+    // Phase 2 (Explosion) Colors: contrast against the NEW flipped background
+    const burstStarColor = isDarkTarget ? "#FFFFFF" : "#09090B";
+    const burstHaloStop0 = isDarkTarget ? "rgba(255, 255, 255, 0.6)" : "rgba(9, 9, 11, 0.4)";
+    const burstHaloStop1 = isDarkTarget ? "rgba(212, 212, 216, 0.2)" : "rgba(39, 39, 42, 0.15)";
+    const burstHaloStop2 = isDarkTarget ? "rgba(212, 212, 216, 0)" : "rgba(39, 39, 42, 0)";
+    const shockwaveColor = isDarkTarget ? "rgba(255, 255, 255," : "rgba(0, 0, 0,";
+
+    // Directional Starlight with Velocity Stretch (Squash & Stretch principle)
+    const drawStarlight = (
       x: number,
       y: number,
       size: number,
       rot: number,
-      alpha: number
+      alpha: number,
+      isPhase2: boolean,
+      stretchFactor: number = 1,
+      stretchAngle: number = 0
     ) => {
       if (alpha <= 0.01) return;
 
       ctx.save();
       ctx.translate(x, y);
-      ctx.rotate(rot);
+
+      if (isPhase2 && stretchFactor > 1.05) {
+        ctx.rotate(stretchAngle);
+        ctx.scale(stretchFactor, 1 / Math.sqrt(stretchFactor));
+      } else {
+        ctx.rotate(rot);
+      }
+
       ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
 
-      // Soft diffuse starlight halo (Gradient fill - 120 FPS accelerated)
-      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 1.8);
-      grad.addColorStop(0, haloStop0);
-      grad.addColorStop(0.5, haloStop1);
-      grad.addColorStop(1, haloStop2);
+      const halo0 = isPhase2 ? burstHaloStop0 : gatherHaloStop0;
+      const halo1 = isPhase2 ? burstHaloStop1 : gatherHaloStop1;
+      const halo2 = isPhase2 ? burstHaloStop2 : gatherHaloStop2;
+      const coreColor = isPhase2 ? burstStarColor : gatherStarColor;
+
+      // Soft diffuse starlight halo
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.0);
+      grad.addColorStop(0, halo0);
+      grad.addColorStop(0.5, halo1);
+      grad.addColorStop(1, halo2);
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(0, 0, size * 1.8, 0, Math.PI * 2);
+      ctx.arc(0, 0, size * 2.0, 0, Math.PI * 2);
       ctx.fill();
 
       // Sharp 4-Point Starlight Core
@@ -108,31 +135,35 @@ export default function StarVortexTransition({
         else ctx.lineTo(px, py);
       }
       ctx.closePath();
-      ctx.fillStyle = starColor;
+      ctx.fillStyle = coreColor;
       ctx.fill();
 
       ctx.restore();
     };
 
-    // Generate monochromatic starlight particles
+    // Generate stars with tiered physical properties (Mass, Ejection Speeds, Radius)
     const stars: StarParticle[] = Array.from({ length: starCount }, () => {
       const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * (Math.max(width, height) * 0.45) + 30;
+      const radius = Math.random() * (maxDim * 0.42) + 40;
+      const mass = Math.random() * 0.8 + 0.6; // Heavy stars travel slower; light sparks blast far
       return {
         angle,
         radius,
         baseRadius: radius,
-        speed: (Math.random() * 0.07 + 0.035) * (Math.random() > 0.5 ? 1 : -1),
-        size: Math.random() * 5.0 + 3.0,
+        speed: (Math.random() * 0.08 + 0.04) * (Math.random() > 0.5 ? 1 : -1),
+        ejectSpeed: (0.45 + (1 / mass) * 0.55) * (Math.random() * 0.4 + 0.8),
+        size: Math.random() * 4.5 + 2.5,
         rotAngle: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() * 0.05 + 0.02) * (Math.random() > 0.5 ? 1 : -1),
-        twinkleSpeed: Math.random() * 0.02 + 0.012,
+        rotSpeed: (Math.random() * 0.06 + 0.02) * (Math.random() > 0.5 ? 1 : -1),
+        twinkleSpeed: Math.random() * 0.025 + 0.015,
         twinklePhase: Math.random() * Math.PI * 2,
-        baseAlpha: Math.random() * 0.3 + 0.7,
+        baseAlpha: Math.random() * 0.35 + 0.65,
+        mass,
       };
     });
 
     const startTime = performance.now();
+    const splitPoint = 0.44; // 44% gathering, 56% explosion & deceleration
 
     const render = (now: number) => {
       const elapsed = now - startTime;
@@ -140,55 +171,113 @@ export default function StarVortexTransition({
 
       ctx.clearRect(0, 0, width, height);
 
-      if (progress < 0.48) {
-        // Phase 1: Inward Gravitational Vortex & High-Speed Twinkle
-        const pull = progress / 0.48;
-        const easePull = pull * pull;
+      if (progress < splitPoint) {
+        // PHASE 1: Gravitational Inward Condensation & Singularity Accumulation
+        const pull = progress / splitPoint;
+        // Cubic acceleration with anticipation compression
+        const easePull = pull * pull * pull;
+
+        // Singularity core glow growing at center
+        const coreSize = 12 * Math.sin(pull * Math.PI * 0.5);
+        if (coreSize > 1) {
+          const coreGrad = ctx.createRadialGradient(originX, originY, 0, originX, originY, coreSize * 2.5);
+          coreGrad.addColorStop(0, gatherHaloStop0);
+          coreGrad.addColorStop(0.6, gatherHaloStop1);
+          coreGrad.addColorStop(1, gatherHaloStop2);
+          ctx.fillStyle = coreGrad;
+          ctx.beginPath();
+          ctx.arc(originX, originY, coreSize * 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         stars.forEach((s) => {
-          s.angle += s.speed * (1 + easePull * 3.2);
-          s.rotAngle += s.rotSpeed * (1 + easePull * 1.8);
-          const r = s.baseRadius * (1 - easePull * 0.92);
+          s.angle += s.speed * (1 + easePull * 4.5);
+          s.rotAngle += s.rotSpeed * (1 + easePull * 2.5);
+          const r = s.baseRadius * (1 - easePull * 0.96);
           const px = originX + Math.cos(s.angle) * r;
           const py = originY + Math.sin(s.angle) * r;
 
-          const twinkle = 0.45 + 0.55 * Math.sin(now * s.twinkleSpeed + s.twinklePhase);
+          const twinkle = 0.5 + 0.5 * Math.sin(now * s.twinkleSpeed + s.twinklePhase);
           const alpha = s.baseAlpha * twinkle;
 
-          draw4PointStarlight(
+          drawStarlight(
             px,
             py,
-            s.size * (1 - easePull * 0.25),
+            s.size * (1 - easePull * 0.3),
             s.rotAngle,
-            alpha
+            alpha,
+            false
           );
         });
       } else {
-        // Phase 2: Supernova Burst Outward Across Screen
+        // PHASE 2: Supernova Detonation with Quintic Easing & Shockwave Wavefront
         if (!flippedRef.current) {
           flippedRef.current = true;
           onFlipRef.current();
         }
 
-        const explode = (progress - 0.48) / 0.52;
-        const easeExplode = 1 - Math.pow(1 - explode, 3);
+        const explode = (progress - splitPoint) / (1 - splitPoint);
 
+        // Quintic Ease-Out (Explosive initial impulse + viscous drag deceleration)
+        const easeExplode = 1 - Math.pow(1 - explode, 4);
+
+        // Instantaneous expansion velocity for velocity stretch (1 at start -> 0 at end)
+        const velocity = Math.pow(1 - explode, 2.5);
+
+        // 1. Expanding Delicate Shockwave Wavefront
+        const shockRadius = easeExplode * maxDim * 0.75;
+        const shockAlpha = (1 - explode) * (1 - explode) * 0.35;
+        if (shockAlpha > 0.01) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(originX, originY, shockRadius, 0, Math.PI * 2);
+          ctx.lineWidth = Math.max(1, 4 * (1 - explode));
+          ctx.strokeStyle = `${shockwaveColor} ${shockAlpha})`;
+          ctx.stroke();
+
+          // Soft shockwave glow ring
+          const ringGrad = ctx.createRadialGradient(
+            originX,
+            originY,
+            Math.max(0, shockRadius - 20),
+            originX,
+            originY,
+            shockRadius + 15
+          );
+          ringGrad.addColorStop(0, `${shockwaveColor} 0)`);
+          ringGrad.addColorStop(0.5, `${shockwaveColor} ${shockAlpha * 0.4})`);
+          ringGrad.addColorStop(1, `${shockwaveColor} 0)`);
+          ctx.fillStyle = ringGrad;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // 2. Outward Ejected Starlight Particles with Inertia & Directional Stretch
         stars.forEach((s) => {
-          s.angle += s.speed * 0.3;
-          s.rotAngle += s.rotSpeed * 1.2;
-          const r = s.baseRadius * (0.08 + easeExplode * 4.8);
-          const px = originX + Math.cos(s.angle) * r;
-          const py = originY + Math.sin(s.angle) * r;
+          s.rotAngle += s.rotSpeed * (1 + velocity * 1.5);
 
-          const twinkle = 0.5 + 0.5 * Math.sin(now * s.twinkleSpeed * 1.5 + s.twinklePhase);
-          const alpha = s.baseAlpha * twinkle * (1 - explode);
+          // Radial distance driven by quintic ease and individual particle ejectSpeed
+          const distance = (12 + s.ejectSpeed * maxDim * 0.55 * easeExplode);
+          const px = originX + Math.cos(s.angle) * distance;
+          const py = originY + Math.sin(s.angle) * distance;
 
-          draw4PointStarlight(
+          // Velocity-dependent stretch along trajectory angle
+          const stretch = 1 + velocity * s.ejectSpeed * 2.2;
+          const stretchAngle = s.angle;
+
+          // Smooth exponential fade-out (no sudden pop)
+          const twinkle = 0.6 + 0.4 * Math.sin(now * s.twinkleSpeed * 2.0 + s.twinklePhase);
+          const alpha = s.baseAlpha * twinkle * Math.pow(1 - explode, 1.6);
+
+          drawStarlight(
             px,
             py,
-            s.size * (1 + easeExplode * 0.6),
+            s.size * (1 + easeExplode * 0.4),
             s.rotAngle,
-            alpha
+            alpha,
+            true,
+            stretch,
+            stretchAngle
           );
         });
       }
@@ -206,7 +295,7 @@ export default function StarVortexTransition({
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [duration, starCount, origin]);
+  }, [duration, starCount, origin, targetMode]);
 
   return (
     <canvas
