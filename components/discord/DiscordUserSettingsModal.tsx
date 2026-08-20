@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTheme, ThemeType } from "@/components/ThemeContext";
+import { useTheme, ThemeStyle } from "@/components/ThemeContext";
 
 interface DiscordUserSettingsModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export default function DiscordUserSettingsModal({
 
   if (!isOpen) return null;
 
-  const handleSelectTheme = (newTheme: ThemeType) => {
+  const handleSelectTheme = (newTheme: ThemeStyle) => {
     setTheme(newTheme);
   };
 
