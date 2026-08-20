@@ -43,6 +43,6 @@ next-env.d.ts
 # scratch & local artifacts
 /scratch
 /archive
-.superpowers/brainstorm/
+.superpowers/
 public/*.html
 docs/superpowers/specs/*.html
