@@ -1,18 +1,52 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import DiscordEmbedCard from "./DiscordEmbedCard";
 import DiscordButton from "./DiscordButton";
+import { EXPERIENCES } from "@/lib/data/experience";
+import { AFFILIATION_GROUPS } from "@/lib/data/affiliations";
 
 interface DiscordHomeFeedProps {
   onOpenThread?: (parent: string, slug: string, title?: string) => void;
   onSwitchChannel?: (channel: string) => void;
 }
 
+const ENTITY_BORDER_COLORS: Record<string, string> = {
+  psysc: "#10B981",
+  moonton: "#5865F2",
+  "up-fighting-maroons": "#8B5CF6",
+  "up-oblation-esports": "#06B6D4",
+  "dark-league-studios": "#EC4899",
+  "up-fair": "#F59E0B",
+  hoyoverse: "#3B82F6",
+};
+
 export default function DiscordHomeFeed({
   onOpenThread,
   onSwitchChannel,
 }: DiscordHomeFeedProps) {
+  const [hoveredBadge, setHoveredBadge] = useState<{
+    text: string;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const handleMouseEnter = (
+    e: React.MouseEvent<HTMLDivElement>,
+    tooltip: string
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoveredBadge({
+      text: tooltip,
+      x: rect.left + rect.width / 2,
+      y: rect.top - 8,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredBadge(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -156,7 +190,60 @@ export default function DiscordHomeFeed({
         </div>
       </div>
 
-      {/* 4. Experience (1:1 copy from ExperienceDossier) */}
+      {/* 4. Affiliations & Partners */}
+      <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
+        <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
+          A
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
+              Aerol (Aedwon)
+            </span>
+            <span className="text-[11px] text-[#949ba4]">Today at 12:03 PM</span>
+          </div>
+
+          <h2 className="text-[16px] font-bold text-white mb-1">
+            Affiliations &amp; Partners
+          </h2>
+          <p className="text-xs text-[#949ba4] mb-3">
+            Entities and brand partners I've built software or run operations for:
+          </p>
+
+          <div className="space-y-4 max-w-2xl">
+            {AFFILIATION_GROUPS.map((group, gIdx) => (
+              <div
+                key={gIdx}
+                className="bg-[#2b2d31] rounded-[4px] border-l-4 border-[#5865F2] p-3 shadow-sm"
+              >
+                <div className="text-[11px] font-bold text-[#949ba4] uppercase tracking-wider mb-2">
+                  {group.category}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {group.items.map((badge, bIdx) => (
+                    <div
+                      key={bIdx}
+                      onMouseEnter={(e) => handleMouseEnter(e, badge.tooltip)}
+                      onMouseLeave={handleMouseLeave}
+                      className="h-10 px-2.5 py-1 bg-[#1e1f22] hover:bg-[#35373c] rounded border border-white/5 flex items-center justify-center cursor-pointer transition-colors"
+                      title={badge.tooltip}
+                    >
+                      <img
+                        src={badge.logo}
+                        alt={badge.name}
+                        className="max-h-6 max-w-[120px] object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Complete Experience Dossier (All 7 Entities & 18 Roles from EXPERIENCES) */}
       <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
         <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
           A
@@ -169,82 +256,47 @@ export default function DiscordHomeFeed({
             <span className="text-[11px] text-[#949ba4]">Today at 12:04 PM</span>
           </div>
 
-          <h2 className="text-[16px] font-bold text-white mb-2">Experience</h2>
+          <h2 className="text-[16px] font-bold text-white mb-3">Experience</h2>
 
-          <div className="space-y-2 max-w-2xl">
-            {/* Org 1 */}
-            <div className="bg-[#2b2d31] rounded-[4px] border-l-4 border-[#10B981] p-3.5 shadow-sm">
-              <div className="flex justify-between items-baseline mb-1">
-                <h4 className="text-white font-bold text-sm">
-                  Philippine Society of Youth Science Clubs
-                </h4>
-              </div>
-              <div className="space-y-2 text-xs text-[#b5bac1]">
-                <div>
-                  <div className="flex justify-between text-white font-medium">
-                    <span>Marketing Associate</span>
-                    <span className="text-gray-400 font-mono text-[11px]">Feb 2024 to Present</span>
+          <div className="space-y-3 max-w-2xl">
+            {EXPERIENCES.map((entity) => {
+              const borderColor = ENTITY_BORDER_COLORS[entity.id] || "#5865F2";
+              return (
+                <div
+                  key={entity.id}
+                  style={{ borderLeftColor: borderColor }}
+                  className="bg-[#2b2d31] rounded-[4px] border-l-4 p-4 shadow-sm space-y-3"
+                >
+                  <div className="flex justify-between items-baseline border-b border-[#3f4147]/50 pb-1.5">
+                    <h4 className="text-white font-bold text-[14.5px]">
+                      {entity.name}
+                    </h4>
                   </div>
-                  <p className="text-[#b5bac1]">
-                    Secured corporate sponsorships generating over ₱800,000 in funding for a national science competition.
-                  </p>
-                </div>
-                <div>
-                  <div className="flex justify-between text-white font-medium">
-                    <span>Regional Head, Region I/II/NCR</span>
-                    <span className="text-gray-400 font-mono text-[11px]">May 2024 to Sep 2024</span>
+                  <div className="space-y-3 text-xs text-[#b5bac1]">
+                    {entity.roles.map((role, rIdx) => (
+                      <div key={rIdx} className="space-y-1">
+                        <div className="flex justify-between items-baseline gap-2 text-white font-medium">
+                          <span className="font-semibold text-[13px] text-gray-100">
+                            {role.title}
+                          </span>
+                          <span className="text-gray-400 font-mono text-[11px] shrink-0">
+                            {role.period}
+                          </span>
+                        </div>
+                        <p className="text-[#b5bac1] text-[12px] leading-relaxed">
+                          {role.description}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-[#b5bac1]">
-                    Directed regional elimination rounds and MathSciAKa workshops, coordinating 30+ volunteers.
-                  </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Org 2 */}
-            <div className="bg-[#2b2d31] rounded-[4px] border-l-4 border-[#5865F2] p-3.5 shadow-sm">
-              <div className="flex justify-between items-baseline mb-1">
-                <h4 className="text-white font-bold text-sm">
-                  Moonton Student Leaders Philippines
-                </h4>
-              </div>
-              <div className="space-y-2 text-xs text-[#b5bac1]">
-                <div>
-                  <div className="flex justify-between text-white font-medium">
-                    <span>
-                      Tournament Director &amp; Head of League Operations, MSL Collegiate Cup
-                    </span>
-                    <span className="text-gray-400 font-mono text-[11px]">Nov 2023 to Jul 2025</span>
-                  </div>
-                  <p className="text-[#b5bac1]">
-                    Directed tournament operations for 3,000+ collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Org 3 */}
-            <div className="bg-[#2b2d31] rounded-[4px] border-l-4 border-[#8B5CF6] p-3.5 shadow-sm">
-              <div className="flex justify-between items-baseline mb-1">
-                <h4 className="text-white font-bold text-sm">Dark League Studios</h4>
-              </div>
-              <div className="space-y-2 text-xs text-[#b5bac1]">
-                <div>
-                  <div className="flex justify-between text-white font-medium">
-                    <span>Project Manager</span>
-                    <span className="text-gray-400 font-mono text-[11px]">Oct 2024 to Jun 2025</span>
-                  </div>
-                  <p className="text-[#b5bac1]">
-                    Directed tournament operations for Estudyante Esports: The National Championships (₱1.5M+ funding across 4 game titles), managing publisher relations, venue vendors, and sponsor commitments.
-                  </p>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* 5. About (1:1 copy from AboutSection) */}
+      {/* 6. About (1:1 copy from AboutSection) */}
       <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
         <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
           A
@@ -269,7 +321,7 @@ export default function DiscordHomeFeed({
         </div>
       </div>
 
-      {/* 6. Footer System Message */}
+      {/* 7. Footer System Message */}
       <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
         <div className="w-10 h-10 rounded-full bg-[#202225] flex items-center justify-center text-gray-400 font-mono text-xs font-bold shrink-0 mt-0.5 border border-white/5">
           &lt;/&gt;
@@ -287,6 +339,19 @@ export default function DiscordHomeFeed({
           </p>
         </div>
       </div>
+
+      {/* Tooltip */}
+      {hoveredBadge && (
+        <div
+          className="fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap transition-opacity duration-150 font-mono font-semibold rounded bg-[#09090B] text-[#FAFAFA] shadow-xl border border-white/10"
+          style={{
+            left: `${hoveredBadge.x}px`,
+            top: `${hoveredBadge.y}px`,
+          }}
+        >
+          {hoveredBadge.text}
+        </div>
+      )}
     </div>
   );
 }
