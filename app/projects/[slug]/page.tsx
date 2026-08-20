@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PROJECTS } from "@/lib/data/projects";
 import { TechIcon } from "@/components/TechIcons";
 import { ProjectArt } from "@/components/ProjectCard";
-import { BookOpen, Bot, QrCode, Tv, ShieldCheck, Award, Calculator, ArrowRight } from "lucide-react";
+import { BookOpen, Bot, QrCode, Tv, ShieldCheck, Award, Calculator, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -41,33 +41,6 @@ export default async function ProjectCaseStudyPage({
 
   const project = PROJECTS[projectIndex];
   const nextProject = PROJECTS[(projectIndex + 1) % PROJECTS.length];
-
-  const getIcon = (iconName: string, color: string) => {
-    const props = {
-      className: "drop-shadow-lg",
-      size: 64,
-      strokeWidth: 1.75,
-      color: color,
-    };
-    switch (iconName) {
-      case "book-open":
-        return <BookOpen {...props} />;
-      case "bot":
-        return <Bot {...props} />;
-      case "qr-code":
-        return <QrCode {...props} />;
-      case "tv":
-        return <Tv {...props} />;
-      case "shield-check":
-        return <ShieldCheck {...props} />;
-      case "award":
-        return <Award {...props} />;
-      case "calculator":
-        return <Calculator {...props} />;
-      default:
-        return <BookOpen {...props} />;
-    }
-  };
 
   const getPlatformIcon = (icon: string) => {
     switch (icon) {
@@ -113,9 +86,15 @@ export default async function ProjectCaseStudyPage({
       {/* Header */}
       <header className="space-y-3">
         <div className="flex justify-between items-baseline flex-wrap gap-3">
-          <h1 className="text-[28px] sm:text-[32px] font-bold text-[var(--text-primary)] tracking-[-0.02em] font-[var(--font-heading)]">
-            {project.title}
-          </h1>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-[28px] sm:text-[32px] font-bold text-[var(--text-primary)] tracking-[-0.02em] font-[var(--font-heading)]">
+              {project.title}
+            </h1>
+            <span className="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-black/[0.04] dark:bg-white/[0.06] border border-[var(--border-subtle)] text-[var(--text-dim)]">
+              {project.tier === "flagship" ? "Flagship" : "Focused Tool"}
+            </span>
+          </div>
+
           <div className="flex gap-3 text-[13px] font-mono">
             {project.liveUrl && (
               <a
@@ -165,7 +144,7 @@ export default async function ProjectCaseStudyPage({
               {project.platforms.map((pl, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-primary)] bg-white/[0.04] px-2 py-0.5 rounded border border-[var(--border-subtle)]"
+                  className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-primary)] bg-black/[0.02] dark:bg-white/[0.04] px-2 py-0.5 rounded border border-[var(--border-subtle)]"
                 >
                   {getPlatformIcon(pl.icon)}
                   <span>{pl.name}</span>
@@ -202,29 +181,37 @@ export default async function ProjectCaseStudyPage({
       </div>
 
       {/* Grounded Narrative Prose */}
-      <article className="space-y-8 text-[14.5px] sm:text-[15px] leading-[1.7] text-[var(--text-muted)] pt-2">
-        {/* Background & Constraints */}
-        <section className="space-y-2.5">
+      <article className="space-y-10 text-[14.5px] sm:text-[15px] leading-[1.7] text-[var(--text-muted)] pt-2">
+        {/* Section 1: Problem & Constraints (or Why I Built This) */}
+        <section className="space-y-3">
           <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)]">
-            Background &amp; Constraints
+            {project.tier === "flagship" ? "Problem & Constraints" : "Why I Built This"}
           </h2>
-          <p>{project.problem}</p>
+          <p className="leading-relaxed">{project.problem}</p>
         </section>
 
-        {/* Architecture & Decisions */}
+        {/* Section 2: How It's Built (or How It Works) */}
         <section className="space-y-4">
           <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)]">
-            Architecture &amp; Key Decisions
+            {project.tier === "flagship" ? "How It's Built" : "How It Works"}
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {project.architecture.map((arch, idx) => (
-              <div key={idx} className="space-y-2">
+              <div key={idx} className="space-y-2.5">
                 <h3 className="text-[14.5px] font-semibold text-[var(--text-primary)]">
                   {idx + 1}. {arch.title}
                 </h3>
-                <p>{arch.description}</p>
+                <p className="leading-relaxed">{arch.description}</p>
+                
+                {arch.tradeOff && (
+                  <div className="text-[13px] bg-black/[0.02] dark:bg-white/[0.03] p-3 rounded-lg border-l-2 border-[var(--accent)] text-[var(--text-muted)] italic my-2">
+                    <span className="font-semibold text-[var(--text-primary)] not-italic mr-1.5">Trade-off:</span>
+                    {arch.tradeOff}
+                  </div>
+                )}
+
                 {arch.codeSnippet && (
-                  <pre className="bg-black/40 p-4 rounded-xl font-mono text-[12.5px] text-gray-200 overflow-x-auto my-3 border border-[var(--border-subtle)]">
+                  <pre className="bg-black/50 dark:bg-black/70 p-4 rounded-xl font-mono text-[12.5px] text-gray-200 overflow-x-auto my-3 border border-[var(--border-subtle)] leading-relaxed">
                     <code>{arch.codeSnippet}</code>
                   </pre>
                 )}
@@ -233,12 +220,70 @@ export default async function ProjectCaseStudyPage({
           </div>
         </section>
 
-        {/* Results */}
-        <section className="space-y-2.5">
+        {/* Section 3: Hurdles & Solutions (Flagship Tier Only) */}
+        {project.tier === "flagship" && project.hurdles && project.hurdles.length > 0 && (
+          <section className="space-y-4">
+            <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)]">
+              Hurdles &amp; Solutions
+            </h2>
+            <div className="space-y-3.5">
+              {project.hurdles.map((hurdle, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[var(--bg-card)] p-4 rounded-[var(--card-radius)] border border-[var(--border-subtle)] space-y-2 shadow-xs"
+                >
+                  <h3 className="text-[14px] font-semibold text-[var(--text-primary)]">
+                    {hurdle.title}
+                  </h3>
+                  <div className="text-[13.5px] space-y-1.5">
+                    <p className="text-[var(--text-muted)]">
+                      <strong className="text-[var(--text-primary)] font-medium">Issue:</strong> {hurdle.issue}
+                    </p>
+                    <p className="text-[var(--text-muted)]">
+                      <strong className="text-[var(--text-primary)] font-medium">Solution:</strong> {hurdle.solution}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Section 4: Results & Numbers */}
+        <section className="space-y-4">
           <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)]">
-            Results
+            Results &amp; Numbers
           </h2>
-          <p>{project.results}</p>
+          <p className="leading-relaxed">{project.results}</p>
+
+          {/* Metrics Pills */}
+          {project.metrics && project.metrics.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              {project.metrics.map((m, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[var(--bg-card)] p-3.5 rounded-[var(--card-radius)] border border-[var(--border-subtle)] text-center shadow-xs"
+                >
+                  <div className="text-[18px] font-bold text-[var(--accent)] font-mono">
+                    {m.value}
+                  </div>
+                  <div className="text-[11.5px] text-[var(--text-muted)] mt-1">
+                    {m.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Retrospective Note */}
+          {project.retrospective && (
+            <div className="mt-4 p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-[var(--border-subtle)] text-[13.5px] leading-relaxed">
+              <span className="font-semibold text-[var(--text-primary)] block mb-1">
+                Retrospective Note
+              </span>
+              <p className="text-[var(--text-muted)]">{project.retrospective}</p>
+            </div>
+          )}
         </section>
       </article>
 
