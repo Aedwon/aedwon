@@ -81,4 +81,25 @@ describe("Navbar Component", () => {
     fireEvent.mouseDown(document.body);
     expect(screen.queryByTestId("theme-popover")).toBeNull();
   });
+
+  it("renders neobrutalist styling when theme is neobrutalist", () => {
+    render(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>
+    );
+
+    const themeButton = screen.getByLabelText("Theme settings");
+    fireEvent.click(themeButton);
+
+    const brutalistButton = screen.getByLabelText ? screen.getByLabelText("Theme settings") : themeButton;
+    const brutalistOption = screen.getByText((content, element) => {
+      return element?.getAttribute("data-tooltip") === "Brutalist";
+    });
+
+    fireEvent.click(brutalistOption);
+    const navContainer = screen.getByText("</aedwon>").closest("div");
+    expect(navContainer?.className).toContain("rounded-none");
+    expect(navContainer?.className).toContain("border-[3px]");
+  });
 });
