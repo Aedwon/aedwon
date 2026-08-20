@@ -29,8 +29,8 @@ export default function ExperienceDossier() {
   return (
     <section id="experience">
       <h2
-        className={`text-[18px] font-semibold mb-4 font-[var(--font-heading)] ${
-          isNeobrutalist ? "text-black font-extrabold" : "text-[var(--text-primary)]"
+        className={`text-[18px] mb-4 ${
+          isNeobrutalist ? "text-black font-black" : "font-semibold text-[var(--text-primary)] font-[var(--font-heading)]"
         }`}
       >
         Experience
@@ -40,7 +40,7 @@ export default function ExperienceDossier() {
       <div
         className={`grid grid-cols-1 md:grid-cols-[210px_1fr] bg-[var(--bg-card)] overflow-hidden h-[350px] transition-all ${
           isNeobrutalist
-            ? "rounded-none border-[3px] border-black shadow-[5px_5px_0px_#000000]"
+            ? "rounded-none border-[3px] border-black shadow-[6px_6px_0px_#000000] bg-white"
             : "rounded-[var(--card-radius)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)]"
         }`}
       >
@@ -60,10 +60,10 @@ export default function ExperienceDossier() {
                 <button
                   key={entity.id}
                   onClick={() => handleTabChange(entity.id)}
-                  className={`text-left px-3 py-2 text-[13px] font-mono transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none ${
+                  className={`text-left px-3 py-2 text-[13px] transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none ${
                     isActive
-                      ? "bg-[#FFE600] text-black font-extrabold border-2 border-black shadow-[2px_2px_0px_#000000] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
-                      : "bg-white text-black font-bold border-2 border-black/50 hover:bg-[#FEF08A] hover:text-black rounded-none"
+                      ? "bg-[#FFE600] text-black font-black border-2 border-black shadow-[3px_3px_0px_#000000] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
+                      : "bg-white text-black font-bold border-2 border-black/60 hover:bg-[#FEF08A] hover:border-black rounded-none"
                   }`}
                 >
                   {entity.shortName}
@@ -108,26 +108,26 @@ export default function ExperienceDossier() {
                   <h3
                     className={`text-[14.5px] min-w-0 ${
                       isNeobrutalist
-                        ? "font-mono font-extrabold text-black"
+                        ? "font-black text-black"
                         : "font-semibold text-[var(--text-primary)]"
                     }`}
                   >
                     {role.title}
                   </h3>
                   <span
-                    className={`text-[11.5px] font-mono whitespace-nowrap shrink-0 ${
+                    className={`text-[11.5px] whitespace-nowrap shrink-0 ${
                       isNeobrutalist
-                        ? "bg-black text-white font-bold px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000]"
-                        : "text-[var(--text-dim)]"
+                        ? "bg-black text-white font-black px-2 py-0.5 border border-black shadow-[1.5px_1.5px_0px_#000]"
+                        : "text-[var(--text-dim)] font-mono"
                     }`}
                   >
                     {role.period}
                   </span>
                 </div>
                 <p
-                  className={`text-[13px] leading-[1.55] ${
+                  className={`text-[13px] leading-[1.65] ${
                     isNeobrutalist
-                      ? "text-black/85 font-mono"
+                      ? "text-black font-medium"
                       : "text-[var(--text-muted)]"
                   }`}
                 >

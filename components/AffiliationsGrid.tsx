@@ -69,7 +69,7 @@ function AffiliationRow({
               onMouseLeave={onLeaveBadge}
               className={`h-[80px] flex items-center justify-center p-[6px] transition-all cursor-pointer relative shrink-0 ${
                 isNeobrutalist
-                  ? "rounded-none border-2 border-black bg-white shadow-[2.5px_2.5px_0px_#000000] hover:shadow-[4px_4px_0px_#000000] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px]"
+                  ? "rounded-none border-[2.5px] border-black bg-white shadow-[3px_3px_0px_#000000] hover:shadow-[5px_5px_0px_#000000] hover:-translate-y-0.5 active:translate-x-[2px] active:translate-y-[2px]"
                   : "transition-transform duration-150 hover:-translate-y-0.5"
               }`}
               style={{
@@ -157,17 +157,17 @@ export default function AffiliationsGrid() {
   return (
     <section id="affiliations" className="relative">
       <h2
-        className={`text-[18px] font-semibold mb-1 font-[var(--font-heading)] ${
+        className={`text-[18px] mb-1 ${
           isNeobrutalist
-            ? "font-mono font-extrabold text-black"
-            : "text-[var(--text-primary)]"
+            ? "font-black text-black"
+            : "font-semibold text-[var(--text-primary)] font-[var(--font-heading)]"
         }`}
       >
         Affiliations &amp; Partners
       </h2>
       <p
         className={`text-[13.5px] mb-5 ${
-          isNeobrutalist ? "font-mono text-black/80" : "text-[var(--text-muted)]"
+          isNeobrutalist ? "text-black font-medium" : "text-[var(--text-muted)]"
         }`}
       >
         Entities and brand partners I&apos;ve built software or run operations for:
@@ -177,10 +177,10 @@ export default function AffiliationsGrid() {
         {AFFILIATION_GROUPS.map((group, idx) => (
           <div key={idx}>
             <div
-              className={`text-[11px] font-mono font-semibold uppercase tracking-wider mb-2 ${
+              className={`text-[11px] uppercase tracking-wider mb-2.5 ${
                 isNeobrutalist
-                  ? "text-black font-extrabold"
-                  : "text-[var(--text-dim)]"
+                  ? "text-black font-black bg-[#FFE600] inline-block px-2 py-0.5 border border-black shadow-[1.5px_1.5px_0px_#000000]"
+                  : "font-mono font-semibold text-[var(--text-dim)]"
               }`}
             >
               {group.category}
@@ -200,10 +200,10 @@ export default function AffiliationsGrid() {
       {/* Unclipped Global Floating Tooltip */}
       {hoveredBadge && (
         <div
-          className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 font-mono text-[11px] font-semibold whitespace-nowrap transition-opacity duration-150 ${
+          className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap transition-opacity duration-150 ${
             isNeobrutalist
-              ? "rounded-none border-2 border-black bg-[#FFE600] text-black font-extrabold shadow-[2px_2px_0px_#000000]"
-              : "rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
+              ? "rounded-none border-2 border-black bg-[#FFE600] text-black font-black shadow-[2.5px_2.5px_0px_#000000]"
+              : "font-mono font-semibold rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
           }`}
           style={{
             left: `${hoveredBadge.x}px`,

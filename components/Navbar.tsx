@@ -63,8 +63,10 @@ export default function Navbar() {
         {/* Brand Mark */}
         <Link
           href="/"
-          className={`font-mono text-[13px] sm:text-[13.5px] font-semibold text-[var(--text-primary)] hover:opacity-85 active:scale-[0.95] transition-all cursor-pointer select-none pl-1 ${
-            isNeobrutalist ? "font-bold tracking-tight" : ""
+          className={`text-[13px] sm:text-[13.5px] select-none transition-all cursor-pointer ${
+            isNeobrutalist
+              ? "font-black bg-[#FFE600] text-black px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_#000000] tracking-tight hover:shadow-[3px_3px_0px_#000000]"
+              : "font-mono font-semibold text-[var(--text-primary)] hover:opacity-85 active:scale-[0.95] pl-1"
           }`}
         >
           &lt;/aedwon&gt;

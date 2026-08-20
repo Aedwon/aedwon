@@ -65,7 +65,7 @@ export function ProjectArt({ slug, brandColor }: { slug: string; brandColor: str
     }`,
     width: 54,
     height: 54,
-    strokeWidth: isNeobrutalist ? 2.25 : 1.75,
+    strokeWidth: isNeobrutalist ? 2.5 : 1.75,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
     fill: "none",
@@ -215,7 +215,7 @@ export default function ProjectCard({
       <div
         className={`h-[110px] w-full flex items-center justify-center mb-5 ${
           isNeobrutalist
-            ? "border-b-2 border-black pb-2"
+            ? "border-b-[3px] border-black bg-white/40 pb-2"
             : ""
         }`}
       >
@@ -224,8 +224,8 @@ export default function ProjectCard({
 
       {/* 2. Card Title */}
       <h3
-        className={`text-[16.5px] font-semibold mb-1.5 font-[var(--font-heading)] tracking-[-0.01em] ${
-          isNeobrutalist ? "text-black font-extrabold" : "text-[var(--text-primary)]"
+        className={`text-[17px] mb-1.5 tracking-tight ${
+          isNeobrutalist ? "text-black font-black" : "text-[var(--text-primary)] font-semibold font-[var(--font-heading)]"
         }`}
       >
         {project.title}
@@ -233,8 +233,8 @@ export default function ProjectCard({
 
       {/* 3. Card Description */}
       <p
-        className={`text-[13px] leading-[1.5] mb-[18px] flex-grow ${
-          isNeobrutalist ? "text-black/85 font-mono" : "text-[var(--text-muted)]"
+        className={`text-[13px] leading-[1.6] mb-[18px] flex-grow ${
+          isNeobrutalist ? "text-black font-medium" : "text-[var(--text-muted)]"
         }`}
       >
         {project.summary}
@@ -249,7 +249,7 @@ export default function ProjectCard({
               data-tooltip={tech.name}
               className={`has-tooltip tech-badge h-[26px] w-[26px] flex items-center justify-center transition-all ${
                 isNeobrutalist
-                  ? "rounded-none bg-white text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_#000000] hover:bg-[#FFE600]"
+                  ? "rounded-none bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000000] hover:bg-[#FFE600] active:translate-x-[1px] active:translate-y-[1px]"
                   : "rounded-[6px] bg-black/[0.04] dark:bg-white/[0.05] hover:bg-black/[0.09] dark:hover:bg-white/[0.12] border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.12] hover:-translate-y-0.5"
               }`}
             >
@@ -260,7 +260,7 @@ export default function ProjectCard({
         <span
           className={`text-[14px] transition-all group-hover:translate-x-1 ${
             isNeobrutalist
-              ? "font-mono font-bold text-black px-2 py-0.5 border border-black bg-white"
+              ? "font-black text-black px-2.5 py-0.5 border-2 border-black bg-[#FFE600] shadow-[2px_2px_0px_#000000]"
               : "text-[var(--text-arrow)] group-hover:text-[var(--text-primary)]"
           }`}
         >
@@ -271,7 +271,7 @@ export default function ProjectCard({
   );
 
   const containerClasses = isNeobrutalist
-    ? "group flex flex-col p-[24px_22px_20px] rounded-none border-[3px] border-black shadow-[5px_5px_0px_#000000] hover:shadow-[7px_7px_0px_#000000] hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_#000000] transition-all duration-150 relative hover:z-20 cursor-pointer"
+    ? "group flex flex-col p-[24px_22px_20px] rounded-none border-[3px] border-black shadow-[6px_6px_0px_#000000] hover:shadow-[8px_8px_0px_#000000] hover:-translate-y-1 active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_#000000] transition-all duration-150 relative hover:z-20 cursor-pointer"
     : `group flex flex-col p-[24px_22px_20px] rounded-[var(--card-radius)] glow-${project.glowColor} shadow-[var(--card-shadow)] hover:shadow-[var(--card-hover-shadow)] transition-all duration-200 hover:-translate-y-1 relative hover:z-20 cursor-pointer`;
 
   const containerStyle = isNeobrutalist ? { backgroundColor: neobrutalistBg } : undefined;
