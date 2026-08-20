@@ -56,11 +56,10 @@ export default function Navbar() {
       <div
         className={`pointer-events-auto inline-flex items-center gap-3 sm:gap-4 px-3.5 sm:px-4 py-1.5 transition-all ${
           isNeobrutalist
-            ? "rounded-none bg-[var(--bg-card)] border-[3px] border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#FFE600]"
+            ? "rounded-none bg-[var(--bg-card)] border-[3px] border-black shadow-[4px_4px_0px_#000000]"
             : "rounded-full bg-[var(--bg-card)]/80 backdrop-blur-xl border border-[var(--border-subtle)] shadow-[0_12px_36px_rgba(0,0,0,0.35)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.5)]"
         }`}
       >
-        
         {/* Brand Mark */}
         <Link
           href="/"
@@ -75,7 +74,7 @@ export default function Navbar() {
         <nav
           className={`relative flex items-center p-0.5 ${
             isNeobrutalist
-              ? "bg-black/[0.08] dark:bg-black/60 rounded-none border-2 border-black dark:border-white/50"
+              ? "bg-black/[0.08] rounded-none border-2 border-black"
               : "bg-black/[0.04] dark:bg-black/35 rounded-full border border-black/[0.03] dark:border-white/[0.04]"
           }`}
         >
@@ -94,7 +93,7 @@ export default function Navbar() {
                   layoutId="navbar-active-pill"
                   className={`absolute inset-0 ${
                     isNeobrutalist
-                      ? "rounded-none bg-[#FFE600] dark:bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000000]"
+                      ? "rounded-none bg-[#FFE600] text-black border-2 border-black shadow-[2px_2px_0px_#000000]"
                       : "rounded-full bg-[var(--bg-card)] border border-black/[0.04] dark:border-white/[0.08] shadow-xs"
                   }`}
                   transition={{
@@ -111,7 +110,7 @@ export default function Navbar() {
                       ? "text-black font-bold"
                       : "text-[var(--text-primary)] font-semibold"
                     : isNeobrutalist
-                    ? "text-[var(--text-primary)] hover:text-black dark:hover:text-white font-bold"
+                    ? "text-[var(--text-primary)] hover:text-black font-bold"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium"
                 }`}
               >
@@ -127,7 +126,7 @@ export default function Navbar() {
             onClick={() => setPopoverOpen(!popoverOpen)}
             className={`w-7 h-7 sm:w-7.5 sm:h-7.5 flex items-center justify-center transition-all cursor-pointer ${
               isNeobrutalist
-                ? "rounded-none bg-[#FFE600] text-black border-2 border-black dark:border-white shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] active:translate-x-[1px] active:translate-y-[1px] font-bold"
+                ? "rounded-none bg-[#FFE600] text-black border-2 border-black shadow-[2px_2px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] font-bold"
                 : "rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-transparent hover:border-black/[0.06] dark:hover:border-white/[0.08] active:scale-[0.92]"
             }`}
             aria-label="Theme settings"
@@ -140,30 +139,20 @@ export default function Navbar() {
               data-testid="theme-popover"
               className={`absolute top-[calc(100%+8px)] right-0 w-[146px] bg-[var(--bg-card)] p-1.5 z-50 flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-150 ${
                 isNeobrutalist
-                  ? "rounded-none border-[2.5px] border-black dark:border-white shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#FFE600]"
+                  ? "rounded-none border-[2.5px] border-black shadow-[5px_5px_0px_#000000]"
                   : "rounded-xl border border-[var(--border-subtle)] shadow-2xl"
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Row 1: Mode (Icons Only) */}
-              {theme !== "discord" ? (
-                <div
-                  className={`grid grid-cols-3 gap-0.5 p-0.5 ${
-                    isNeobrutalist
-                      ? "bg-black/[0.08] dark:bg-black/50 rounded-none border border-black dark:border-white/30"
-                      : "bg-black/[0.04] dark:bg-black/30 rounded-[9px]"
-                  }`}
-                >
+              {/* Row 1: Mode Switcher (Only visible for Default theme) */}
+              {theme === "default" && (
+                <div className="grid grid-cols-3 gap-0.5 bg-black/[0.04] dark:bg-black/30 p-0.5 rounded-[9px]">
                   <button
                     onClick={(e) => handleModeChange("system", e)}
                     data-tooltip="System"
-                    className={`has-tooltip h-7 flex items-center justify-center transition-all cursor-pointer ${
-                      isNeobrutalist ? "rounded-none active:translate-x-[1px] active:translate-y-[1px]" : "rounded-[7px] active:scale-[0.92]"
-                    } ${
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
                       mode === "system"
-                        ? isNeobrutalist
-                          ? "bg-[#FFE600] text-black font-bold border border-black shadow-[1px_1px_0px_#000]"
-                          : "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
                         : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
                     }`}
                   >
@@ -172,13 +161,9 @@ export default function Navbar() {
                   <button
                     onClick={(e) => handleModeChange("light", e)}
                     data-tooltip="Light"
-                    className={`has-tooltip h-7 flex items-center justify-center transition-all cursor-pointer ${
-                      isNeobrutalist ? "rounded-none active:translate-x-[1px] active:translate-y-[1px]" : "rounded-[7px] active:scale-[0.92]"
-                    } ${
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
                       mode === "light"
-                        ? isNeobrutalist
-                          ? "bg-[#FFE600] text-black font-bold border border-black shadow-[1px_1px_0px_#000]"
-                          : "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
                         : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
                     }`}
                   >
@@ -187,22 +172,14 @@ export default function Navbar() {
                   <button
                     onClick={(e) => handleModeChange("dark", e)}
                     data-tooltip="Dark"
-                    className={`has-tooltip h-7 flex items-center justify-center transition-all cursor-pointer ${
-                      isNeobrutalist ? "rounded-none active:translate-x-[1px] active:translate-y-[1px]" : "rounded-[7px] active:scale-[0.92]"
-                    } ${
+                    className={`has-tooltip h-7 rounded-[7px] flex items-center justify-center transition-all cursor-pointer active:scale-[0.92] ${
                       mode === "dark"
-                        ? isNeobrutalist
-                          ? "bg-[#FFE600] text-black font-bold border border-black shadow-[1px_1px_0px_#000]"
-                          : "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
+                        ? "bg-[var(--bg-card)] text-[var(--text-primary)] font-medium shadow-xs border border-black/[0.04] dark:border-white/[0.08]"
                         : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
                     }`}
                   >
                     <Moon className="w-3.5 h-3.5" />
                   </button>
-                </div>
-              ) : (
-                <div className="py-1.5 px-2 bg-black/20 rounded-[8px] text-center text-[10.5px] font-mono text-[var(--text-dim)]">
-                  Dark mode only
                 </div>
               )}
 
@@ -210,7 +187,7 @@ export default function Navbar() {
               <div
                 className={`grid grid-cols-3 gap-0.5 p-0.5 ${
                   isNeobrutalist
-                    ? "bg-black/[0.08] dark:bg-black/50 rounded-none border border-black dark:border-white/30"
+                    ? "bg-black/[0.08] rounded-none border border-black"
                     : "bg-black/[0.04] dark:bg-black/30 rounded-[9px]"
                 }`}
               >

@@ -30,7 +30,7 @@ export default function ExperienceDossier() {
     <section id="experience">
       <h2
         className={`text-[18px] font-semibold mb-4 font-[var(--font-heading)] ${
-          isNeobrutalist ? "text-black dark:text-white font-extrabold" : "text-[var(--text-primary)]"
+          isNeobrutalist ? "text-black font-extrabold" : "text-[var(--text-primary)]"
         }`}
       >
         Experience
@@ -40,7 +40,7 @@ export default function ExperienceDossier() {
       <div
         className={`grid grid-cols-1 md:grid-cols-[210px_1fr] bg-[var(--bg-card)] overflow-hidden h-[350px] transition-all ${
           isNeobrutalist
-            ? "rounded-none border-[3px] border-black dark:border-white shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#FFE600]"
+            ? "rounded-none border-[3px] border-black shadow-[5px_5px_0px_#000000]"
             : "rounded-[var(--card-radius)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)]"
         }`}
       >
@@ -48,7 +48,7 @@ export default function ExperienceDossier() {
         <div
           className={`flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto p-2.5 md:p-3 shrink-0 gap-1.5 ${
             isNeobrutalist
-              ? "bg-[#F4F4F5] dark:bg-black/50 border-b md:border-b-0 md:border-r-[3px] border-black dark:border-white"
+              ? "bg-[#F4F4F5] border-b md:border-b-0 md:border-r-[3px] border-black"
               : "bg-transparent border-b md:border-b-0 md:border-r border-[var(--border-subtle)]"
           }`}
         >
@@ -62,8 +62,8 @@ export default function ExperienceDossier() {
                   onClick={() => handleTabChange(entity.id)}
                   className={`text-left px-3 py-2 text-[13px] font-mono transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none ${
                     isActive
-                      ? "bg-[#FFE600] text-black font-extrabold border-2 border-black dark:border-white shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
-                      : "bg-white dark:bg-zinc-900/80 text-black dark:text-zinc-300 font-bold border-2 border-black/50 dark:border-white/30 hover:bg-[#FEF08A] hover:text-black rounded-none"
+                      ? "bg-[#FFE600] text-black font-extrabold border-2 border-black shadow-[2px_2px_0px_#000000] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
+                      : "bg-white text-black font-bold border-2 border-black/50 hover:bg-[#FEF08A] hover:text-black rounded-none"
                   }`}
                 >
                   {entity.shortName}
@@ -91,7 +91,7 @@ export default function ExperienceDossier() {
         <div
           ref={scrollRef}
           className={`p-6 overflow-y-auto ${
-            isNeobrutalist ? "bg-white dark:bg-[#18181B]" : "dossier-scroll-viewport"
+            isNeobrutalist ? "bg-white" : "dossier-scroll-viewport"
           }`}
         >
           <div className="space-y-5">
@@ -100,7 +100,7 @@ export default function ExperienceDossier() {
                 key={idx}
                 className={`space-y-1.5 pb-5 last:border-none last:pb-0 ${
                   isNeobrutalist
-                    ? "border-b-2 border-black/20 dark:border-white/20"
+                    ? "border-b-2 border-black/20"
                     : "border-b border-[var(--border-subtle)]"
                 }`}
               >
@@ -108,7 +108,7 @@ export default function ExperienceDossier() {
                   <h3
                     className={`text-[14.5px] min-w-0 ${
                       isNeobrutalist
-                        ? "font-mono font-extrabold text-black dark:text-white"
+                        ? "font-mono font-extrabold text-black"
                         : "font-semibold text-[var(--text-primary)]"
                     }`}
                   >
@@ -117,7 +117,7 @@ export default function ExperienceDossier() {
                   <span
                     className={`text-[11.5px] font-mono whitespace-nowrap shrink-0 ${
                       isNeobrutalist
-                        ? "bg-black dark:bg-[#FFE600] text-white dark:text-black font-bold px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000]"
+                        ? "bg-black text-white font-bold px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000]"
                         : "text-[var(--text-dim)]"
                     }`}
                   >
@@ -127,7 +127,7 @@ export default function ExperienceDossier() {
                 <p
                   className={`text-[13px] leading-[1.55] ${
                     isNeobrutalist
-                      ? "text-black/85 dark:text-zinc-300 font-mono"
+                      ? "text-black/85 font-mono"
                       : "text-[var(--text-muted)]"
                   }`}
                 >

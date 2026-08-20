@@ -17,7 +17,7 @@ export default function Footer() {
     <footer
       className={`mt-20 pt-10 pb-12 ${
         isNeobrutalist
-          ? "border-t-[3px] border-black dark:border-white"
+          ? "border-t-[3px] border-black"
           : "border-t border-[var(--border-subtle)]"
       }`}
     >
@@ -25,7 +25,7 @@ export default function Footer() {
         <h2
           className={`text-[17px] font-semibold mb-2 font-[var(--font-heading)] ${
             isNeobrutalist
-              ? "font-mono font-extrabold text-black dark:text-white"
+              ? "font-mono font-extrabold text-black"
               : "text-[var(--text-primary)]"
           }`}
         >
@@ -33,7 +33,7 @@ export default function Footer() {
         </h2>
         <p
           className={`text-[14.5px] mb-5 ${
-            isNeobrutalist ? "font-mono text-black/80 dark:text-zinc-300" : "text-[var(--text-muted)]"
+            isNeobrutalist ? "font-mono text-black/80" : "text-[var(--text-muted)]"
           }`}
         >
           Get in touch for software projects or community infrastructure:
@@ -45,7 +45,7 @@ export default function Footer() {
             href="mailto:aerol.balayon@gmail.com"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black bg-[var(--bg-card)] border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000000] rounded-none hover:bg-[#FFE600] active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -61,7 +61,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black bg-[var(--bg-card)] border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000000] rounded-none hover:bg-[#FFE600] active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -79,7 +79,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black bg-[var(--bg-card)] border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000000] rounded-none hover:bg-[#FFE600] active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -97,7 +97,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 transition-all ${
               isNeobrutalist
-                ? "font-mono font-bold text-black dark:text-white bg-[var(--bg-card)] border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600] rounded-none hover:bg-[#FFE600] hover:text-black active:translate-x-[1px] active:translate-y-[1px]"
+                ? "font-mono font-bold text-black bg-[var(--bg-card)] border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_#000000] rounded-none hover:bg-[#FFE600] active:translate-x-[1px] active:translate-y-[1px]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)] group"
             }`}
           >
@@ -113,7 +113,7 @@ export default function Footer() {
       <div
         className={`flex justify-between items-center text-[12px] font-mono pt-4 ${
           isNeobrutalist
-            ? "border-t-2 border-black dark:border-white/30 text-black dark:text-zinc-400 font-bold"
+            ? "border-t-2 border-black text-black font-bold"
             : "border-t border-[var(--border-subtle)] text-[var(--text-dim)]"
         }`}
       >

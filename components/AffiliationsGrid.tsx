@@ -69,7 +69,7 @@ function AffiliationRow({
               onMouseLeave={onLeaveBadge}
               className={`h-[80px] flex items-center justify-center p-[6px] transition-all cursor-pointer relative shrink-0 ${
                 isNeobrutalist
-                  ? "rounded-none border-2 border-black dark:border-white bg-[var(--bg-card)] shadow-[2.5px_2.5px_0px_#000000] dark:shadow-[2.5px_2.5px_0px_#FFE600] hover:shadow-[4px_4px_0px_#000000] dark:hover:shadow-[4px_4px_0px_#FFFFFF] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px]"
+                  ? "rounded-none border-2 border-black bg-white shadow-[2.5px_2.5px_0px_#000000] hover:shadow-[4px_4px_0px_#000000] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px]"
                   : "transition-transform duration-150 hover:-translate-y-0.5"
               }`}
               style={{
@@ -84,7 +84,7 @@ function AffiliationRow({
                 decoding="async"
                 draggable={false}
                 className={`max-w-full max-h-full object-contain transition-all duration-200 ${
-                  badge.adaptive ? "logo-adaptive" : ""
+                  badge.adaptive && !isNeobrutalist ? "logo-adaptive" : ""
                 }`}
               />
             </div>
@@ -132,6 +132,13 @@ export default function AffiliationsGrid() {
   };
 
   const getLogoSrc = (badge: AffiliationBadge) => {
+    if (isNeobrutalist) {
+      if (badge.name === "MOONTON") return "/logos/moonton-light.svg";
+      if (badge.name === "Dark League Studios") return "/logos/dls-light.svg";
+      if (badge.name === "Estudyante Esports") return "/logos/estudyante-esports-light.svg";
+      return badge.logo;
+    }
+
     const isDark = resolvedMode === "dark";
     if (badge.name === "MOONTON") {
       return isDark ? "/logos/moonton-dark.svg" : "/logos/moonton-light.svg";
@@ -152,7 +159,7 @@ export default function AffiliationsGrid() {
       <h2
         className={`text-[18px] font-semibold mb-1 font-[var(--font-heading)] ${
           isNeobrutalist
-            ? "font-mono font-extrabold text-black dark:text-white"
+            ? "font-mono font-extrabold text-black"
             : "text-[var(--text-primary)]"
         }`}
       >
@@ -160,7 +167,7 @@ export default function AffiliationsGrid() {
       </h2>
       <p
         className={`text-[13.5px] mb-5 ${
-          isNeobrutalist ? "font-mono text-black/80 dark:text-zinc-300" : "text-[var(--text-muted)]"
+          isNeobrutalist ? "font-mono text-black/80" : "text-[var(--text-muted)]"
         }`}
       >
         Entities and brand partners I&apos;ve built software or run operations for:
@@ -172,7 +179,7 @@ export default function AffiliationsGrid() {
             <div
               className={`text-[11px] font-mono font-semibold uppercase tracking-wider mb-2 ${
                 isNeobrutalist
-                  ? "text-black dark:text-[#FFE600] font-extrabold"
+                  ? "text-black font-extrabold"
                   : "text-[var(--text-dim)]"
               }`}
             >
@@ -195,7 +202,7 @@ export default function AffiliationsGrid() {
         <div
           className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 font-mono text-[11px] font-semibold whitespace-nowrap transition-opacity duration-150 ${
             isNeobrutalist
-              ? "rounded-none border-2 border-black dark:border-white bg-[#FFE600] text-black font-extrabold shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#FFE600]"
+              ? "rounded-none border-2 border-black bg-[#FFE600] text-black font-extrabold shadow-[2px_2px_0px_#000000]"
               : "rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
           }`}
           style={{

@@ -109,4 +109,20 @@ describe("Neobrutalist Theme Integration", () => {
     expect(upButton).toBeDefined();
     expect(upButton.className).toContain("rounded-none");
   });
+
+  it("omits mode switcher controls when neobrutalist theme is active", () => {
+    const { container } = render(
+      <ThemeProvider>
+        <div>
+          <ThemeConsumer />
+        </div>
+      </ThemeProvider>
+    );
+
+    const btn = screen.getByText("Set Brutalist");
+    fireEvent.click(btn);
+
+    expect(screen.getByTestId("current-theme").textContent).toBe("neobrutalist");
+    expect(screen.getByTestId("current-mode").textContent).toBe("light");
+  });
 });

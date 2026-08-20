@@ -41,29 +41,9 @@ html[data-theme="default"][data-mode="light"] body {
   --border-subtle: rgba(0, 0, 0, 0.08);
 }
 
-/* Neobrutalist Theme - Dark Mode */
-[data-theme="neobrutalist"][data-mode="dark"],
-html[data-theme="neobrutalist"][data-mode="dark"] body {
-  --bg-canvas: #0A0A0C;
-  --bg-card: #18181B;
-  --bg-card-hover: #27272A;
-  --text-primary: #FFFFFF;
-  --text-muted: #E4E4E7;
-  --text-dim: #A1A1AA;
-  --text-arrow: #FFE600;
-  --card-radius: 0px;
-  --card-shadow: 5px 5px 0px #FFE600;
-  --card-hover-shadow: 7px 7px 0px #FFFFFF;
-  --card-border: 2.5px solid #FFFFFF;
-  --accent: #FFE600;
-  --accent-contrast: #000000;
-  --border-subtle: rgba(255, 255, 255, 0.25);
-  --font-heading: ui-monospace, "SF Mono", Monaco, "Cascadia Code", Menlo, monospace;
-}
-
-/* Neobrutalist Theme - Light Mode */
-[data-theme="neobrutalist"][data-mode="light"],
-html[data-theme="neobrutalist"][data-mode="light"] body {
+/* Neobrutalist Theme - Light Mode Only */
+[data-theme="neobrutalist"],
+html[data-theme="neobrutalist"] body {
   --bg-canvas: #FEF08A;
   --bg-card: #FFFFFF;
   --bg-card-hover: #FEF9C3;
@@ -83,11 +63,6 @@ html[data-theme="neobrutalist"][data-mode="light"] body {
 
 /* Neobrutalist Global Overrides */
 [data-theme="neobrutalist"] ::selection {
-  background: #FFE600;
-  color: #000000;
-}
-
-[data-theme="neobrutalist"][data-mode="light"] ::selection {
   background: #000000;
   color: #FFE600;
 }
@@ -308,11 +283,6 @@ html[data-mode="light"] .logo-adaptive,
   border-radius: 0px !important;
   box-shadow: 4px 4px 0px #000000;
   background: #09090B !important;
-}
-
-[data-theme="neobrutalist"][data-mode="dark"] pre {
-  border: 2.5px solid #FFFFFF;
-  box-shadow: 4px 4px 0px #FFE600;
 }
 
 [data-theme="neobrutalist"] code {

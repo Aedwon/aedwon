@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import StarVortexTransition from "./ThemeTransitions/StarVortexTransition";
-import BayerDitherTransition from "./ThemeTransitions/BayerDitherTransition";
 
 export type ThemeStyle = "default" | "neobrutalist" | "discord";
 export type ThemeMode = "system" | "light" | "dark";
@@ -45,6 +44,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     let effectiveMode: "light" | "dark" = "dark";
     if (savedTheme === "discord") {
       effectiveMode = "dark";
+      savedMode = "dark";
+    } else if (savedTheme === "neobrutalist") {
+      effectiveMode = "light";
+      savedMode = "light";
     } else if (savedMode === "system") {
       effectiveMode = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     } else {
@@ -52,7 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     setThemeState(savedTheme);
-    setModeState(savedTheme === "discord" ? "dark" : savedMode);
+    setModeState(savedMode);
     setResolvedMode(effectiveMode);
 
     if (typeof document !== "undefined") {
@@ -88,16 +91,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {}
 
-    // Discord theme is always dark mode
+    // Discord theme is always dark mode, Neobrutalist is always light mode
     if (newTheme === "discord") {
       applyThemeMode("dark", "dark");
+    } else if (newTheme === "neobrutalist") {
+      applyThemeMode("light", "light");
     }
   };
 
   const setMode = useCallback(
     (newMode: ThemeMode, origin?: { x: number; y: number }) => {
-      // Discord theme has no light mode toggle
-      if (theme === "discord") return;
+      // Discord (dark only) and Neobrutalist (light only) have no mode toggle
+      if (theme === "discord" || theme === "neobrutalist") return;
 
       let targetEffective: "light" | "dark" = "dark";
       if (newMode === "system") {
@@ -157,21 +162,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
 
-      {/* Active Transition Overlays */}
+      {/* Active Transition Overlays (Default theme only) */}
       {activeTransition && activeTransition.theme === "default" && (
         <StarVortexTransition
           origin={activeTransition.origin}
           targetMode={activeTransition.targetMode}
           sourceMode={activeTransition.sourceMode}
-          onFlipTheme={handleMidpointFlip}
-          onComplete={handleTransitionComplete}
-        />
-      )}
-
-      {activeTransition && activeTransition.theme === "neobrutalist" && (
-        <BayerDitherTransition
-          sourceMode={activeTransition.sourceMode}
-          targetMode={activeTransition.targetMode}
           onFlipTheme={handleMidpointFlip}
           onComplete={handleTransitionComplete}
         />
