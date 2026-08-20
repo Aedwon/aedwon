@@ -8,7 +8,7 @@
 
 :root {
   /* Default: Dark Mode */
-  --bg-canvas: #0C0C0E;
+  --bg-canvas: #0F0F12;
   --bg-card: #161619;
   --bg-card-hover: #1C1C20;
   --text-primary: #F4F4F5;
@@ -44,19 +44,21 @@ html[data-theme="default"][data-mode="light"] body {
 /* Neobrutalist Theme - Dark Mode */
 [data-theme="neobrutalist"][data-mode="dark"],
 html[data-theme="neobrutalist"][data-mode="dark"] body {
-  --bg-canvas: #121212;
-  --bg-card: #1E1E1E;
-  --bg-card-hover: #262626;
+  --bg-canvas: #0A0A0C;
+  --bg-card: #18181B;
+  --bg-card-hover: #27272A;
   --text-primary: #FFFFFF;
-  --text-muted: #D4D4D8;
+  --text-muted: #E4E4E7;
   --text-dim: #A1A1AA;
   --text-arrow: #FFE600;
   --card-radius: 0px;
-  --card-shadow: 4px 4px 0px #FFFFFF;
-  --card-hover-shadow: 6px 6px 0px #FFE600;
+  --card-shadow: 5px 5px 0px #FFE600;
+  --card-hover-shadow: 7px 7px 0px #FFFFFF;
+  --card-border: 2.5px solid #FFFFFF;
   --accent: #FFE600;
-  --font-heading: ui-monospace, "SF Mono", monospace;
-  --border-subtle: rgba(255, 255, 255, 0.15);
+  --accent-contrast: #000000;
+  --border-subtle: rgba(255, 255, 255, 0.25);
+  --font-heading: ui-monospace, "SF Mono", Monaco, "Cascadia Code", Menlo, monospace;
 }
 
 /* Neobrutalist Theme - Light Mode */
@@ -66,15 +68,39 @@ html[data-theme="neobrutalist"][data-mode="light"] body {
   --bg-card: #FFFFFF;
   --bg-card-hover: #FEF9C3;
   --text-primary: #000000;
-  --text-muted: #27272A;
-  --text-dim: #52525B;
+  --text-muted: #18181B;
+  --text-dim: #3F3F46;
   --text-arrow: #000000;
   --card-radius: 0px;
-  --card-shadow: 4px 4px 0px #000000;
-  --card-hover-shadow: 6px 6px 0px #000000;
+  --card-shadow: 5px 5px 0px #000000;
+  --card-hover-shadow: 7px 7px 0px #000000;
+  --card-border: 3px solid #000000;
   --accent: #000000;
-  --font-heading: ui-monospace, "SF Mono", monospace;
-  --border-subtle: rgba(0, 0, 0, 0.2);
+  --accent-contrast: #FFE600;
+  --border-subtle: #000000;
+  --font-heading: ui-monospace, "SF Mono", Monaco, "Cascadia Code", Menlo, monospace;
+}
+
+/* Neobrutalist Global Overrides */
+[data-theme="neobrutalist"] ::selection {
+  background: #FFE600;
+  color: #000000;
+}
+
+[data-theme="neobrutalist"][data-mode="light"] ::selection {
+  background: #000000;
+  color: #FFE600;
+}
+
+/* Flatten glows and force solid background in neobrutalist theme */
+[data-theme="neobrutalist"] .glow-blue,
+[data-theme="neobrutalist"] .glow-purple,
+[data-theme="neobrutalist"] .glow-pink,
+[data-theme="neobrutalist"] .glow-violet,
+[data-theme="neobrutalist"] .glow-green,
+[data-theme="neobrutalist"] .glow-amber,
+[data-theme="neobrutalist"] .glow-cyan {
+  background: var(--bg-card) !important;
 }
 
 /* Discord Theme - Dark Mode */
