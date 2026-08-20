@@ -55,7 +55,7 @@ export const EXPERIENCES: ExperienceEntity[] = [
           "Directed tournament operations for 3,000+ collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.",
       },
       {
-        title: "National Admin for Partnerships & Network Head",
+        title: "National Admin for Partnerships",
         period: "Jan 2024 to May 2026",
         description:
           "Founded The MSL Network (10,000+ members) across 80+ partner student esports orgs, managing a portfolio of 70+ ongoing collaborations.",
