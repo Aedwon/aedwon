@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider, useTheme } from "../ThemeContext";
+import HeroSection from "../HeroSection";
 
 function ThemeConsumer() {
   const { theme, setTheme, mode, setMode } = useTheme();
@@ -29,5 +30,23 @@ describe("Neobrutalist Theme Integration", () => {
 
     expect(screen.getByTestId("current-theme").textContent).toBe("neobrutalist");
     expect(document.documentElement.getAttribute("data-theme")).toBe("neobrutalist");
+  });
+
+  it("renders status stickers in HeroSection under neobrutalist theme", () => {
+    const { HeroSectionWithTheme } = render(
+      <ThemeProvider>
+        <div>
+          <ThemeConsumer />
+          <HeroSection />
+        </div>
+      </ThemeProvider>
+    );
+
+    const btn = screen.getByText("Set Brutalist");
+    fireEvent.click(btn);
+
+    expect(screen.getByText("STATUS: OPEN FOR WORK")).toBeDefined();
+    expect(screen.getByText("UP DILIMAN CS")).toBeDefined();
+    expect(screen.getByText("DOST SCHOLAR")).toBeDefined();
   });
 });
