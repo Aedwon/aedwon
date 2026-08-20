@@ -27,9 +27,11 @@ export default function RootLayout({
                 try {
                   const theme = localStorage.getItem('aedwon-theme') || 'default';
                   const mode = localStorage.getItem('aedwon-mode') || 'dark';
-                  const effectiveMode = mode === 'system' 
+                  let effectiveMode = mode === 'system' 
                     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                     : mode;
+                  if (theme === 'discord') effectiveMode = 'dark';
+                  if (theme === 'neobrutalist') effectiveMode = 'light';
                   document.documentElement.setAttribute('data-theme', theme);
                   document.documentElement.setAttribute('data-mode', effectiveMode);
                 } catch (e) {}

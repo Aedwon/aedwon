@@ -104,7 +104,7 @@ Entities and brand partners I've built software or run operations for:
 2. Moonton Student Leaders Philippines (Sep 2020 to May 2026)
    • Tournament Director & Head of League Operations, MSL Collegiate Cup (Nov 2023 to Jul 2025)
      Directed tournament operations for 3,000+ collegiate competitors across 180+ universities, writing a custom Discord bot that automated match check-ins and cut admin overhead by 90%.
-   • National Admin for Partnerships & Network Head (Jan 2024 to May 2026)
+   • National Admin for Partnerships (Jan 2024 to May 2026)
      Founded The MSL Network (10,000+ members) across 80+ partner student esports orgs, managing a portfolio of 70+ ongoing collaborations.
    • Administrative Assistant & Database Manager (Feb 2022 to Nov 2023)
      Maintained centralized records for 10,000+ student members nationwide and automated reporting workflows to cut manual processing time by 70%.
