@@ -11,6 +11,7 @@ export default function OpenSourceSection() {
     tagline: "Open-source civic tech initiative modernizing Philippine government digital infrastructure.",
     category: "civic" as const,
     categoryLabel: "Civic Tech",
+    tier: "focused" as const,
     role: "Open Source Contributor",
     timeline: "2024 to Present",
     featured: false,

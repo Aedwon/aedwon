@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PROJECTS } from "@/lib/data/projects";
 import { TechIcon } from "@/components/TechIcons";
 import { ProjectArt } from "@/components/ProjectCard";
-import { BookOpen, Bot, QrCode, Tv, ShieldCheck, Award, Calculator, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
