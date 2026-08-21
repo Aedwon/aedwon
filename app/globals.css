@@ -78,14 +78,6 @@ html[data-theme="neobrutalist"] body {
   transition: none !important;
 }
 
-/* DOM Containment for heavy offscreen sections to optimize theme style recalcs */
-#affiliations,
-#experience,
-#about {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
-}
-
 /* Neobrutalist Global Overrides */
 [data-theme="neobrutalist"] ::selection {
   background: #000000;
@@ -233,6 +225,14 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+[data-theme="neobrutalist"] .has-tooltip::after {
+  background: #000000;
+  color: #FFE600;
+  border-radius: 0px;
+  border: 1.5px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+}
+
 /* Subtle Muted Tech Stack Icons with Hover Brand Color Reveal */
 .tech-badge {
   position: relative;
@@ -305,12 +305,58 @@ html[data-theme="default"][data-mode="light"] .logo-adaptive,
 
 /* Neobrutalist Case Studies, Code Snippets, and Technical Content */
 [data-theme="neobrutalist"] pre {
-  border: 2.5px solid #000000;
   border-radius: 0px !important;
-  box-shadow: 4px 4px 0px #000000;
-  background: #09090B !important;
 }
 
 [data-theme="neobrutalist"] code {
   font-family: ui-monospace, "SF Mono", Monaco, "Cascadia Code", monospace;
+}
+
+/* Syntax Highlighting Tokens (Tailored Tokyo Night / Dark Slate Theme) */
+.hljs-code-content .hljs-keyword,
+.hljs-code-content .hljs-selector-tag,
+.hljs-code-content .hljs-built_in,
+.hljs-code-content .hljs-name,
+.hljs-code-content .hljs-tag {
+  color: #F472B6; /* pink-400 */
+  font-weight: 600;
+}
+
+.hljs-code-content .hljs-string,
+.hljs-code-content .hljs-title,
+.hljs-code-content .hljs-section,
+.hljs-code-content .hljs-attribute,
+.hljs-code-content .hljs-literal,
+.hljs-code-content .hljs-template-tag,
+.hljs-code-content .hljs-template-variable,
+.hljs-code-content .hljs-type,
+.hljs-code-content .hljs-addition {
+  color: #6EE7B7; /* emerald-300 */
+}
+
+.hljs-code-content .hljs-attr,
+.hljs-code-content .hljs-variable,
+.hljs-code-content .hljs-variable.language_,
+.hljs-code-content .hljs-params {
+  color: #93C5FD; /* blue-300 */
+}
+
+.hljs-code-content .hljs-function,
+.hljs-code-content .hljs-title.function_ {
+  color: #60A5FA; /* blue-400 */
+  font-weight: 600;
+}
+
+.hljs-code-content .hljs-comment,
+.hljs-code-content .hljs-quote,
+.hljs-code-content .hljs-deletion,
+.hljs-code-content .hljs-meta {
+  color: #6B7280; /* gray-500 */
+  font-style: italic;
+}
+
+.hljs-code-content .hljs-number,
+.hljs-code-content .hljs-regexp,
+.hljs-code-content .hljs-link {
+  color: #FBBF24; /* amber-400 */
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { AFFILIATION_GROUPS, AffiliationBadge } from "@/lib/data/affiliations";
 import { useTheme } from "@/components/ThemeContext";
 
@@ -108,6 +109,11 @@ function AffiliationRow({
 export default function AffiliationsGrid() {
   const { theme, resolvedMode } = useTheme();
   const isNeobrutalist = theme === "neobrutalist";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [hoveredBadge, setHoveredBadge] = useState<{
     text: string;
@@ -197,22 +203,25 @@ export default function AffiliationsGrid() {
         ))}
       </div>
 
-      {/* Unclipped Global Floating Tooltip */}
-      {hoveredBadge && (
-        <div
-          className={`fixed pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap transition-opacity duration-150 ${
-            isNeobrutalist
-              ? "rounded-none border-2 border-black bg-black text-white font-black shadow-[2.5px_2.5px_0px_rgba(0,0,0,0.5)]"
-              : "font-mono font-semibold rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
-          }`}
-          style={{
-            left: `${hoveredBadge.x}px`,
-            top: `${hoveredBadge.y}px`,
-          }}
-        >
-          {hoveredBadge.text}
-        </div>
-      )}
+      {/* Unclipped Global Floating Tooltip via createPortal */}
+      {mounted &&
+        hoveredBadge &&
+        createPortal(
+          <div
+            className={`fixed pointer-events-none z-[9999] transform -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap transition-opacity duration-150 ${
+              isNeobrutalist
+                ? "rounded-none border-2 border-black bg-black text-white font-black shadow-[2.5px_2.5px_0px_rgba(0,0,0,0.5)]"
+                : "font-mono font-semibold rounded bg-[#09090B] text-[#FAFAFA] dark:bg-[#FFFFFF] dark:text-[#09090B] shadow-xl border border-white/10 dark:border-black/10"
+            }`}
+            style={{
+              left: `${hoveredBadge.x}px`,
+              top: `${hoveredBadge.y}px`,
+            }}
+          >
+            {hoveredBadge.text}
+          </div>,
+          document.body
+        )}
     </section>
   );
 }

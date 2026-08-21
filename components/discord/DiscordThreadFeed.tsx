@@ -4,6 +4,7 @@ import React from "react";
 import { PROJECTS, ProjectItem } from "@/lib/data/projects";
 import { BLOG_POSTS, BlogPost } from "@/lib/data/blogs";
 import DiscordBotFooter from "./DiscordBotFooter";
+import CodeBlock from "@/components/CodeBlock";
 
 interface DiscordThreadFeedProps {
   thread: {
@@ -169,10 +170,17 @@ export default function DiscordThreadFeed({
                   <p className="text-xs text-[#b5bac1] leading-relaxed">
                     {arch.description}
                   </p>
+                  {arch.tradeOff && (
+                    <p className="text-xs text-[#b5bac1] leading-relaxed mt-1.5">
+                      <strong className="text-white">Trade-off:</strong> {arch.tradeOff}
+                    </p>
+                  )}
                   {arch.codeSnippet && (
-                    <pre className="mt-2 p-2.5 bg-[#1e1f22] rounded text-[11px] font-mono text-gray-200 overflow-x-auto border border-[#202225]">
-                      <code>{arch.codeSnippet}</code>
-                    </pre>
+                    <CodeBlock
+                      code={arch.codeSnippet}
+                      language={arch.codeLanguage || "dart"}
+                      className="!my-2"
+                    />
                   )}
                 </div>
               ))}
@@ -180,7 +188,43 @@ export default function DiscordThreadFeed({
           </div>
         </div>
 
-        {/* Message 4: Outcome & Metrics */}
+        {/* Message 4: Hurdles & Solutions (Flagship Tier Only) */}
+        {project.tier === "flagship" && project.hurdles && project.hurdles.length > 0 && (
+          <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
+            <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
+              A
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
+                  Aerol (Aedwon)
+                </span>
+                <span className="text-[11px] text-[#949ba4]">Today at 12:03 PM</span>
+              </div>
+              <h2 className="text-[15px] font-bold text-white mb-2">
+                Hurdles &amp; Solutions
+              </h2>
+              <div className="space-y-3">
+                {project.hurdles.map((hurdle, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-[#2b2d31] p-3 rounded border border-[#3f4147] space-y-1"
+                  >
+                    <h3 className="text-white font-bold text-sm mb-1">{hurdle.title}</h3>
+                    <p className="text-xs text-[#b5bac1] leading-relaxed">
+                      <strong className="text-white">Problem:</strong> {hurdle.issue}
+                    </p>
+                    <p className="text-xs text-[#b5bac1] leading-relaxed">
+                      <strong className="text-white">Resolution:</strong> {hurdle.solution}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Message 5: Outcome & Metrics */}
         <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
           <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
             A
@@ -190,7 +234,7 @@ export default function DiscordThreadFeed({
               <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
                 Aerol (Aedwon)
               </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:03 PM</span>
+              <span className="text-[11px] text-[#949ba4]">Today at 12:04 PM</span>
             </div>
             <h2 className="text-[15px] font-bold text-white mb-1.5">
               Outcome &amp; Metrics
@@ -200,7 +244,7 @@ export default function DiscordThreadFeed({
             </p>
 
             {project.metrics && project.metrics.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                 {project.metrics.map((m, idx) => (
                   <div
                     key={idx}
@@ -216,10 +260,16 @@ export default function DiscordThreadFeed({
                 ))}
               </div>
             )}
+
+            {project.retrospective && (
+              <p className="text-xs text-[#b5bac1] leading-relaxed mt-2">
+                <strong className="text-white">Retrospective:</strong> {project.retrospective}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Message 5: Tech Stack Chips */}
+        {/* Message 6: Tech Stack Chips */}
         <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
           <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
             A
@@ -229,7 +279,7 @@ export default function DiscordThreadFeed({
               <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
                 Aerol (Aedwon)
               </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:04 PM</span>
+              <span className="text-[11px] text-[#949ba4]">Today at 12:05 PM</span>
             </div>
             <h2 className="text-[15px] font-bold text-white mb-2">Tech Stack</h2>
             <div className="flex flex-wrap gap-1.5">

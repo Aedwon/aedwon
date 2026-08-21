@@ -1,9 +1,7 @@
-# Discord Layout Refinement Progress Ledger
+# Project Case Study Standards Progress Ledger
 
-Plan: `docs/superpowers/plans/2026-08-21-discord-layout-refinement.md`
+Plan: `docs/superpowers/plans/2026-08-21-project-case-study-standards.md`
 
-- [x] Task 1: Discord Subcomponents — Server Rail & Member Sidebar (complete d6ba598)
-- [x] Task 2: Discord Channel Sidebar & Thread Engine (complete 394c7b0)
-- [x] Task 3: Discord Message Streams — Home, Projects, Blogs & Thread Views (complete abb33ab)
-- [x] Task 4: Discord Shell Integration & Viewport Overhaul (complete 6a58795)
-- [x] Task 5: End-to-End Verification & Walkthrough (complete 968a909)
+- [x] Task 1: Update Project Data Schema & Comprehensive Content (complete 31017ea)
+- [x] Task 2: Refactor `/projects/[slug]` Case Study Page Renderer (complete 67656ac)
+- [x] Task 3: Full End-to-End Build & Visual Verification (complete 67660c7)

@@ -54,7 +54,7 @@ export const PROJECTS: ProjectItem[] = [
   {
     slug: 'pantas',
     title: 'Pantas',
-    tagline: 'Offline-first mobile exam reviewer for Philippine civil service and university entrance preparation with FSRS spaced repetition and interactive OMR mock exam sheets.',
+    tagline: 'Local-first mobile exam reviewer for Philippine civil service and university entrance preparation with on-device FSRS spaced repetition and OMR mock exam simulations.',
     category: 'mobile',
     categoryLabel: 'Mobile & Offline',
     tier: 'flagship',
@@ -82,51 +82,85 @@ export const PROJECTS: ProjectItem[] = [
     ],
     liveUrl: 'https://pantas.app',
     summary: 'Mobile exam reviewer for Philippine civil service and university entrance tests, with adaptive spaced repetition and OMR answer sheets.',
-    problem: 'Civil Service Exam and UPCAT preparation in the Philippines relies on bulky 500-page printed reviewers or web apps that break when mobile data drops during long jeepney and bus commutes. Reviewees need guaranteed offline study drills that remember what they got wrong without chewing through expensive mobile data buckets.',
+    problem: 'I built Pantas because Civil Service Exam and UPCAT preparation in the Philippines still relies on bulky 500-page printed reviewers or web apps that break when mobile data drops during long jeepney and bus commutes. Commercial review centers charge upwards of ₱10,000, while cheap digital reviewers are often bloated with synthetic passing probabilities and paywalled basic explanations. I wanted to give reviewees a guaranteed offline study tool that accurately tracks memory decay without consuming expensive mobile data buckets.',
     architecture: [
       {
-        title: 'FSRS Spaced Repetition Engine',
-        description: 'Implements the Free Spaced Repetition Scheduler algorithm locally in Dart. It calculates memory stability and difficulty curves on-device after every review rating (Again, Hard, Good, Easy), scheduling future recall drills right as forgetting probability rises.',
-        tradeOff: 'Evaluating retention state on-device adds ~1.2MB to the binary size, but eliminates all cloud roundtrips and keeps flashcard drills instant.',
-        codeSnippet: `// Local Dart evaluation of FSRS stability & review intervals
-State calculateNextFSRSState(Card card, Rating rating) {
-  final interval = fsrs.nextInterval(card.stability, card.difficulty, rating);
-  return State(interval: interval, lastReviewed: DateTime.now());
+        title: 'Editorial "Ink & Rule" Design System & Source Sans 3',
+        description: 'I stripped away the generic AI aesthetic (Poppins bold, stock blue #1F6BFF, drop shadows, emoji icons, pastel pills) in favor of an editorial printed-workbook identity. I used warm paper surfaces (#FBF9F4), near-black ink (#26221B), 1px hairline rules (#E5DFD3), and tabular figures, budgeting Board Green (#1D5C50) strictly for the single primary CTA per screen. I originally tried pairing a serif with sans, but on a phone screen the serif became an eyesore at small sizes and distracted from the content. I standardized on Source Sans 3 across all 15 typography roles to keep the focus entirely on reading.',
+        tradeOff: 'Abandoning standard Material cards and elevated shadows meant writing custom layout math with hairline dividers, but it eliminated visual fatigue during 2-hour study drills.',
+      },
+      {
+        title: 'Local-First Encrypted Persistence via Drift SQLite & SQLCipher',
+        description: 'I designed the app under one core rule: studying is never blocked by the network; only account and money are. All question banks, user response logs, and scheduled drill states live in an encrypted local database using Drift SQLite with 256-bit AES SQLCipher for RA 10173 compliance. I replaced dynamic runtime CMS queries with an immutable, pre-compiled static SQLite seed (content.db / assets/seed/v1.json), ensuring cold boots and drill queries stay instant.',
+        tradeOff: 'Bundling static seed databases adds ~8MB to the initial APK size, but guarantees zero-latency drills with 100% offline availability.',
+        codeSnippet: `// Pure local database setup with SQLCipher encryption and static seed loader
+LazyDatabase openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'pantas_encrypted.db'));
+    return SqlcipherDatabase(
+      file,
+      password: await secureStorage.getDatabaseKey(),
+      setup: (rawDb) => rawDb.execute('PRAGMA cipher_memory_security = OFF;'),
+    );
+  });
 }`,
       },
       {
-        title: 'Local-First Encrypted Persistence',
-        description: 'Uses Drift SQLite compiled with 256-bit AES SQLCipher encryption. All question banks, user response logs, and scheduled drill states live in an encrypted local database. Cloud sync to Firebase Firestore runs in the background only when an unmetered connection is available.',
-        tradeOff: 'SQLCipher requires custom native build toolchains on iOS and Android, but guarantees user answer logs comply with Philippine Data Privacy regulations (RA 10173).',
+        title: 'Pure Dart FSRS-6 Spaced Repetition Engine & On-Device Optimizer',
+        description: 'I implemented the FSRS-6 algorithm locally in pure Dart using the 21-parameter weight vector with dedicated same-day stability formulas for exam cramming behavior. To personalize intervals without sending study logs to a cloud server, I designed an on-device optimizer that fits parameters directly on device once a student logs 200 reviews (compared to Anki\'s 400+ threshold), guarded by a held-out test split to prevent overfitting.',
+        tradeOff: 'FSRS-6\'s 200-review optimizer threshold is calibrated for short 8-week Philippine exam countdowns, using held-out split validation to reject overfitted weights while allowing students to revert to defaults in Settings.',
+        codeSnippet: `// Pure Dart FSRS-6 scheduler with 21-parameter weights and same-day stability
+FsrsItem scheduleFsrs6Review(FsrsItem item, Rating rating, DateTime now, List<double> w) {
+  final elapsedDays = item.lastReviewed == null ? 0.0 : now.difference(item.lastReviewed!).inHours / 24.0;
+  final nextStability = elapsedDays < 1.0
+      ? fsrs6.calculateSameDayStability(item.stability, rating, w)
+      : fsrs6.calculateStability(item.stability, item.difficulty, elapsedDays, rating, w);
+  final nextDifficulty = fsrs6.calculateDifficulty(item.difficulty, rating, w);
+  final intervalDays = fsrs6.nextInterval(nextStability, targetRetention: 0.90, decay: -w[20]);
+  return item.copyWith(
+    stability: nextStability,
+    difficulty: nextDifficulty,
+    due: now.add(Duration(days: intervalDays.clamp(1, 36500).round())),
+    lastReviewed: now,
+  );
+}`,
       },
       {
-        title: 'Digital OMR Exam Simulation',
-        description: 'A custom canvas bubble sheet widget mimicking physical Civil Service Commission answer sheets. It enforces strict per-section timing, question jump grids, and blueprint-weighted subject ratios.',
+        title: 'Assessment Hub & Distractor Misconception Explanations',
+        description: 'I replaced generic topic queues with an Assessment Hub (Today\'s Session, Drill, Retake, Mock Exam). Instead of showing a simple green checkmark or red cross, I authored answer reveals that explicitly explain why each incorrect choice (distractor) is wrong. To recreate real exam pressure, I wrote a custom canvas OMR bubble sheet with strict section boundary timers, question jump grids, and blueprint-weighted subject ratios.',
+        tradeOff: 'Authoring custom misconception explanations for all 4 multiple-choice options quadrupled content writing time, but prevented students from relying on rote memorization.',
       },
       {
-        title: 'Dynamic Content Pipeline',
-        description: 'Fetches question revisions from Sanity CMS through a local migration pipeline that validates schema changes and writes directly into local SQLite.',
+        title: 'Psychometric Integrity ("Never Invent a Figure")',
+        description: 'I instituted a strict rule: never invent a figure. I banned synthetic score predictions and fake readiness percentages (\'Passing Probability: 92%\'). Instead, I structured the Progress tab around four honest questions: The Diagnosis (where points leak and why), The Mirror (behavioral archetypes like stamina drop-off and pacing under pressure), The Record (measurable movement over time), and What\'s Fading (FSRS decay curves). I show score impact strictly as point deltas (\'Fixing these weak topics is worth +9 points\').',
       },
     ],
     hurdles: [
       {
-        title: 'SQLCipher Database Migration Deadlocks',
-        issue: 'Updating question banks while preserving existing spaced repetition progress caused database lock errors during app startup on low-end Android devices.',
-        solution: 'Isolated question bank tables from user progress tables, running schema migrations in a separate background isolate with a dedicated write-ahead log (WAL) pool.',
+        title: 'SQLCipher Database Migration Deadlocks on Budget Devices',
+        issue: 'When I ran question bank migrations and schema updates during cold boot on low-RAM Android devices, the SQLite database locked up and threw unhandled exceptions before the home view could mount.',
+        solution: 'I decoupled static question banks from mutable user response tables and moved schema migrations into a background isolate with a dedicated write-ahead log (WAL) pool, unblocking the main UI thread.',
       },
       {
-        title: 'FSRS Memory Retention Drift',
-        issue: 'Standard SM-2 algorithms over-scheduled easy cards, burying difficult civil service math problems.',
-        solution: 'Migrated to 17-parameter FSRS model tuning stability decay curves specifically for 30-day exam preparation windows.',
+        title: 'FSRS-4.5 Cramming Flaws & Same-Day Review Drift',
+        issue: 'In FSRS-4.5, repeating the same card multiple times during intense last-minute cram sessions had no stability formula, causing intervals to distort and easy cards to bury high-yield civil service and UPCAT topics.',
+        solution: 'I upgraded to FSRS-6\'s 21-parameter weight vector with dedicated same-day review stability calculations (w[17..19]) and trainable decay. I built a local Dart optimizer with a 200-review threshold and held-out validation guard, giving cramming reviewees accurate intervals without cloud dependencies.',
+      },
+      {
+        title: 'Cold-Start Entitlement Race Conditions in Offline Posture',
+        issue: 'Standard subscription SDKs fail closed when network requests time out. A student studying on an offline commute could lose Pro access if a check failed.',
+        solution: 'I instituted a fail-open local cache rule: the last known entitlement state stands until positively contradicted by a successful server verification. Cached subscription tokens survive cold starts and are read before the first frame renders.',
       },
     ],
-    results: 'Sub-15ms local query performance across 5,000+ question banks, zero cloud dependencies during active test sessions, and pre-launch beta covering CSE Professional and UPCAT exams.',
+    results: 'I delivered sub-15ms local query performance across 2,216+ question bank items with 100% offline study operation. The app runs without network dependencies during drills, eliminates synthetic passing metrics, and complies with RA 10173 on-device data encryption.',
     metrics: [
-      { value: '100%', label: 'Offline drill capability with zero cloud telemetry' },
-      { value: '< 15ms', label: 'Query latency for 50-item exam drills via Drift SQLite' },
-      { value: 'RA 10173', label: 'Compliant on-device user data encryption' },
+      { value: '100%', label: 'Offline study drills with zero cloud blockers' },
+      { value: '< 15ms', label: 'SQLite query latency for 50-item exam drills' },
+      { value: '21', label: 'FSRS-6 parameters with on-device optimizer' },
+      { value: 'RA 10173', label: 'Compliant on-device 256-bit AES encryption' },
     ],
-    retrospective: 'If starting over today, I would build the question validation toolchain as a Rust CLI to catch formatting and typo anomalies before they enter the CMS.',
+    retrospective: 'If I were starting over today, I would build the question validation toolchain as a standalone CLI to catch distractor formatting anomalies and schema typos before compiling the static SQLite seed.',
   },
   {
     slug: 'msl-network',
