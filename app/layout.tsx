@@ -9,6 +9,15 @@ import PageTransition from "@/components/PageTransition";
 export const metadata: Metadata = {
   title: "Aedwon",
   description: "Computer Science at UP Diliman on a DOST Merit Scholarship. Software builds, client-side tools, and platforms.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    apple: [
+      { url: "/apple-icon", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -19,6 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="default" data-mode="dark" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
         {/* Anti-Flash Theme Script */}
         <script
           dangerouslySetInnerHTML={{
