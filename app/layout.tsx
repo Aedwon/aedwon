@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
-  title: "Aerol (Aedwon) — Software Engineer & Builder",
+  title: "Aedwon",
   description: "Computer Science at UP Diliman on a DOST Merit Scholarship. Software builds, client-side tools, and platforms.",
 };
 
