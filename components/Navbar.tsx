@@ -44,11 +44,32 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const [pillPosition, setPillPosition] = useState<{ left: number; width: number } | null>(null);
+  const tabRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+
   const navItems = [
     { label: "Home", href: "/", isActive: pathname === "/" },
     { label: "Projects", href: "/projects", isActive: pathname.startsWith("/projects") },
     { label: "Blogs", href: "/blogs", isActive: pathname.startsWith("/blogs") },
   ];
+
+  // Measure active tab pill position relative to nav capsule
+  useEffect(() => {
+    const updatePillPosition = () => {
+      const activeItem = navItems.find((item) => item.isActive);
+      const activeEl = activeItem ? tabRefs.current[activeItem.href] : null;
+      if (activeEl) {
+        setPillPosition({
+          left: activeEl.offsetLeft,
+          width: activeEl.offsetWidth,
+        });
+      }
+    };
+
+    updatePillPosition();
+    window.addEventListener("resize", updatePillPosition);
+    return () => window.removeEventListener("resize", updatePillPosition);
+  }, [pathname]);
 
   const isNeobrutalist = theme === "neobrutalist";
 
@@ -66,7 +87,7 @@ export default function Navbar() {
           href="/"
           className={`text-[13px] sm:text-[13.5px] select-none transition-all cursor-pointer ${
             isNeobrutalist
-              ? "font-black bg-[#FFE600] text-black px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_#000000] tracking-tight hover:shadow-[3px_3px_0px_#000000]"
+              ? "font-black bg-[#FFE600] text-black px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_#000000]"
               : "font-mono font-semibold text-[var(--text-primary)] hover:opacity-85 active:scale-[0.95] pl-1"
           }`}
         >
@@ -81,9 +102,35 @@ export default function Navbar() {
               : "bg-black/[0.04] dark:bg-black/35 rounded-full border border-black/[0.03] dark:border-white/[0.04]"
           }`}
         >
+          {/* Sliding Active Pill */}
+          {pillPosition && (
+            <motion.div
+              data-testid="navbar-active-pill"
+              className={`absolute top-0.5 bottom-0.5 pointer-events-none ${
+                isNeobrutalist
+                  ? "rounded-none bg-[#FFE600] border-2 border-black shadow-[2px_2px_0px_#000000]"
+                  : "rounded-full bg-[var(--bg-card)] border border-black/[0.04] dark:border-white/[0.08] shadow-xs"
+              }`}
+              initial={false}
+              animate={{
+                x: pillPosition.left,
+                width: pillPosition.width,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 32,
+              }}
+              style={{ left: 0 }}
+            />
+          )}
+
           {navItems.map((item) => (
             <Link
               key={item.href}
+              ref={(el) => {
+                tabRefs.current[item.href] = el;
+              }}
               href={item.href}
               className={`relative px-3 py-1 text-[12px] sm:text-[12.5px] select-none transition-colors duration-150 active:scale-[0.94] ${
                 isNeobrutalist
@@ -91,21 +138,6 @@ export default function Navbar() {
                   : "rounded-full"
               }`}
             >
-              {item.isActive && (
-                <motion.span
-                  layoutId="navbar-active-pill"
-                  className={`absolute inset-0 ${
-                    isNeobrutalist
-                      ? "rounded-none bg-[#FFE600] text-black border-2 border-black shadow-[2px_2px_0px_#000000]"
-                      : "rounded-full bg-[var(--bg-card)] border border-black/[0.04] dark:border-white/[0.08] shadow-xs"
-                  }`}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 32,
-                  }}
-                />
-              )}
               <span
                 className={`relative z-10 transition-colors duration-150 ${
                   item.isActive

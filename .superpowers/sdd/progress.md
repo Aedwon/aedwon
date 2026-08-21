@@ -1,7 +1,6 @@
-# Project Case Study Standards Progress Ledger
+# Adaptive Terminal Emerald Favicon Progress Ledger
 
-Plan: `docs/superpowers/plans/2026-08-21-project-case-study-standards.md`
+Plan: `docs/superpowers/plans/2026-08-21-adaptive-favicon.md`
 
-- [x] Task 1: Update Project Data Schema & Comprehensive Content (complete 31017ea)
-- [x] Task 2: Refactor `/projects/[slug]` Case Study Page Renderer (complete 67656ac)
-- [x] Task 3: Full End-to-End Build & Visual Verification (complete 67660c7)
+- [x] Task 1: Vector Favicon & Next.js Icon Scaffolding (complete 8e08358)
+- [x] Task 2: Visual & Browser Dev Server Verification (complete)

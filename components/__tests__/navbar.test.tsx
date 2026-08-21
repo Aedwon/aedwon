@@ -92,7 +92,6 @@ describe("Navbar Component", () => {
     const themeButton = screen.getByLabelText("Theme settings");
     fireEvent.click(themeButton);
 
-    const brutalistButton = screen.getByLabelText ? screen.getByLabelText("Theme settings") : themeButton;
     const brutalistOption = screen.getByText((content, element) => {
       return element?.getAttribute("data-tooltip") === "Brutalist";
     });
