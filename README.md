@@ -7,10 +7,6 @@
   <a href="mailto:aerol.balayon@gmail.com"><img src="https://img.shields.io/badge/Email-aerol.balayon@gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white" alt="Email" /></a>
 </p>
 
-I studied Computer Science at the University of the Philippines Diliman on a DOST-SEI Merit Scholarship, following high school at Philippine Science High School.
-
-I build offline-first mobile applications, community operations bots, and civic tech tooling.
-
 ---
 
 ## Core Technical Stack
@@ -133,39 +129,6 @@ Touchscreen survey system built for interactive event booths under severe venue 
 > Contributor · 2024 to Present · TypeScript, Next.js, Tailwind CSS
 
 Contributing to civic technology initiatives modernizing Philippine government web portals and public open data accessibility.
-
----
-
-## Organizations & Brand Partners
-
-Entities and brands I have built software or directed operations for:
-
-### Organizations & LGUs
-<p align="left">
-  <img src="./public/logos/up-diliman.svg" height="42" alt="UP Diliman" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/dost.svg" height="42" alt="DOST-SEI" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/pshs.svg" height="42" alt="PSHS" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/psysc.svg" height="42" alt="PSYSC" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/moonton.svg" height="42" alt="MOONTON Games" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/dls.svg" height="42" alt="Dark League Studios" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/hoyoverse.svg" height="42" alt="HoYoverse / miHoYo" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/ilocos-sur.webp" height="42" alt="Provincial Government of Ilocos Sur" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/lgu-norala.webp" height="42" alt="Municipality of Norala" />
-</p>
-
-### Event & Brand Partners
-<p align="left">
-  <img src="./public/logos/riot-games.svg" height="34" alt="Riot Games" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/ayala-malls.svg" height="34" alt="Ayala Malls" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/sm-supermalls.svg" height="34" alt="SM Supermalls" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/smart.svg" height="34" alt="Smart Communications" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/converge.svg" height="34" alt="Converge ICT" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/msi.svg" height="34" alt="MSI" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/oppo.svg" height="34" alt="OPPO" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/zowie.svg" height="34" alt="BenQ ZOWIE" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/hotel101.webp" height="34" alt="Hotel101" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./public/logos/chronos.webp" height="34" alt="Chronos Athletics" />
-</p>
 
 ---
 
