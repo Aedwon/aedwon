@@ -42,9 +42,17 @@ export default function FeaturedProjects() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {featured.map((project) => (
-          <ProjectCard key={project.slug} project={project} />
-        ))}
+        {featured.map((project) => {
+          const isBetterGov = project.slug === "bettergov-ph";
+          return (
+            <ProjectCard
+              key={project.slug}
+              project={project}
+              external={isBetterGov}
+              href={isBetterGov ? project.liveUrl ?? project.githubUrl : undefined}
+            />
+          );
+        })}
       </div>
     </section>
   );
