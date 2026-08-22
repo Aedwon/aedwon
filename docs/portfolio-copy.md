@@ -32,8 +32,8 @@ Featured projects [See all projects →]
   Link: [View case study →]
 
 • QR Studio
-  Summary: In-browser QR code builder with gradient styling and SVG export that runs entirely client-side without backend requests.
-  Stack: [TypeScript, HTML5 Canvas, Vite, Tailwind CSS]
+  Summary: Static Vite QR editor that keeps QR payload generation and logo processing in the browser while using qr-code-styling for rendering and export.
+  Stack: [JavaScript, Vite, HTML5 Canvas, qr-code-styling]
   Link: [View case study →]
 
 • Kiosk Survey
@@ -253,15 +253,35 @@ Get in touch for software projects or community infrastructure:
 - **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator & Frontend Engineer
-- **Timeline:** 2024
+- **Timeline:** 2026
 - **Platform:** Web
-- **Stack:** TypeScript, HTML5 Canvas, Vite, Tailwind CSS
-- **Why I Built This:** Most web QR code generators are bloated with popups, require account sign-ups, or transmit user payloads and Wi-Fi credentials to remote tracking servers.
-- **How It Works:** Generates the Reed-Solomon error correction matrix and encodes payload bits in-memory. Renders real-time gradient patterns directly on an HTML5 canvas and exports clean SVG path strings for print-ready vector files.
-- **Results & Numbers:** Instant in-browser generator with zero network latency, complete data privacy, and clean vector exports.
-- **Metrics:**
-  - `0ms`: Network latency with zero backend requests
-  - `100%`: Client-side privacy and vector precision
+- **Stack:** JavaScript, Vite, HTML5 Canvas, qr-code-styling
+- **GitHub URL:** https://github.com/Aedwon/QR-Code-Maker
+- **Summary:** Static Vite QR editor that keeps QR payload generation and logo processing in the browser while using `qr-code-styling` for rendering and export.
+
+#### Building the editor around one QR instance
+
+QR Studio is a static Vite app written in vanilla JavaScript and CSS. I did not implement the QR encoding algorithm myself. The app wraps `qr-code-styling` and keeps one `QRCodeStyling` instance mounted in the preview. The controls mutate a shared options object, then a 150 millisecond debounce rebuilds those options and passes them to `update()` instead of recreating the QR object for every input event.
+
+Presets and manual controls use the same state. Applying a preset deep-copies its dot, corner, and background settings before syncing the visible controls. A manual edit clears the active preset. There is also a library-specific state problem to handle. `qr-code-styling` shallow-merges updates, so removing a gradient from the local options is not enough to clear a previously rendered one. `buildOptions()` explicitly passes `gradient: undefined` for the dot and corner groups whenever they switch back to a flat color.
+
+#### Processing logos before rendering
+
+Logo uploads are read with `FileReader` and kept as data URLs in memory. I store the original image separately from the version passed into the QR renderer because QR Studio can add a circle, square, or rounded background behind the logo. When one of those backgrounds is selected, the app creates an off-screen canvas based on the largest image dimension, adds 15 percent padding, draws the background shape, centers the original logo, and converts the result back into a PNG data URL.
+
+Logo handling also changed after the first implementation. A later fix enabled `hideBackgroundDots` so transparent parts of an uploaded logo do not have QR modules showing through them. Uploading a logo changes the selected error-correction level from Q to H, and removing it restores Q. That does not guarantee that every heavily styled QR code will scan under every condition, but it gives embedded logos more error-correction headroom in the current editor.
+
+#### Changes after the first editor
+
+The first commit already contained the main editor with presets, gradient controls, logo embedding, error-correction settings, and PNG, SVG, and JPEG export. The next substantial change was the responsive layout. At 900 pixels and below, the page reverses the main column order and makes the preview sticky above the controls. Smaller breakpoints reduce the QR preview and increase several interactive controls to touch-friendly sizes so the editor remains usable without hiding the result below a long settings panel.
+
+The latest feature in the repository is the input capacity indicator. It measures the payload with `Blob([value]).size`, so non-ASCII text is counted as UTF-8 bytes instead of JavaScript string length. The configured limit changes with the selected L, M, Q, or H error-correction level. The progress bar warns after 75 percent of that limit and marks the input as too long once it passes the configured maximum.
+
+#### What stays local
+
+The QR generation path does not require an application backend. Payload changes, styling, uploaded-logo processing, and file export happen in the browser. The deployment configuration builds the Vite project into a static `dist` directory, and PNG, SVG, and JPEG files are exported through the `qr-code-styling` download API.
+
+The page itself is not completely network-free. It loads Google Analytics and Google Fonts, and the optional feedback form posts to Web3Forms. The useful boundary is narrower. QR payloads and uploaded logos are processed locally by the application, while those separate page services still make external requests.
 
 ### 2.6 Kiosk Survey (`/projects/kiosk-survey`) — Focused
 - **Tier:** Focused
