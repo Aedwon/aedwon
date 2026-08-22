@@ -172,6 +172,88 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
     retrospective:
       "If I keep developing it, I'd start with the initial codec load. I'd make the download cost more visible and test whether optional decoders can be split or deferred. True animated-image conversion would come after that instead of stopping at the first GIF frame.",
   },
+  {
+    slug: "lakambini-events-redesign",
+    title: "Lakambini Events Redesign",
+    tagline:
+      "Fourteen-page website redesign for a nine-division events company, built around one editorial design system without forcing every service into the same page template.",
+    category: "web",
+    categoryLabel: "Web & Tools",
+    tier: "focused",
+    role: "Redesign & Frontend Developer",
+    timeline: "2026",
+    featured: false,
+    order: 15,
+    glowColor: "green",
+    brandColor: "#E9C255",
+    icon: "layout-template",
+    platforms: [{ name: "Web", icon: "web" }],
+    stack: [
+      { name: "Next.js", icon: "nextjs" },
+      { name: "TypeScript", icon: "typescript" },
+      { name: "Tailwind CSS v4", icon: "tailwind" },
+      { name: "Framer Motion", icon: "motion" },
+      { name: "next/image", icon: "nextjs" },
+      { name: "next/font", icon: "nextjs" },
+    ],
+    githubUrl: "https://github.com/Aedwon/lakambini-redesign",
+    summary:
+      "Lakambini Events website redesign with five core pages, nine dedicated service-division pages, a shared emerald-and-gold editorial system, responsive navigation, and an accessibility pass built into the frontend.",
+    problem:
+      "Lakambini covers live entertainment, multimedia production, experiential marketing, event management, training, design, community work, software, and spatial builds. A single generic services page would flatten those into one long list. I redesigned the site around a shared visual system and nine dedicated division routes so each line of work could explain itself without making the overall site feel like nine unrelated microsites.",
+    architecture: [
+      {
+        title: "One system across nine division pages",
+        description:
+          "The site has five core pages and nine service-division pages. Division data such as names, capabilities, hero copy, and cross-links lives in a shared TypeScript model, while each division still gets a static route with its own deep-dive sections. Shared pieces such as DivisionHero, DivisionCrossLinks, and the CTA banner keep the pages related without making their content layouts identical.",
+        tradeOff:
+          "Static division routes mean more files to maintain than one dynamic template. I accepted that because the divisions do different work, and forcing them through one page shape would make the content less useful.",
+      },
+      {
+        title: "Emerald Editorial as a token system",
+        description:
+          "I moved the visual language into Tailwind v4 theme tokens and reusable typography utilities. Noto Serif handles display type, Manrope handles body and interface text, and the surface palette steps through deep emerald layers with gold reserved for high-value accents. The design avoids default card borders where spacing and surface shifts can create the separation instead.",
+        tradeOff:
+          "A strict token system makes one-off styling slower, but it stops fourteen pages from drifting into slightly different greens, type scales, and interaction patterns.",
+      },
+      {
+        title: "A navbar built for a large service catalogue",
+        description:
+          "The desktop navbar morphs over the first 80 pixels of scroll from a full-width transparent header into a compact glass panel. The Services control opens a three-by-three division menu. On mobile, the same catalogue becomes an accordion inside the navigation overlay. Route changes close open menus, Escape returns focus to the hamburger, and reduced-motion users get a snapped state instead of the scroll interpolation.",
+      },
+      {
+        title: "Accessibility and performance as part of the build",
+        description:
+          "The later pass added a skip link, visible focus states, ARIA state for menus, reduced-motion handling, minimum 44 pixel mobile touch targets, and stronger form semantics. Above-fold images use next/image priority while lower sections keep lazy loading. Every core page and division page also has its own metadata and a single page-level h1.",
+      },
+    ],
+    hurdles: [
+      {
+        title: "Nine services do not fit a normal navigation bar",
+        issue:
+          "Putting nine division links directly in the primary navigation would make the header noisy on desktop and unusable on smaller screens. Hiding them behind a generic Services link would make the actual scope of the company harder to discover.",
+        solution:
+          "I kept one Services entry in the main nav, then exposed all nine divisions in a desktop mega-menu and a mobile accordion. The same division names and routes are reused across navigation and cross-links so users can move between related services without returning to the overview page.",
+      },
+      {
+        title: "The interface is ahead of the photography archive",
+        issue:
+          "The page structure and visual system are much further along than the final image migration. Most content slots still point to reference or stock imagery, while the repository's public image folder only contains the real Lakambini logo.",
+        solution:
+          "I wrote an archive image brief that maps each placeholder to the real event photo it needs, including crop ratio, subject, mood, and candidate projects to search. I would use that archive work to finish the site instead of inventing polished-looking event images that Lakambini did not actually produce.",
+      },
+    ],
+    results:
+      "The redesign now covers all five core pages and nine service divisions with one responsive component system. The codebase includes per-page metadata, reduced-motion support, keyboard and ARIA navigation work, audited mobile touch targets, and a shared design-token layer. The remaining visual gap is the replacement of placeholder photography with real Lakambini archive images.",
+    metrics: [
+      { value: "14", label: "Pages covered by the responsive and metadata pass" },
+      { value: "9", label: "Dedicated service-division pages" },
+      { value: "44px", label: "Minimum mobile touch target used in the accessibility pass" },
+      { value: ">7:1", label: "Documented contrast floor for primary audited text pairs" },
+    ],
+    retrospective:
+      "I'd move the archive-photo work earlier next time. Once the layout and type system became consistent, placeholder photography became the most obvious unfinished part. I'd also keep division metadata and image references in one content manifest so the static pages can stay custom without repeating the same descriptive fields by hand.",
+  },
 ];
 
 export const ALL_PROJECTS: ProjectItem[] = [
