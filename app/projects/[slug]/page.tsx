@@ -24,9 +24,20 @@ export async function generateMetadata({
   const project = getProjectBySlug(slug);
   if (!project) return { title: "Project Not Found" };
 
+  const canonicalSlug = project.slug;
+  const title = `${project.title} — Case Study | Aerol (Aedwon)`;
+  const canonical = `/projects/${canonicalSlug}`;
+
   return {
-    title: `${project.title} — Case Study | Aerol (Aedwon)`,
+    title,
     description: project.summary,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description: project.summary,
+      url: canonical,
+      type: "article",
+    },
   };
 }
 
