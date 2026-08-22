@@ -168,7 +168,7 @@ export const ADDITIONAL_PROJECTS: RegisteredProject[] = [
     slug: "lakambini-events-redesign",
     title: "Lakambini Events Redesign",
     tagline:
-      "Redesign of Lakambini Events across five core pages and nine service pages, with a shared content model and custom layouts for each division.",
+      "Next.js redesign for Lakambini Events with five core pages, nine dedicated service routes, shared division data, and a scroll-responsive navigation system.",
     category: "web",
     categoryLabel: "Web & Tools",
     tier: "focused",
@@ -184,29 +184,42 @@ export const ADDITIONAL_PROJECTS: RegisteredProject[] = [
       { name: "Next.js", icon: "nextjs" },
       { name: "TypeScript", icon: "typescript" },
       { name: "Tailwind CSS v4", icon: "tailwind" },
-      { name: "Framer Motion", icon: "motion" },
       { name: "next/image", icon: "nextjs" },
       { name: "next/font", icon: "nextjs" },
     ],
     githubUrl: "https://github.com/Aedwon/lakambini-redesign",
     summary:
-      "Lakambini Events redesign with nine dedicated service pages, shared division data, and a frontend that grew most around the navigation and accessibility work.",
+      "I rebuilt the Lakambini Events site around five core pages and nine individual service routes. Shared division data keeps repeated service information consistent, while each service page keeps its own layout and deep-dive content. The navigation also went through several implementation passes as the service structure, scroll behavior, mobile controls, and accessibility work came together.",
     problem:
-      "Lakambini has nine service divisions covering live entertainment, multimedia, event production, training, design, community work, software, and spatial builds. I gave each division its own static page instead of stretching one Services template across all of them. The repeated names, capabilities, hero copy, and cross-links live in a shared TypeScript file, so the page layouts can differ without copying the same content everywhere.",
-    architecture: [
+      "Lakambini has nine service divisions. Each division has its own static route, while repeated service metadata is stored in a shared TypeScript data file and consumed by common hero and cross-link components.",
+    architecture: [],
+    results:
+      "The page structure and visual system are in place. Many image slots still use remote placeholder or reference images, and the repository includes an archive image brief for replacing them with actual Lakambini event photography.",
+    articleSections: [
       {
-        title: "Nine divisions, nine pages",
-        description:
-          "The division routes are static. TANGHAL, DALOY, TAYO, and the other services can each use their own deep-dive sections, while the shared data file handles the content that repeats between pages. The visual rules work the same way. Noto Serif, Manrope, the emerald surface colors, and the main spacing decisions live in Tailwind v4 theme tokens and reusable utilities. There are fourteen pages in the current build, so keeping those values in one place saves me from fixing the same small inconsistency several times.",
+        title: "Nine service routes, one division model",
+        paragraphs: [
+          "Lakambini has nine service divisions covering live entertainment, multimedia production, experiential marketing, event production, training, design, community work, software, and spatial builds. I gave each division its own route under `app/services` instead of putting every service through one generic page template. The shared pieces stay consistent, but the rest of each page can follow the subject. TANGHAL has sections for live performances and talent management, while DALOY uses bento grids and feature blocks for its technology-focused content.",
+          "The shared part is the division data instead of the page composition. `lib/divisions.ts` stores each division's slug, name, subtitle, description, capabilities, CTA copy, and image references. `DivisionHero` renders that information at the top of each service page, and `DivisionCrossLinks` reads the same array to link to the other eight divisions. This keeps repeated service metadata in one place without requiring the nine pages to share the same body layout.",
+          "The broader visual rules are centralized as well. Noto Serif and Manrope are loaded through `next/font`, while the emerald surfaces, gold accents, font families, typography scales, and reusable effects live in the Tailwind v4 theme and utilities in `styles/globals.css`.",
+        ],
       },
       {
-        title: "The header got complicated",
-        description:
-          "What looks like a normal header ended up needing separate state for the desktop services menu, the mobile menu, the mobile services accordion, scroll progress, route changes, focus return, and reduced motion. The Git history shows the layout shell first, scroll-based styling after that, then a later move to requestAnimationFrame interpolation over the first 80 pixels. The accessibility pass came later and added the keyboard and menu behavior that was missing from the earlier implementation. Mobile controls were also brought to a 44 pixel touch baseline during that pass.",
+        title: "The header changed in stages",
+        paragraphs: [
+          "The header started as part of the first shared layout shell. A later pass added scroll-based styling using a simple `window.scrollY > 50` state. As the header picked up the services dropdown and more visual transitions, that threshold became too coarse for the expanded-to-compact change.",
+          "A later commit replaced the boolean transition with a `scrollProgress` value calculated across the first 80 pixels of scrolling. Scroll updates are scheduled with `requestAnimationFrame`, then the component interpolates the outer and inner padding, maximum width, border radius, background opacity, blur, shadow, and other visual properties. The desktop Inquire button also crossfades between its outline and filled versions over the same progress value.",
+          "The current header has separate state for the desktop services dropdown, mobile menu, and mobile services accordion. Route changes close the open menus. Escape closes the menus and returns focus to the hamburger after closing the mobile menu. Opening that menu locks body scrolling. The accessibility pass also added `aria-expanded` and `aria-controls`, a 44 pixel mobile menu button, visible keyboard focus styles, and a reduced-motion path that snaps the header between states instead of running the scroll interpolation.",
+        ],
+      },
+      {
+        title: "The photography is still placeholder-heavy",
+        paragraphs: [
+          "The current repository has the visual system and page structure in place, but it does not yet contain the event photography that the redesign calls for. Many image slots still use remote Unsplash or Google-hosted references, and the only image currently stored under `public/images` is the Lakambini logo.",
+          "I documented those placeholders in `ARCHIVE_IMAGE_BRIEF.md` instead of filling the site with substitute project imagery. The brief records the location and aspect ratio of each slot, the kind of archive photo that fits it, and composition notes for the dark emerald and gold treatment. It also points to specific past events where useful. That leaves a concrete path for replacing the references with actual Lakambini work once the archive photos are selected.",
+        ],
       },
     ],
-    results:
-      "The page structure is in place across five core pages and nine service pages. The remaining work is mostly photography. Many of the larger slots still point to stock or reference images, and the repository only contains the real Lakambini logo locally. I wrote an archive image brief that lists the real event photo each slot needs, including the crop, subject, mood, and past projects worth checking. I am leaving those placeholders alone until the actual archive can replace them.",
   },
 ];
 
