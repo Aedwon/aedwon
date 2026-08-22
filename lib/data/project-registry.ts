@@ -216,7 +216,66 @@ export const ADDITIONAL_PROJECTS: RegisteredProject[] = [
   },
 ];
 
+const NORALA_PROJECT_OVERRIDE: Partial<RegisteredProject> = {
+  title: "Norala SB Transparency Portal",
+  tagline:
+    "Unofficial bilingual legislative-transparency prototype for the Sangguniang Bayan of Norala, built around repository-backed records, linked council data, and explicit demo safeguards.",
+  role: "Creator & Developer",
+  timeline: "2026",
+  stack: [
+    { name: "Next.js 16", icon: "nextjs" },
+    { name: "TypeScript", icon: "typescript" },
+    { name: "Tailwind CSS 4", icon: "tailwind" },
+    { name: "next-intl", icon: "i18n" },
+  ],
+  liveUrl: "https://norala-sb-demo.vercel.app",
+  githubUrl: "https://github.com/Aedwon/norala-sb-demo",
+  summary:
+    "Unofficial bilingual legislative-transparency prototype with repository-backed records, derived council links, and explicit safeguards that keep the demo separate from an official LGU service.",
+  problem:
+    "Norala SB Transparency Portal is a student proof-of-concept for the Sangguniang Bayan of Norala, South Cotabato. It uses synthetic officials and legislative records and was prepared for possible donation to the LGU. The current repository has no application database or admin backend. Its public records are kept with the code instead.",
+  architecture: [],
+  hurdles: undefined,
+  results:
+    "The current prototype connects repository-backed legislative records to council, committee, session, announcement, and bilingual route views while keeping the deployment visibly marked as unofficial. The ordinance index and detail routes remain placeholders in the current code.",
+  metrics: undefined,
+  retrospective: undefined,
+  articleSections: [
+    {
+      title: "Repository-backed legislative records",
+      paragraphs: [
+        "Norala SB Transparency Portal is a student proof-of-concept for the Sangguniang Bayan of Norala, South Cotabato. It uses synthetic officials and legislative records and was prepared for possible donation to the LGU. The current repository has no application database or admin backend. Its public records are kept with the code instead.",
+        "Legislative documents and announcements live in repository content files. Officials, committees, sessions, and the subject vocabulary live in TypeScript. `lib/content.ts` reads document frontmatter and body content, then builds the relationships used elsewhere in the site.",
+        "Some of those relationships are derived instead of stored twice. An official's authored legislation is found by matching document `authorSlugs`. Committee pages collect legislation through `committeeSlug`. When one document lists another under `amends`, the loader derives the reverse `amendedBy` relationship.",
+        "The content layer also has a `verifyCrossLinks()` pass for references between records. It checks document authors, committees, sessions, amendment targets, and document links inside session agendas. The Git history shows this data layer landing with a temporary verification page before the council, session, and announcement pages were built. That debug route was removed after the content relationships had been checked.",
+      ],
+    },
+    {
+      title: "One set of records across two locales",
+      paragraphs: [
+        "The application uses `next-intl` with `/en` and `/fil` as explicit route prefixes. The locale layout generates both route variants, loads the matching message bundle, sets the document language, and wraps the page in the same header, footer, skip link, and prototype banner.",
+        "The content records themselves are shared. On the home page, the same legislative document supplies either `summaryEn` or `summaryFil` depending on the route. Council pages do the same with official biographies while translated interface labels come from the locale message files. A later commit also fixed the home page links so internal navigation keeps the active locale prefix.",
+        "The home page pulls recent legislation, the next scheduled session, and the latest announcements from the same content layer. Council pages use the document relationships to connect officials and committees back to the records associated with them.",
+      ],
+    },
+    {
+      title: "Keeping the prototype visibly unofficial",
+      paragraphs: [
+        "The demo status is part of the implementation instead of being left to a disclaimer at the bottom of the page. The locale layout always renders a prototype banner. Page metadata sets `index` and `follow` to false, and `robots.ts` blocks crawling of the site. The contact page shows the shape of an official inquiry form, but every control is disabled and the page states that the demo does not submit or store the entered information.",
+        "The handover document treats those restrictions as adoption steps. It explains how an LGU team could replace the synthetic records and remove the demo banner and crawler restrictions if the repository were adopted for official use.",
+        "The current build is still incomplete around ordinance browsing. The home page includes a search form and links to recent legislation, but the `/ordinances` index and `/ordinances/[slug]` detail routes are placeholders in the current code. The project specification describes a FlexSearch index, URL-based filters, and a fuller document view, but those pieces are not implemented in the current `main` branch. The current repository also does not contain the SQLite, Prisma, Workbox, OCR, or PWA implementation claimed by the older portfolio article.",
+      ],
+    },
+  ],
+};
+
+const REGISTERED_BASE_PROJECTS: RegisteredProject[] = PROJECTS.map((project) =>
+  project.slug === "norala-sb-portal"
+    ? ({ ...project, ...NORALA_PROJECT_OVERRIDE } as RegisteredProject)
+    : project,
+);
+
 export const ALL_PROJECTS: RegisteredProject[] = [
-  ...PROJECTS,
+  ...REGISTERED_BASE_PROJECTS,
   ...ADDITIONAL_PROJECTS,
 ].sort((a, b) => a.order - b.order);

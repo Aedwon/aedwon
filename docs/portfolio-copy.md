@@ -239,24 +239,41 @@ Not every admin surface stayed inside Discord. The repository includes a Vercel 
 
 The analytics dashboard follows a similar split. Its serverless endpoint reads daily rollups from MySQL and resolves cached Discord member and channel names before returning the dashboard data. The long-running Discord process uses `aiomysql`, while these request-based endpoints use `PyMySQL`. Both sides work from the same database instead of maintaining a second reporting store.
 
-### 2.3 Norala SB Legislative Transparency Portal (`/projects/norala-sb-portal`) — Flagship
+### 2.3 Norala SB Transparency Portal (`/projects/norala-sb-portal`) (Flagship)
 - **Tier:** Flagship
 - **Category:** Civic Tech
-- **Role:** Creator & Full-Stack Architect
-- **Timeline:** 2024
-- **Platform:** Web, PWA
-- **Stack:** TypeScript, Next.js, Tailwind CSS, SQLite, Prisma, Lucide, PWA Service Worker
-- **Problem & Constraints:** Municipal legislative records in rural Philippine local government units are stored in physical paper binders or fragmented scanned PDFs. Citizens and municipal staff have no fast way to search enacted ordinances on mobile devices.
-- **How It's Built:**
-  - **Full-Text Legislative Indexing:** Builds an inverted index of enacted municipal ordinances, resolutions, and committee reports using SQLite FTS5 for sub-second keyword matching.
-  - **Offline PWA Service Worker:** Caches recent gazette listings and legislative metadata on the user device via Workbox, allowing citizens to read ordinances even with weak provincial mobile signals.
-- **Hurdles & Solutions:**
-  - **OCR Inaccuracies on Scanned Legacy Documents:** Decades-old typewriter municipal documents had skewed text and faded ink that broke text search indexing. Pre-processed document scans with contrast normalization filters before passing text blocks into the search index.
-- **Results & Numbers:** Delivered sub-second search indexing across hundreds of local ordinances, giving citizens searchable mobile access to municipal legislation.
-- **Metrics:**
-  - `Sub-second`: Full-text search across municipal legislation
-  - `Offline PWA`: Accessible on low-bandwidth mobile devices
-- **Retrospective:** Structuring legislative metadata to support open civic data schemas (like Popolo) would make future inter-LGU integrations easier.
+- **Role:** Creator & Developer
+- **Timeline:** 2026
+- **Platform:** Web
+- **Stack:** Next.js 16, TypeScript, Tailwind CSS 4, next-intl
+- **Live URL:** https://norala-sb-demo.vercel.app
+- **GitHub URL:** https://github.com/Aedwon/norala-sb-demo
+
+Norala SB Transparency Portal is a student proof-of-concept for the Sangguniang Bayan of Norala, South Cotabato. It uses synthetic officials and legislative records and was prepared for possible donation to the LGU. The current repository has no application database or admin backend. Its public records are kept with the code instead.
+
+#### Repository-backed legislative records
+
+Legislative documents and announcements live in repository content files. Officials, committees, sessions, and the subject vocabulary live in TypeScript. `lib/content.ts` reads document frontmatter and body content, then builds the relationships used elsewhere in the site.
+
+Some of those relationships are derived instead of stored twice. An official's authored legislation is found by matching document `authorSlugs`. Committee pages collect legislation through `committeeSlug`. When one document lists another under `amends`, the loader derives the reverse `amendedBy` relationship.
+
+The content layer also has a `verifyCrossLinks()` pass for references between records. It checks document authors, committees, sessions, amendment targets, and document links inside session agendas. The Git history shows this data layer landing with a temporary verification page before the council, session, and announcement pages were built. That debug route was removed after the content relationships had been checked.
+
+#### One set of records across two locales
+
+The application uses `next-intl` with `/en` and `/fil` as explicit route prefixes. The locale layout generates both route variants, loads the matching message bundle, sets the document language, and wraps the page in the same header, footer, skip link, and prototype banner.
+
+The content records themselves are shared. On the home page, the same legislative document supplies either `summaryEn` or `summaryFil` depending on the route. Council pages do the same with official biographies while translated interface labels come from the locale message files. A later commit also fixed the home page links so internal navigation keeps the active locale prefix.
+
+The home page pulls recent legislation, the next scheduled session, and the latest announcements from the same content layer. Council pages use the document relationships to connect officials and committees back to the records associated with them.
+
+#### Keeping the prototype visibly unofficial
+
+The demo status is part of the implementation instead of being left to a disclaimer at the bottom of the page. The locale layout always renders a prototype banner. Page metadata sets `index` and `follow` to false, and `robots.ts` blocks crawling of the site. The contact page shows the shape of an official inquiry form, but every control is disabled and the page states that the demo does not submit or store the entered information.
+
+The handover document treats those restrictions as adoption steps. It explains how an LGU team could replace the synthetic records and remove the demo banner and crawler restrictions if the repository were adopted for official use.
+
+The current build is still incomplete around ordinance browsing. The home page includes a search form and links to recent legislation, but the `/ordinances` index and `/ordinances/[slug]` detail routes are placeholders in the current code. The project specification describes a FlexSearch index, URL-based filters, and a fuller document view, but those pieces are not implemented in the current `main` branch. The current repository also does not contain the SQLite, Prisma, Workbox, OCR, or PWA implementation claimed by the older portfolio article.
 
 ### 2.4 PSO Automated Scorer & Ranking Engine (`/projects/pso-scoring-model`) — Flagship
 - **Tier:** Flagship
