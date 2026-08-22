@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { PROJECTS, ProjectItem } from "@/lib/data/projects";
-import { BLOG_POSTS, BlogPost } from "@/lib/data/blogs";
+import { getProjectBySlug, type RegisteredProject } from "@/lib/data/project-registry";
+import { BLOG_POSTS, type BlogPost } from "@/lib/data/blogs";
 import DiscordBotFooter from "./DiscordBotFooter";
 import CodeBlock from "@/components/CodeBlock";
 
@@ -15,36 +15,18 @@ interface DiscordThreadFeedProps {
   onClose: () => void;
 }
 
-export default function DiscordThreadFeed({
-  thread,
-  onClose,
-}: DiscordThreadFeedProps) {
-  // Normalize slug lookup
-  const normalizeSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+function normalizeSlug(slug: string): string {
+  return slug.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
-  const project: ProjectItem | undefined =
-    thread.parent === "projects"
-      ? PROJECTS.find(
-          (p) =>
-            p.slug === thread.slug ||
-            normalizeSlug(p.slug) === normalizeSlug(thread.slug) ||
-            (thread.slug === "sb-norala" && p.slug === "norala-sb-portal") ||
-            (thread.slug === "bettergov" && p.slug === "bettergov-ph") ||
-            (thread.slug === "psysc-scorer" && p.slug === "pso-scoring-model") ||
-            (thread.slug === "msl-bot" && p.slug === "msl-collegiate-cup-bot") ||
-            (thread.slug === "ilocos-sur-bot" && p.slug === "ilocos-sur-esports-bot") ||
-            (thread.slug === "oppo-bot" && p.slug === "oppo-legend-cup-bot") ||
-            (thread.slug === "gi-calculator" && p.slug === "gi-damage-calculator") ||
-            (thread.slug === "agent-framework" && p.slug === "ai-agent-framework")
-        )
-      : undefined;
-
-  const blog: BlogPost | undefined =
+export default function DiscordThreadFeed({ thread, onClose }: DiscordThreadFeedProps) {
+  const project = thread.parent === "projects" ? getProjectBySlug(thread.slug) : undefined;
+  const blog =
     thread.parent === "blogs"
       ? BLOG_POSTS.find(
-          (b) =>
-            b.slug === thread.slug ||
-            normalizeSlug(b.slug) === normalizeSlug(thread.slug)
+          (post) =>
+            post.slug === thread.slug ||
+            normalizeSlug(post.slug) === normalizeSlug(thread.slug),
         )
       : undefined;
 
@@ -53,8 +35,9 @@ export default function DiscordThreadFeed({
       <div className="py-8 text-center text-gray-400">
         <p>Thread content not found.</p>
         <button
+          type="button"
           onClick={onClose}
-          className="mt-3 text-xs text-[#5865F2] hover:underline cursor-pointer"
+          className="mt-3 text-xs text-[#5865F2] hover:underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"
         >
           Back to #{thread.parent}
         </button>
@@ -62,304 +45,178 @@ export default function DiscordThreadFeed({
     );
   }
 
-  // Case Study View
-  if (project) {
-    return (
-      <div className="space-y-6 max-w-3xl">
-        {/* Thread Header Banner */}
-        <div className="pt-2 pb-3 border-b border-[#3f4147]/40 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-5 h-5 text-gray-300"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <h1 className="text-xl font-bold text-white">{project.title}</h1>
-            <span className="text-xs bg-[#2b2d31] text-[#949ba4] px-2 py-0.5 rounded border border-[#3f4147]">
-              {project.categoryLabel}
-            </span>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-xs bg-[#4e5058] hover:bg-[#6d6f78] text-white px-3 py-1.5 rounded transition-colors cursor-pointer"
-          >
-            Back to #projects
-          </button>
-        </div>
+  if (project) return <ProjectThread project={project} onClose={onClose} />;
+  return <BlogThread blog={blog!} onClose={onClose} />;
+}
 
-        {/* Message 1: Overview */}
-        <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-          <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-            A
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-                Aerol (Aedwon)
-              </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:00 PM</span>
-            </div>
-            <p className="text-[14px] text-[#dbdee1] leading-relaxed mb-3">
-              {project.tagline || project.summary}
-            </p>
+function ProjectThread({ project, onClose }: { project: RegisteredProject; onClose: () => void }) {
+  const hasArticle = Boolean(project.articleSections?.length);
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs bg-[#2b2d31] p-3 rounded border border-[#3f4147]">
-              <div>
-                <div className="text-[10px] uppercase font-bold text-[#949ba4]">Role</div>
-                <div className="text-white font-medium">{project.role}</div>
-              </div>
-              <div>
-                <div className="text-[10px] uppercase font-bold text-[#949ba4]">Timeline</div>
-                <div className="text-white font-medium">{project.timeline}</div>
-              </div>
-              <div>
-                <div className="text-[10px] uppercase font-bold text-[#949ba4]">Category</div>
-                <div className="text-white font-medium">{project.categoryLabel}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Message 2: The Spark (Problem Statement) */}
-        <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-          <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-            A
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-                Aerol (Aedwon)
-              </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:01 PM</span>
-            </div>
-            <h2 className="text-[15px] font-bold text-white mb-1.5">The Spark</h2>
-            <p className="text-[14px] text-[#dbdee1] leading-relaxed">
-              {project.problem}
-            </p>
-          </div>
-        </div>
-
-        {/* Message 3: Architecture Breakdown */}
-        <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-          <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-            A
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-                Aerol (Aedwon)
-              </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:02 PM</span>
-            </div>
-            <h2 className="text-[15px] font-bold text-white mb-2">
-              Architecture Breakdown
-            </h2>
-            <div className="space-y-3">
-              {project.architecture.map((arch, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#2b2d31] p-3 rounded border-l-4 border-[#5865F2]"
-                >
-                  <h3 className="text-white font-bold text-sm mb-1">{arch.title}</h3>
-                  <p className="text-xs text-[#b5bac1] leading-relaxed">
-                    {arch.description}
-                  </p>
-                  {arch.tradeOff && (
-                    <p className="text-xs text-[#b5bac1] leading-relaxed mt-1.5">
-                      <strong className="text-white">Trade-off:</strong> {arch.tradeOff}
-                    </p>
-                  )}
-                  {arch.codeSnippet && (
-                    <CodeBlock
-                      code={arch.codeSnippet}
-                      language={arch.codeLanguage || "dart"}
-                      className="!my-2"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Message 4: Hurdles & Solutions (Flagship Tier Only) */}
-        {project.tier === "flagship" && project.hurdles && project.hurdles.length > 0 && (
-          <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-            <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-              A
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-                  Aerol (Aedwon)
-                </span>
-                <span className="text-[11px] text-[#949ba4]">Today at 12:03 PM</span>
-              </div>
-              <h2 className="text-[15px] font-bold text-white mb-2">
-                Hurdles &amp; Solutions
-              </h2>
-              <div className="space-y-3">
-                {project.hurdles.map((hurdle, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-[#2b2d31] p-3 rounded border border-[#3f4147] space-y-1"
-                  >
-                    <h3 className="text-white font-bold text-sm mb-1">{hurdle.title}</h3>
-                    <p className="text-xs text-[#b5bac1] leading-relaxed">
-                      <strong className="text-white">Problem:</strong> {hurdle.issue}
-                    </p>
-                    <p className="text-xs text-[#b5bac1] leading-relaxed">
-                      <strong className="text-white">Resolution:</strong> {hurdle.solution}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Message 5: Outcome & Metrics */}
-        <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-          <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-            A
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-                Aerol (Aedwon)
-              </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:04 PM</span>
-            </div>
-            <h2 className="text-[15px] font-bold text-white mb-1.5">
-              Outcome &amp; Metrics
-            </h2>
-            <p className="text-[14px] text-[#dbdee1] leading-relaxed mb-3">
-              {project.results}
-            </p>
-
-            {project.metrics && project.metrics.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                {project.metrics.map((m, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-[#2b2d31] p-2.5 rounded border border-[#3f4147] text-center"
-                  >
-                    <div className="text-base font-bold text-[#5865F2]">
-                      {m.value}
-                    </div>
-                    <div className="text-[10px] text-[#949ba4] mt-0.5">
-                      {m.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {project.retrospective && (
-              <p className="text-xs text-[#b5bac1] leading-relaxed mt-2">
-                <strong className="text-white">Retrospective:</strong> {project.retrospective}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Message 6: Tech Stack Chips */}
-        <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-          <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-            A
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-                Aerol (Aedwon)
-              </span>
-              <span className="text-[11px] text-[#949ba4]">Today at 12:05 PM</span>
-            </div>
-            <h2 className="text-[15px] font-bold text-white mb-2">Tech Stack</h2>
-            <div className="flex flex-wrap gap-1.5">
-              {project.stack.map((t, idx) => (
-                <span
-                  key={idx}
-                  className="bg-[#2b2d31] text-gray-200 text-xs px-2.5 py-1 rounded border border-[#3f4147] font-mono"
-                >
-                  {t.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer System Message */}
-        <DiscordBotFooter />
-      </div>
-    );
-  }
-
-  // Blog Article View
   return (
     <div className="space-y-6 max-w-3xl">
-      <div className="pt-2 pb-3 border-b border-[#3f4147]/40 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <svg
-            className="w-5 h-5 text-gray-300"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          <h1 className="text-xl font-bold text-white">{blog?.title}</h1>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-xs bg-[#4e5058] hover:bg-[#6d6f78] text-white px-3 py-1.5 rounded transition-colors cursor-pointer"
-        >
-          Back to #blogs
-        </button>
-      </div>
+      <ThreadHeader title={project.title} label={project.categoryLabel} onClose={onClose} parent="projects" />
 
-      <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
-        <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">
-          A
+      <DiscordMessage time="12:00 PM">
+        <p className="text-[14px] text-[#dbdee1] leading-relaxed mb-3">{project.tagline}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs bg-[#2b2d31] p-3 rounded border border-[#3f4147]">
+          <Metadata label="Role" value={project.role} />
+          <Metadata label="Timeline" value={project.timeline} />
+          <Metadata label="Category" value={project.categoryLabel} />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-[#f2f3f5] hover:underline cursor-pointer text-[14px]">
-              Aerol (Aedwon)
-            </span>
-            <span className="text-[11px] text-[#949ba4]">
-              {blog?.date} · {blog?.readTime}
-            </span>
-          </div>
+      </DiscordMessage>
 
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {blog?.tags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="bg-[#2b2d31] text-[#949ba4] text-xs px-2 py-0.5 rounded border border-[#3f4147]"
-              >
-                #{tag}
-              </span>
+      {hasArticle ? (
+        project.articleSections!.map((section, index) => (
+          <DiscordMessage key={section.title} time={`12:0${index + 1} PM`}>
+            <h2 className="text-[15px] font-bold text-white mb-2">{section.title}</h2>
+            <div className="space-y-2.5">
+              {section.paragraphs.map((paragraph, paragraphIndex) => (
+                <p key={paragraphIndex} className="text-[14px] text-[#dbdee1] leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            {section.codeSnippet && (
+              <CodeBlock code={section.codeSnippet} language={section.codeLanguage || "text"} className="!my-3" />
+            )}
+          </DiscordMessage>
+        ))
+      ) : (
+        <>
+          <DiscordMessage time="12:01 PM">
+            <h2 className="text-[15px] font-bold text-white mb-1.5">Problem and constraints</h2>
+            <p className="text-[14px] text-[#dbdee1] leading-relaxed">{project.problem}</p>
+          </DiscordMessage>
+
+          {project.architecture.length > 0 && (
+            <DiscordMessage time="12:02 PM">
+              <h2 className="text-[15px] font-bold text-white mb-2">Architecture</h2>
+              <div className="space-y-3">
+                {project.architecture.map((item) => (
+                  <div key={item.title} className="bg-[#2b2d31] p-3 rounded border-l-4 border-[#5865F2]">
+                    <h3 className="text-white font-bold text-sm mb-1">{item.title}</h3>
+                    <p className="text-xs text-[#b5bac1] leading-relaxed">{item.description}</p>
+                    {item.tradeOff && (
+                      <p className="text-xs text-[#b5bac1] leading-relaxed mt-1.5">
+                        <strong className="text-white">Trade-off:</strong> {item.tradeOff}
+                      </p>
+                    )}
+                    {item.codeSnippet && (
+                      <CodeBlock code={item.codeSnippet} language={item.codeLanguage || "text"} className="!my-2" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </DiscordMessage>
+          )}
+
+          {project.hurdles && project.hurdles.length > 0 && (
+            <DiscordMessage time="12:03 PM">
+              <h2 className="text-[15px] font-bold text-white mb-2">Hurdles and solutions</h2>
+              <div className="space-y-3">
+                {project.hurdles.map((hurdle) => (
+                  <div key={hurdle.title} className="bg-[#2b2d31] p-3 rounded border border-[#3f4147] space-y-1">
+                    <h3 className="text-white font-bold text-sm">{hurdle.title}</h3>
+                    <p className="text-xs text-[#b5bac1] leading-relaxed"><strong className="text-white">Problem:</strong> {hurdle.issue}</p>
+                    <p className="text-xs text-[#b5bac1] leading-relaxed"><strong className="text-white">Resolution:</strong> {hurdle.solution}</p>
+                  </div>
+                ))}
+              </div>
+            </DiscordMessage>
+          )}
+        </>
+      )}
+
+      <DiscordMessage time="12:05 PM">
+        <h2 className="text-[15px] font-bold text-white mb-1.5">Outcome</h2>
+        <p className="text-[14px] text-[#dbdee1] leading-relaxed mb-3">{project.results}</p>
+        {project.metrics && project.metrics.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {project.metrics.map((metric) => (
+              <div key={`${metric.value}-${metric.label}`} className="bg-[#2b2d31] p-2.5 rounded border border-[#3f4147] text-center">
+                <div className="text-base font-bold text-[#5865F2]">{metric.value}</div>
+                <div className="text-[10px] text-[#949ba4] mt-0.5">{metric.label}</div>
+              </div>
             ))}
           </div>
+        )}
+      </DiscordMessage>
 
-          <div className="text-[14px] text-[#dbdee1] leading-relaxed whitespace-pre-line">
-            {blog?.content}
-          </div>
+      <DiscordMessage time="12:06 PM">
+        <h2 className="text-[15px] font-bold text-white mb-2">Tech stack</h2>
+        <div className="flex flex-wrap gap-1.5">
+          {project.stack.map((item) => (
+            <span key={item.name} className="bg-[#2b2d31] text-gray-200 text-xs px-2.5 py-1 rounded border border-[#3f4147] font-mono">
+              {item.name}
+            </span>
+          ))}
         </div>
-      </div>
+      </DiscordMessage>
 
-      {/* Footer System Message */}
       <DiscordBotFooter />
+    </div>
+  );
+}
+
+function BlogThread({ blog, onClose }: { blog: BlogPost; onClose: () => void }) {
+  return (
+    <div className="space-y-6 max-w-3xl">
+      <ThreadHeader title={blog.title} onClose={onClose} parent="blogs" />
+      <DiscordMessage time="12:00 PM">
+        <div className="text-[11px] text-[#949ba4] mb-3">{blog.date} · {blog.readTime}</div>
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {blog.tags.map((tag) => (
+            <span key={tag} className="bg-[#2b2d31] text-[#949ba4] text-xs px-2 py-0.5 rounded border border-[#3f4147]">#{tag}</span>
+          ))}
+        </div>
+        <div className="text-[14px] text-[#dbdee1] leading-relaxed whitespace-pre-line">{blog.content}</div>
+      </DiscordMessage>
+      <DiscordBotFooter />
+    </div>
+  );
+}
+
+function ThreadHeader({ title, label, onClose, parent }: { title: string; label?: string; onClose: () => void; parent: "projects" | "blogs" }) {
+  return (
+    <div className="pt-2 pb-3 border-b border-[#3f4147]/40 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2 min-w-0">
+        <svg className="w-5 h-5 text-gray-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        <h1 className="text-xl font-bold text-white truncate">{title}</h1>
+        {label && <span className="hidden sm:inline text-xs bg-[#2b2d31] text-[#949ba4] px-2 py-0.5 rounded border border-[#3f4147]">{label}</span>}
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="text-xs bg-[#4e5058] hover:bg-[#6d6f78] text-white px-3 py-1.5 rounded transition-colors cursor-pointer shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"
+      >
+        Back to #{parent}
+      </button>
+    </div>
+  );
+}
+
+function DiscordMessage({ children, time }: { children: React.ReactNode; time: string }) {
+  return (
+    <div className="flex gap-4 group hover:bg-[#2e3035] -mx-4 px-4 py-2 rounded transition-colors">
+      <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold shrink-0 mt-0.5 text-sm ring-1 ring-white/20">A</div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-semibold text-[#f2f3f5] text-[14px]">Aerol (Aedwon)</span>
+          <span className="text-[11px] text-[#949ba4]">Today at {time}</span>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Metadata({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-[10px] uppercase font-bold text-[#949ba4]">{label}</div>
+      <div className="text-white font-medium">{value}</div>
     </div>
   );
 }
