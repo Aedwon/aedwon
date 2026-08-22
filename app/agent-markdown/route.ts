@@ -2,9 +2,14 @@ import { markdownForPath } from "@/lib/agent-content";
 
 export const dynamic = "force-dynamic";
 
+const MARKDOWN_PATH_HEADER = "x-aedwon-markdown-path";
+
 function responseFor(request: Request, includeBody: boolean) {
   const url = new URL(request.url);
-  const pathname = url.searchParams.get("path") ?? "/";
+  const pathname =
+    request.headers.get(MARKDOWN_PATH_HEADER) ??
+    url.searchParams.get("path") ??
+    "/";
   const result = markdownForPath(pathname);
 
   const headers = new Headers({
