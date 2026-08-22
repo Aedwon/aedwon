@@ -21,6 +21,12 @@ These are author-specific rules, not general AI-writing heuristics. They overrid
 - Group related sentences into real paragraphs. Do not format normal prose as one sentence per paragraph. Single-sentence paragraphs are allowed only when the sentence genuinely needs emphasis or a change in pace.
 - Plain words win. Prefer *used* over *leveraged*, *built* over *architected* when the distinction does not matter, and *instead of* over elevated contrast phrases.
 - Do not force every section into a clean setup, conflict, lesson, and optimistic ending. Leave a technical limitation unresolved when it is genuinely unresolved.
+- Do not default every case-study section to problem, decision, tradeoff, and lesson. Use chronology when the build actually happened in stages. State a decision plainly when there is no useful story around it.
+- Watch repeated contrast sentences such as *"X, but Y"*, *"X while Y"*, and *"on one hand / on the other hand"*. One is normal. Repeating the shape across a page sounds manufactured.
+- Prefer specific build history when the repository supports it. A sequence such as *"the layout shell shipped first, the scroll behavior came later"* reads better than converting the same facts into an abstract architecture summary.
+- Never invent failed versions, frustrations, motives, or lessons to make a case study sound more human. Personal texture must still come from source evidence or the author's own stated experience.
+- Keep technical details that explain a decision, bug, constraint, or outcome. Remove details whose only job is to signal technical competence.
+- Do not end every section with a neat takeaway. Some paragraphs should simply stop when the useful information is finished.
 - Preserve uneven rhythm. Short sentences are allowed. So are longer technical sentences when the detail needs them.
 
 When an outside unslop or humanizer guide conflicts with these rules, follow this profile.
@@ -48,6 +54,7 @@ Never use these words or their variants:
 ### 5. Ban Performative Balance & Symmetrical Formulas
 - Avoid following every statement with an automatic *"However..."*, *"On the other hand..."*, or *"That being said..."*.
 - Avoid formulaic openers: *"Whether you are looking for X, need Y, or want to Z..."*, *"In today's fast-paced digital world..."*.
+- Avoid repeated rhetorical balancing. Do not keep setting up two opposed options just to resolve them in the next sentence.
 
 ### 6. Ban Em Dashes, Semicolon Prose & Bullet-Soup
 - **Em dashes:** Do not use them in authored portfolio copy.
@@ -59,6 +66,7 @@ Never use these words or their variants:
 - Engineer burstiness: mix short blunt sentences with longer explanatory ones.
 - Avoid uniform 15-to-20 word sentences.
 - Avoid one-sentence-per-paragraph formatting as a default. Paragraph breaks should follow changes in idea, emphasis, or pacing, not every sentence boundary.
+- Avoid making every section the same length or giving every heading the same amount of explanation.
 - Avoid tidy 5-paragraph essay structures and moralizing/inspirational concluding sentences.
 
 ### 8. Voice-Match Principles (Subtract, Don't Add)
