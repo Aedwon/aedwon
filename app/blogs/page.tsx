@@ -6,6 +6,13 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Blogs — Aerol (Aedwon)",
   description: "Technical notes on offline software architecture, tournament systems, and agentic workflows.",
+  alternates: { canonical: "/blogs" },
+  openGraph: {
+    title: "Blogs — Aerol (Aedwon)",
+    description: "Technical notes on offline software architecture, tournament systems, and agentic workflows.",
+    url: "/blogs",
+    type: "website",
+  },
 };
 
 export default function BlogsPage() {
