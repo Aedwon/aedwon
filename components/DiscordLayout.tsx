@@ -61,10 +61,7 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
       id="discord-client-root"
       className="fixed inset-0 overflow-hidden bg-[#313338] text-white flex z-50 select-none font-sans text-sm antialiased"
     >
-      <DiscordServerRail
-        activeChannel={activeChannel}
-        onSelectChannel={handleSelectChannel}
-      />
+      <DiscordServerRail onSelectChannel={handleSelectChannel} />
 
       <DiscordChannelSidebar
         activeChannel={activeChannel}
