@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import React from "react";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ThemeProvider, useTheme } from "../ThemeContext";
 
@@ -50,7 +50,7 @@ describe("ThemeProvider", () => {
     vi.restoreAllMocks();
   });
 
-  it("persists valid theme choices and restores them", () => {
+  it("persists valid theme choices and restores them", async () => {
     const first = render(
       <ThemeProvider>
         <Consumer />
@@ -65,7 +65,7 @@ describe("ThemeProvider", () => {
         <Consumer />
       </ThemeProvider>,
     );
-    expect(screen.getByTestId("theme")).toHaveTextContent("neobrutalist");
+    await waitFor(() => expect(screen.getByTestId("theme")).toHaveTextContent("neobrutalist"));
     expect(screen.getByTestId("resolved")).toHaveTextContent("light");
   });
 
