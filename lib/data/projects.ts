@@ -23,6 +23,13 @@ export interface ProjectArchitectureItem {
   codeLanguage?: string;
 }
 
+export interface ProjectArticleSection {
+  title: string;
+  paragraphs: string[];
+  codeSnippet?: string;
+  codeLanguage?: string;
+}
+
 export interface ProjectItem {
   slug: string;
   title: string;
@@ -48,6 +55,7 @@ export interface ProjectItem {
   results: string;
   metrics?: ProjectMetric[];
   retrospective?: string;
+  articleSections?: ProjectArticleSection[];
 }
 
 export const PROJECTS: ProjectItem[] = [
@@ -276,40 +284,56 @@ async def verify_student(ctx, student_id: str, school_code: str):
   {
     slug: 'kiosk-survey',
     title: 'Kiosk Survey',
-    tagline: 'Offline touchscreen survey application for Android TV operating reliably in high-density event environments with automatic queue syncing.',
+    tagline: 'Flutter survey kiosk for HOK Benefits with local Hive storage, a controlled on-screen keyboard, CSV export, and Android screen pinning.',
     category: 'mobile',
     categoryLabel: 'Mobile & Offline',
     tier: 'focused',
-    role: 'Lead Developer',
-    timeline: '2023 to 2024',
+    role: 'Developer',
+    timeline: '2026',
     featured: true,
     order: 4,
     glowColor: 'violet',
     brandColor: '#A78BFA',
     icon: 'tv',
     platforms: [
-      { name: 'Android TV', icon: 'android' },
+      { name: 'Android', icon: 'android' },
     ],
     stack: [
       { name: 'Flutter', icon: 'flutter' },
       { name: 'Dart', icon: 'dart' },
-      { name: 'SQLite', icon: 'sqlite' },
-      { name: 'Android TV OS', icon: 'android' },
+      { name: 'Hive', icon: 'storage' },
+      { name: 'Android', icon: 'android' },
     ],
-    summary: 'Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.',
-    problem: 'Event venues suffer from severe cellular congestion and dropped Wi-Fi under crowd loads. Standard web forms freeze or drop responses when attendees submit surveys at interactive booths.',
-    architecture: [
+    summary: 'Landscape Flutter survey kiosk that stores responses locally in Hive, resets inactive sessions, gives operators a CSV export path, and uses Android lock-task mode to keep the app pinned.',
+    problem: 'Kiosk Survey is a landscape Flutter app for collecting three HOK Benefits feedback prompts with local storage, controlled text entry, session resets, and an operator export path.',
+    architecture: [],
+    results: 'The current build stores completed surveys locally in Hive, exports them to CSV through the admin screen, and uses Android lock-task mode for screen pinning.',
+    articleSections: [
       {
-        title: 'Android TV Local Persistence Queue',
-        description: 'Built with Flutter for Android TV touch displays. Every attendee submission writes immediately to a local SQLite journal. A connectivity listener detects stable connections and flushes queued JSON records in atomic batches.',
+        title: 'The attendee loop',
+        paragraphs: [
+          'Kiosk Survey is a landscape Flutter app for collecting three HOK Benefits feedback prompts. The welcome screen starts the survey from a full-screen tap. Each question accepts one text response, and the user cannot continue until the current field contains an answer.',
+          'The response fields are read-only to the system keyboard and open a custom on-screen keyboard when tapped. It handles letters, numbers, symbols, shift state, cursor-aware insertion, backspace, space, and dismissal. A March 16 commit changed the survey from suggested answer chips plus free text to text-only responses. Later commits hid the keyboard by default and increased the question text to 72 pixels.',
+          'Session reset behavior lives in the application shell instead of being repeated across individual screens. Pointer activity resets a 45-second timer, and an inactive survey returns to the welcome route. After submission, the thank-you screen stays up for three seconds before returning to the start screen for the next response.',
+        ],
+      },
+      {
+        title: 'Responses stay on the device until export',
+        paragraphs: [
+          'The current build does not have a reconnection queue or automatic server sync. SurveyRepository opens a Hive box and writes each completed submission there, adding an ISO timestamp before saving it. Submitting the survey only waits for that local write before moving to the thank-you screen.',
+          'Operators have a separate admin path reached through a hidden five-tap target on the welcome screen, followed by password entry. The admin view shows the current entry count and can export the stored responses to CSV or clear them after confirmation.',
+          'CSV export was already part of the initial implementation, then changed in smaller passes. One commit replaced internal headings such as `Q1_Answer` with the full question text. Another changed the native save flow to pass the generated CSV bytes through the file picker. The current dialog lets the operator choose the output file, with a USB drive given as an example destination.',
+        ],
+      },
+      {
+        title: 'Screen pinning moved into Android',
+        paragraphs: [
+          'The Flutter shell already forced landscape orientation, hid the system UI with immersive mode, and handled session resets in the initial commit. Native screen pinning came later.',
+          'On March 17, the Android activity was changed from a plain FlutterActivity to one that calls startLockTask() when it resumes. The same change added a method channel between Flutter and Android. The admin screen can invoke stopKioskMode, which calls stopLockTask() before closing the application.',
+          'That leaves the kiosk behavior split across the two layers. Flutter controls the survey flow, fullscreen presentation, inactivity reset, and operator interface. Android lock-task mode keeps the application pinned until an operator exits through the admin path.',
+        ],
       },
     ],
-    results: 'Ran continuously for 8 hours on-site during a high-density live event with zero dropped responses and zero crashes.',
-    metrics: [
-      { value: '8 Hours', label: 'Continuous offline operation during live event' },
-      { value: '0', label: 'Dropped survey submissions or app crashes' },
-    ],
-    retrospective: 'Adding an automated USB export fallback would give event coordinators even greater peace of mind during total network blackouts.',
   },
   {
     slug: 'norala-sb-portal',
