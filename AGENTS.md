@@ -22,10 +22,14 @@ These are author-specific rules, not general AI-writing heuristics. They overrid
 - Plain words win. Prefer *used* over *leveraged*, *built* over *architected* when the distinction does not matter, and *instead of* over elevated contrast phrases.
 - Do not force every section into a clean setup, conflict, lesson, and optimistic ending. Leave a technical limitation unresolved when it is genuinely unresolved.
 - Do not default every case-study section to problem, decision, tradeoff, and lesson. Use chronology when the build actually happened in stages. State a decision plainly when there is no useful story around it.
+- Case studies do not need a standard number of headings. Use as few sections as the project needs. Two to four meaningful body sections is usually enough for a focused project, and section lengths should not be artificially balanced.
 - Watch repeated contrast sentences such as *"X, but Y"*, *"X while Y"*, and *"on one hand / on the other hand"*. One is normal. Repeating the shape across a page sounds manufactured.
 - Prefer specific build history when the repository supports it. A sequence such as *"the layout shell shipped first, the scroll behavior came later"* reads better than converting the same facts into an abstract architecture summary.
 - Never invent failed versions, frustrations, motives, or lessons to make a case study sound more human. Personal texture must still come from source evidence or the author's own stated experience.
-- Keep technical details that explain a decision, bug, constraint, or outcome. Remove details whose only job is to signal technical competence.
+- Do not manufacture authenticity by deliberately inserting awkward sentences, fake uncertainty, or self-conscious lines about sounding human.
+- Do not publish meta-writing commentary such as *"this version is less polished"*, *"I am avoiding portfolio language"*, or references to AI detection. The published copy should simply read naturally.
+- Keep technical details that explain a decision, bug, constraint, or outcome. Remove details whose only job is to signal technical competence. One concrete implementation detail is often better than a catalogue of tools.
+- Do not add a metric strip by default. Put numbers where they naturally explain scale, behavior, or a measured outcome. A separate metrics block is appropriate only when the numbers are central to the project.
 - Do not end every section with a neat takeaway. Some paragraphs should simply stop when the useful information is finished.
 - Preserve uneven rhythm. Short sentences are allowed. So are longer technical sentences when the detail needs them.
 
@@ -67,6 +71,7 @@ Never use these words or their variants:
 - Avoid uniform 15-to-20 word sentences.
 - Avoid one-sentence-per-paragraph formatting as a default. Paragraph breaks should follow changes in idea, emphasis, or pacing, not every sentence boundary.
 - Avoid making every section the same length or giving every heading the same amount of explanation.
+- Avoid turning each implementation detail into its own heading. Related details should share a section when they belong to the same part of the build.
 - Avoid tidy 5-paragraph essay structures and moralizing/inspirational concluding sentences.
 
 ### 8. Voice-Match Principles (Subtract, Don't Add)
