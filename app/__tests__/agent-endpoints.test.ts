@@ -8,7 +8,7 @@ import { GET as getLlms } from "../llms.txt/route";
 import {
   GET as getMarkdown,
   HEAD as headMarkdown,
-} from "../_agent-markdown/route";
+} from "../agent-markdown/route";
 import { proxy } from "../../proxy";
 
 describe("agent-facing endpoints", () => {
@@ -28,6 +28,7 @@ describe("agent-facing endpoints", () => {
     const value = robots();
     expect(value.sitemap).toBe("https://aedwon.com/sitemap.xml");
     expect(value.host).toBe("https://aedwon.com");
+    expect(value.rules).toMatchObject({ disallow: expect.arrayContaining(["/agent-markdown"]) });
   });
 
   it("serves llms.txt with explicit usage guidance", async () => {
@@ -39,7 +40,7 @@ describe("agent-facing endpoints", () => {
 
   it("serves Markdown GET and HEAD responses with the protocol headers", async () => {
     const request = new Request(
-      "https://aedwon.com/_agent-markdown?path=%2Fprojects",
+      "https://aedwon.com/agent-markdown?path=%2Fprojects",
     );
     const response = await getMarkdown(request);
     expect(response.status).toBe(200);
@@ -64,7 +65,7 @@ describe("agent-facing endpoints", () => {
     const markdownResponse = proxy(markdownRequest);
     expect(markdownResponse.headers.get("vary")).toBe("Accept");
     expect(markdownResponse.headers.get("x-middleware-rewrite")).toContain(
-      "/_agent-markdown?path=%2Fprojects",
+      "/agent-markdown?path=%2Fprojects",
     );
 
     const htmlResponse = proxy(
