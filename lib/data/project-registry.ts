@@ -16,7 +16,7 @@ export const ADDITIONAL_PROJECTS: RegisteredProject[] = [
     slug: "mlbb-post-game-extractor",
     title: "MLBB Post-Game Extractor",
     tagline:
-      "Browser-based OCR pipeline that turns Mobile Legends post-game screenshots into reviewable match data and analysis-ready CSV exports without uploading images to a server.",
+      "Client-side MLBB screenshot extractor built around configurable crop presets, Tesseract.js OCR, and long or role-positioned CSV exports.",
     category: "web",
     categoryLabel: "Web & Tools",
     tier: "focused",
@@ -40,63 +40,41 @@ export const ADDITIONAL_PROJECTS: RegisteredProject[] = [
     ],
     githubUrl: "https://github.com/Aedwon/mlbb-post-game-extractor",
     summary:
-      "Client-side MLBB screenshot extractor that crops stat regions, runs OCR in browser workers, lets analysts reconcile the result, and exports match data in long or role-positional wide CSV formats.",
+      "Browser tool that maps post-game screenshots to five tab presets, slices stat columns into ten player records, checks battle IDs across a batch, and exports match data as a 40-column long CSV or a 226-column wide CSV.",
     problem:
-      "Post-game analysis starts with screenshots, but screenshots are a poor data format. Copying kills, assists, damage, gold, hero picks, roles, bans, and match metadata by hand is slow enough that analysts either sample only a few games or accept inconsistent spreadsheets. I built this as a browser tool that turns a batch of MLBB post-game screens into structured rows while keeping the original images on the analyst's machine.",
-    architecture: [
-      {
-        title: "Coordinate-mapped Canvas slicing",
-        description:
-          "The UI lets me define stat bounding boxes against a base screenshot. Those coordinates are stored as x, y, width, and height values, then reused across a batch. A symmetry lock mirrors regions across the center line so the same preset can target Blue and Red team columns without drawing every crop twice. Each screenshot is normalized through an off-screen canvas and sliced into small image blobs before OCR begins.",
-        tradeOff:
-          "This is deliberately template-driven instead of trying to detect the whole scoreboard layout with computer vision. It needs a preset when the game UI changes, but the crop is predictable and gives Tesseract much less visual noise to interpret.",
-      },
-      {
-        title: "Tesseract.js in web workers",
-        description:
-          "The cropped stat cells are passed to Tesseract.js workers, so OCR runs through WebAssembly away from the main React thread. The app can process many small regions from several screenshots while the interface remains usable. Raw OCR output is normalized with field-specific parsing instead of treating every result as trustworthy text.",
-        tradeOff:
-          "Running OCR locally is heavier on the user's CPU than sending screenshots to a hosted vision API, but there is no image upload step, no API bill, and no external service holding match screenshots.",
-      },
-      {
-        title: "Human reconciliation before export",
-        description:
-          "OCR is treated as a first pass, not ground truth. Extracted values are grouped by player in a review interface where the analyst can correct text, assign heroes and roles, add patch and draft metadata, choose the winning side, and verify duration before saving a match. Roster validation checks that role assignments are complete and unique before role-positional exports are produced.",
-      },
-      {
-        title: "Long and role-positional CSV schemas",
-        description:
-          "The exporter supports two downstream shapes. Long format writes ten player rows per match for conventional analysis. Wide format places both teams into one role-positioned match row with 226 columns, which is useful when the next stage expects EXP, Jungle, Mid, Gold, and Roam features to stay in fixed positions instead of depending on player order.",
-        tradeOff:
-          "The wide schema is intentionally large. It is less pleasant to inspect by hand, but it removes reshaping work for models and team-analysis pipelines that need one feature vector per match.",
-      },
-    ],
-    hurdles: [
-      {
-        title: "Mirrored scoreboards are not actually symmetric data",
-        issue:
-          "The visual layout suggests that Blue and Red team stat columns can be mirrored mechanically, but the DPS screen used a different red-side column order. That produced valid-looking crops attached to the wrong fields.",
-        solution:
-          "I separated visual crop mirroring from semantic field ordering and corrected the red-side DPS mapping explicitly instead of forcing one universal column sequence.",
-      },
-      {
-        title: "OCR errors need a workflow, not a better promise",
-        issue:
-          "Small game fonts, compression, outlines, and dense numeric columns make occasional OCR mistakes unavoidable. Silently exporting the first recognition result would turn those mistakes into bad analysis data.",
-        solution:
-          "I put reconciliation in the normal path. OCR results stay editable, structured fields get parsers and validation, and manual metadata sits beside extracted stats before a row is considered ready for export.",
-      },
-    ],
+      "The extractor turns MLBB post-game screenshots into structured ten-player match data using configurable crop presets and browser-based OCR.",
+    architecture: [],
     results:
-      "The project now covers the full local pipeline from screenshot ingestion to normalized match exports. It has reusable crop presets, worker-based OCR, player-level review, hero and role assignment, patch and draft metadata, duration parsing, and selectable long or wide CSV output. No backend is required for image processing or export.",
-    metrics: [
-      { value: "0", label: "Server uploads required for screenshot processing" },
-      { value: "10", label: "Player rows emitted per match in long format" },
-      { value: "226", label: "Columns in the role-positional wide export" },
-      { value: "2", label: "CSV layouts: long and wide" },
+      "The current implementation covers batch screenshot mapping, Battle ID verification, editable player review, match metadata, and selectable long or role-positioned CSV exports without a backend.",
+    articleSections: [
+      {
+        title: "Building the batch around crop presets",
+        paragraphs: [
+          "The extractor works from the five MLBB post-game tabs it knows about: Main, DPS, Team, Overall, and Farm. Each uploaded screenshot gets a preset, and the app blocks OCR when two screenshots are assigned to the same tab. The batch architecture landed early in the repository history along with the switch from reading one image to building ten player records across several screenshots.",
+          "Each preset is a collection of crop boxes in source-image coordinates. The screenshot is drawn to a full-resolution canvas while the browser displays a scaled version, so dragging a box in the UI still updates coordinates against the original image. Those boxes are saved in `localStorage` using the image dimensions and preset name as the key. A calibrated Main preset at one resolution does not overwrite the configuration for another resolution or another tab.",
+          "Most boxes represent a full stat column instead of one player cell. During OCR, the code divides a column's height into five equal slices, adds a small amount of padding around each crop, and sends the slices through Tesseract one at a time. Crops on the left half become players 1 through 5. Crops on the right become players 6 through 10. Header fields such as Battle ID and duration use a single crop instead.",
+          "Before extracting the stat columns, the app makes a separate Battle ID pass over the uploaded screenshots. It strips the OCR result down to digits and compares each usable ID with the first one using Levenshtein distance. A distance above three stops the batch. It is a small check, but it keeps screenshots from different matches from being merged into the same ten-player record.",
+        ],
+      },
+      {
+        title: "The red side needed its own field order",
+        paragraphs: [
+          "The crop editor has a symmetry lock because the two team layouts share much of the same geometry. Default red-side boxes are generated by moving the blue group to the other half of the screenshot while preserving the spacing inside the group. Moving or resizing one side can update its paired box on the other side as well.",
+          "The field order is not fully symmetric, though. The current defaults have explicit red-side orders for the Main and DPS tabs. This distinction came from a concrete bug in the DPS export. The red-side crops were landing on valid cells, but Hero Damage and Consecutive Kills were being attached to the wrong fields because the code assumed the blue-side column sequence also described the red side.",
+          "The fix was one line in `RED_COLUMN_ORDER`, adding the DPS sequence as `consec_kills` followed by `hero_dmg`. That kept the mirroring code for positioning while giving tabs with different semantics their own field order. It is also why I would not replace the crop presets with a single blanket rule for both halves of the scoreboard.",
+        ],
+      },
+      {
+        title: "Exporting a match instead of dumping OCR text",
+        paragraphs: [
+          "The match schema was added in a sequence of small commits on May 2. The repository first added a duration parser and roster validation, then the role and hero constants. The long serializer came next, followed by the role-positioned wide serializer. After that, the duration crop, DPS mapping fix, player review fields, match metadata form, and final export picker were wired into the application.",
+          "The review step groups OCR values by player and keeps the extracted stat fields editable. Each player also needs a hero and one of the five roles. Confirmation stays disabled while a hero or role is missing, or when the same role appears twice on one side. That validation also protects the wide export because the serializer finds each slot by its side and role. Without unique role assignments, a column such as `blue_mid_kills` would not have one unambiguous player to read from.",
+          "The long CSV keeps one row per player. It has 16 match-level columns, five player metadata columns, and 19 stat columns for a total of 40. Match information such as Battle ID, patch, duration, winner, ban mode, and bans is repeated across the ten player rows.",
+          "The wide CSV turns the same match into one 226-column row. It starts with the same 16 match columns, then writes ten fixed role slots in Blue then Red order. Within each side the order is EXP, Jungle, Mid, Roam, and Gold. Each slot contains IGN and hero followed by the 19 stat fields. The serializer therefore does the reshaping itself instead of requiring a separate pivot after export.",
+          "Patch, winning side, and bans are manual metadata fields in the current UI. Duration comes from OCR and is converted from `MM:SS` to seconds only when it matches that format. The crop configurations and IGN history persist in `localStorage`, while the current match metadata and player assignments are reset after a match is saved. Screenshot processing and CSV generation stay in the browser. There is no backend in the current application path.",
+        ],
+      },
     ],
-    retrospective:
-      "If I extend this further, I would version crop presets against specific MLBB patches and add a confidence-driven review queue so low-confidence fields are surfaced first instead of making analysts scan every extracted value equally.",
   },
   {
     slug: "webp-unli",
