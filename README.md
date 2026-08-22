@@ -1,9 +1,5 @@
 # Aerol Balayon
 
-I'm Aerol. You might also know me as Aedwon.
-
-I studied Computer Science at UP Diliman on a DOST Merit Scholarship after Philippine Science High School. Most of my recent work has been in offline-first apps and community infrastructure.
-
 [aedwon.com](https://aedwon.com) · [LinkedIn](https://linkedin.com/in/aedwon) · [Discord](https://discord.com/users/aedwon) · [Email](mailto:aerol.balayon@gmail.com)
 
 ## Selected work
