@@ -2,12 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { ALL_PROJECTS } from "@/lib/data/project-registry";
+import { PORTFOLIO_PROJECTS } from "@/lib/data/project-overrides";
 import ProjectCard from "./ProjectCard";
 import { useTheme } from "./ThemeContext";
 
 export default function FeaturedProjects() {
-  const featured = ALL_PROJECTS.filter((p) => p.featured);
+  const featured = PORTFOLIO_PROJECTS.filter((p) => p.featured);
   let isNeobrutalist = false;
 
   try {
