@@ -18,6 +18,7 @@ These are author-specific rules, not general AI-writing heuristics. They overrid
 - Avoid semicolons in narrative copy. Use a period or a plain conjunction instead. Semicolons are fine inside code and lists where the punctuation is structurally necessary.
 - Use sentence case for headings.
 - Prefer connected prose over labeled mini-bullets. A list should exist because the content is actually enumerable, not because the paragraph can be split into tidy chunks.
+- Group related sentences into real paragraphs. Do not format normal prose as one sentence per paragraph. Single-sentence paragraphs are allowed only when the sentence genuinely needs emphasis or a change in pace.
 - Plain words win. Prefer *used* over *leveraged*, *built* over *architected* when the distinction does not matter, and *instead of* over elevated contrast phrases.
 - Do not force every section into a clean setup, conflict, lesson, and optimistic ending. Leave a technical limitation unresolved when it is genuinely unresolved.
 - Preserve uneven rhythm. Short sentences are allowed. So are longer technical sentences when the detail needs them.
@@ -57,6 +58,7 @@ Never use these words or their variants:
 ### 7. Sentence Length, Burstiness & Rhythm
 - Engineer burstiness: mix short blunt sentences with longer explanatory ones.
 - Avoid uniform 15-to-20 word sentences.
+- Avoid one-sentence-per-paragraph formatting as a default. Paragraph breaks should follow changes in idea, emphasis, or pacing, not every sentence boundary.
 - Avoid tidy 5-paragraph essay structures and moralizing/inspirational concluding sentences.
 
 ### 8. Voice-Match Principles (Subtract, Don't Add)
