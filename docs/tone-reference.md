@@ -44,6 +44,25 @@ Feel free to connect with me on any of these platforms!
 
 ---
 
+## Aedwon voice calibration
+
+Hiroki is a reference for directness and technical specificity, not a sentence-level imitation target. Aedwon's own phrasing wins when the two differ.
+
+- Use "instead of". Do not use "rather than" in authored portfolio copy.
+- Do not use colons in normal prose unless the colon introduces an actual list.
+- Do not use em dashes in authored portfolio copy.
+- Avoid semicolons in narrative copy.
+- Keep headings in sentence case.
+- Use plain verbs and concrete nouns.
+- Lists should exist because the content is genuinely enumerable. Do not turn ordinary prose into repeated label-and-description bullets.
+- Let sentence length move around. Short sentences are normal.
+- Do not manufacture a lesson at the end of every section.
+- Keep real limitations in the copy when they matter. Do not polish them away for a cleaner story.
+
+These rules override generic humanizer advice.
+
+---
+
 ## The "Unslop" Rules for Aedwon's Copy
 
 1. **First-person & Plain English:**

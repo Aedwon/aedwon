@@ -48,18 +48,24 @@ export interface ProjectItem {
   results: string;
   metrics?: ProjectMetric[];
   retrospective?: string;
+  articleSections?: {
+    title: string;
+    paragraphs: string[];
+    codeSnippet?: string;
+    codeLanguage?: string;
+  }[];
 }
 
 export const PROJECTS: ProjectItem[] = [
   {
     slug: 'pantas',
     title: 'Pantas',
-    tagline: 'Local-first mobile exam reviewer for Philippine civil service and university entrance preparation with on-device FSRS spaced repetition and OMR mock exam simulations.',
+    tagline: 'Android-first exam reviewer for Philippine civil service and university entrance preparation, with encrypted local study state and on-device FSRS-6 scheduling.',
     category: 'mobile',
     categoryLabel: 'Mobile & Offline',
     tier: 'flagship',
     role: 'Lead Architect & Developer',
-    timeline: '2024 to Present',
+    timeline: '2026 to Present',
     featured: true,
     order: 1,
     glowColor: 'blue',
@@ -67,7 +73,6 @@ export const PROJECTS: ProjectItem[] = [
     icon: 'book-open',
     platforms: [
       { name: 'Android', icon: 'android' },
-      { name: 'iOS', icon: 'apple' },
     ],
     stack: [
       { name: 'Flutter (3.41+)', icon: 'flutter' },
@@ -81,86 +86,45 @@ export const PROJECTS: ProjectItem[] = [
       { name: 'RevenueCat', icon: 'payment' },
     ],
     liveUrl: 'https://pantas.app',
-    summary: 'Mobile exam reviewer for Philippine civil service and university entrance tests, with adaptive spaced repetition and OMR answer sheets.',
-    problem: 'I built Pantas because Civil Service Exam and UPCAT preparation in the Philippines still relies on bulky 500-page printed reviewers or web apps that break when mobile data drops during long jeepney and bus commutes. Commercial review centers charge upwards of ₱10,000, while cheap digital reviewers are often bloated with synthetic passing probabilities and paywalled basic explanations. I wanted to give reviewees a guaranteed offline study tool that accurately tracks memory decay without consuming expensive mobile data buckets.',
-    architecture: [
+    summary: 'Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.',
+    problem: 'Pantas is a pre-launch Flutter reviewer for Philippine exam preparation. Its current implementation keeps study state in an encrypted local database and schedules practice with an on-device FSRS-6 engine.',
+    architecture: [],
+    results: 'The local study and scheduling paths are implemented. Firebase-backed account sync and the mock-exam content path are not currently usable in the running build.',
+    articleSections: [
       {
-        title: 'Editorial "Ink & Rule" Design System & Source Sans 3',
-        description: 'I stripped away the generic AI aesthetic (Poppins bold, stock blue #1F6BFF, drop shadows, emoji icons, pastel pills) in favor of an editorial printed-workbook identity. I used warm paper surfaces (#FBF9F4), near-black ink (#26221B), 1px hairline rules (#E5DFD3), and tabular figures, budgeting Board Green (#1D5C50) strictly for the single primary CTA per screen. I originally tried pairing a serif with sans, but on a phone screen the serif became an eyesore at small sizes and distracted from the content. I standardized on Source Sans 3 across all 15 typography roles to keep the focus entirely on reading.',
-        tradeOff: 'Abandoning standard Material cards and elevated shadows meant writing custom layout math with hairline dividers, but it eliminated visual fatigue during 2-hour study drills.',
+        title: 'Keeping study state local',
+        paragraphs: [
+          'Pantas stores its mutable study state in a Drift database instead of depending on a network request before a quiz can work. The database includes attempts, review state, quiz sessions, lesson progress, preferences, review logs, and a queue of changes waiting to sync.',
+          'The database is opened through Drift\'s background native database path. Pantas generates a 32-byte key with `Random.secure()`, stores that key through `flutter_secure_storage`, and supplies it to SQLite3MultipleCiphers in SQLCipher compatibility mode. The repository also records the migration details because changing the encryption library or secure-storage format incorrectly could leave an existing install unable to open its own database.',
+          'The sync layer was built around that local state. Changes such as an updated review schedule are added to a persistent pending queue, which keeps failed operations available for another attempt. The Firestore mappers, push and pull paths, and conflict handling exist in the repository. They are not live in the current build because Firebase bootstrap is still intentionally unwired.',
+        ],
       },
       {
-        title: 'Local-First Encrypted Persistence via Drift SQLite & SQLCipher',
-        description: 'I designed the app under one core rule: studying is never blocked by the network; only account and money are. All question banks, user response logs, and scheduled drill states live in an encrypted local database using Drift SQLite with 256-bit AES SQLCipher for RA 10173 compliance. I replaced dynamic runtime CMS queries with an immutable, pre-compiled static SQLite seed (content.db / assets/seed/v1.json), ensuring cold boots and drill queries stay instant.',
-        tradeOff: 'Bundling static seed databases adds ~8MB to the initial APK size, but guarantees zero-latency drills with 100% offline availability.',
-        codeSnippet: `// Pure local database setup with SQLCipher encryption and static seed loader
-LazyDatabase openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'pantas_encrypted.db'));
-    return SqlcipherDatabase(
-      file,
-      password: await secureStorage.getDatabaseKey(),
-      setup: (rawDb) => rawDb.execute('PRAGMA cipher_memory_security = OFF;'),
-    );
-  });
-}`,
+        title: 'What happens after an answer',
+        paragraphs: [
+          'A practice answer feeds directly into the review scheduler. `SubmitAnswer` checks the selected choice, derives a scheduler rating from correctness and response time, loads the existing review state or creates a new one, runs the FSRS scheduler, and saves the next due state. The same operation writes a review log containing the state from before the review, the rating that was actually used, correctness, response duration, and the version of the rating heuristic.',
+          'That log was added when the scheduler moved from FSRS-4.5 to FSRS-6. The original implementation landed in May with separate paths for new questions, successful reviews, and lapses. In July, the scheduler moved to FSRS-6\'s 21 default weights, a trainable decay parameter, and a separate same-day stability formula. Tests were updated with reference values and migration cases so existing review states could continue through the new formulas.',
+          'The current build still uses the published default weight vector. There is a separate design for fitting weights from a student\'s review history on the device, but that optimizer has not been implemented. Keeping that distinction in the article matters because the scheduling code is real today while personalized parameter fitting is not.',
+        ],
       },
       {
-        title: 'Pure Dart FSRS-6 Spaced Repetition Engine & On-Device Optimizer',
-        description: 'I implemented the FSRS-6 algorithm locally in pure Dart using the 21-parameter weight vector with dedicated same-day stability formulas for exam cramming behavior. To personalize intervals without sending study logs to a cloud server, I designed an on-device optimizer that fits parameters directly on device once a student logs 200 reviews (compared to Anki\'s 400+ threshold), guarded by a held-out test split to prevent overfitting.',
-        tradeOff: 'FSRS-6\'s 200-review optimizer threshold is calibrated for short 8-week Philippine exam countdowns, using held-out split validation to reject overfitted weights while allowing students to revert to defaults in Settings.',
-        codeSnippet: `// Pure Dart FSRS-6 scheduler with 21-parameter weights and same-day stability
-FsrsItem scheduleFsrs6Review(FsrsItem item, Rating rating, DateTime now, List<double> w) {
-  final elapsedDays = item.lastReviewed == null ? 0.0 : now.difference(item.lastReviewed!).inHours / 24.0;
-  final nextStability = elapsedDays < 1.0
-      ? fsrs6.calculateSameDayStability(item.stability, rating, w)
-      : fsrs6.calculateStability(item.stability, item.difficulty, elapsedDays, rating, w);
-  final nextDifficulty = fsrs6.calculateDifficulty(item.difficulty, rating, w);
-  final intervalDays = fsrs6.nextInterval(nextStability, targetRetention: 0.90, decay: -w[20]);
-  return item.copyWith(
-    stability: nextStability,
-    difficulty: nextDifficulty,
-    due: now.add(Duration(days: intervalDays.clamp(1, 36500).round())),
-    lastReviewed: now,
-  );
-}`,
+        title: 'Fixing passage ordering at the session boundary',
+        paragraphs: [
+          'Reading-comprehension passages exposed a problem in how quiz sessions were assembled. Quick Quiz shuffled individual questions, which could split questions from one passage across different parts of the session. A student could read the same passage, answer something unrelated, then encounter another question from that passage later.',
+          'The first fix grouped passage questions in the Quick Quiz path. That did not solve the general case because other use cases could create sessions through different routes. The grouping logic was moved into `QuizSession.start`, which is the shared constructor for new quiz sessions. Every new session now runs its questions through `groupPassageSets` before the first answer is recorded.',
+          'Resumed sessions deliberately keep their stored order. Answer outcomes are indexed by question position, so regrouping a session after answers already exist could attach those outcomes to different questions. The common constructor is therefore the right boundary for new-session ordering, while resume restores the order that was originally saved.',
+        ],
       },
       {
-        title: 'Assessment Hub & Distractor Misconception Explanations',
-        description: 'I replaced generic topic queues with an Assessment Hub (Today\'s Session, Drill, Retake, Mock Exam). Instead of showing a simple green checkmark or red cross, I authored answer reveals that explicitly explain why each incorrect choice (distractor) is wrong. To recreate real exam pressure, I wrote a custom canvas OMR bubble sheet with strict section boundary timers, question jump grids, and blueprint-weighted subject ratios.',
-        tradeOff: 'Authoring custom misconception explanations for all 4 multiple-choice options quadrupled content writing time, but prevented students from relying on rote memorization.',
-      },
-      {
-        title: 'Psychometric Integrity ("Never Invent a Figure")',
-        description: 'I instituted a strict rule: never invent a figure. I banned synthetic score predictions and fake readiness percentages (\'Passing Probability: 92%\'). Instead, I structured the Progress tab around four honest questions: The Diagnosis (where points leak and why), The Mirror (behavioral archetypes like stamina drop-off and pacing under pressure), The Record (measurable movement over time), and What\'s Fading (FSRS decay curves). I show score impact strictly as point deltas (\'Fixing these weak topics is worth +9 points\').',
+        title: 'Building content before it reaches the app',
+        paragraphs: [
+          'Questions are authored as structured files and pass through tooling before they are packed into the application. The authoring runbook has a validator for schema and content errors, followed by a Question Studio review step for flagged issues and duplicate stems. Questions that need a figure can stay inactive until the required illustration and renderer exist.',
+          'The content model also separates two meanings of difficulty. Authored difficulty is only used to organize the writing progression from easier questions toward exam-level ones. It is not written into the runtime question model. FSRS difficulty belongs to an individual student\'s review state and changes from their actual review history instead.',
+          'For the SQLite content path, the seed writer takes exported JSON and passes exams, subjects, topics, passages, questions, choices, lessons, and related records through the project\'s content parsers before writing `content.db`. When it builds the shipped database asset, it hashes the finished SQLite file and writes a shortened digest into `content_seed_version.dart`. The installer can use that digest to tell that bundled content changed instead of relying on somebody remembering to update a date or version string by hand.',
+          'Pantas is still in active pre-launch development. The local study and scheduling paths are implemented, while Firebase-backed account sync and the mock-exam content path are not currently usable in the running build. I am keeping those unfinished pieces out of the feature claims until their runtime paths are actually connected.',
+        ],
       },
     ],
-    hurdles: [
-      {
-        title: 'SQLCipher Database Migration Deadlocks on Budget Devices',
-        issue: 'When I ran question bank migrations and schema updates during cold boot on low-RAM Android devices, the SQLite database locked up and threw unhandled exceptions before the home view could mount.',
-        solution: 'I decoupled static question banks from mutable user response tables and moved schema migrations into a background isolate with a dedicated write-ahead log (WAL) pool, unblocking the main UI thread.',
-      },
-      {
-        title: 'FSRS-4.5 Cramming Flaws & Same-Day Review Drift',
-        issue: 'In FSRS-4.5, repeating the same card multiple times during intense last-minute cram sessions had no stability formula, causing intervals to distort and easy cards to bury high-yield civil service and UPCAT topics.',
-        solution: 'I upgraded to FSRS-6\'s 21-parameter weight vector with dedicated same-day review stability calculations (w[17..19]) and trainable decay. I built a local Dart optimizer with a 200-review threshold and held-out validation guard, giving cramming reviewees accurate intervals without cloud dependencies.',
-      },
-      {
-        title: 'Cold-Start Entitlement Race Conditions in Offline Posture',
-        issue: 'Standard subscription SDKs fail closed when network requests time out. A student studying on an offline commute could lose Pro access if a check failed.',
-        solution: 'I instituted a fail-open local cache rule: the last known entitlement state stands until positively contradicted by a successful server verification. Cached subscription tokens survive cold starts and are read before the first frame renders.',
-      },
-    ],
-    results: 'I delivered sub-15ms local query performance across 2,216+ question bank items with 100% offline study operation. The app runs without network dependencies during drills, eliminates synthetic passing metrics, and complies with RA 10173 on-device data encryption.',
-    metrics: [
-      { value: '100%', label: 'Offline study drills with zero cloud blockers' },
-      { value: '< 15ms', label: 'SQLite query latency for 50-item exam drills' },
-      { value: '21', label: 'FSRS-6 parameters with on-device optimizer' },
-      { value: 'RA 10173', label: 'Compliant on-device 256-bit AES encryption' },
-    ],
-    retrospective: 'If I were starting over today, I would build the question validation toolchain as a standalone CLI to catch distractor formatting anomalies and schema typos before compiling the static SQLite seed.',
   },
   {
     slug: 'msl-network',
@@ -454,13 +418,13 @@ def compute_scores(raw_matrix: np.ndarray, answer_key: np.ndarray, weights: np.n
   },
   {
     slug: 'msl-collegiate-cup-bot',
-    title: 'MSL Cup Tournament Bot',
-    tagline: 'Tournament operations engine for collegiate MLBB competitions automating match lobbies, bracket updates, and ticketing for 3,000+ student players.',
+    title: 'MSL Collegiate Cup Bot',
+    tagline: 'Discord operations bot for the MSL Collegiate Cup with roster verification, persistent match handling, support tickets, and Challonge bracket commands.',
     category: 'bots',
     categoryLabel: 'Bots & Systems',
     tier: 'focused',
-    role: 'Head of League Operations & Developer',
-    timeline: '2024 to 2025',
+    role: 'Developer',
+    timeline: '2025 to 2026',
     featured: false,
     order: 8,
     glowColor: 'purple',
@@ -468,29 +432,52 @@ def compute_scores(raw_matrix: np.ndarray, answer_key: np.ndarray, weights: np.n
     icon: 'trophy',
     platforms: [
       { name: 'Discord', icon: 'server' },
-      { name: 'Hostinger (KVM2 VPS)', icon: 'server' },
     ],
     stack: [
       { name: 'Python', icon: 'python' },
       { name: 'Discord.py', icon: 'bot' },
-      { name: 'MySQL', icon: 'mysql' },
-      { name: 'Hostinger (KVM2 VPS)', icon: 'hostinger' },
-      { name: 'Google Sheets API', icon: 'sheets' },
+      { name: 'Google Sheets', icon: 'sheets' },
+      { name: 'requests', icon: 'web' },
+      { name: 'aiohttp', icon: 'async' },
+      { name: 'Challonge API', icon: 'challonge' },
+      { name: 'JSON & CSV', icon: 'storage' },
     ],
-    summary: 'Tournament bot automating match sessions, team check-ins, rulebook enforcement, and dispute ticketing for 3,000+ collegiate competitors on Hostinger VPS with MySQL.',
-    problem: 'Operating a nationwide tournament for 3,000+ collegiate competitors across 180+ universities with referee arbitration and match scheduling.',
-    architecture: [
+    summary: 'Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.',
+    problem: 'The bot coordinates roster verification, match acknowledgements and disputes, support tickets, and bracket operations inside Discord while preserving enough state to recover active workflows after restarts.',
+    architecture: [],
+    results: 'The current repository includes persistent verification mappings, restart-aware match sessions, persistent support tickets with HTML transcripts, and explicit Challonge bracket reporting commands.',
+    articleSections: [
       {
-        title: 'Match Lobby & Ticketing Pipeline',
-        description: 'Automated match lobby creation, team verification, bracket sync, and multi-tier support ticketing with HTML transcript logging on Hostinger KVM2 VPS with MySQL backend.',
+        title: 'Roster verification feeds match acknowledgement',
+        paragraphs: [
+          "The verification flow starts from the current Group Stage Teams sheet. `^verify` accepts a Mobile Legends UID and server pair, fetches the sheet's CSV export, rejects a pair already claimed by another Discord account, then looks for the matching roster row. A successful match assigns the verification role, changes the member nickname to `[ABBREV] IGN`, and appends the Discord ID, team abbreviation, IGN, UID, server, and timestamp to `data/verified_users.csv`.",
+          "That local mapping is reused by the match cog. When someone replies `I acknowledge` after a game result, the bot looks up the Discord account in the verified-user file and records the team abbreviation along with the member name and acknowledgement time. The game moves on after two different team abbreviations have acknowledged it. Verification therefore does more than assign a Discord role. It gives the match workflow a persistent link between an account and the team it represents.",
+        ],
+      },
+      {
+        title: 'Match handling became restart-aware',
+        paragraphs: [
+          "The Git history shows the match cog arriving first as game-result tracking, then gaining dispute timing and persistence in follow-up commits. Each Discord channel can hold one `MatchSession` with its best-of format, marshal, game list, current status, acknowledgement timing, dispute timing, and last result message ID.",
+          "`/game_result` moves the session into `checking_ack` and starts its acknowledgement timer. Filing a dispute records when the dispute began and pauses the effective timer. The elapsed-time calculation subtracts both completed dispute time and an active dispute, so `/match_force_ack` still requires five active minutes even when the process was paused. Resolving a dispute is limited to the session marshal, an administrator, or someone with the configured Marshal role.",
+          "The session is written to `data/active_matches.json` whenever its state changes. When the cog loads again, it reconstructs those sessions and reattaches either the dispute or resolve view to the saved Discord message ID. The deserializer also accepts the older acknowledgement-list format and converts it into the newer per-team dictionary. That matches the repository history where acknowledgements later gained the name and timestamp of the person who submitted them.",
+        ],
+      },
+      {
+        title: 'Tickets became a second persistent workflow',
+        paragraphs: [
+          "The ticket system arrived later in December 2025 and grew through a series of smaller commits. A user chooses among League Operations, Rewards & Payouts, Contents & Socials, and General & Tech Support, then submits a subject and description through a modal. The bot creates a `[tag]-username` channel whose permission overwrites expose it to the creator, the bot, the relevant category role, and the support role. Creation time, category, creator, claim state, added users, and reminder state are stored in `data/active_tickets.json`.",
+          "Claiming a ticket has its own permission checks. The creator and manually added users cannot claim it. Category staff and administrators can, while an escalated ticket can also become claimable by League Operations. A task runs every ten minutes and sends a reminder after an unclaimed ticket has been open for 24 hours. Rewards and Contents tickets receive an additional escalation after 48 hours.",
+          "Closing a ticket reads up to 500 channel messages in chronological order and turns them into an HTML transcript. The renderer handles Discord mentions, basic message formatting, attachments, and embeds. The transcript is sent to the log channel and directly to the ticket creator, while manually added users receive their own copy. The creator also gets a rating prompt before the ticket channel is deleted. The Git history around this code includes separate passes for embed rendering, mention parsing, transcript layout, and Discord interaction-response handling instead of one large ticket-system commit.",
+        ],
+      },
+      {
+        title: 'Challonge was added after the Discord workflows',
+        paragraphs: [
+          "Challonge support was added in January 2026. A marshal or administrator can link a bracket to the current Discord channel with `/challonge_link`. The bot validates the tournament, fetches its participants, and stores the channel-to-bracket mapping in `data/challonge_brackets.json`. Other commands can list bracket matches or explicitly report a winner and score.",
+          "The current client is a small asynchronous wrapper over Challonge API v1 using `aiohttp`. The Git history briefly moved the integration to the v2.1 OAuth flow before reverting to the API-key version that remains in the repository. The current code keeps this bracket state separate from `MatchSession`. Discord acknowledgements do not automatically submit a result to Challonge. Reporting the bracket result is still an explicit marshal or administrator action.",
+        ],
       },
     ],
-    results: 'Cut tournament administrative delays by 90% across full season schedule.',
-    metrics: [
-      { value: '3,000+', label: 'Collegiate competitors managed' },
-      { value: '90%', label: 'Reduction in manual referee operations' },
-    ],
-    retrospective: 'Integrating Discord modal forms directly into match lobbies would make screenshot submission for match results even faster.',
   },
   {
     slug: 'ilocos-sur-esports-bot',

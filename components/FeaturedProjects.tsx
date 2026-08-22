@@ -2,12 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { PROJECTS } from "@/lib/data/projects";
+import { PORTFOLIO_PROJECTS } from "@/lib/data/project-overrides";
 import ProjectCard from "./ProjectCard";
 import { useTheme } from "./ThemeContext";
 
 export default function FeaturedProjects() {
-  const featured = PROJECTS.filter((p) => p.featured);
+  const featured = PORTFOLIO_PROJECTS.filter((p) => p.featured);
   let isNeobrutalist = false;
 
   try {
@@ -42,9 +42,17 @@ export default function FeaturedProjects() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {featured.map((project) => (
-          <ProjectCard key={project.slug} project={project} />
-        ))}
+        {featured.map((project) => {
+          const isBetterGov = project.slug === "bettergov-ph";
+          return (
+            <ProjectCard
+              key={project.slug}
+              project={project}
+              external={isBetterGov}
+              href={isBetterGov ? project.liveUrl ?? project.githubUrl : undefined}
+            />
+          );
+        })}
       </div>
     </section>
   );

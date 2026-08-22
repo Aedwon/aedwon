@@ -22,13 +22,13 @@ I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following 
 Featured projects [See all projects →]
 
 • Pantas
-  Summary: Mobile exam reviewer for Philippine civil service and university entrance tests, with adaptive spaced repetition and OMR answer sheets.
+  Summary: Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.
   Stack: [Flutter, Dart, Drift, SQLCipher, Riverpod, FSRS, Sanity, RevenueCat]
   Link: [View case study →]
 
-• The MSL Network
-  Summary: Planned and built the Philippine student gaming community to 10,000+ members, using custom Discord bots for student verification and event quests.
-  Stack: [Python, Discord.py, MySQL, Google Sheets API]
+• MSL Network Bot
+  Summary: Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.
+  Stack: [Python, Discord.py, MySQL, aiomysql, aiohttp, Vercel, Pterodactyl]
   Link: [View case study →]
 
 • QR Studio
@@ -165,69 +165,115 @@ Get in touch for software projects or community infrastructure:
 - **Tier:** Flagship
 - **Category:** Mobile & Offline
 - **Role:** Lead Architect & Developer
-- **Timeline:** 2024 to Present
-- **Platform:** Android, iOS (Flutter)
+- **Timeline:** 2026 to Present
+- **Platform:** Android (Flutter)
 - **Stack:** Flutter 3.41+, Dart, Drift (SQLite), SQLCipher, Riverpod 2.x, Open Spaced Repetition (FSRS), Firebase Firestore, Sanity CMS, RevenueCat
 - **Live URL:** https://pantas.app
-- **Problem & Constraints:** I built Pantas because Civil Service Exam and UPCAT preparation in the Philippines still relies on bulky 500-page printed reviewers or web apps that break when mobile data drops during long jeepney and bus commutes. Commercial review centers charge upwards of ₱10,000, while cheap digital reviewers are often bloated with synthetic passing probabilities and paywalled basic explanations. I wanted to give reviewees a guaranteed offline study tool that accurately tracks memory decay without consuming expensive mobile data buckets.
-- **How It's Built:**
-  - **Editorial "Ink & Rule" Design System & Source Sans 3:** I stripped away the generic AI aesthetic (Poppins bold, stock blue `#1F6BFF`, drop shadows, emoji icons, pastel pills) in favor of an editorial printed-workbook identity. I used warm paper surfaces (`#FBF9F4`), near-black ink (`#26221B`), 1px hairline rules (`#E5DFD3`), and tabular figures, budgeting Board Green (`#1D5C50`) strictly for the single primary CTA per screen. I originally tried pairing a serif with sans, but on a phone screen the serif became an eyesore at small sizes and distracted from the content. I standardized on Source Sans 3 across all 15 typography roles to keep the focus entirely on reading.
-  - **Local-First Encrypted Persistence via Drift SQLite & SQLCipher:** I designed the app under one core rule: studying is never blocked by the network; only account and money are. All question banks, user response logs, and scheduled drill states live in an encrypted local database using Drift SQLite with 256-bit AES SQLCipher for RA 10173 compliance. I replaced dynamic runtime CMS queries with an immutable, pre-compiled static SQLite seed (`content.db` / `assets/seed/v1.json`), ensuring cold boots and drill queries stay instant.
-  - **Pure Dart FSRS-6 Spaced Repetition Engine & On-Device Optimizer:** I implemented the FSRS-6 algorithm locally in pure Dart using the 21-parameter weight vector with dedicated same-day stability formulas for exam cramming behavior. To personalize intervals without sending study logs to a cloud server, I designed an on-device optimizer that fits parameters directly on device once a student logs 200 reviews (compared to Anki's 400+ threshold), guarded by a held-out test split to prevent overfitting.
-  - **Assessment Hub & Distractor Misconception Explanations:** I replaced generic topic queues with an Assessment Hub (`Today's Session`, `Drill`, `Retake`, `Mock Exam`). Instead of showing a simple green checkmark or red cross, I authored answer reveals that explicitly explain why each incorrect choice (distractor) is wrong. To recreate real exam pressure, I wrote a custom canvas OMR bubble sheet with strict section boundary timers, question jump grids, and blueprint-weighted subject ratios.
-  - **Psychometric Integrity ("Never Invent a Figure"):** I instituted a strict rule: never invent a figure. I banned synthetic score predictions and fake readiness percentages ('Passing Probability: 92%'). Instead, I structured the Progress tab around four honest questions: The Diagnosis (where points leak and why), The Mirror (behavioral archetypes like stamina drop-off and pacing under pressure), The Record (measurable movement over time), and What's Fading (FSRS decay curves). I show score impact strictly as point deltas ('Fixing these weak topics is worth +9 points').
-- **Hurdles & Solutions:**
-  - **SQLCipher Database Migration Deadlocks on Budget Devices:** When I ran question bank migrations and schema updates during cold boot on low-RAM Android devices, the SQLite database locked up and threw unhandled exceptions before the home view could mount. I decoupled static question banks from mutable user response tables and moved schema migrations into a background isolate with a dedicated write-ahead log (WAL) pool, unblocking the main UI thread.
-  - **FSRS-4.5 Cramming Flaws & Same-Day Review Drift:** In FSRS-4.5, repeating the same card multiple times during intense last-minute cram sessions had no stability formula, causing intervals to distort and easy cards to bury high-yield civil service and UPCAT topics. I upgraded to FSRS-6's 21-parameter weight vector with dedicated same-day review stability calculations (w[17..19]) and trainable decay. I built a local Dart optimizer with a 200-review threshold and held-out validation guard, giving cramming reviewees accurate intervals without cloud dependencies.
-  - **Cold-Start Entitlement Race Conditions in Offline Posture:** Standard subscription SDKs fail closed when network requests time out. A student studying on an offline commute could lose Pro access if a check failed. I instituted a fail-open local cache rule: the last known entitlement state stands until positively contradicted by a successful server verification. Cached subscription tokens survive cold starts and are read before the first frame renders.
-- **Results & Numbers:** I delivered sub-15ms local query performance across 2,216+ question bank items with 100% offline study operation. The app runs without network dependencies during drills, eliminates synthetic passing metrics, and complies with RA 10173 on-device data encryption.
-- **Metrics:**
-  - `100%`: Offline study drills with zero cloud blockers
-  - `< 15ms`: SQLite query latency for 50-item exam drills
-  - `21`: FSRS-6 parameter weights with on-device optimizer
-  - `RA 10173`: Compliant on-device 256-bit AES encryption
-- **Retrospective:** If I were starting over today, I would build the question validation toolchain as a standalone CLI to catch distractor formatting anomalies and schema typos before compiling the static SQLite seed.
+- **Tagline:** Android-first exam reviewer for Philippine civil service and university entrance preparation, with encrypted local study state and on-device FSRS-6 scheduling.
+- **Summary:** Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.
 
-### 2.2 The MSL Network & Verification Platform (`/projects/msl-network`) — Flagship
+#### Keeping study state local
+
+Pantas stores its mutable study state in a Drift database instead of depending on a network request before a quiz can work. The database includes attempts, review state, quiz sessions, lesson progress, preferences, review logs, and a queue of changes waiting to sync.
+
+The database is opened through Drift's background native database path. Pantas generates a 32-byte key with `Random.secure()`, stores that key through `flutter_secure_storage`, and supplies it to SQLite3MultipleCiphers in SQLCipher compatibility mode. The repository also records the migration details because changing the encryption library or secure-storage format incorrectly could leave an existing install unable to open its own database.
+
+The sync layer was built around that local state. Changes such as an updated review schedule are added to a persistent pending queue, which keeps failed operations available for another attempt. The Firestore mappers, push and pull paths, and conflict handling exist in the repository. They are not live in the current build because Firebase bootstrap is still intentionally unwired.
+
+#### What happens after an answer
+
+A practice answer feeds directly into the review scheduler. `SubmitAnswer` checks the selected choice, derives a scheduler rating from correctness and response time, loads the existing review state or creates a new one, runs the FSRS scheduler, and saves the next due state. The same operation writes a review log containing the state from before the review, the rating that was actually used, correctness, response duration, and the version of the rating heuristic.
+
+That log was added when the scheduler moved from FSRS-4.5 to FSRS-6. The original implementation landed in May with separate paths for new questions, successful reviews, and lapses. In July, the scheduler moved to FSRS-6's 21 default weights, a trainable decay parameter, and a separate same-day stability formula. Tests were updated with reference values and migration cases so existing review states could continue through the new formulas.
+
+The current build still uses the published default weight vector. There is a separate design for fitting weights from a student's review history on the device, but that optimizer has not been implemented. Keeping that distinction in the article matters because the scheduling code is real today while personalized parameter fitting is not.
+
+#### Fixing passage ordering at the session boundary
+
+Reading-comprehension passages exposed a problem in how quiz sessions were assembled. Quick Quiz shuffled individual questions, which could split questions from one passage across different parts of the session. A student could read the same passage, answer something unrelated, then encounter another question from that passage later.
+
+The first fix grouped passage questions in the Quick Quiz path. That did not solve the general case because other use cases could create sessions through different routes. The grouping logic was moved into `QuizSession.start`, which is the shared constructor for new quiz sessions. Every new session now runs its questions through `groupPassageSets` before the first answer is recorded.
+
+Resumed sessions deliberately keep their stored order. Answer outcomes are indexed by question position, so regrouping a session after answers already exist could attach those outcomes to different questions. The common constructor is therefore the right boundary for new-session ordering, while resume restores the order that was originally saved.
+
+#### Building content before it reaches the app
+
+Questions are authored as structured files and pass through tooling before they are packed into the application. The authoring runbook has a validator for schema and content errors, followed by a Question Studio review step for flagged issues and duplicate stems. Questions that need a figure can stay inactive until the required illustration and renderer exist.
+
+The content model also separates two meanings of difficulty. Authored difficulty is only used to organize the writing progression from easier questions toward exam-level ones. It is not written into the runtime question model. FSRS difficulty belongs to an individual student's review state and changes from their actual review history instead.
+
+For the SQLite content path, the seed writer takes exported JSON and passes exams, subjects, topics, passages, questions, choices, lessons, and related records through the project's content parsers before writing `content.db`. When it builds the shipped database asset, it hashes the finished SQLite file and writes a shortened digest into `content_seed_version.dart`. The installer can use that digest to tell that bundled content changed instead of relying on somebody remembering to update a date or version string by hand.
+
+Pantas is still in active pre-launch development. The local study and scheduling paths are implemented, while Firebase-backed account sync and the mock-exam content path are not currently usable in the running build. I am keeping those unfinished pieces out of the feature claims until their runtime paths are actually connected.
+
+### 2.2 MSL Network Bot (`/projects/msl-network`) — Flagship
 - **Tier:** Flagship
 - **Category:** Bots & Systems
-- **Role:** Platform Architect & Community Lead
-- **Timeline:** 2022 to Present
-- **Platform:** Discord, Hostinger (KVM2 VPS)
-- **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Google Sheets API, Asyncio
-- **Problem & Constraints:** Managing competitive collegiate gaming across 180+ campuses manually meant tournament admins were overwhelmed by student ID verification, team check-ins, and dispute handling during live game days.
-- **How It's Built:**
-  - **Discord Verification & Role Hierarchy Engine:** An automated verification bot that validates student credentials against campus registrar lists, granting university-specific channels and competitive tier roles.
-  - **Hostinger KVM2 VPS Host Architecture:** Hosted on a Linux KVM2 VPS running systemd service workers, asynchronous MySQL connection pools, and automatic memory-managed worker recycling.
-  - **Campus Leaderboard & Quest Engine:** Tracks weekly inter-university scrimmage results and activity leaderboards across 80+ partner student organizations.
-- **Hurdles & Solutions:**
-  - **Discord Gateway Rate Limits During Tournament Kickoffs:** Over 800 players joining match lobbies simultaneously caused Discord API HTTP 429 rate limit freezes. Implemented token bucket rate limiters and queued role assignments through an asyncio worker pool with jittered backoff.
-  - **Google Sheets API Quota Exhaustion:** Live lookups during tournament registrations burned through the 300 requests-per-minute quota. Built a local MySQL write-through cache syncing modified rows in 60-second batch intervals.
-- **Results & Numbers:** Scaled the platform to 10,000+ active student members across 180+ universities, cutting tournament check-in administrative time by 90%.
-- **Metrics:**
-  - `10,000+`: Active student community members
-  - `90%`: Reduction in manual tournament check-in overhead
-  - `180+`: Philippine universities connected
-- **Retrospective:** I should have moved off Google Sheets earlier in the lifecycle. The custom caching layer worked, but a direct PostgreSQL admin UI would have saved maintenance hours.
+- **Role:** Developer
+- **Timeline:** 2026
+- **Platform:** Discord, Web
+- **Stack:** Python, Discord.py, MySQL, aiomysql, aiohttp, Vercel, Pterodactyl
+- **GitHub URL:** https://github.com/Aedwon/Discord-Bot
 
-### 2.3 Norala SB Legislative Transparency Portal (`/projects/norala-sb-portal`) — Flagship
+#### From XP tracking to community operations
+
+The bot started in January 2026 with XP, moderation, and boost tracking. The leveling code already collected pending message, reaction, and voice XP in memory before writing updates. As more features arrived, the project moved into separate Discord cogs backed by shared services and an async MySQL pool. The current entry point loads verification, events, raffles, quests, tickets, analytics, moderation, voice tools, and other server features from one process.
+
+The bot is intentionally scoped to one Discord server. `config.py` carries a single guild ID, and startup opens the database, restores persistent views, then syncs slash commands to that guild. Configurable role and channel IDs live in database-backed settings. It is server-specific community infrastructure instead of a general multi-server bot framework.
+
+#### Verification became part of the economy
+
+MLBB account verification landed in March after XP and Event Points were already present. A persistent Discord button opens a modal for a member's full name, MLBB UID, server ID, and an optional referral code. The verification service enforces a unique MLBB UID in MySQL, then keeps verified Discord user IDs in an in-memory set. Message, reaction, voice, XP, and Event Point paths can check that set without querying the verification table for every activity update.
+
+MSL cross-referencing came next. The current service reads the public `FINAL` Google Sheet tab as CSV with `aiohttp`, normalizes the UID and server values, and rebuilds an in-memory lookup every six hours. The first implementation keyed MSL records by UID alone. A later change moved the lookup to the `(UID, server)` pair used by the current code. The same check now feeds eligibility rules in event registration, placements, and raffles.
+
+#### Event workflows use Discord state directly
+
+Event tracking stays attached to Discord Scheduled Events instead of maintaining a separate event calendar. An administrator can configure an activity workflow for an event. Audio workflows accumulate minutes from voice-state changes. Text workflows count qualifying messages. Forum entries require an administrator to validate the post with a check reaction. A kiosk workflow can require registration before a participation claim is accepted.
+
+Progress is kept in memory while an event is active and written to MySQL as it changes. When Discord marks the scheduled event complete, the bot flushes remaining voice time, checks stored progress against the configured threshold, records eligible rewards, and sends the Event Point change through the existing economy service. The same event system also tracks registration, placement rewards, participation claims, and peak attendance across the main and overflow voice channels.
+
+#### Web admin tools share the same data
+
+Not every admin surface stayed inside Discord. The repository includes a Vercel endpoint for the quest configuration dashboard with authenticated create, edit, activation, and deletion operations against the same quest tables used by the bot. Daily quests themselves track message counts, voice minutes, or reactions and store each member's assignment and progress in MySQL.
+
+The analytics dashboard follows a similar split. Its serverless endpoint reads daily rollups from MySQL and resolves cached Discord member and channel names before returning the dashboard data. The long-running Discord process uses `aiomysql`, while these request-based endpoints use `PyMySQL`. Both sides work from the same database instead of maintaining a second reporting store.
+
+### 2.3 Norala SB Transparency Portal (`/projects/norala-sb-portal`) (Flagship)
 - **Tier:** Flagship
 - **Category:** Civic Tech
-- **Role:** Creator & Full-Stack Architect
-- **Timeline:** 2024
-- **Platform:** Web, PWA
-- **Stack:** TypeScript, Next.js, Tailwind CSS, SQLite, Prisma, Lucide, PWA Service Worker
-- **Problem & Constraints:** Municipal legislative records in rural Philippine local government units are stored in physical paper binders or fragmented scanned PDFs. Citizens and municipal staff have no fast way to search enacted ordinances on mobile devices.
-- **How It's Built:**
-  - **Full-Text Legislative Indexing:** Builds an inverted index of enacted municipal ordinances, resolutions, and committee reports using SQLite FTS5 for sub-second keyword matching.
-  - **Offline PWA Service Worker:** Caches recent gazette listings and legislative metadata on the user device via Workbox, allowing citizens to read ordinances even with weak provincial mobile signals.
-- **Hurdles & Solutions:**
-  - **OCR Inaccuracies on Scanned Legacy Documents:** Decades-old typewriter municipal documents had skewed text and faded ink that broke text search indexing. Pre-processed document scans with contrast normalization filters before passing text blocks into the search index.
-- **Results & Numbers:** Delivered sub-second search indexing across hundreds of local ordinances, giving citizens searchable mobile access to municipal legislation.
-- **Metrics:**
-  - `Sub-second`: Full-text search across municipal legislation
-  - `Offline PWA`: Accessible on low-bandwidth mobile devices
-- **Retrospective:** Structuring legislative metadata to support open civic data schemas (like Popolo) would make future inter-LGU integrations easier.
+- **Role:** Creator & Developer
+- **Timeline:** 2026
+- **Platform:** Web
+- **Stack:** Next.js 16, TypeScript, Tailwind CSS 4, next-intl
+- **Live URL:** https://norala-sb-demo.vercel.app
+- **GitHub URL:** https://github.com/Aedwon/norala-sb-demo
+
+Norala SB Transparency Portal is a student proof-of-concept for the Sangguniang Bayan of Norala, South Cotabato. It uses synthetic officials and legislative records and was prepared for possible donation to the LGU. The current repository has no application database or admin backend. Its public records are kept with the code instead.
+
+#### Repository-backed legislative records
+
+Legislative documents and announcements live in repository content files. Officials, committees, sessions, and the subject vocabulary live in TypeScript. `lib/content.ts` reads document frontmatter and body content, then builds the relationships used elsewhere in the site.
+
+Some of those relationships are derived instead of stored twice. An official's authored legislation is found by matching document `authorSlugs`. Committee pages collect legislation through `committeeSlug`. When one document lists another under `amends`, the loader derives the reverse `amendedBy` relationship.
+
+The content layer also has a `verifyCrossLinks()` pass for references between records. It checks document authors, committees, sessions, amendment targets, and document links inside session agendas. The Git history shows this data layer landing with a temporary verification page before the council, session, and announcement pages were built. That debug route was removed after the content relationships had been checked.
+
+#### One set of records across two locales
+
+The application uses `next-intl` with `/en` and `/fil` as explicit route prefixes. The locale layout generates both route variants, loads the matching message bundle, sets the document language, and wraps the page in the same header, footer, skip link, and prototype banner.
+
+The content records themselves are shared. On the home page, the same legislative document supplies either `summaryEn` or `summaryFil` depending on the route. Council pages do the same with official biographies while translated interface labels come from the locale message files. A later commit also fixed the home page links so internal navigation keeps the active locale prefix.
+
+The home page pulls recent legislation, the next scheduled session, and the latest announcements from the same content layer. Council pages use the document relationships to connect officials and committees back to the records associated with them.
+
+#### Keeping the prototype visibly unofficial
+
+The demo status is part of the implementation instead of being left to a disclaimer at the bottom of the page. The locale layout always renders a prototype banner. Page metadata sets `index` and `follow` to false, and `robots.ts` blocks crawling of the site. The contact page shows the shape of an official inquiry form, but every control is disabled and the page states that the demo does not submit or store the entered information.
+
+The handover document treats those restrictions as adoption steps. It explains how an LGU team could replace the synthetic records and remove the demo banner and crawler restrictions if the repository were adopted for official use.
+
+The current build is still incomplete around ordinance browsing. The home page includes a search form and links to recent legislation, but the `/ordinances` index and `/ordinances/[slug]` detail routes are placeholders in the current code. The project specification describes a FlexSearch index, URL-based filters, and a fuller document view, but those pieces are not implemented in the current `main` branch. The current repository also does not contain the SQLite, Prisma, Workbox, OCR, or PWA implementation claimed by the older portfolio article.
 
 ### 2.4 PSO Automated Scorer & Ranking Engine (`/projects/pso-scoring-model`) — Flagship
 - **Tier:** Flagship
@@ -292,19 +338,42 @@ Get in touch for software projects or community infrastructure:
 - **Metrics:**
   - `Open Source`: Public citizen digital infrastructure
 
-### 2.8 MSL Collegiate Cup Tournament Bot (`/projects/msl-collegiate-cup-bot`) — Focused
+### 2.8 MSL Collegiate Cup Bot (`/projects/msl-collegiate-cup-bot`) — Focused
 - **Tier:** Focused
 - **Category:** Bots & Systems
-- **Role:** Head of League Operations & Developer
-- **Timeline:** 2024 to 2025
-- **Platform:** Discord, Hostinger (KVM2 VPS)
-- **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Google Sheets API
-- **Why I Built This:** Operating a nationwide tournament for 3,000+ collegiate competitors across 180+ universities with referee arbitration and match scheduling.
-- **How It Works:** Automated match lobby creation, team verification, bracket sync, and multi-tier support ticketing with HTML transcript logging on Hostinger KVM2 VPS with MySQL backend.
-- **Results & Numbers:** Cut tournament administrative delays by 90% across full season schedule.
-- **Metrics:**
-  - `3,000+`: Collegiate competitors managed
-  - `90%`: Reduction in manual referee operations
+- **Role:** Developer
+- **Timeline:** 2025 to 2026
+- **Platform:** Discord
+- **Stack:** Python, Discord.py, Google Sheets, requests, aiohttp, Challonge API, JSON and CSV persistence
+- **Summary:** Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.
+
+#### Roster verification feeds match acknowledgement
+
+The verification flow starts from the current Group Stage Teams sheet. `^verify` accepts a Mobile Legends UID and server pair, fetches the sheet's CSV export, rejects a pair already claimed by another Discord account, then looks for the matching roster row. A successful match assigns the verification role, changes the member nickname to `[ABBREV] IGN`, and appends the Discord ID, team abbreviation, IGN, UID, server, and timestamp to `data/verified_users.csv`.
+
+That local mapping is reused by the match cog. When someone replies `I acknowledge` after a game result, the bot looks up the Discord account in the verified-user file and records the team abbreviation along with the member name and acknowledgement time. The game moves on after two different team abbreviations have acknowledged it. Verification therefore does more than assign a Discord role. It gives the match workflow a persistent link between an account and the team it represents.
+
+#### Match handling became restart-aware
+
+The Git history shows the match cog arriving first as game-result tracking, then gaining dispute timing and persistence in follow-up commits. Each Discord channel can hold one `MatchSession` with its best-of format, marshal, game list, current status, acknowledgement timing, dispute timing, and last result message ID.
+
+`/game_result` moves the session into `checking_ack` and starts its acknowledgement timer. Filing a dispute records when the dispute began and pauses the effective timer. The elapsed-time calculation subtracts both completed dispute time and an active dispute, so `/match_force_ack` still requires five active minutes even when the process was paused. Resolving a dispute is limited to the session marshal, an administrator, or someone with the configured Marshal role.
+
+The session is written to `data/active_matches.json` whenever its state changes. When the cog loads again, it reconstructs those sessions and reattaches either the dispute or resolve view to the saved Discord message ID. The deserializer also accepts the older acknowledgement-list format and converts it into the newer per-team dictionary. That matches the repository history where acknowledgements later gained the name and timestamp of the person who submitted them.
+
+#### Tickets became a second persistent workflow
+
+The ticket system arrived later in December 2025 and grew through a series of smaller commits. A user chooses among League Operations, Rewards & Payouts, Contents & Socials, and General & Tech Support, then submits a subject and description through a modal. The bot creates a `[tag]-username` channel whose permission overwrites expose it to the creator, the bot, the relevant category role, and the support role. Creation time, category, creator, claim state, added users, and reminder state are stored in `data/active_tickets.json`.
+
+Claiming a ticket has its own permission checks. The creator and manually added users cannot claim it. Category staff and administrators can, while an escalated ticket can also become claimable by League Operations. A task runs every ten minutes and sends a reminder after an unclaimed ticket has been open for 24 hours. Rewards and Contents tickets receive an additional escalation after 48 hours.
+
+Closing a ticket reads up to 500 channel messages in chronological order and turns them into an HTML transcript. The renderer handles Discord mentions, basic message formatting, attachments, and embeds. The transcript is sent to the log channel and directly to the ticket creator, while manually added users receive their own copy. The creator also gets a rating prompt before the ticket channel is deleted. The Git history around this code includes separate passes for embed rendering, mention parsing, transcript layout, and Discord interaction-response handling instead of one large ticket-system commit.
+
+#### Challonge was added after the Discord workflows
+
+Challonge support was added in January 2026. A marshal or administrator can link a bracket to the current Discord channel with `/challonge_link`. The bot validates the tournament, fetches its participants, and stores the channel-to-bracket mapping in `data/challonge_brackets.json`. Other commands can list bracket matches or explicitly report a winner and score.
+
+The current client is a small asynchronous wrapper over Challonge API v1 using `aiohttp`. The Git history briefly moved the integration to the v2.1 OAuth flow before reverting to the API-key version that remains in the repository. The current code keeps this bracket state separate from `MatchSession`. Discord acknowledgements do not automatically submit a result to Challonge. Reporting the bracket result is still an explicit marshal or administrator action.
 
 ### 2.9 Ilocos Sur Festival Esports Bot (`/projects/ilocos-sur-esports-bot`) — Focused
 - **Tier:** Focused
@@ -357,3 +426,22 @@ Get in touch for software projects or community infrastructure:
 - **Results & Numbers:** Reusable, stack-agnostic workflow framework for agentic pair programming.
 - **Metrics:**
   - `Modular`: Multi-agent engineering skills and guardrails
+
+### 2.13 WebP Unli (`/projects/webp-unli`) — Focused
+- **Tier:** Focused
+- **Category:** Web & Tools
+- **Role:** Creator & Developer
+- **Timeline:** 2026
+- **Platform:** Web
+- **Stack:** Next.js 16, TypeScript, Tailwind CSS, wasm-vips, WebAssembly, Web Workers, fflate, Vitest, Playwright
+- **Summary:** Next.js static export that converts supported images to WebP in a wasm-vips worker. Each queued file stores its own options, and completed results can be downloaded individually or as a ZIP.
+- **Article:**
+  - **Browser-side conversion:** WebP Unli is a static Next.js 16 export. When the page loads, useVips starts a module worker from /worker.js and waits for wasm-vips to report that it is ready. Converting a file means reading it into an ArrayBuffer, transferring that buffer to the worker, decoding it with libvips, applying the selected resize and WebP options, then transferring the encoded buffer back to the page. The result is wrapped in a WebP Blob for download. There is no image-processing API in that path.
+
+    The worker uses thumbnailImage when resize is enabled, then writes the result as WebP with writeToBuffer. The write call receives the selected quality and lossless flag. Metadata stripping is passed through the same options object. The input filter accepts JPG and JPEG, PNG, GIF, WebP, AVIF, TIFF and TIF, BMP, SVG, and HEIC or HEIF by MIME type or file extension.
+  - **Queue state lives with each file:** Each file enters the queue with its own copy of the conversion options, including a separate nested resize object. That detail was added after the first queue implementation. The original runConversion callback closed over the files array, so reconversion could read an older queue snapshot. A later fix moved current entries into a ref, added a counter for active conversion batches, copied the nested resize settings, and disabled reconvert controls while conversion was already running.
+
+    There is one module worker for the page. Convert All submits every idle entry through the same worker-backed conversion function while React keeps status and progress on each FileEntry. Finished files can be downloaded one at a time. When at least two results are ready, Download All reads the WebP blobs into Uint8Arrays and packages them with fflate.
+  - **Getting wasm-vips through a static build:** The worker first lived in lib/worker.ts and was constructed from a module URL. Turbopack emitted it as a raw TypeScript asset in production, which the browser could not execute. The worker never sent its ready message, so the page stayed on the loading screen. I moved the worker to public/worker.js as plain JavaScript and load that static asset directly instead.
+
+    That fixed the worker asset, but wasm-vips still depended on cross-origin isolation because its SharedArrayBuffer and pthread path needs COOP and COEP. For local development, next.config.js sends Cross-Origin-Opener-Policy as same-origin and Cross-Origin-Embedder-Policy as require-corp. The Vercel deployment repeats those headers in vercel.json because the static export does not carry the Next.js header configuration into the built site.
