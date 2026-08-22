@@ -124,10 +124,7 @@ function AffiliationRow({
 
 export default function AffiliationsGrid() {
   const { isNeobrutalist, resolvedMode } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
-
-  useEffect(() => setMounted(true), []);
 
   const showTooltip = useCallback((element: HTMLElement, text: string) => {
     const rect = element.getBoundingClientRect();
@@ -173,7 +170,7 @@ export default function AffiliationsGrid() {
         ))}
       </div>
 
-      {mounted && tooltip && createPortal(
+      {tooltip && typeof document !== "undefined" && createPortal(
         <div
           role="tooltip"
           className={`fixed pointer-events-none z-[9999] -translate-x-1/2 -translate-y-full px-2.5 py-1 text-[11px] whitespace-nowrap ${
