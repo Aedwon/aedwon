@@ -26,9 +26,9 @@ Featured projects [See all projects →]
   Stack: [Flutter, Dart, Drift, SQLCipher, Riverpod, FSRS, Sanity, RevenueCat]
   Link: [View case study →]
 
-• The MSL Network
-  Summary: Planned and built the Philippine student gaming community to 10,000+ members, using custom Discord bots for student verification and event quests.
-  Stack: [Python, Discord.py, MySQL, Google Sheets API]
+• MSL Network Bot
+  Summary: Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.
+  Stack: [Python, Discord.py, MySQL, aiomysql, aiohttp, Vercel, Pterodactyl]
   Link: [View case study →]
 
 • QR Studio
@@ -206,27 +206,38 @@ For the SQLite content path, the seed writer takes exported JSON and passes exam
 
 Pantas is still in active pre-launch development. The local study and scheduling paths are implemented, while Firebase-backed account sync and the mock-exam content path are not currently usable in the running build. I am keeping those unfinished pieces out of the feature claims until their runtime paths are actually connected.
 
-### 2.2 The MSL Network & Verification Platform (`/projects/msl-network`) — Flagship
+### 2.2 MSL Network Bot (`/projects/msl-network`) — Flagship
 - **Tier:** Flagship
 - **Category:** Bots & Systems
-- **Role:** Platform Architect & Community Lead
-- **Timeline:** 2022 to Present
-- **Platform:** Discord, Hostinger (KVM2 VPS)
-- **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Google Sheets API, Asyncio
-- **Problem & Constraints:** Managing competitive collegiate gaming across 180+ campuses manually meant tournament admins were overwhelmed by student ID verification, team check-ins, and dispute handling during live game days.
-- **How It's Built:**
-  - **Discord Verification & Role Hierarchy Engine:** An automated verification bot that validates student credentials against campus registrar lists, granting university-specific channels and competitive tier roles.
-  - **Hostinger KVM2 VPS Host Architecture:** Hosted on a Linux KVM2 VPS running systemd service workers, asynchronous MySQL connection pools, and automatic memory-managed worker recycling.
-  - **Campus Leaderboard & Quest Engine:** Tracks weekly inter-university scrimmage results and activity leaderboards across 80+ partner student organizations.
-- **Hurdles & Solutions:**
-  - **Discord Gateway Rate Limits During Tournament Kickoffs:** Over 800 players joining match lobbies simultaneously caused Discord API HTTP 429 rate limit freezes. Implemented token bucket rate limiters and queued role assignments through an asyncio worker pool with jittered backoff.
-  - **Google Sheets API Quota Exhaustion:** Live lookups during tournament registrations burned through the 300 requests-per-minute quota. Built a local MySQL write-through cache syncing modified rows in 60-second batch intervals.
-- **Results & Numbers:** Scaled the platform to 10,000+ active student members across 180+ universities, cutting tournament check-in administrative time by 90%.
-- **Metrics:**
-  - `10,000+`: Active student community members
-  - `90%`: Reduction in manual tournament check-in overhead
-  - `180+`: Philippine universities connected
-- **Retrospective:** I should have moved off Google Sheets earlier in the lifecycle. The custom caching layer worked, but a direct PostgreSQL admin UI would have saved maintenance hours.
+- **Role:** Developer
+- **Timeline:** 2026
+- **Platform:** Discord, Web
+- **Stack:** Python, Discord.py, MySQL, aiomysql, aiohttp, Vercel, Pterodactyl
+- **GitHub URL:** https://github.com/Aedwon/Discord-Bot
+
+#### From XP tracking to community operations
+
+The bot started in January 2026 with XP, moderation, and boost tracking. The leveling code already collected pending message, reaction, and voice XP in memory before writing updates. As more features arrived, the project moved into separate Discord cogs backed by shared services and an async MySQL pool. The current entry point loads verification, events, raffles, quests, tickets, analytics, moderation, voice tools, and other server features from one process.
+
+The bot is intentionally scoped to one Discord server. `config.py` carries a single guild ID, and startup opens the database, restores persistent views, then syncs slash commands to that guild. Configurable role and channel IDs live in database-backed settings. It is server-specific community infrastructure instead of a general multi-server bot framework.
+
+#### Verification became part of the economy
+
+MLBB account verification landed in March after XP and Event Points were already present. A persistent Discord button opens a modal for a member's full name, MLBB UID, server ID, and an optional referral code. The verification service enforces a unique MLBB UID in MySQL, then keeps verified Discord user IDs in an in-memory set. Message, reaction, voice, XP, and Event Point paths can check that set without querying the verification table for every activity update.
+
+MSL cross-referencing came next. The current service reads the public `FINAL` Google Sheet tab as CSV with `aiohttp`, normalizes the UID and server values, and rebuilds an in-memory lookup every six hours. The first implementation keyed MSL records by UID alone. A later change moved the lookup to the `(UID, server)` pair used by the current code. The same check now feeds eligibility rules in event registration, placements, and raffles.
+
+#### Event workflows use Discord state directly
+
+Event tracking stays attached to Discord Scheduled Events instead of maintaining a separate event calendar. An administrator can configure an activity workflow for an event. Audio workflows accumulate minutes from voice-state changes. Text workflows count qualifying messages. Forum entries require an administrator to validate the post with a check reaction. A kiosk workflow can require registration before a participation claim is accepted.
+
+Progress is kept in memory while an event is active and written to MySQL as it changes. When Discord marks the scheduled event complete, the bot flushes remaining voice time, checks stored progress against the configured threshold, records eligible rewards, and sends the Event Point change through the existing economy service. The same event system also tracks registration, placement rewards, participation claims, and peak attendance across the main and overflow voice channels.
+
+#### Web admin tools share the same data
+
+Not every admin surface stayed inside Discord. The repository includes a Vercel endpoint for the quest configuration dashboard with authenticated create, edit, activation, and deletion operations against the same quest tables used by the bot. Daily quests themselves track message counts, voice minutes, or reactions and store each member's assignment and progress in MySQL.
+
+The analytics dashboard follows a similar split. Its serverless endpoint reads daily rollups from MySQL and resolves cached Discord member and channel names before returning the dashboard data. The long-running Discord process uses `aiomysql`, while these request-based endpoints use `PyMySQL`. Both sides work from the same database instead of maintaining a second reporting store.
 
 ### 2.3 Norala SB Legislative Transparency Portal (`/projects/norala-sb-portal`) — Flagship
 - **Tier:** Flagship

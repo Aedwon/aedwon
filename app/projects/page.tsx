@@ -1,24 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { ALL_PROJECTS } from "@/lib/data/project-registry";
+import { PORTFOLIO_PROJECTS } from "@/lib/data/project-overrides";
 import ProjectCard from "@/components/ProjectCard";
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const categories = [
-    { id: "all", label: "All", count: ALL_PROJECTS.length },
-    { id: "mobile", label: "Mobile & Offline", count: ALL_PROJECTS.filter((p) => p.category === "mobile").length },
-    { id: "civic", label: "Civic Tech", count: ALL_PROJECTS.filter((p) => p.category === "civic").length },
-    { id: "bots", label: "Bots & Systems", count: ALL_PROJECTS.filter((p) => p.category === "bots").length },
-    { id: "web", label: "Web & Tools", count: ALL_PROJECTS.filter((p) => p.category === "web").length },
+    { id: "all", label: "All", count: PORTFOLIO_PROJECTS.length },
+    { id: "mobile", label: "Mobile & Offline", count: PORTFOLIO_PROJECTS.filter((p) => p.category === "mobile").length },
+    { id: "civic", label: "Civic Tech", count: PORTFOLIO_PROJECTS.filter((p) => p.category === "civic").length },
+    { id: "bots", label: "Bots & Systems", count: PORTFOLIO_PROJECTS.filter((p) => p.category === "bots").length },
+    { id: "web", label: "Web & Tools", count: PORTFOLIO_PROJECTS.filter((p) => p.category === "web").length },
   ];
 
   const filteredProjects =
     activeCategory === "all"
-      ? ALL_PROJECTS
-      : ALL_PROJECTS.filter((p) => p.category === activeCategory);
+      ? PORTFOLIO_PROJECTS
+      : PORTFOLIO_PROJECTS.filter((p) => p.category === activeCategory);
 
   return (
     <div className="space-y-6">
