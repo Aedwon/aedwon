@@ -87,6 +87,91 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
     retrospective:
       "If I extend this further, I would version crop presets against specific MLBB patches and add a confidence-driven review queue so low-confidence fields are surfaced first instead of making analysts scan every extracted value equally.",
   },
+  {
+    slug: "webp-unli",
+    title: "WebP Unli",
+    tagline:
+      "Static in-browser image converter using libvips through WebAssembly and a Web Worker, with batch controls, local processing, and no upload step.",
+    category: "web",
+    categoryLabel: "Web & Tools",
+    tier: "focused",
+    role: "Creator & Developer",
+    timeline: "2026",
+    featured: false,
+    order: 14,
+    glowColor: "green",
+    brandColor: "#22C55E",
+    icon: "image-down",
+    platforms: [{ name: "Web", icon: "web" }],
+    stack: [
+      { name: "Next.js 16", icon: "nextjs" },
+      { name: "TypeScript", icon: "typescript" },
+      { name: "Tailwind CSS", icon: "tailwind" },
+      { name: "wasm-vips", icon: "wasm" },
+      { name: "WebAssembly", icon: "wasm" },
+      { name: "Web Workers", icon: "worker" },
+      { name: "fflate", icon: "zip" },
+      { name: "Vitest", icon: "test" },
+      { name: "Playwright", icon: "test" },
+    ],
+    githubUrl: "https://github.com/Aedwon/webp-unli",
+    summary:
+      "Private browser-based image converter that runs libvips locally, supports batch WebP conversion with per-file overrides, and packages completed files into a ZIP without sending source images to a server.",
+    problem:
+      "I wanted a WebP converter that did not require uploading personal images to a remote service, creating an account, or giving up control of the original files just to change formats. The real engineering problem was making a native-grade image library work inside a static browser application while keeping conversions responsive and giving each file enough control for quality, resizing, and metadata removal.",
+    architecture: [
+      {
+        title: "libvips Running Inside a Web Worker",
+        description:
+          "The conversion engine is a plain JavaScript module worker served from public/worker.js. It loads wasm-vips at runtime, decodes the transferred image buffer with libvips, optionally resizes it, and writes the result back to a WebP buffer with the selected quality, lossless, and metadata-strip settings. The input ArrayBuffer is transferred to the worker rather than copied, and the encoded output buffer is transferred back to the page when conversion finishes.",
+        tradeOff:
+          "The first visit has to download and initialize roughly 10 MB of WebAssembly runtime files. That is a real startup cost, but the files can then be cached by the browser and the actual images never need a conversion server.",
+      },
+      {
+        title: "Static Export With a Runtime Codec",
+        description:
+          "The site uses Next.js static export, so production hosting only serves files. The worker and wasm-vips runtime live under public/, while the application code coordinates conversion entirely in the browser. This keeps deployment independent of server functions and means conversion capacity is provided by the user's device rather than a backend queue.",
+        tradeOff:
+          "A static deployment removes server-side image processing, but browser capabilities and cross-origin isolation become part of the application runtime instead of infrastructure details hidden behind an API.",
+      },
+      {
+        title: "Batch Queue With Per-File Overrides",
+        description:
+          "Files enter a React-managed queue with a copy of the current global conversion settings. Each file can then override quality, lossless mode, resize dimensions, aspect-ratio locking, and metadata stripping without changing the rest of the batch. Conversions run through the worker with progress callbacks, completed files can be re-converted with new settings, and fflate bundles finished outputs into one ZIP for batch download.",
+      },
+      {
+        title: "Format Intake and Honest Edge-Case Handling",
+        description:
+          "The input layer recognizes JPG, PNG, GIF, WebP, AVIF, TIFF, BMP, SVG, HEIC, and HEIF through MIME types with extension fallback when browser metadata is incomplete. Animated GIFs are scanned for multiple graphic-control blocks and explicitly flagged because the current converter only keeps the first frame. HEIC files also skip browser-native previews when the browser cannot display them directly.",
+      },
+    ],
+    hurdles: [
+      {
+        title: "A Worker That Built Successfully but Could Not Run",
+        issue:
+          "The original worker lived as TypeScript beside the application code. In production, Turbopack treated it as a static asset and emitted the raw TypeScript file, which the browser could not parse. The page then sat on its loading state waiting for a ready message that would never arrive.",
+        solution:
+          "I moved the worker to public/worker.js as plain JavaScript and instantiate it directly as a module worker. That makes the browser receive executable JavaScript instead of relying on the bundler to transform a worker entry correctly.",
+      },
+      {
+        title: "wasm-vips Needed Cross-Origin Isolation",
+        issue:
+          "Even with the worker loading correctly, wasm-vips could hang during initialization because its SharedArrayBuffer and pthread path requires a cross-origin isolated page. A static export also meant Next.js production headers were not enough by themselves.",
+        solution:
+          "I set Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers for local development in next.config.js and again in vercel.json for the deployed static site. Once both environments were isolated correctly, the worker could initialize the threaded WebAssembly runtime instead of remaining on the loading screen.",
+      },
+    ],
+    results:
+      "WebP Unli now runs as a fully static conversion tool with no backend image-processing path. It supports batch conversion, quality and lossless output, resizing, metadata stripping, per-file settings, reconversion, animated-GIF warnings, and ZIP download while keeping source files on the user's device.",
+    metrics: [
+      { value: "0", label: "Server uploads required for image conversion" },
+      { value: "~10 MB", label: "WebAssembly runtime downloaded and cached on first load" },
+      { value: "8+", label: "Documented source image formats accepted" },
+      { value: "Static", label: "Next.js export with browser-side conversion" },
+    ],
+    retrospective:
+      "If I keep developing it, I would focus first on the initial codec load: make the download cost more visible, test whether optional decoders can be split or deferred, and add true animated-image conversion instead of stopping at the first GIF frame.",
+  },
 ];
 
 export const ALL_PROJECTS: ProjectItem[] = [
