@@ -6,10 +6,42 @@ import DiscordLayout from "@/components/DiscordLayout";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
+import {
+  PERSON_JSON_LD,
+  PERSON_NAME,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site-content";
 
 export const metadata: Metadata = {
-  title: "Aedwon",
-  description: "Computer Science at UP Diliman on a DOST Merit Scholarship. Software builds, client-side tools, and platforms.",
+  metadataBase: new URL(SITE_URL),
+  title: `${SITE_NAME} — ${PERSON_NAME}`,
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: `${SITE_NAME} — ${PERSON_NAME}`,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    siteName: SITE_NAME,
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} — ${PERSON_NAME}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — ${PERSON_NAME}`,
+    description: SITE_DESCRIPTION,
+    images: ["/opengraph-image"],
+  },
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -19,12 +51,18 @@ export const metadata: Metadata = {
   },
 };
 
+const personJsonLd = JSON.stringify(PERSON_JSON_LD).replace(/</g, "\\u003c");
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="default" data-mode="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/favicon.ico" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: personJsonLd }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
