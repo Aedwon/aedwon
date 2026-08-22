@@ -38,7 +38,7 @@ export default function ExperienceDossier() {
 
       {/* Dossier Container */}
       <div
-        className={`grid grid-cols-1 md:grid-cols-[210px_1fr] bg-[var(--bg-card)] overflow-hidden h-[350px] transition-all ${
+        className={`grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[210px_1fr] md:grid-rows-1 bg-[var(--bg-card)] overflow-hidden h-[350px] transition-all ${
           isNeobrutalist
             ? "rounded-none border-[3px] border-black shadow-[6px_6px_0px_#000000] bg-white"
             : "rounded-[var(--card-radius)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)]"
@@ -90,7 +90,7 @@ export default function ExperienceDossier() {
         {/* Right: Scrollable Roles Stack */}
         <div
           ref={scrollRef}
-          className={`p-6 overflow-y-auto ${
+          className={`min-h-0 p-6 overflow-y-auto ${
             isNeobrutalist ? "bg-white" : "dossier-scroll-viewport"
           }`}
         >
