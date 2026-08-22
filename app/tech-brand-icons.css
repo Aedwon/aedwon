@@ -1,0 +1,87 @@
+/* Project article tech-stack overrides.
+ * The case-study component resolves icons from technology names, so newer
+ * stack entries need explicit mappings until they are folded into TechIcons.
+ */
+
+.has-tooltip[data-tooltip="Tesseract.js"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="WebAssembly"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="Web Workers"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="localStorage"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="Vitest"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="wasm-vips"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="fflate"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="Playwright"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="Pterodactyl"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="aiohttp"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="qr-code-styling"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="Hive"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="next-intl"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="requests"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="JSON & CSV"] > .tech-stack-icon {
+  display: none;
+}
+
+.has-tooltip[data-tooltip="Tesseract.js"]::before,
+.has-tooltip[data-tooltip="WebAssembly"]::before,
+.has-tooltip[data-tooltip="Web Workers"]::before,
+.has-tooltip[data-tooltip="localStorage"]::before,
+.has-tooltip[data-tooltip="Vitest"]::before,
+.has-tooltip[data-tooltip="wasm-vips"]::before,
+.has-tooltip[data-tooltip="fflate"]::before,
+.has-tooltip[data-tooltip="Playwright"]::before,
+.has-tooltip[data-tooltip="Pterodactyl"]::before,
+.has-tooltip[data-tooltip="aiohttp"]::before,
+.has-tooltip[data-tooltip="qr-code-styling"]::before,
+.has-tooltip[data-tooltip="Hive"]::before,
+.has-tooltip[data-tooltip="next-intl"]::before,
+.has-tooltip[data-tooltip="requests"]::before,
+.has-tooltip[data-tooltip="JSON & CSV"]::before {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  background-color: var(--tech-icon-color, currentColor);
+  -webkit-mask: var(--tech-icon-mask) center / contain no-repeat;
+  mask: var(--tech-icon-mask) center / contain no-repeat;
+}
+
+.has-tooltip[data-tooltip="Tesseract.js"] { --tech-icon-mask: url("/tech-icons/ocr.svg"); --tech-icon-color: #22d3ee; }
+.has-tooltip[data-tooltip="WebAssembly"],
+.has-tooltip[data-tooltip="wasm-vips"] { --tech-icon-mask: url("/tech-icons/webassembly.svg"); --tech-icon-color: #654ff0; }
+.has-tooltip[data-tooltip="Web Workers"] { --tech-icon-mask: url("/tech-icons/worker.svg"); --tech-icon-color: #a78bfa; }
+.has-tooltip[data-tooltip="localStorage"] { --tech-icon-mask: url("/tech-icons/storage.svg"); --tech-icon-color: #34d399; }
+.has-tooltip[data-tooltip="Vitest"] { --tech-icon-mask: url("/tech-icons/vitest.svg"); --tech-icon-color: #6e9f18; }
+.has-tooltip[data-tooltip="Pterodactyl"] { --tech-icon-mask: url("/tech-icons/pterodactyl.svg"); --tech-icon-color: #105289; }
+.has-tooltip[data-tooltip="aiohttp"],
+.has-tooltip[data-tooltip="requests"] { --tech-icon-mask: url("/tech-icons/network.svg"); --tech-icon-color: #60a5fa; }
+.has-tooltip[data-tooltip="qr-code-styling"] { --tech-icon-mask: url("/tech-icons/qr.svg"); --tech-icon-color: #fb7185; }
+.has-tooltip[data-tooltip="Hive"] { --tech-icon-mask: url("/tech-icons/hive.svg"); --tech-icon-color: #facc15; }
+.has-tooltip[data-tooltip="next-intl"] { --tech-icon-mask: url("/tech-icons/i18n.svg"); --tech-icon-color: #38bdf8; }
+.has-tooltip[data-tooltip="fflate"] { --tech-icon-mask: url("/tech-icons/archive.svg"); --tech-icon-color: #f59e0b; }
+.has-tooltip[data-tooltip="JSON & CSV"] { --tech-icon-mask: url("/tech-icons/data-file.svg"); --tech-icon-color: #4ade80; }
+
+/* Playwright's official mark is multi-color, so render the actual SVG instead
+ * of tinting it through a mask. */
+.has-tooltip[data-tooltip="Playwright"]::before {
+  background: url("/tech-icons/playwright.svg") center / contain no-repeat;
+  -webkit-mask: none;
+  mask: none;
+}
+
+[data-mode="light"] .has-tooltip[data-tooltip="Tesseract.js"] { --tech-icon-color: #0891b2; }
+[data-mode="light"] .has-tooltip[data-tooltip="Web Workers"] { --tech-icon-color: #7c3aed; }
+[data-mode="light"] .has-tooltip[data-tooltip="localStorage"] { --tech-icon-color: #059669; }
+[data-mode="light"] .has-tooltip[data-tooltip="aiohttp"],
+[data-mode="light"] .has-tooltip[data-tooltip="requests"] { --tech-icon-color: #2563eb; }
+[data-mode="light"] .has-tooltip[data-tooltip="qr-code-styling"] { --tech-icon-color: #e11d48; }
+[data-mode="light"] .has-tooltip[data-tooltip="Hive"] { --tech-icon-color: #ca8a04; }
+[data-mode="light"] .has-tooltip[data-tooltip="next-intl"] { --tech-icon-color: #0284c7; }
+[data-mode="light"] .has-tooltip[data-tooltip="fflate"] { --tech-icon-color: #d97706; }
+[data-mode="light"] .has-tooltip[data-tooltip="JSON & CSV"] { --tech-icon-color: #15803d; }
+
+/* Neobrutalist cards intentionally use monochrome icons so hover inversion keeps
+ * working the same way as the original TechIcon component. */
+[data-theme="neobrutalist"] .has-tooltip::before {
+  --tech-icon-color: currentColor;
+}

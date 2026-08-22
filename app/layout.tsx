@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./tech-brand-icons.css";
 import { ThemeProvider } from "@/components/ThemeContext";
 import DiscordLayout from "@/components/DiscordLayout";
 import Navbar from "@/components/Navbar";
