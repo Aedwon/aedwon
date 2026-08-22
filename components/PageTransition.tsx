@@ -1,45 +1,62 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface PageTransitionProps {
   children: React.ReactNode;
+}
+
+interface RouteTransitionState {
+  path: string;
+  previousIndex: number;
+  hasNavigated: boolean;
 }
 
 function getRouteIndex(path: string): number {
   if (path === "/") return 0;
   if (path.startsWith("/projects")) return 1;
   if (path.startsWith("/blogs")) return 2;
-  return 1;
+  return 0;
 }
 
 export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
-  const prevPathRef = useRef(pathname);
+  const reduceMotion = useReducedMotion();
+  const [routeState, setRouteState] = useState<RouteTransitionState>(() => ({
+    path: pathname,
+    previousIndex: getRouteIndex(pathname),
+    hasNavigated: false,
+  }));
+
+  if (routeState.path !== pathname) {
+    setRouteState({
+      path: pathname,
+      previousIndex: getRouteIndex(routeState.path),
+      hasNavigated: true,
+    });
+  }
 
   const currentIndex = getRouteIndex(pathname);
-  const prevIndex = getRouteIndex(prevPathRef.current);
-
-  // Direction follows navbar capsule indicator motion:
-  // Moving to a higher tab index (e.g. Home -> Projects): enters from right (+20px)
-  // Moving to a lower tab index (e.g. Projects -> Home): enters from left (-20px)
-  const direction = currentIndex >= prevIndex ? 1 : -1;
-
-  useEffect(() => {
-    prevPathRef.current = pathname;
-  }, [pathname]);
+  const direction =
+    currentIndex === routeState.previousIndex
+      ? 0
+      : currentIndex > routeState.previousIndex
+        ? 1
+        : -1;
+  const shouldAnimate = routeState.hasNavigated && !reduceMotion;
 
   return (
     <motion.div
       key={pathname}
-      initial={{ opacity: 0, x: direction * 20 }}
+      initial={shouldAnimate ? { opacity: 0, x: direction * 20 } : false}
       animate={{ opacity: 1, x: 0 }}
-      transition={{
-        duration: 0.22,
-        ease: [0.16, 1, 0.3, 1],
-      }}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+      }
       className="w-full"
     >
       {children}

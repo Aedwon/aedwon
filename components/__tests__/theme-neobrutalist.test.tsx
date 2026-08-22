@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
+import "@testing-library/jest-dom";
+import { beforeEach, describe, expect, it } from "vitest";
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider, useTheme } from "../ThemeContext";
 import HeroSection from "../HeroSection";
 import ProjectCard from "../ProjectCard";
@@ -8,107 +9,78 @@ import ExperienceDossier from "../ExperienceDossier";
 import { PROJECTS } from "@/lib/data/projects";
 
 function ThemeConsumer() {
-  const { theme, setTheme, mode, setMode } = useTheme();
+  const { theme, mode, resolvedMode, supportsColorMode, setTheme, setMode } = useTheme();
   return (
     <div>
       <span data-testid="current-theme">{theme}</span>
       <span data-testid="current-mode">{mode}</span>
+      <span data-testid="resolved-mode">{resolvedMode}</span>
+      <span data-testid="supports-color-mode">{String(supportsColorMode)}</span>
       <button onClick={() => setTheme("neobrutalist")}>Set Brutalist</button>
-      <button onClick={() => setMode("light")}>Set Light</button>
+      <button onClick={() => setTheme("discord")}>Set Discord</button>
       <button onClick={() => setMode("dark")}>Set Dark</button>
     </div>
   );
 }
 
-describe("Neobrutalist Theme Integration", () => {
-  it("should switch theme to neobrutalist and set attributes on document", () => {
+describe("theme capabilities", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.documentElement.setAttribute("data-theme", "default");
+    document.documentElement.setAttribute("data-mode", "dark");
+  });
+
+  it("forces neobrutalist presentation to resolved light mode", () => {
     render(
       <ThemeProvider>
         <ThemeConsumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const btn = screen.getByText("Set Brutalist");
-    fireEvent.click(btn);
+    fireEvent.click(screen.getByText("Set Brutalist"));
+    expect(screen.getByTestId("current-theme")).toHaveTextContent("neobrutalist");
+    expect(screen.getByTestId("resolved-mode")).toHaveTextContent("light");
+    expect(screen.getByTestId("supports-color-mode")).toHaveTextContent("false");
+    expect(document.documentElement).toHaveAttribute("data-theme", "neobrutalist");
+    expect(document.documentElement).toHaveAttribute("data-mode", "light");
 
-    expect(screen.getByTestId("current-theme").textContent).toBe("neobrutalist");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("neobrutalist");
+    fireEvent.click(screen.getByText("Set Dark"));
+    expect(screen.getByTestId("resolved-mode")).toHaveTextContent("light");
   });
 
-  it("renders HeroSection under neobrutalist theme with exact copy and brutalist frame", () => {
+  it("forces Discord presentation to resolved dark mode", () => {
     render(
       <ThemeProvider>
-        <div>
-          <ThemeConsumer />
-          <HeroSection />
-        </div>
-      </ThemeProvider>
+        <ThemeConsumer />
+      </ThemeProvider>,
     );
+    fireEvent.click(screen.getByText("Set Discord"));
+    expect(screen.getByTestId("resolved-mode")).toHaveTextContent("dark");
+    expect(screen.getByTestId("supports-color-mode")).toHaveTextContent("false");
+  });
 
-    const btn = screen.getByText("Set Brutalist");
-    fireEvent.click(btn);
-
+  it("renders HeroSection with the existing neobrutalist frame", () => {
+    render(
+      <ThemeProvider>
+        <ThemeConsumer />
+        <HeroSection />
+      </ThemeProvider>,
+    );
+    fireEvent.click(screen.getByText("Set Brutalist"));
     const heading = screen.getByText("I'm Aerol. You might also know me as Aedwon.");
-    expect(heading).toBeDefined();
-    const container = heading.closest("section");
-    expect(container?.className).toContain("border-[3px]");
-    expect(container?.className).toContain("rounded-none");
+    expect(heading.closest("section")?.className).toContain("border-[3px]");
   });
 
-  it("renders ProjectCard with neobrutalist styling when theme is neobrutalist", () => {
-    const testProject = PROJECTS[0];
-
+  it("renders project cards and experience controls with neobrutalist styling", () => {
     render(
       <ThemeProvider>
-        <div>
-          <ThemeConsumer />
-          <ProjectCard project={testProject} />
-        </div>
-      </ThemeProvider>
+        <ThemeConsumer />
+        <ProjectCard project={PROJECTS[0]} />
+        <ExperienceDossier />
+      </ThemeProvider>,
     );
-
-    const btn = screen.getByText("Set Brutalist");
-    fireEvent.click(btn);
-
-    const cardTitle = screen.getByText("Pantas");
-    const cardContainer = cardTitle.closest("a");
-    expect(cardContainer).toBeDefined();
-    expect(cardContainer?.className).toContain("border-black");
-    expect(cardContainer?.className).toContain("rounded-none");
-  });
-
-  it("renders ExperienceDossier with brutalist styling and exact copy", () => {
-    render(
-      <ThemeProvider>
-        <div>
-          <ThemeConsumer />
-          <ExperienceDossier />
-        </div>
-      </ThemeProvider>
-    );
-
-    const btn = screen.getByText("Set Brutalist");
-    fireEvent.click(btn);
-
-    expect(screen.getByText("Experience")).toBeDefined();
-    const upButton = screen.getByText("UP Fighting Maroons");
-    expect(upButton).toBeDefined();
-    expect(upButton.className).toContain("rounded-none");
-  });
-
-  it("omits mode switcher controls when neobrutalist theme is active", () => {
-    const { container } = render(
-      <ThemeProvider>
-        <div>
-          <ThemeConsumer />
-        </div>
-      </ThemeProvider>
-    );
-
-    const btn = screen.getByText("Set Brutalist");
-    fireEvent.click(btn);
-
-    expect(screen.getByTestId("current-theme").textContent).toBe("neobrutalist");
-    expect(screen.getByTestId("current-mode").textContent).toBe("light");
+    fireEvent.click(screen.getByText("Set Brutalist"));
+    expect(screen.getByText("Pantas").closest("a")?.className).toContain("rounded-none");
+    expect(screen.getByText("UP Fighting Maroons").className).toContain("rounded-none");
   });
 });

@@ -1,17 +1,18 @@
 import React from "react";
 import { notFound, redirect } from "next/navigation";
-import { PORTFOLIO_PROJECTS } from "@/lib/data/project-overrides";
+import {
+  PROJECT_ALIASES,
+  getCaseStudyProjects,
+  getNextProject,
+  getProjectBySlug,
+} from "@/lib/data/project-registry";
 import ProjectCaseStudyClient from "@/components/ProjectCaseStudyClient";
 import type { Metadata } from "next";
 
-const CASE_STUDY_PROJECTS = PORTFOLIO_PROJECTS.filter(
-  (project) => project.slug !== "bettergov-ph",
-);
-
 export async function generateStaticParams() {
-  return CASE_STUDY_PROJECTS.map((p) => ({
-    slug: p.slug,
-  }));
+  const canonical = getCaseStudyProjects().map((project) => ({ slug: project.slug }));
+  const aliases = Object.keys(PROJECT_ALIASES).map((slug) => ({ slug }));
+  return [...canonical, ...aliases];
 }
 
 export async function generateMetadata({
@@ -20,11 +21,23 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = PORTFOLIO_PROJECTS.find((p) => p.slug === slug);
+  const project = getProjectBySlug(slug);
   if (!project) return { title: "Project Not Found" };
+
+  const canonicalSlug = project.slug;
+  const title = `${project.title} — Case Study | Aerol (Aedwon)`;
+  const canonical = `/projects/${canonicalSlug}`;
+
   return {
-    title: `${project.title} — Case Study | Aerol (Aedwon)`,
+    title,
     description: project.summary,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description: project.summary,
+      url: canonical,
+      type: "article",
+    },
   };
 }
 
@@ -34,21 +47,22 @@ export default async function ProjectCaseStudyPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = PORTFOLIO_PROJECTS.find((p) => p.slug === slug);
+  const project = getProjectBySlug(slug);
 
-  if (!project) {
-    notFound();
+  if (!project) notFound();
+
+  if (project.slug !== slug) {
+    redirect(`/projects/${project.slug}`);
   }
 
   if (project.slug === "bettergov-ph") {
     redirect(project.liveUrl ?? project.githubUrl ?? "/projects");
   }
 
-  const projectIndex = CASE_STUDY_PROJECTS.findIndex((p) => p.slug === slug);
-  const nextProject =
-    CASE_STUDY_PROJECTS[(projectIndex + 1) % CASE_STUDY_PROJECTS.length];
+  const nextProject = getNextProject(project.slug);
+  if (!nextProject) notFound();
 
-  return (
-    <ProjectCaseStudyClient project={project} nextProject={nextProject} />
-  );
+  return <ProjectCaseStudyClient project={project} nextProject={nextProject} />;
 }
+
+export const dynamicParams = false;

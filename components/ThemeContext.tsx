@@ -1,171 +1,222 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import StarVortexTransition from "./ThemeTransitions/StarVortexTransition";
 import { scheduleIdlePrewarm } from "@/lib/utils/asset-prewarmer";
 
 export type ThemeStyle = "default" | "neobrutalist" | "discord";
 export type ThemeMode = "system" | "light" | "dark";
 
+type ResolvedMode = "light" | "dark";
+
 interface ThemeContextType {
   theme: ThemeStyle;
   mode: ThemeMode;
-  resolvedMode: "light" | "dark";
+  resolvedMode: ResolvedMode;
+  isNeobrutalist: boolean;
+  isDiscord: boolean;
+  supportsColorMode: boolean;
   isTransitioning: boolean;
   setTheme: (theme: ThemeStyle) => void;
   setMode: (mode: ThemeMode, origin?: { x: number; y: number }) => void;
 }
 
+interface ActiveTransition {
+  sourceMode: ResolvedMode;
+  targetMode: ResolvedMode;
+  origin?: { x: number; y: number };
+  pendingMode: ThemeMode;
+}
+
+const THEME_KEY = "aedwon-theme";
+const MODE_KEY = "aedwon-mode";
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+function isThemeStyle(value: string | null): value is ThemeStyle {
+  return value === "default" || value === "neobrutalist" || value === "discord";
+}
+
+function isThemeMode(value: string | null): value is ThemeMode {
+  return value === "system" || value === "light" || value === "dark";
+}
+
+function getSystemMode(): ResolvedMode {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function resolveMode(theme: ThemeStyle, mode: ThemeMode): ResolvedMode {
+  if (theme === "discord") return "dark";
+  if (theme === "neobrutalist") return "light";
+  return mode === "system" ? getSystemMode() : mode;
+}
+
+function readStorage(key: string): string | null {
+  try {
+    return window.localStorage?.getItem(key) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(key: string, value: string): void {
+  try {
+    window.localStorage?.setItem(key, value);
+  } catch {
+    // Theme state remains usable when storage is blocked or unavailable.
+  }
+}
+
+function applyDocumentTheme(theme: ThemeStyle, resolvedMode: ResolvedMode): void {
+  document.documentElement.setAttribute("data-theme", theme);
+  document.documentElement.setAttribute("data-mode", resolvedMode);
+}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeStyle>("default");
   const [mode, setModeState] = useState<ThemeMode>("dark");
-  const [resolvedMode, setResolvedMode] = useState<"light" | "dark">("dark");
-  const [mounted, setMounted] = useState(false);
+  const [resolvedMode, setResolvedMode] = useState<ResolvedMode>("dark");
+  const [activeTransition, setActiveTransition] = useState<ActiveTransition | null>(null);
+  const cancelPrewarmRef = useRef<(() => void) | null>(null);
+  const transitionFlippedRef = useRef(false);
 
-  const [activeTransition, setActiveTransition] = useState<{
-    theme: ThemeStyle;
-    sourceMode: "light" | "dark";
-    targetMode: "light" | "dark";
-    origin?: { x: number; y: number };
-    pendingMode: ThemeMode;
-  } | null>(null);
+  const isNeobrutalist = theme === "neobrutalist";
+  const isDiscord = theme === "discord";
+  const supportsColorMode = theme === "default";
 
   useEffect(() => {
-    let savedTheme: ThemeStyle = "default";
-    let savedMode: ThemeMode = "dark";
-    try {
-      if (typeof window !== "undefined" && window.localStorage) {
-        savedTheme = (localStorage.getItem("aedwon-theme") as ThemeStyle) || "default";
-        savedMode = (localStorage.getItem("aedwon-mode") as ThemeMode) || "dark";
-      }
-    } catch {}
+    let cancelled = false;
 
-    let effectiveMode: "light" | "dark" = "dark";
-    if (savedTheme === "discord") {
-      effectiveMode = "dark";
-      savedMode = "dark";
-    } else if (savedTheme === "neobrutalist") {
-      effectiveMode = "light";
-      savedMode = "light";
-    } else if (savedMode === "system") {
-      effectiveMode = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    } else {
-      effectiveMode = savedMode;
-    }
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const storedTheme = readStorage(THEME_KEY);
+      const storedMode = readStorage(MODE_KEY);
+      const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
+      const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
+      const initialResolvedMode = resolveMode(initialTheme, initialMode);
 
-    setThemeState(savedTheme);
-    setModeState(savedMode);
+      if (initialTheme !== "default") setThemeState(initialTheme);
+      if (initialMode !== "dark") setModeState(initialMode);
+      if (initialResolvedMode !== "dark") setResolvedMode(initialResolvedMode);
+      applyDocumentTheme(initialTheme, initialResolvedMode);
+    });
+
+    cancelPrewarmRef.current = scheduleIdlePrewarm(1000);
+    return () => {
+      cancelled = true;
+      cancelPrewarmRef.current?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mode !== "system" || theme !== "default" || typeof window.matchMedia !== "function") return;
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (event: MediaQueryListEvent) => {
+      if (activeTransition) return;
+      const nextMode: ResolvedMode = event.matches ? "dark" : "light";
+      setResolvedMode(nextMode);
+      document.documentElement.setAttribute("data-mode", nextMode);
+    };
+
+    media.addEventListener?.("change", handleChange);
+    return () => media.removeEventListener?.("change", handleChange);
+  }, [activeTransition, mode, theme]);
+
+  const applyMode = useCallback((effectiveMode: ResolvedMode, modeSetting: ThemeMode) => {
     setResolvedMode(effectiveMode);
-
-    if (typeof document !== "undefined") {
-      const root = document.documentElement;
-      root.setAttribute("data-theme", savedTheme);
-      root.setAttribute("data-mode", effectiveMode);
-    }
-
-    setMounted(true);
-    scheduleIdlePrewarm(1000);
+    setModeState(modeSetting);
+    document.documentElement.setAttribute("data-mode", effectiveMode);
+    writeStorage(MODE_KEY, modeSetting);
   }, []);
 
-  const applyThemeMode = useCallback((targetEffective: "light" | "dark", targetModeSetting: ThemeMode) => {
-    setResolvedMode(targetEffective);
-    setModeState(targetModeSetting);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-mode", targetEffective);
-    }
-    try {
-      if (typeof window !== "undefined" && window.localStorage) {
-        localStorage.setItem("aedwon-mode", targetModeSetting);
-      }
-    } catch {}
-  }, []);
+  const setTheme = useCallback(
+    (newTheme: ThemeStyle) => {
+      transitionFlippedRef.current = false;
+      setActiveTransition(null);
+      setThemeState(newTheme);
+      writeStorage(THEME_KEY, newTheme);
 
-  const setTheme = (newTheme: ThemeStyle) => {
-    setThemeState(newTheme);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", newTheme);
-    }
-    try {
-      if (typeof window !== "undefined" && window.localStorage) {
-        localStorage.setItem("aedwon-theme", newTheme);
-      }
-    } catch {}
-
-    // Discord theme is always dark mode, Neobrutalist is always light mode
-    if (newTheme === "discord") {
-      applyThemeMode("dark", "dark");
-    } else if (newTheme === "neobrutalist") {
-      applyThemeMode("light", "light");
-    }
-  };
+      const effectiveMode = resolveMode(newTheme, mode);
+      setResolvedMode(effectiveMode);
+      applyDocumentTheme(newTheme, effectiveMode);
+    },
+    [mode],
+  );
 
   const setMode = useCallback(
     (newMode: ThemeMode, origin?: { x: number; y: number }) => {
-      // Discord (dark only) and Neobrutalist (light only) have no mode toggle
-      if (theme === "discord" || theme === "neobrutalist") return;
+      if (!supportsColorMode || activeTransition) return;
 
-      let targetEffective: "light" | "dark" = "dark";
-      if (newMode === "system") {
-        targetEffective = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      } else {
-        targetEffective = newMode;
-      }
+      const targetEffective = resolveMode("default", newMode);
+      const prefersReducedMotion =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      // Check for prefers-reduced-motion
-      if (
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
-        applyThemeMode(targetEffective, newMode);
+      if (prefersReducedMotion || targetEffective === resolvedMode) {
+        applyMode(targetEffective, newMode);
         return;
       }
 
-      if (targetEffective === resolvedMode) {
-        setModeState(newMode);
-        localStorage.setItem("aedwon-mode", newMode);
-        return;
-      }
-
-      if (activeTransition) return;
-
+      transitionFlippedRef.current = false;
       setActiveTransition({
-        theme,
         sourceMode: resolvedMode,
         targetMode: targetEffective,
         origin,
         pendingMode: newMode,
       });
     },
-    [theme, resolvedMode, activeTransition, applyThemeMode]
+    [activeTransition, applyMode, resolvedMode, supportsColorMode],
   );
 
   const handleMidpointFlip = useCallback(() => {
-    if (activeTransition) {
-      applyThemeMode(activeTransition.targetMode, activeTransition.pendingMode);
-    }
-  }, [activeTransition, applyThemeMode]);
+    if (!activeTransition || transitionFlippedRef.current) return;
+    transitionFlippedRef.current = true;
+    applyMode(activeTransition.targetMode, activeTransition.pendingMode);
+  }, [activeTransition, applyMode]);
 
   const handleTransitionComplete = useCallback(() => {
+    transitionFlippedRef.current = false;
     setActiveTransition(null);
   }, []);
 
-  return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        mode,
-        resolvedMode,
-        isTransitioning: activeTransition !== null,
-        setTheme,
-        setMode,
-      }}
-    >
-      {children}
+  const value = useMemo<ThemeContextType>(
+    () => ({
+      theme,
+      mode,
+      resolvedMode,
+      isNeobrutalist,
+      isDiscord,
+      supportsColorMode,
+      isTransitioning: activeTransition !== null,
+      setTheme,
+      setMode,
+    }),
+    [
+      activeTransition,
+      isDiscord,
+      isNeobrutalist,
+      mode,
+      resolvedMode,
+      setMode,
+      setTheme,
+      supportsColorMode,
+      theme,
+    ],
+  );
 
-      {/* Active Transition Overlays (Default theme only) */}
-      {activeTransition && activeTransition.theme === "default" && (
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+      {activeTransition && (
         <StarVortexTransition
           origin={activeTransition.origin}
           targetMode={activeTransition.targetMode}
@@ -180,8 +231,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
+  if (!context) throw new Error("useTheme must be used within a ThemeProvider");
   return context;
 }

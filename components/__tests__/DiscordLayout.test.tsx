@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import React from "react";
 import DiscordLayout from "../DiscordLayout";
 import { ThemeProvider, useTheme } from "../ThemeContext";
@@ -17,26 +17,24 @@ vi.mock("next/navigation", () => ({
 
 function ThemeController() {
   const { setTheme } = useTheme();
-  return (
-    <button onClick={() => setTheme("discord")}>Activate Discord</button>
-  );
+  return <button onClick={() => setTheme("discord")}>Activate Discord</button>;
 }
 
-describe("DiscordLayout Full Shell", () => {
-  it("renders regular children when theme is default or neobrutalist", () => {
+describe("DiscordLayout shell", () => {
+  it("renders regular children outside Discord presentation", () => {
     render(
       <ThemeProvider>
         <DiscordLayout>
           <div data-testid="regular-content">Regular Content</div>
         </DiscordLayout>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByTestId("regular-content")).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText(/Message #home/i)).not.toBeInTheDocument();
+    expect(document.querySelector("#discord-client-root")).toBeNull();
   });
 
-  it("renders full 4-column Discord client shell when theme is discord", () => {
+  it("renders the Discord shell with a decorative composer", () => {
     render(
       <ThemeProvider>
         <div>
@@ -45,20 +43,19 @@ describe("DiscordLayout Full Shell", () => {
             <div data-testid="inner-content">Inner Content</div>
           </DiscordLayout>
         </div>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const btn = screen.getByText("Activate Discord");
-    fireEvent.click(btn);
+    fireEvent.click(screen.getByText("Activate Discord"));
 
-    // Verify 4 columns exist
     expect(screen.getByLabelText("Servers")).toBeInTheDocument();
     expect(screen.getByLabelText("Channels")).toBeInTheDocument();
     expect(screen.getByLabelText("Member List")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Message #home/i)).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.getByText("Message #home")).toBeInTheDocument();
   });
 
-  it("toggles member list when member icon is clicked", () => {
+  it("toggles the member list through an accessible button", () => {
     render(
       <ThemeProvider>
         <div>
@@ -67,17 +64,19 @@ describe("DiscordLayout Full Shell", () => {
             <div>Content</div>
           </DiscordLayout>
         </div>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const activateBtn = screen.getByText("Activate Discord");
-    fireEvent.click(activateBtn);
+    fireEvent.click(screen.getByText("Activate Discord"));
 
-    const memberToggle = screen.getByTitle(/Member List/i);
+    const memberToggle = screen.getByRole("button", { name: "Toggle member list" });
+    expect(memberToggle).toHaveAttribute("aria-controls", "member-sidebar");
+    expect(memberToggle).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByLabelText("Member List")).toBeInTheDocument();
 
     fireEvent.click(memberToggle);
-    expect(screen.queryByLabelText("Member List")).not.toBeInTheDocument();
+    expect(memberToggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByLabelText("Member List")).toBeNull();
 
     fireEvent.click(memberToggle);
     expect(screen.getByLabelText("Member List")).toBeInTheDocument();

@@ -21,12 +21,6 @@ function setPixel(x, y, [r, g, b, a]) {
   rgba[idx + 3] = a;
 }
 
-function getPixel(x, y) {
-  if (x < 0 || x >= width || y < 0 || y >= height) return [0, 0, 0, 0];
-  const idx = (y * width + x) * 4;
-  return [rgba[idx], rgba[idx + 1], rgba[idx + 2], rgba[idx + 3]];
-}
-
 function drawLine(x0, y0, x1, y1, color, thickness = 2.5) {
   const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) * 4;
   const rad = thickness / 2;

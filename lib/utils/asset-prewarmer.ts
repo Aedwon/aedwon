@@ -1,91 +1,139 @@
 /**
- * Theme & Asset Prewarmer
- * Pre-instantiates and decodes SVG/WebP assets into browser image decode cache
- * during idle moments or upon user hover over navigation/theme triggers.
+ * Theme asset prewarmer.
+ * Only adaptive assets that change with the selected presentation are warmed.
  */
 
-export const THEME_CRITICAL_ASSETS = [
-  "/logos/moonton-light.svg",
-  "/logos/moonton-dark.svg",
-  "/logos/dls-light.svg",
-  "/logos/dls-dark.svg",
-  "/logos/estudyante-esports-light.svg",
-  "/logos/estudyante-esports-dark.svg",
-  "/logos/psysc.svg",
-  "/logos/hoyoverse.svg",
-  "/logos/up-diliman.svg",
-  "/logos/up-maroons.svg",
-  "/logos/up-fair.webp",
-  "/logos/up-kugihan.webp",
-  "/logos/dost.svg",
-  "/logos/pshs.svg",
-  "/logos/ilocos-sur.webp",
-  "/logos/lgu-norala.webp",
-  "/logos/riot-games.svg",
-  "/logos/ayala-malls.svg",
-  "/logos/sm-supermalls.svg",
-  "/logos/smart.svg",
-  "/logos/converge.svg",
-  "/logos/msi.svg",
-  "/logos/hotel101.webp",
-  "/logos/oppo.svg",
-  "/logos/zowie.svg",
-  "/logos/chronos.webp",
-];
+export type ThemeAssetTarget = "default-light" | "default-dark" | "neobrutalist";
+
+export const THEME_ASSETS: Record<ThemeAssetTarget, readonly string[]> = {
+  "default-light": [
+    "/logos/moonton-light.svg",
+    "/logos/dls-light.svg",
+    "/logos/estudyante-esports-light.svg",
+  ],
+  "default-dark": [
+    "/logos/moonton-dark.svg",
+    "/logos/dls-dark.svg",
+    "/logos/estudyante-esports-dark.svg",
+  ],
+  neobrutalist: [
+    "/logos/moonton-light.svg",
+    "/logos/dls-light.svg",
+    "/logos/estudyante-esports-light.svg",
+  ],
+};
 
 const warmedAssets = new Set<string>();
+const pendingAssets = new Set<string>();
+const pendingImages = new Map<string, HTMLImageElement>();
 
-/**
- * Checks if a specific asset URL has already been warmed.
- */
 export function isAssetWarmed(src: string): boolean {
   return warmedAssets.has(src);
 }
 
-/**
- * Pre-warms and decodes a list of assets asynchronously.
- */
-export function prewarmThemeAssets(assets: string[] = THEME_CRITICAL_ASSETS): void {
+function finishPrewarm(src: string, succeeded: boolean): void {
+  pendingAssets.delete(src);
+  pendingImages.delete(src);
+  if (succeeded) warmedAssets.add(src);
+}
+
+export function prewarmThemeAssets(assets: readonly string[]): void {
   if (typeof window === "undefined" || typeof Image === "undefined") return;
 
   for (const src of assets) {
-    if (warmedAssets.has(src)) continue;
-    warmedAssets.add(src);
+    if (warmedAssets.has(src) || pendingAssets.has(src)) continue;
 
     try {
-      const img = new Image();
-      img.src = src;
-      if (typeof img.decode === "function") {
-        img.decode().catch(() => {
-          // Ignore decoding errors for silent background prewarm
-        });
+      const image = new Image();
+      pendingAssets.add(src);
+      pendingImages.set(src, image);
+
+      image.onload = () => finishPrewarm(src, true);
+      image.onerror = () => finishPrewarm(src, false);
+      image.src = src;
+
+      if (typeof image.decode === "function") {
+        void image.decode().then(
+          () => finishPrewarm(src, true),
+          () => {
+            // onload/onerror remains the fallback for formats with inconsistent decode support.
+          },
+        );
       }
     } catch {
-      // Ignore background prewarm failures
+      finishPrewarm(src, false);
     }
   }
 }
 
-/**
- * Schedules prewarming during browser idle time via requestIdleCallback.
- */
-export function scheduleIdlePrewarm(delayMs: number = 1000): void {
-  if (typeof window === "undefined") return;
+export function prewarmThemeTarget(target: ThemeAssetTarget): void {
+  prewarmThemeAssets(THEME_ASSETS[target]);
+}
 
-  const runPrewarm = () => {
+function getCurrentTarget(): ThemeAssetTarget | null {
+  const root = document.documentElement;
+  const theme = root.getAttribute("data-theme");
+  const mode = root.getAttribute("data-mode");
+
+  if (theme === "neobrutalist") return "neobrutalist";
+  if (theme !== "default") return null;
+  return mode === "light" ? "default-light" : "default-dark";
+}
+
+function shouldSkipIdlePrewarm(): boolean {
+  const connection = (navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+  }).connection;
+
+  return Boolean(
+    connection?.saveData ||
+      connection?.effectiveType === "slow-2g" ||
+      connection?.effectiveType === "2g",
+  );
+}
+
+/**
+ * Schedules a small current-theme prewarm and returns a cleanup function.
+ */
+export function scheduleIdlePrewarm(delayMs = 1000): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let idleId: number | null = null;
+  let cancelled = false;
+
+  const run = () => {
+    if (cancelled || shouldSkipIdlePrewarm()) return;
+
+    const prewarm = () => {
+      if (cancelled) return;
+      const target = getCurrentTarget();
+      if (target) prewarmThemeTarget(target);
+    };
+
     if ("requestIdleCallback" in window) {
-      (window as any).requestIdleCallback(
-        () => prewarmThemeAssets(),
-        { timeout: 3000 }
-      );
+      idleId = window.requestIdleCallback(prewarm, { timeout: 2500 });
     } else {
-      setTimeout(() => prewarmThemeAssets(), 150);
+      timeoutId = setTimeout(prewarm, 150);
     }
   };
 
+  const schedule = () => {
+    timeoutId = setTimeout(run, delayMs);
+  };
+
   if (document.readyState === "complete") {
-    setTimeout(runPrewarm, delayMs);
+    schedule();
   } else {
-    window.addEventListener("load", () => setTimeout(runPrewarm, delayMs), { once: true });
+    window.addEventListener("load", schedule, { once: true });
   }
+
+  return () => {
+    cancelled = true;
+    window.removeEventListener("load", schedule);
+    if (timeoutId !== null) clearTimeout(timeoutId);
+    if (idleId !== null && "cancelIdleCallback" in window) {
+      window.cancelIdleCallback(idleId);
+    }
+  };
 }

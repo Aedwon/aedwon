@@ -1,0 +1,148 @@
+name: Verify portfolio
+
+on:
+  push:
+    branches:
+      - main
+      - codex/**
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build production app
+        run: npm run build
+
+      - name: Verify public agent endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          npm run start -- -p 3000 > /tmp/aedwon-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'STATUS=$?; kill "$SERVER_PID" 2>/dev/null || true; if [ "$STATUS" -ne 0 ]; then echo "--- next server log ---"; cat /tmp/aedwon-next.log; fi; exit "$STATUS"' EXIT
+
+          READY=0
+          for _ in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" != "1" ]; then
+            echo "Production server did not become ready"
+            exit 1
+          fi
+
+          assert_status() {
+            local path="$1"
+            local expected="$2"
+            local actual
+            actual=$(curl -sS -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000${path}")
+            if [ "$actual" != "$expected" ]; then
+              echo "FAIL status: expected ${path} to return ${expected}, got ${actual}"
+              return 1
+            fi
+            echo "PASS status ${path}: ${actual}"
+          }
+
+          assert_contains() {
+            local label="$1"
+            local value="$2"
+            local needle="$3"
+            if ! grep -Fq -- "$needle" <<< "$value"; then
+              echo "FAIL content: ${label} missing ${needle}"
+              return 1
+            fi
+            echo "PASS content: ${label}"
+          }
+
+          assert_regex() {
+            local label="$1"
+            local value="$2"
+            local pattern="$3"
+            if ! grep -Eqi -- "$pattern" <<< "$value"; then
+              echo "FAIL header/content: ${label} did not match ${pattern}"
+              echo "--- observed ${label} ---"
+              printf '%s\n' "$value"
+              return 1
+            fi
+            echo "PASS header/content: ${label}"
+          }
+
+          assert_status "/path-that-does-not-exist" "404"
+          assert_status "/llms.txt" "200"
+          assert_status "/sitemap.xml" "200"
+          assert_status "/robots.txt" "200"
+          assert_status "/about" "200"
+          assert_status "/contact" "200"
+          assert_status "/privacy" "200"
+          assert_status "/opengraph-image" "200"
+
+          LLMS_BODY=$(curl -fsS http://127.0.0.1:3000/llms.txt)
+          assert_contains "llms.txt guidance" "$LLMS_BODY" "When to use this site"
+
+          SITEMAP_BODY=$(curl -fsS http://127.0.0.1:3000/sitemap.xml)
+          assert_contains "sitemap lastmod" "$SITEMAP_BODY" "<lastmod>"
+
+          ROBOTS_BODY=$(curl -fsS http://127.0.0.1:3000/robots.txt)
+          assert_contains "robots sitemap" "$ROBOTS_BODY" "Sitemap: https://aedwon.com/sitemap.xml"
+
+          MARKDOWN_HEADERS=$(curl -sSI -H "Accept: text/markdown" http://127.0.0.1:3000/projects | tr -d '\r')
+          assert_regex "markdown content-type" "$MARKDOWN_HEADERS" '^content-type: text/markdown; charset=utf-8$'
+          assert_regex "markdown vary" "$MARKDOWN_HEADERS" '^vary: .*accept'
+
+          MARKDOWN_BODY=$(curl -fsS -H "Accept: text/markdown" http://127.0.0.1:3000/projects)
+          assert_contains "markdown projects body" "$MARKDOWN_BODY" "# Projects"
+
+          HTML_HEADERS=$(curl -sSI -H "Accept: text/html" http://127.0.0.1:3000/ | tr -d '\r')
+          assert_regex "html vary" "$HTML_HEADERS" '^vary: .*accept'
+
+          UNSUPPORTED_STATUS=$(curl -sS -o /dev/null -w "%{http_code}" -H "Accept: application/pdf" http://127.0.0.1:3000/)
+          if [ "$UNSUPPORTED_STATUS" != "406" ]; then
+            echo "FAIL status: unsupported representation returned ${UNSUPPORTED_STATUS}"
+            exit 1
+          fi
+          echo "PASS status unsupported representation: 406"
+
+          MARKDOWN_404_STATUS=$(curl -sS -o /tmp/markdown-404.txt -w "%{http_code}" -H "Accept: text/markdown" http://127.0.0.1:3000/path-that-does-not-exist)
+          if [ "$MARKDOWN_404_STATUS" != "404" ]; then
+            echo "FAIL status: markdown 404 returned ${MARKDOWN_404_STATUS}"
+            exit 1
+          fi
+          MARKDOWN_404_BODY=$(cat /tmp/markdown-404.txt)
+          assert_contains "markdown 404 llms recovery" "$MARKDOWN_404_BODY" "llms.txt"
+          assert_contains "markdown 404 sitemap recovery" "$MARKDOWN_404_BODY" "sitemap.xml"
+
+          HOME_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/)
+          assert_regex "homepage h1" "$HOME_HTML" '<h1'
+          assert_contains "homepage canonical" "$HOME_HTML" 'rel="canonical"'
+          assert_contains "homepage og:type" "$HOME_HTML" 'property="og:type"'
+          assert_contains "homepage Person JSON-LD" "$HOME_HTML" '"@type":"Person"'
+
+          OG_HEADERS=$(curl -sSI http://127.0.0.1:3000/opengraph-image | tr -d '\r')
+          assert_regex "Open Graph image content-type" "$OG_HEADERS" '^content-type: image/png'

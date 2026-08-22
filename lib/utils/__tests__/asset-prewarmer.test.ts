@@ -1,62 +1,93 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { prewarmThemeAssets, THEME_CRITICAL_ASSETS, isAssetWarmed } from "../asset-prewarmer";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  THEME_ASSETS,
+  isAssetWarmed,
+  prewarmThemeAssets,
+  prewarmThemeTarget,
+} from "../asset-prewarmer";
 
 describe("asset-prewarmer", () => {
+  const originalImage = global.Image;
+
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("exports a non-empty list of critical theme assets", () => {
-    expect(THEME_CRITICAL_ASSETS.length).toBeGreaterThan(0);
-    expect(THEME_CRITICAL_ASSETS).toContain("/logos/moonton-light.svg");
-    expect(THEME_CRITICAL_ASSETS).toContain("/logos/moonton-dark.svg");
+  afterEach(() => {
+    global.Image = originalImage;
   });
 
-  it("prewarms assets by creating Image instances and calling decode", async () => {
-    const decodeMock = vi.fn().mockResolvedValue(undefined);
-    const mockImageInstances: any[] = [];
+  it("groups only adaptive assets by target theme", () => {
+    expect(THEME_ASSETS["default-light"]).toContain("/logos/moonton-light.svg");
+    expect(THEME_ASSETS["default-dark"]).toContain("/logos/moonton-dark.svg");
+    expect(THEME_ASSETS.neobrutalist).toEqual(THEME_ASSETS["default-light"]);
+    expect(Object.values(THEME_ASSETS).flat().every((src) => src.startsWith("/logos/"))).toBe(true);
+  });
 
-    // Mock Image constructor in global scope
-    const originalImage = global.Image;
+  it("marks an asset warmed only after decode succeeds", async () => {
+    const decodeMock = vi.fn().mockResolvedValue(undefined);
+    const instances: { src: string; decode: typeof decodeMock }[] = [];
+
     global.Image = class {
       src = "";
       decode = decodeMock;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+
       constructor() {
-        mockImageInstances.push(this);
+        instances.push(this);
       }
-    } as any;
+    } as never;
 
-    try {
-      prewarmThemeAssets();
+    const src = "/test-targeted-logo.svg";
+    prewarmThemeAssets([src]);
+    expect(instances).toHaveLength(1);
+    expect(isAssetWarmed(src)).toBe(false);
 
-      expect(mockImageInstances.length).toBe(THEME_CRITICAL_ASSETS.length);
-      expect(isAssetWarmed("/logos/moonton-light.svg")).toBe(true);
-      expect(decodeMock).toHaveBeenCalled();
-    } finally {
-      global.Image = originalImage;
-    }
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(decodeMock).toHaveBeenCalledTimes(1);
+    expect(isAssetWarmed(src)).toBe(true);
   });
 
-  it("does not re-warm assets that have already been warmed", () => {
-    const mockImageInstances: any[] = [];
-    const originalImage = global.Image;
+  it("does not re-warm an asset after a successful decode", async () => {
+    const decodeMock = vi.fn().mockResolvedValue(undefined);
+    const instances: object[] = [];
+
     global.Image = class {
       src = "";
-      decode = vi.fn().mockResolvedValue(undefined);
+      decode = decodeMock;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+
       constructor() {
-        mockImageInstances.push(this);
+        instances.push(this);
       }
-    } as any;
+    } as never;
 
-    try {
-      prewarmThemeAssets(["/test-logo.svg"]);
-      expect(mockImageInstances.length).toBe(1);
+    const src = "/test-once-logo.svg";
+    prewarmThemeAssets([src]);
+    await Promise.resolve();
+    await Promise.resolve();
+    prewarmThemeAssets([src]);
 
-      // Second call with same asset should not instantiate new Image
-      prewarmThemeAssets(["/test-logo.svg"]);
-      expect(mockImageInstances.length).toBe(1);
-    } finally {
-      global.Image = originalImage;
-    }
+    expect(instances).toHaveLength(1);
+  });
+
+  it("prewarms a specific target instead of every theme asset", () => {
+    const instances: object[] = [];
+    global.Image = class {
+      src = "";
+      decode = vi.fn().mockImplementation(() => new Promise<void>(() => {}));
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+
+      constructor() {
+        instances.push(this);
+      }
+    } as never;
+
+    prewarmThemeTarget("default-dark");
+    expect(instances).toHaveLength(THEME_ASSETS["default-dark"].length);
   });
 });

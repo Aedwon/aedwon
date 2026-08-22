@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from "react";
 
 interface StarParticle {
   angle: number;
-  radius: number;
   baseRadius: number;
   speed: number;
   ejectSpeed: number;
@@ -14,7 +13,6 @@ interface StarParticle {
   twinkleSpeed: number;
   twinklePhase: number;
   baseAlpha: number;
-  mass: number;
 }
 
 interface StarVortexTransitionProps {
@@ -27,55 +25,62 @@ interface StarVortexTransitionProps {
   starCount?: number;
 }
 
-/**
- * Creates an offscreen cached sprite canvas with halo and 4-point star core.
- * Avoids recalculating gradients and 8-point vector paths per particle per frame.
- */
 function createStarSprite(
   coreColor: string,
   halo0: string,
   halo1: string,
   halo2: string,
-  spriteDim: number = 64
+  spriteDim = 64,
 ): HTMLCanvasElement | null {
-  if (typeof document === "undefined") return null;
-  const offCanvas = document.createElement("canvas");
-  offCanvas.width = spriteDim;
-  offCanvas.height = spriteDim;
-  const offCtx = offCanvas.getContext("2d");
-  if (!offCtx) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = spriteDim;
+  canvas.height = spriteDim;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
 
   const center = spriteDim / 2;
-  const haloRadius = spriteDim / 2;
+  const gradient = context.createRadialGradient(center, center, 0, center, center, center);
+  gradient.addColorStop(0, halo0);
+  gradient.addColorStop(0.5, halo1);
+  gradient.addColorStop(1, halo2);
+  context.fillStyle = gradient;
+  context.beginPath();
+  context.arc(center, center, center, 0, Math.PI * 2);
+  context.fill();
+
   const coreRadius = spriteDim * 0.25;
   const innerRadius = coreRadius * 0.22;
-
-  // 1. Soft diffuse starlight halo
-  const grad = offCtx.createRadialGradient(center, center, 0, center, center, haloRadius);
-  grad.addColorStop(0, halo0);
-  grad.addColorStop(0.5, halo1);
-  grad.addColorStop(1, halo2);
-  offCtx.fillStyle = grad;
-  offCtx.beginPath();
-  offCtx.arc(center, center, haloRadius, 0, Math.PI * 2);
-  offCtx.fill();
-
-  // 2. Sharp 4-Point Starlight Core
-  const spikes = 4;
-  offCtx.beginPath();
-  for (let i = 0; i < spikes * 2; i++) {
-    const r = i % 2 === 0 ? coreRadius : innerRadius;
-    const angle = (i / (spikes * 2)) * Math.PI * 2;
-    const px = center + Math.cos(angle) * r;
-    const py = center + Math.sin(angle) * r;
-    if (i === 0) offCtx.moveTo(px, py);
-    else offCtx.lineTo(px, py);
+  context.beginPath();
+  for (let index = 0; index < 8; index += 1) {
+    const radius = index % 2 === 0 ? coreRadius : innerRadius;
+    const angle = (index / 8) * Math.PI * 2;
+    const x = center + Math.cos(angle) * radius;
+    const y = center + Math.sin(angle) * radius;
+    if (index === 0) context.moveTo(x, y);
+    else context.lineTo(x, y);
   }
-  offCtx.closePath();
-  offCtx.fillStyle = coreColor;
-  offCtx.fill();
+  context.closePath();
+  context.fillStyle = coreColor;
+  context.fill();
+  return canvas;
+}
 
-  return offCanvas;
+function createCoreSprite(color0: string, color1: string, color2: string): HTMLCanvasElement | null {
+  const size = 96;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+
+  const center = size / 2;
+  const gradient = context.createRadialGradient(center, center, 0, center, center, center);
+  gradient.addColorStop(0, color0);
+  gradient.addColorStop(0.6, color1);
+  gradient.addColorStop(1, color2);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+  return canvas;
 }
 
 export default function StarVortexTransition({
@@ -86,114 +91,108 @@ export default function StarVortexTransition({
   duration = 720,
   starCount = 140,
 }: StarVortexTransitionProps) {
-  const onFlipRef = useRef(onFlipTheme);
-  const onCompleteRef = useRef(onComplete);
-  onFlipRef.current = onFlipTheme;
-  onCompleteRef.current = onComplete;
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animRef = useRef<number | null>(null);
+  const animationRef = useRef<number | null>(null);
   const flippedRef = useRef(false);
+  const completedRef = useRef(false);
 
   useEffect(() => {
-    // Disable background CSS transitions while canvas animation is running
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.add("is-theme-transitioning");
+    flippedRef.current = false;
+    completedRef.current = false;
+
+    const finish = () => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      document.documentElement.classList.remove("is-theme-transitioning");
+      onComplete();
+    };
+
+    const flip = () => {
+      if (flippedRef.current) return;
+      flippedRef.current = true;
+      onFlipTheme();
+    };
+
+    if (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      flip();
+      finish();
+      return;
     }
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) {
+      flip();
+      finish();
+      return;
+    }
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const maxDim = Math.hypot(width, height);
-
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-
-    ctx.scale(dpr, dpr);
-
-    const originX = origin?.x ?? width / 2;
-    const originY = origin?.y ?? height / 2;
+    document.documentElement.classList.add("is-theme-transitioning");
 
     const isDarkTarget = targetMode === "dark";
-
-    // Phase 1 (Gathering) Colors
     const gatherStarColor = isDarkTarget ? "#000000" : "#FFFFFF";
-    const gatherHaloStop0 = isDarkTarget ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.45)";
-    const gatherHaloStop1 = isDarkTarget ? "rgba(20, 20, 24, 0.2)" : "rgba(228, 228, 231, 0.15)";
-    const gatherHaloStop2 = isDarkTarget ? "rgba(20, 20, 24, 0)" : "rgba(228, 228, 231, 0)";
-
-    // Phase 2 (Explosion) Colors
+    const gatherHalo0 = isDarkTarget ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.45)";
+    const gatherHalo1 = isDarkTarget ? "rgba(20,20,24,0.2)" : "rgba(228,228,231,0.15)";
+    const gatherHalo2 = isDarkTarget ? "rgba(20,20,24,0)" : "rgba(228,228,231,0)";
     const burstStarColor = isDarkTarget ? "#FFFFFF" : "#09090B";
-    const burstHaloStop0 = isDarkTarget ? "rgba(255, 255, 255, 0.6)" : "rgba(9, 9, 11, 0.4)";
-    const burstHaloStop1 = isDarkTarget ? "rgba(212, 212, 216, 0.2)" : "rgba(39, 39, 42, 0.15)";
-    const burstHaloStop2 = isDarkTarget ? "rgba(212, 212, 216, 0)" : "rgba(39, 39, 42, 0)";
-    const shockwaveColor = isDarkTarget ? "rgba(255, 255, 255," : "rgba(0, 0, 0,";
+    const burstHalo0 = isDarkTarget ? "rgba(255,255,255,0.6)" : "rgba(9,9,11,0.4)";
+    const burstHalo1 = isDarkTarget ? "rgba(212,212,216,0.2)" : "rgba(39,39,42,0.15)";
+    const burstHalo2 = isDarkTarget ? "rgba(212,212,216,0)" : "rgba(39,39,42,0)";
+    const shockwaveRgb = isDarkTarget ? "255,255,255" : "0,0,0";
 
-    // Offscreen cached sprites (Zero per-frame allocation)
     const gatherSprite = createStarSprite(
       gatherStarColor,
-      gatherHaloStop0,
-      gatherHaloStop1,
-      gatherHaloStop2,
-      64
+      gatherHalo0,
+      gatherHalo1,
+      gatherHalo2,
     );
     const burstSprite = createStarSprite(
       burstStarColor,
-      burstHaloStop0,
-      burstHaloStop1,
-      burstHaloStop2,
-      64
+      burstHalo0,
+      burstHalo1,
+      burstHalo2,
     );
+    const coreSprite = createCoreSprite(gatherHalo0, gatherHalo1, gatherHalo2);
 
-    // Fast drawStarlight blitting from cached sprite
-    const drawStarlight = (
-      x: number,
-      y: number,
-      size: number,
-      rot: number,
-      alpha: number,
-      isPhase2: boolean,
-      stretchFactor: number = 1,
-      stretchAngle: number = 0
-    ) => {
-      if (alpha <= 0.01) return;
-      const sprite = isPhase2 ? burstSprite : gatherSprite;
-
-      ctx.save();
-      ctx.translate(x, y);
-
-      if (isPhase2 && stretchFactor > 1.05) {
-        ctx.rotate(stretchAngle);
-        ctx.scale(stretchFactor, 1 / Math.sqrt(stretchFactor));
-      } else {
-        ctx.rotate(rot);
-      }
-
-      ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
-
-      const drawSize = size * 4.0;
-      if (sprite) {
-        ctx.drawImage(sprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
-      }
-      ctx.restore();
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      maxDim: Math.hypot(window.innerWidth, window.innerHeight),
+      originX: origin?.x ?? window.innerWidth / 2,
+      originY: origin?.y ?? window.innerHeight / 2,
     };
 
-    // Generate stars with tiered physical properties
-    const stars: StarParticle[] = Array.from({ length: starCount }, () => {
-      const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * (maxDim * 0.42) + 40;
+    const resizeCanvas = () => {
+      const previousMaxDim = viewport.maxDim;
+      viewport.width = window.innerWidth;
+      viewport.height = window.innerHeight;
+      viewport.dpr = Math.min(window.devicePixelRatio || 1, 2);
+      viewport.maxDim = Math.hypot(viewport.width, viewport.height);
+      viewport.originX = origin?.x ?? viewport.width / 2;
+      viewport.originY = origin?.y ?? viewport.height / 2;
+
+      canvas.width = Math.round(viewport.width * viewport.dpr);
+      canvas.height = Math.round(viewport.height * viewport.dpr);
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
+      context.setTransform(viewport.dpr, 0, 0, viewport.dpr, 0, 0);
+
+      if (previousMaxDim > 0 && stars.length > 0) {
+        const scale = viewport.maxDim / previousMaxDim;
+        for (const star of stars) star.baseRadius *= scale;
+      }
+    };
+
+    const stars: StarParticle[] = [];
+    for (let index = 0; index < starCount; index += 1) {
       const mass = Math.random() * 0.8 + 0.6;
-      return {
-        angle,
-        radius,
-        baseRadius: radius,
+      stars.push({
+        angle: Math.random() * Math.PI * 2,
+        baseRadius: Math.random() * (viewport.maxDim * 0.42) + 40,
         speed: (Math.random() * 0.08 + 0.04) * (Math.random() > 0.5 ? 1 : -1),
         ejectSpeed: (0.45 + (1 / mass) * 0.55) * (Math.random() * 0.4 + 0.8),
         size: Math.random() * 4.5 + 2.5,
@@ -202,144 +201,134 @@ export default function StarVortexTransition({
         twinkleSpeed: Math.random() * 0.025 + 0.015,
         twinklePhase: Math.random() * Math.PI * 2,
         baseAlpha: Math.random() * 0.35 + 0.65,
-        mass,
-      };
-    });
+      });
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas, { passive: true });
+
+    const drawStar = (
+      sprite: HTMLCanvasElement | null,
+      x: number,
+      y: number,
+      size: number,
+      rotation: number,
+      alpha: number,
+      stretch = 1,
+    ) => {
+      if (!sprite || alpha <= 0.01) return;
+      context.save();
+      context.translate(x, y);
+      context.rotate(rotation);
+      if (stretch > 1.05) context.scale(stretch, 1 / Math.sqrt(stretch));
+      context.globalAlpha = Math.max(0, Math.min(1, alpha));
+      const drawSize = size * 4;
+      context.drawImage(sprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+      context.restore();
+    };
 
     const startTime = performance.now();
     const splitPoint = 0.44;
+    let cancelled = false;
 
     const render = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      ctx.clearRect(0, 0, width, height);
+      if (cancelled) return;
+      const progress = Math.min((now - startTime) / duration, 1);
+      context.clearRect(0, 0, viewport.width, viewport.height);
 
       if (progress < splitPoint) {
-        // PHASE 1: Gravitational Inward Condensation
         const pull = progress / splitPoint;
-        const easePull = pull * pull * pull;
-
+        const easedPull = pull * pull * pull;
         const coreSize = 12 * Math.sin(pull * Math.PI * 0.5);
-        if (coreSize > 1) {
-          const coreGrad = ctx.createRadialGradient(originX, originY, 0, originX, originY, coreSize * 2.5);
-          coreGrad.addColorStop(0, gatherHaloStop0);
-          coreGrad.addColorStop(0.6, gatherHaloStop1);
-          coreGrad.addColorStop(1, gatherHaloStop2);
-          ctx.fillStyle = coreGrad;
-          ctx.beginPath();
-          ctx.arc(originX, originY, coreSize * 2.5, 0, Math.PI * 2);
-          ctx.fill();
+
+        if (coreSprite && coreSize > 1) {
+          const size = coreSize * 5;
+          context.globalAlpha = 1;
+          context.drawImage(
+            coreSprite,
+            viewport.originX - size / 2,
+            viewport.originY - size / 2,
+            size,
+            size,
+          );
         }
 
-        stars.forEach((s) => {
-          s.angle += s.speed * (1 + easePull * 4.5);
-          s.rotAngle += s.rotSpeed * (1 + easePull * 2.5);
-          const r = s.baseRadius * (1 - easePull * 0.96);
-          const px = originX + Math.cos(s.angle) * r;
-          const py = originY + Math.sin(s.angle) * r;
-
-          const twinkle = 0.5 + 0.5 * Math.sin(now * s.twinkleSpeed + s.twinklePhase);
-          const alpha = s.baseAlpha * twinkle;
-
-          drawStarlight(
-            px,
-            py,
-            s.size * (1 - easePull * 0.3),
-            s.rotAngle,
-            alpha,
-            false
+        for (const star of stars) {
+          star.angle += star.speed * (1 + easedPull * 4.5);
+          star.rotAngle += star.rotSpeed * (1 + easedPull * 2.5);
+          const radius = star.baseRadius * (1 - easedPull * 0.96);
+          const x = viewport.originX + Math.cos(star.angle) * radius;
+          const y = viewport.originY + Math.sin(star.angle) * radius;
+          const twinkle = 0.5 + 0.5 * Math.sin(now * star.twinkleSpeed + star.twinklePhase);
+          drawStar(
+            gatherSprite,
+            x,
+            y,
+            star.size * (1 - easedPull * 0.3),
+            star.rotAngle,
+            star.baseAlpha * twinkle,
           );
-        });
+        }
       } else {
-        // PHASE 2: Supernova Detonation & Shockwave
-        if (!flippedRef.current) {
-          flippedRef.current = true;
-          onFlipRef.current();
-        }
-
+        flip();
         const explode = (progress - splitPoint) / (1 - splitPoint);
-        const easeExplode = 1 - Math.pow(1 - explode, 4);
+        const easedExplode = 1 - Math.pow(1 - explode, 4);
         const velocity = Math.pow(1 - explode, 2.5);
+        const shockRadius = easedExplode * viewport.maxDim * 0.75;
+        const shockAlpha = Math.pow(1 - explode, 2) * 0.35;
 
-        // Expanding Shockwave
-        const shockRadius = easeExplode * maxDim * 0.75;
-        const shockAlpha = (1 - explode) * (1 - explode) * 0.35;
         if (shockAlpha > 0.01) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(originX, originY, shockRadius, 0, Math.PI * 2);
-          ctx.lineWidth = Math.max(1, 4 * (1 - explode));
-          ctx.strokeStyle = `${shockwaveColor} ${shockAlpha})`;
-          ctx.stroke();
-
-          const ringGrad = ctx.createRadialGradient(
-            originX,
-            originY,
-            Math.max(0, shockRadius - 20),
-            originX,
-            originY,
-            shockRadius + 15
-          );
-          ringGrad.addColorStop(0, `${shockwaveColor} 0)`);
-          ringGrad.addColorStop(0.5, `${shockwaveColor} ${shockAlpha * 0.4})`);
-          ringGrad.addColorStop(1, `${shockwaveColor} 0)`);
-          ctx.fillStyle = ringGrad;
-          ctx.fill();
-          ctx.restore();
+          context.globalAlpha = 1;
+          context.beginPath();
+          context.arc(viewport.originX, viewport.originY, shockRadius, 0, Math.PI * 2);
+          context.lineWidth = Math.max(1, 4 * (1 - explode));
+          context.strokeStyle = `rgba(${shockwaveRgb},${shockAlpha})`;
+          context.stroke();
         }
 
-        // Outward Starlight Particles
-        stars.forEach((s) => {
-          s.rotAngle += s.rotSpeed * (1 + velocity * 1.5);
-
-          const distance = 12 + s.ejectSpeed * maxDim * 0.55 * easeExplode;
-          const px = originX + Math.cos(s.angle) * distance;
-          const py = originY + Math.sin(s.angle) * distance;
-
-          const stretch = 1 + velocity * s.ejectSpeed * 2.2;
-          const stretchAngle = s.angle;
-
-          const twinkle = 0.6 + 0.4 * Math.sin(now * s.twinkleSpeed * 2.0 + s.twinklePhase);
-          const alpha = s.baseAlpha * twinkle * Math.pow(1 - explode, 1.6);
-
-          drawStarlight(
-            px,
-            py,
-            s.size * (1 + easeExplode * 0.4),
-            s.rotAngle,
+        for (const star of stars) {
+          star.rotAngle += star.rotSpeed * (1 + velocity * 1.5);
+          const distance = 12 + star.ejectSpeed * viewport.maxDim * 0.55 * easedExplode;
+          const x = viewport.originX + Math.cos(star.angle) * distance;
+          const y = viewport.originY + Math.sin(star.angle) * distance;
+          const twinkle = 0.6 + 0.4 * Math.sin(now * star.twinkleSpeed * 2 + star.twinklePhase);
+          const alpha = star.baseAlpha * twinkle * Math.pow(1 - explode, 1.6);
+          const stretch = 1 + velocity * star.ejectSpeed * 2.2;
+          drawStar(
+            burstSprite,
+            x,
+            y,
+            star.size * (1 + easedExplode * 0.4),
+            star.angle,
             alpha,
-            true,
             stretch,
-            stretchAngle
           );
-        });
+        }
       }
 
+      context.globalAlpha = 1;
       if (progress < 1) {
-        animRef.current = requestAnimationFrame(render);
+        animationRef.current = requestAnimationFrame(render);
       } else {
-        ctx.clearRect(0, 0, width, height);
-        if (typeof document !== "undefined") {
-          document.documentElement.classList.remove("is-theme-transitioning");
-        }
-        onCompleteRef.current();
+        context.clearRect(0, 0, viewport.width, viewport.height);
+        finish();
       }
     };
 
-    animRef.current = requestAnimationFrame(render);
+    animationRef.current = requestAnimationFrame(render);
 
     return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      if (typeof document !== "undefined") {
-        document.documentElement.classList.remove("is-theme-transitioning");
-      }
+      cancelled = true;
+      window.removeEventListener("resize", resizeCanvas);
+      if (animationRef.current !== null) cancelAnimationFrame(animationRef.current);
+      document.documentElement.classList.remove("is-theme-transitioning");
     };
-  }, [duration, starCount, origin, targetMode]);
+  }, [duration, onComplete, onFlipTheme, origin, starCount, targetMode]);
 
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       className="fixed inset-0 pointer-events-none z-50 transition-none"
     />
   );
