@@ -1,6 +1,7 @@
+import "@testing-library/jest-dom";
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
 import Navbar from "../Navbar";
 import { ThemeProvider } from "../ThemeContext";
 
@@ -10,93 +11,66 @@ vi.mock("next/navigation", () => ({
   usePathname: () => mockPathname,
 }));
 
-describe("Navbar Component", () => {
+describe("Navbar", () => {
   beforeEach(() => {
     mockPathname = "/";
+    localStorage.clear();
   });
 
-  it("renders the </aedwon> brand link to home", () => {
+  it("renders primary links and marks the active route", () => {
+    mockPathname = "/projects/example";
     render(
       <ThemeProvider>
         <Navbar />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const brandLink = screen.getByText("</aedwon>");
-    expect(brandLink).toBeDefined();
-    expect(brandLink.closest("a")?.getAttribute("href")).toBe("/");
+    expect(screen.getByText("</aedwon>").closest("a")).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Home" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Blogs" })).toBeInTheDocument();
   });
 
-  it("renders Home, Projects, and Blogs navigation links", () => {
+  it("opens and closes the theme settings popover", () => {
     render(
       <ThemeProvider>
         <Navbar />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    expect(screen.getByText("Home")).toBeDefined();
-    expect(screen.getByText("Projects")).toBeDefined();
-    expect(screen.getByText("Blogs")).toBeDefined();
-  });
+    const trigger = screen.getByRole("button", { name: "Theme settings" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("dialog", { name: "Theme settings" })).toBeInTheDocument();
 
-  it("highlights the active route based on pathname", () => {
-    mockPathname = "/projects";
-    const { rerender } = render(
-      <ThemeProvider>
-        <Navbar />
-      </ThemeProvider>
-    );
-
-    const projectsLink = screen.getByText("Projects");
-    expect(projectsLink.className).toContain("text-[var(--text-primary)]");
-
-    mockPathname = "/blogs";
-    rerender(
-      <ThemeProvider>
-        <Navbar />
-      </ThemeProvider>
-    );
-    const blogsLink = screen.getByText("Blogs");
-    expect(blogsLink.className).toContain("text-[var(--text-primary)]");
-  });
-
-  it("toggles the theme popover menu when clicking the palette button", () => {
-    render(
-      <ThemeProvider>
-        <Navbar />
-      </ThemeProvider>
-    );
-
-    const themeButton = screen.getByLabelText("Theme settings");
-    expect(themeButton).toBeDefined();
-
-    // Popover is initially not in document
-    expect(screen.queryByTestId("theme-popover")).toBeNull();
-
-    // Click to open
-    fireEvent.click(themeButton);
-    expect(screen.getByTestId("theme-popover")).toBeDefined();
-
-    // Click outside to close
     fireEvent.mouseDown(document.body);
-    expect(screen.queryByTestId("theme-popover")).toBeNull();
+    expect(screen.queryByRole("dialog", { name: "Theme settings" })).toBeNull();
   });
 
-  it("renders neobrutalist styling when theme is neobrutalist", () => {
+  it("returns focus to the theme trigger when Escape closes the popover", () => {
     render(
       <ThemeProvider>
         <Navbar />
-      </ThemeProvider>
+      </ThemeProvider>,
+    );
+    const trigger = screen.getByRole("button", { name: "Theme settings" });
+    fireEvent.click(trigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "Theme settings" })).toBeNull();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("switches to neobrutalist presentation through the labeled control", () => {
+    render(
+      <ThemeProvider>
+        <Navbar />
+      </ThemeProvider>,
     );
 
-    const themeButton = screen.getByLabelText("Theme settings");
-    fireEvent.click(themeButton);
+    fireEvent.click(screen.getByRole("button", { name: "Theme settings" }));
+    fireEvent.click(screen.getByRole("button", { name: "Use neobrutalist presentation" }));
 
-    const brutalistOption = screen.getByText((content, element) => {
-      return element?.getAttribute("data-tooltip") === "Brutalist";
-    });
-
-    fireEvent.click(brutalistOption);
     const navContainer = screen.getByText("</aedwon>").closest("div");
     expect(navContainer?.className).toContain("rounded-none");
     expect(navContainer?.className).toContain("border-[3px]");
