@@ -103,9 +103,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
       const initialResolvedMode = resolveMode(initialTheme, initialMode);
 
-      setThemeState(initialTheme);
-      setModeState(initialMode);
-      setResolvedMode(initialResolvedMode);
+      if (initialTheme !== "default") setThemeState(initialTheme);
+      if (initialMode !== "dark") setModeState(initialMode);
+      if (initialResolvedMode !== "dark") setResolvedMode(initialResolvedMode);
       applyDocumentTheme(initialTheme, initialResolvedMode);
     });
 
