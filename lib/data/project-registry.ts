@@ -210,7 +210,7 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
       {
         title: "The navbar took more work than I expected",
         description:
-          "Nine services do not fit comfortably in a normal header. I ended up with one Services item that opens a three-by-three grid on desktop and an accordion on mobile. The navbar also changes shape as you scroll. The first version of that transition felt too abrupt, so I changed it to interpolate over the first 80 pixels using requestAnimationFrame. Later I added route-change cleanup, Escape handling, focus return, and a reduced-motion path because those details were missing from the early version.",
+          "The navbar went through a couple of passes. The initial layout shell came first, scroll-based styling was added after that, and the morph itself later moved to requestAnimationFrame with interpolation over the first 80 pixels. The Services item ended up opening a three-by-three grid on desktop and an accordion on mobile. A later accessibility pass added route-change cleanup, Escape handling, focus return, and a reduced-motion path.",
       },
       {
         title: "The design system got stricter as the site grew",
