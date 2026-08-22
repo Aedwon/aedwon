@@ -154,7 +154,7 @@ export default function CodeBlock({
 
       {/* Code with Line Numbers */}
       <div className="flex p-4 overflow-x-auto text-[12.5px] leading-[1.65] font-mono">
-        <div className="select-none text-gray-600 text-right pr-4 font-mono shrink-0 border-r border-white/5">
+        <div className="select-none text-gray-400 text-right pr-4 font-mono shrink-0 border-r border-white/5">
           {lines.map((_, i) => (
             <div key={i}>{i + 1}</div>
           ))}
