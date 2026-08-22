@@ -1,6 +1,17 @@
 import { PROJECTS, type ProjectItem } from "@/lib/data/projects";
 
-export const ADDITIONAL_PROJECTS: ProjectItem[] = [
+export interface ProjectArticleSection {
+  title: string;
+  paragraphs: string[];
+  codeSnippet?: string;
+  codeLanguage?: string;
+}
+
+export type RegisteredProject = ProjectItem & {
+  articleSections?: ProjectArticleSection[];
+};
+
+export const ADDITIONAL_PROJECTS: RegisteredProject[] = [
   {
     slug: "mlbb-post-game-extractor",
     title: "MLBB Post-Game Extractor",
@@ -91,7 +102,7 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
     slug: "webp-unli",
     title: "WebP Unli",
     tagline:
-      "Static in-browser image converter using libvips through WebAssembly and a Web Worker, with batch controls, local processing, and no upload step.",
+      "Static browser image converter built around libvips through WebAssembly, with batch conversion, per-file settings, and no image upload step.",
     category: "web",
     categoryLabel: "Web & Tools",
     tier: "focused",
@@ -116,61 +127,42 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
     ],
     githubUrl: "https://github.com/Aedwon/webp-unli",
     summary:
-      "Private browser-based image converter that runs libvips locally, supports batch WebP conversion with per-file overrides, and packages completed files into a ZIP without sending source images to a server.",
+      "Static browser image converter that runs libvips in a Web Worker, supports per-file batch settings, and keeps source images on the user's device.",
     problem:
-      "I wanted a WebP converter that did not require uploading personal images to a remote service, creating an account, or giving up control of the original files just to change formats. The real engineering problem was making a native-grade image library work inside a static browser application while keeping conversions responsive and giving each file enough control for quality, resizing, and metadata removal.",
-    architecture: [
-      {
-        title: "libvips running inside a web worker",
-        description:
-          "The conversion engine is a plain JavaScript module worker served from public/worker.js. It loads wasm-vips at runtime, decodes the transferred image buffer with libvips, optionally resizes it, and writes the result back to a WebP buffer with the selected quality, lossless, and metadata-strip settings. The input ArrayBuffer is transferred to the worker instead of copied. The encoded output buffer is transferred back to the page when conversion finishes.",
-        tradeOff:
-          "The first visit has to download and initialize roughly 10 MB of WebAssembly runtime files. That is a real startup cost, but the files can then be cached by the browser and the actual images never need a conversion server.",
-      },
-      {
-        title: "Static export with a runtime codec",
-        description:
-          "The site uses Next.js static export, so production hosting only serves files. The worker and wasm-vips runtime live under public/, while the application code coordinates conversion entirely in the browser. The user's device provides the conversion capacity. There is no backend queue.",
-        tradeOff:
-          "A static deployment removes server-side image processing, but browser capabilities and cross-origin isolation become part of the application runtime instead of infrastructure details hidden behind an API.",
-      },
-      {
-        title: "Batch queue with per-file overrides",
-        description:
-          "Files enter a React-managed queue with a copy of the current global conversion settings. Each file can then override quality, lossless mode, resize dimensions, aspect-ratio locking, and metadata stripping without changing the rest of the batch. Conversions run through the worker with progress callbacks, completed files can be re-converted with new settings, and fflate bundles finished outputs into one ZIP for batch download.",
-      },
-      {
-        title: "Format intake and edge cases",
-        description:
-          "The input layer recognizes JPG, PNG, GIF, WebP, AVIF, TIFF, BMP, SVG, HEIC, and HEIF through MIME types with extension fallback when browser metadata is incomplete. Animated GIFs are scanned for multiple graphic-control blocks and explicitly flagged because the current converter only keeps the first frame. HEIC files also skip browser-native previews when the browser cannot display them directly.",
-      },
-    ],
-    hurdles: [
-      {
-        title: "A worker that built successfully but could not run",
-        issue:
-          "The original worker lived as TypeScript beside the application code. In production, Turbopack treated it as a static asset and emitted the raw TypeScript file, which the browser could not parse. The page then sat on its loading state waiting for a ready message that would never arrive.",
-        solution:
-          "I moved the worker to public/worker.js as plain JavaScript and instantiate it directly as a module worker. That makes the browser receive executable JavaScript instead of relying on the bundler to transform a worker entry correctly.",
-      },
-      {
-        title: "wasm-vips needed cross-origin isolation",
-        issue:
-          "Even with the worker loading correctly, wasm-vips could hang during initialization because its SharedArrayBuffer and pthread path requires a cross-origin isolated page. A static export also meant Next.js production headers were not enough by themselves.",
-        solution:
-          "I set Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers for local development in next.config.js and again in vercel.json for the deployed static site. Once both environments were isolated correctly, the worker could initialize the threaded WebAssembly runtime instead of remaining on the loading screen.",
-      },
-    ],
+      "WebP Unli is a browser converter that keeps source images on the user's device. The site is a static Next.js export, with image conversion handled locally through wasm-vips.",
+    architecture: [],
     results:
-      "WebP Unli now runs as a fully static conversion tool with no backend image-processing path. It supports batch conversion, quality and lossless output, resizing, metadata stripping, per-file settings, reconversion, animated-GIF warnings, and ZIP download while keeping source files on the user's device.",
-    metrics: [
-      { value: "0", label: "Server uploads required for image conversion" },
-      { value: "~10 MB", label: "WebAssembly runtime downloaded and cached on first load" },
-      { value: "8+", label: "Documented source image formats accepted" },
-      { value: "Static", label: "Next.js export with browser-side conversion" },
+      "The current tool covers local file selection through WebP download, including batch conversion, per-file settings, reconversion, and ZIP downloads.",
+    articleSections: [
+      {
+        title: "Local conversion with libvips",
+        paragraphs: [
+          "WebP Unli is a browser converter that keeps source images on the user's device. The site is a static Next.js export. Image decoding, resizing, WebP encoding, and metadata stripping all happen locally through `wasm-vips`, so there is no image-processing API or upload queue behind the page.",
+          "Each file's `ArrayBuffer` is transferred to a module worker. libvips decodes it, applies the selected resize and WebP options, then transfers the encoded buffer back. The first load includes roughly 10 MB of WebAssembly runtime files, which the browser can cache afterward.",
+        ],
+      },
+      {
+        title: "The batch queue changed after the first implementation",
+        paragraphs: [
+          "The first conversion flow could already process multiple files. A later commit fixed state around reconversion and overlapping jobs. `runConversion` originally closed over the `files` array. It now reads the current queue through a ref, keeps a count of active conversion batches, and copies the nested resize settings when a file enters the queue.",
+          "Each file keeps its own settings after that point. Completed files can be converted again with different options, and two or more finished images can be packaged into one ZIP with `fflate`.",
+        ],
+      },
+      {
+        title: "Production loading needed two fixes",
+        paragraphs: [
+          "The worker originally lived beside the application code as TypeScript. Turbopack emitted it as a raw `.ts` asset in production, so the browser could not execute it and the loading screen never received its ready message. I moved the worker to `public/worker.js` and load it directly as a module worker.",
+          "That fixed the worker file, but `wasm-vips` could still hang during initialization. Its `SharedArrayBuffer` and pthread path requires a cross-origin isolated page. Local development gets the COOP and COEP headers from `next.config.js`. The Vercel deployment sets the same headers in `vercel.json` because those Next.js headers are not carried into the static export.",
+        ],
+      },
+      {
+        title: "Where it is now",
+        paragraphs: [
+          "The input layer recognizes JPG, PNG, GIF, WebP, AVIF, TIFF, BMP, SVG, HEIC, and HEIF through MIME types with an extension fallback. Animated GIFs are flagged because the current converter only keeps the first frame. HEIC and HEIF files are accepted for conversion, while the file card skips a browser preview when the format cannot be displayed natively.",
+          "Playwright covers the basic PNG and JPG conversion paths, multi-file download, removing files from the queue, and the conversion controls. The current conversion and export path runs without a backend.",
+        ],
+      },
     ],
-    retrospective:
-      "If I keep developing it, I'd start with the initial codec load. I'd make the download cost more visible and test whether optional decoders can be split or deferred. True animated-image conversion would come after that instead of stopping at the first GIF frame.",
   },
   {
     slug: "lakambini-events-redesign",
@@ -218,7 +210,7 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
   },
 ];
 
-export const ALL_PROJECTS: ProjectItem[] = [
+export const ALL_PROJECTS: RegisteredProject[] = [
   ...PROJECTS,
   ...ADDITIONAL_PROJECTS,
 ].sort((a, b) => a.order - b.order);
