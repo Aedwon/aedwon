@@ -93,13 +93,8 @@ export default function StarVortexTransition({
 }: StarVortexTransitionProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
-  const flipCallbackRef = useRef(onFlipTheme);
-  const completeCallbackRef = useRef(onComplete);
   const flippedRef = useRef(false);
   const completedRef = useRef(false);
-
-  flipCallbackRef.current = onFlipTheme;
-  completeCallbackRef.current = onComplete;
 
   useEffect(() => {
     flippedRef.current = false;
@@ -109,13 +104,13 @@ export default function StarVortexTransition({
       if (completedRef.current) return;
       completedRef.current = true;
       document.documentElement.classList.remove("is-theme-transitioning");
-      completeCallbackRef.current();
+      onComplete();
     };
 
     const flip = () => {
       if (flippedRef.current) return;
       flippedRef.current = true;
-      flipCallbackRef.current();
+      onFlipTheme();
     };
 
     if (
@@ -328,7 +323,7 @@ export default function StarVortexTransition({
       if (animationRef.current !== null) cancelAnimationFrame(animationRef.current);
       document.documentElement.classList.remove("is-theme-transitioning");
     };
-  }, [duration, origin, starCount, targetMode]);
+  }, [duration, onComplete, onFlipTheme, origin, starCount, targetMode]);
 
   return (
     <canvas
