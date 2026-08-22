@@ -93,19 +93,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const supportsColorMode = theme === "default";
 
   useEffect(() => {
-    const storedTheme = readStorage(THEME_KEY);
-    const storedMode = readStorage(MODE_KEY);
-    const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
-    const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
-    const initialResolvedMode = resolveMode(initialTheme, initialMode);
+    let cancelled = false;
 
-    setThemeState(initialTheme);
-    setModeState(initialMode);
-    setResolvedMode(initialResolvedMode);
-    applyDocumentTheme(initialTheme, initialResolvedMode);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const storedTheme = readStorage(THEME_KEY);
+      const storedMode = readStorage(MODE_KEY);
+      const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
+      const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
+      const initialResolvedMode = resolveMode(initialTheme, initialMode);
+
+      setThemeState(initialTheme);
+      setModeState(initialMode);
+      setResolvedMode(initialResolvedMode);
+      applyDocumentTheme(initialTheme, initialResolvedMode);
+    });
 
     cancelPrewarmRef.current = scheduleIdlePrewarm(1000);
-    return () => cancelPrewarmRef.current?.();
+    return () => {
+      cancelled = true;
+      cancelPrewarmRef.current?.();
+    };
   }, []);
 
   useEffect(() => {
