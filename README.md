@@ -69,6 +69,18 @@ Light and dark changes in the default presentation use a custom Canvas star-vort
 
 The application is built with Next.js 16 and React 19, with Tailwind CSS and Framer Motion for presentation and motion.
 
+### Agent-facing endpoints
+
+The same canonical portfolio data is available through a small machine-readable surface:
+
+- [`/llms.txt`](https://aedwon.com/llms.txt) explains when an agent should use this portfolio and points to the primary sources.
+- [`/sitemap.xml`](https://aedwon.com/sitemap.xml) lists indexable portfolio, project, blog, and trust pages with `lastmod` values.
+- [`/robots.txt`](https://aedwon.com/robots.txt) advertises the sitemap and excludes internal utility paths.
+- Canonical HTML pages negotiate a Markdown representation when the request sends `Accept: text/markdown`; negotiated responses vary on `Accept`.
+- Missing paths return a real 404, and the Markdown representation includes recovery links to the main indexes.
+
+CI builds the production app, starts the production server, and checks these statuses, headers, metadata signals, and machine-readable files with real HTTP requests.
+
 <details>
 <summary><b>Local development</b></summary>
 
