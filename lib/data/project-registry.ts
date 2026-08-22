@@ -176,7 +176,7 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
     slug: "lakambini-events-redesign",
     title: "Lakambini Events Redesign",
     tagline:
-      "Redesign of Lakambini Events across five core pages and nine service pages, with a shared editorial system and custom layouts for each division.",
+      "Redesign of Lakambini Events across five core pages and nine service pages, with a shared content model and custom layouts for each division.",
     category: "web",
     categoryLabel: "Web & Tools",
     tier: "focused",
@@ -198,52 +198,23 @@ export const ADDITIONAL_PROJECTS: ProjectItem[] = [
     ],
     githubUrl: "https://github.com/Aedwon/lakambini-redesign",
     summary:
-      "Website redesign for Lakambini Events covering five main pages and nine service divisions. The division pages stay custom, while repeated content and visual rules live in shared data and theme tokens.",
+      "Lakambini Events redesign with nine dedicated service pages, shared division data, and a frontend that grew most around the navigation and accessibility work.",
     problem:
-      "Lakambini has nine service divisions covering work that ranges from live entertainment and multimedia to software and spatial builds. I did not want one generic Services page to carry all of that. The redesign uses five core pages and nine division pages. Repeated data stays shared in TypeScript, while each division page keeps its own content layout.",
+      "Lakambini has nine service divisions covering live entertainment, multimedia, event production, training, design, community work, software, and spatial builds. I gave each division its own static page instead of stretching one Services template across all of them. The repeated names, capabilities, hero copy, and cross-links live in a shared TypeScript file, so the page layouts can differ without copying the same content everywhere.",
     architecture: [
       {
-        title: "I split the divisions into real pages",
+        title: "Nine divisions, nine pages",
         description:
-          "The shared division file holds repeated content such as names, capabilities, hero copy, and links. The routing map keeps each service as a static child route instead of one dynamic division template. That leaves each page free to use its own deep-dive sections. I reused the pieces that were actually common, mainly the hero, cross-links, and closing CTA.",
+          "The division routes are static. TANGHAL, DALOY, TAYO, and the other services can each use their own deep-dive sections, while the shared data file handles the content that repeats between pages. The visual rules work the same way. Noto Serif, Manrope, the emerald surface colors, and the main spacing decisions live in Tailwind v4 theme tokens and reusable utilities. There are fourteen pages in the current build, so keeping those values in one place saves me from fixing the same small inconsistency several times.",
       },
       {
-        title: "The navbar took more work than I expected",
+        title: "The header got complicated",
         description:
-          "The navbar went through a couple of passes. The initial layout shell came first, scroll-based styling was added after that, and the morph itself later moved to requestAnimationFrame with interpolation over the first 80 pixels. The Services item ended up opening a three-by-three grid on desktop and an accordion on mobile. A later accessibility pass added route-change cleanup, Escape handling, focus return, and a reduced-motion path.",
-      },
-      {
-        title: "I kept the visual rules in one place",
-        description:
-          "The visual system lives in Tailwind v4 theme tokens and reusable typography classes. Noto Serif handles the display type and Manrope handles the rest. The emerald palette is split into surface levels so most sections can separate themselves without another border. Keeping those values centralized also makes the fourteen pages easier to adjust as one site.",
-      },
-    ],
-    hurdles: [
-      {
-        title: "The accessibility pass came after the main build",
-        issue:
-          "The project plan added a dedicated accessibility and touch UX phase after the main page assembly, polish, and interaction work. That audit identified mobile target sizes, keyboard behavior, menu state, form semantics, and reduced-motion handling as things that needed their own pass.",
-        solution:
-          "I went back through the shared controls and navigation. Mobile targets were brought to a 44 pixel baseline, focus styles were made visible, the menus got ARIA state and Escape handling, and the layout got a skip link. I also checked heading structure, metadata, and image loading across the routes.",
-      },
-      {
-        title: "The photos are still the unfinished part",
-        issue:
-          "The code is ahead of the content here. Most of the large image slots still use reference or stock material, and the repository only has the real Lakambini logo in its local image folder. That is the part of the redesign I would not call finished yet.",
-        solution:
-          "I made an archive image brief instead of filling the gaps with generated event photos. It maps the major image slots to the kind of real Lakambini photo they need, including crop, subject, mood, and candidate past projects. I would leave the placeholders visible until those archive images are available instead of faking a portfolio history.",
+          "What looks like a normal header ended up needing separate state for the desktop services menu, the mobile menu, the mobile services accordion, scroll progress, route changes, focus return, and reduced motion. The Git history shows the layout shell first, scroll-based styling after that, then a later move to requestAnimationFrame interpolation over the first 80 pixels. The accessibility pass came later and added the keyboard and menu behavior that was missing from the earlier implementation. Mobile controls were also brought to a 44 pixel touch baseline during that pass.",
       },
     ],
     results:
-      "The current build covers fourteen pages and all nine service divisions. The shared frontend has per-page metadata, reduced-motion handling, keyboard navigation work, 44 pixel mobile touch targets, and a documented contrast audit. The remaining visual work is the real event photography.",
-    metrics: [
-      { value: "14", label: "Pages covered by the responsive and metadata pass" },
-      { value: "9", label: "Dedicated service-division pages" },
-      { value: "44px", label: "Minimum mobile touch target used in the accessibility pass" },
-      { value: ">7:1", label: "Documented contrast floor for primary audited text pairs" },
-    ],
-    retrospective:
-      "If I restarted this, I would bring the photo archive in much earlier. The placeholders were easy to ignore while I was still building layouts, then became the first thing I noticed once the rest of the site was consistent. I would also put the repeated division metadata and image references into one content manifest. The pages can stay custom without making those fields harder to update.",
+      "The page structure is in place across five core pages and nine service pages. The remaining work is mostly photography. Many of the larger slots still point to stock or reference images, and the repository only contains the real Lakambini logo locally. I wrote an archive image brief that lists the real event photo each slot needs, including the crop, subject, mood, and past projects worth checking. I am leaving those placeholders alone until the actual archive can replace them.",
   },
 ];
 
