@@ -49,9 +49,7 @@ function isThemeMode(value: string | null): value is ThemeMode {
 }
 
 function getSystemMode(): ResolvedMode {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return "dark";
-  }
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return "dark";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
@@ -88,6 +86,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>("dark");
   const [activeTransition, setActiveTransition] = useState<ActiveTransition | null>(null);
   const cancelPrewarmRef = useRef<(() => void) | null>(null);
+  const transitionFlippedRef = useRef(false);
 
   const isNeobrutalist = theme === "neobrutalist";
   const isDiscord = theme === "discord";
@@ -110,9 +109,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (mode !== "system" || theme !== "default" || typeof window.matchMedia !== "function") {
-      return;
-    }
+    if (mode !== "system" || theme !== "default" || typeof window.matchMedia !== "function") return;
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (event: MediaQueryListEvent) => {
@@ -135,6 +132,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = useCallback(
     (newTheme: ThemeStyle) => {
+      transitionFlippedRef.current = false;
       setActiveTransition(null);
       setThemeState(newTheme);
       writeStorage(THEME_KEY, newTheme);
@@ -160,6 +158,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      transitionFlippedRef.current = false;
       setActiveTransition({
         sourceMode: resolvedMode,
         targetMode: targetEffective,
@@ -171,14 +170,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const handleMidpointFlip = useCallback(() => {
-    setActiveTransition((transition) => {
-      if (!transition) return null;
-      applyMode(transition.targetMode, transition.pendingMode);
-      return transition;
-    });
-  }, [applyMode]);
+    if (!activeTransition || transitionFlippedRef.current) return;
+    transitionFlippedRef.current = true;
+    applyMode(activeTransition.targetMode, activeTransition.pendingMode);
+  }, [activeTransition, applyMode]);
 
   const handleTransitionComplete = useCallback(() => {
+    transitionFlippedRef.current = false;
     setActiveTransition(null);
   }, []);
 
