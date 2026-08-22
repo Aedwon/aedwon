@@ -50,18 +50,31 @@ export default function Navbar() {
   }, [navItems]);
 
   useEffect(() => {
-    updatePillPosition();
+    let cancelled = false;
+    const measure = () => {
+      if (!cancelled) updatePillPosition();
+    };
+    const initialFrame = requestAnimationFrame(measure);
     const nav = navRef.current;
+
     if (!nav || typeof ResizeObserver === "undefined") {
-      window.addEventListener("resize", updatePillPosition);
-      return () => window.removeEventListener("resize", updatePillPosition);
+      window.addEventListener("resize", measure);
+      return () => {
+        cancelled = true;
+        cancelAnimationFrame(initialFrame);
+        window.removeEventListener("resize", measure);
+      };
     }
 
-    const observer = new ResizeObserver(updatePillPosition);
+    const observer = new ResizeObserver(measure);
     observer.observe(nav);
     Object.values(tabRefs.current).forEach((element) => element && observer.observe(element));
-    void document.fonts?.ready.then(updatePillPosition);
-    return () => observer.disconnect();
+    void document.fonts?.ready.then(measure);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(initialFrame);
+      observer.disconnect();
+    };
   }, [updatePillPosition]);
 
   useEffect(() => {
