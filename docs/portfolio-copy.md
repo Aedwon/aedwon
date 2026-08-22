@@ -37,8 +37,8 @@ Featured projects [See all projects →]
   Link: [View case study →]
 
 • Kiosk Survey
-  Summary: Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.
-  Stack: [Flutter, Dart, Android TV, SQLite]
+  Summary: Landscape Flutter survey kiosk that stores responses locally in Hive, resets inactive sessions, gives operators a CSV export path, and uses Android lock-task mode to keep the app pinned.
+  Stack: [Flutter, Dart, Hive, Android]
   Link: [View case study →]
 ```
 
@@ -266,16 +266,35 @@ Get in touch for software projects or community infrastructure:
 ### 2.6 Kiosk Survey (`/projects/kiosk-survey`) — Focused
 - **Tier:** Focused
 - **Category:** Mobile & Offline
-- **Role:** Lead Developer
-- **Timeline:** 2023 to 2024
-- **Platform:** Android TV OS
-- **Stack:** Flutter, Dart, SQLite, Android TV
-- **Why I Built This:** Event venues suffer from severe cellular congestion and dropped Wi-Fi under crowd loads. Standard web forms freeze or drop responses when attendees submit surveys at interactive booths.
-- **How It Works:** Built with Flutter for Android TV touch displays. Every attendee submission writes immediately to a local SQLite journal. A connectivity listener detects stable connections and flushes queued JSON records in atomic batches.
-- **Results & Numbers:** Ran continuously for 8 hours on-site during a high-density live event with zero dropped responses and zero crashes.
-- **Metrics:**
-  - `8 Hours`: Continuous offline operation during live event
-  - `0`: Dropped survey submissions or app crashes
+- **Role:** Developer
+- **Timeline:** 2026
+- **Platform:** Android
+- **Stack:** Flutter, Dart, Hive, Android
+- **Summary:** Landscape Flutter survey kiosk that stores responses locally in Hive, resets inactive sessions, gives operators a CSV export path, and uses Android lock-task mode to keep the app pinned.
+
+#### The attendee loop
+
+Kiosk Survey is a landscape Flutter app for collecting three HOK Benefits feedback prompts. The welcome screen starts the survey from a full-screen tap. Each question accepts one text response, and the user cannot continue until the current field contains an answer.
+
+The response fields are read-only to the system keyboard and open a custom on-screen keyboard when tapped. It handles letters, numbers, symbols, shift state, cursor-aware insertion, backspace, space, and dismissal. A March 16 commit changed the survey from suggested answer chips plus free text to text-only responses. Later commits hid the keyboard by default and increased the question text to 72 pixels.
+
+Session reset behavior lives in the application shell instead of being repeated across individual screens. Pointer activity resets a 45-second timer, and an inactive survey returns to the welcome route. After submission, the thank-you screen stays up for three seconds before returning to the start screen for the next response.
+
+#### Responses stay on the device until export
+
+The current build does not have a reconnection queue or automatic server sync. `SurveyRepository` opens a Hive box and writes each completed submission there, adding an ISO timestamp before saving it. Submitting the survey only waits for that local write before moving to the thank-you screen.
+
+Operators have a separate admin path reached through a hidden five-tap target on the welcome screen, followed by password entry. The admin view shows the current entry count and can export the stored responses to CSV or clear them after confirmation.
+
+CSV export was already part of the initial implementation, then changed in smaller passes. One commit replaced internal headings such as `Q1_Answer` with the full question text. Another changed the native save flow to pass the generated CSV bytes through the file picker. The current dialog lets the operator choose the output file, with a USB drive given as an example destination.
+
+#### Screen pinning moved into Android
+
+The Flutter shell already forced landscape orientation, hid the system UI with immersive mode, and handled session resets in the initial commit. Native screen pinning came later.
+
+On March 17, the Android activity was changed from a plain `FlutterActivity` to one that calls `startLockTask()` when it resumes. The same change added a method channel between Flutter and Android. The admin screen can invoke `stopKioskMode`, which calls `stopLockTask()` before closing the application.
+
+That leaves the kiosk behavior split across the two layers. Flutter controls the survey flow, fullscreen presentation, inactivity reset, and operator interface. Android lock-task mode keeps the application pinned until an operator exits through the admin path.
 
 ### 2.7 BetterGov PH (`/projects/bettergov-ph`) — Focused
 - **Tier:** Focused
