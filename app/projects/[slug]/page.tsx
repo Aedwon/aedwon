@@ -1,7 +1,6 @@
 import React from "react";
 import { notFound, redirect } from "next/navigation";
 import {
-  ALL_PROJECTS,
   PROJECT_ALIASES,
   getCaseStudyProjects,
   getNextProject,
@@ -56,5 +55,3 @@ export default async function ProjectCaseStudyPage({
 }
 
 export const dynamicParams = false;
-
-void ALL_PROJECTS;
