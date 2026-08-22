@@ -357,3 +357,22 @@ Get in touch for software projects or community infrastructure:
 - **Results & Numbers:** Reusable, stack-agnostic workflow framework for agentic pair programming.
 - **Metrics:**
   - `Modular`: Multi-agent engineering skills and guardrails
+
+### 2.13 WebP Unli (`/projects/webp-unli`) — Focused
+- **Tier:** Focused
+- **Category:** Web & Tools
+- **Role:** Creator & Developer
+- **Timeline:** 2026
+- **Platform:** Web
+- **Stack:** Next.js 16, TypeScript, Tailwind CSS, wasm-vips, WebAssembly, Web Workers, fflate, Vitest, Playwright
+- **Summary:** Next.js static export that converts supported images to WebP in a wasm-vips worker. Each queued file stores its own options, and completed results can be downloaded individually or as a ZIP.
+- **Article:**
+  - **Browser-side conversion:** WebP Unli is a static Next.js 16 export. When the page loads, useVips starts a module worker from /worker.js and waits for wasm-vips to report that it is ready. Converting a file means reading it into an ArrayBuffer, transferring that buffer to the worker, decoding it with libvips, applying the selected resize and WebP options, then transferring the encoded buffer back to the page. The result is wrapped in a WebP Blob for download. There is no image-processing API in that path.
+
+    The worker uses thumbnailImage when resize is enabled, then writes the result as WebP with writeToBuffer. The write call receives the selected quality and lossless flag. Metadata stripping is passed through the same options object. The input filter accepts JPG and JPEG, PNG, GIF, WebP, AVIF, TIFF and TIF, BMP, SVG, and HEIC or HEIF by MIME type or file extension.
+  - **Queue state lives with each file:** Each file enters the queue with its own copy of the conversion options, including a separate nested resize object. That detail was added after the first queue implementation. The original runConversion callback closed over the files array, so reconversion could read an older queue snapshot. A later fix moved current entries into a ref, added a counter for active conversion batches, copied the nested resize settings, and disabled reconvert controls while conversion was already running.
+
+    There is one module worker for the page. Convert All submits every idle entry through the same worker-backed conversion function while React keeps status and progress on each FileEntry. Finished files can be downloaded one at a time. When at least two results are ready, Download All reads the WebP blobs into Uint8Arrays and packages them with fflate.
+  - **Getting wasm-vips through a static build:** The worker first lived in lib/worker.ts and was constructed from a module URL. Turbopack emitted it as a raw TypeScript asset in production, which the browser could not execute. The worker never sent its ready message, so the page stayed on the loading screen. I moved the worker to public/worker.js as plain JavaScript and load that static asset directly instead.
+
+    That fixed the worker asset, but wasm-vips still depended on cross-origin isolation because its SharedArrayBuffer and pthread path needs COOP and COEP. For local development, next.config.js sends Cross-Origin-Opener-Policy as same-origin and Cross-Origin-Embedder-Policy as require-corp. The Vercel deployment repeats those headers in vercel.json because the static export does not carry the Next.js header configuration into the built site.
