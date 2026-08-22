@@ -63,23 +63,22 @@ Single-server Discord infrastructure for MLBB verification, community activity, 
 
 ## This repository
 
-Source for [aedwon.com](https://aedwon.com). The portfolio uses a chameleon presentation system with default, neobrutalist, and full Discord-style modes. The Discord shell maps the site's real routes into channels and threads while reading the same canonical project records as the standard pages.
+This is the source for [aedwon.com](https://aedwon.com), built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Framer Motion. Project facts live in a canonical registry that feeds the standard project pages, featured work, the Discord presentation, and the site's machine-readable responses.
 
-Light and dark changes in the default presentation use a custom Canvas star-vortex transition. Theme-dependent logo assets are prewarmed on demand, and the navbar indicator and page motion follow the same route ordering without maintaining a second navigation state.
+The interface can switch between a default presentation, a neobrutalist one, and a Discord-style client. Default mode supports system, light, and dark color modes. Light and dark changes run through a custom Canvas star-vortex animation that flips the actual theme at the midpoint and skips the effect when reduced motion is requested. Theme-dependent logos are prewarmed only for the likely target presentation, with idle prewarming skipped on data-saver and slow connections.
 
-The application is built with Next.js 16 and React 19, with Tailwind CSS and Framer Motion for presentation and motion.
+Discord mode replaces the normal shell without replacing the routing model. The current URL is mapped into channels and threads, so deep links and browser navigation still use the same `/projects` and `/blogs` routes. The standard navbar measures its active indicator from the rendered tabs with `ResizeObserver`, and page motion follows that same route order.
 
-### Agent-facing endpoints
+`Next.js 16` `React 19` `TypeScript` `Tailwind CSS` `Framer Motion` `Vitest`
 
-The same canonical portfolio data is available through a small machine-readable surface:
+<details>
+<summary><b>Agent-facing surface</b></summary>
 
-- [`/llms.txt`](https://aedwon.com/llms.txt) explains when an agent should use this portfolio and points to the primary sources.
-- [`/sitemap.xml`](https://aedwon.com/sitemap.xml) lists indexable portfolio, project, blog, and trust pages with `lastmod` values.
-- [`/robots.txt`](https://aedwon.com/robots.txt) advertises the sitemap and excludes internal utility paths.
-- Canonical HTML pages negotiate a Markdown representation when the request sends `Accept: text/markdown`; negotiated responses vary on `Accept`.
-- Missing paths return a real 404, and the Markdown representation includes recovery links to the main indexes.
+The same content model also has a machine-readable surface. [`/llms.txt`](https://aedwon.com/llms.txt) describes the portfolio and its canonical sources, while normal pages can return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://aedwon.com/sitemap.xml) and [`/robots.txt`](https://aedwon.com/robots.txt) expose the public index and crawler guidance.
 
-CI builds the production app, starts the production server, and checks these statuses, headers, metadata signals, and machine-readable files with real HTTP requests.
+CI runs tests, lint, and the production build, then starts the built app and checks status codes, content negotiation, metadata, 404 behavior, and the public machine-readable endpoints with real HTTP requests.
+
+</details>
 
 <details>
 <summary><b>Local development</b></summary>
