@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/_agent-markdown", "/logo-cropper", "/logo-sizing"],
+      disallow: ["/agent-markdown", "/logo-cropper", "/logo-sizing"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,
