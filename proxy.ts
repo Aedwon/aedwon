@@ -4,6 +4,8 @@ import {
   preferredPageRepresentation,
 } from "@/lib/accept-negotiation";
 
+const MARKDOWN_PATH_HEADER = "x-aedwon-markdown-path";
+
 export function proxy(request: NextRequest) {
   const accept = request.headers.get("accept");
   const representation = preferredPageRepresentation(accept);
@@ -26,7 +28,12 @@ export function proxy(request: NextRequest) {
     rewriteUrl.pathname = "/agent-markdown";
     rewriteUrl.searchParams.set("path", request.nextUrl.pathname);
 
-    const response = NextResponse.rewrite(rewriteUrl);
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(MARKDOWN_PATH_HEADER, request.nextUrl.pathname);
+
+    const response = NextResponse.rewrite(rewriteUrl, {
+      request: { headers: requestHeaders },
+    });
     response.headers.set("Vary", "Accept");
     return response;
   }
