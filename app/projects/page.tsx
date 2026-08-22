@@ -1,24 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { PROJECTS } from "@/lib/data/projects";
+import { ALL_PROJECTS } from "@/lib/data/project-registry";
 import ProjectCard from "@/components/ProjectCard";
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const categories = [
-    { id: "all", label: "All", count: PROJECTS.length },
-    { id: "mobile", label: "Mobile & Offline", count: PROJECTS.filter((p) => p.category === "mobile").length },
-    { id: "civic", label: "Civic Tech", count: PROJECTS.filter((p) => p.category === "civic").length },
-    { id: "bots", label: "Bots & Systems", count: PROJECTS.filter((p) => p.category === "bots").length },
-    { id: "web", label: "Web & Tools", count: PROJECTS.filter((p) => p.category === "web").length },
+    { id: "all", label: "All", count: ALL_PROJECTS.length },
+    { id: "mobile", label: "Mobile & Offline", count: ALL_PROJECTS.filter((p) => p.category === "mobile").length },
+    { id: "civic", label: "Civic Tech", count: ALL_PROJECTS.filter((p) => p.category === "civic").length },
+    { id: "bots", label: "Bots & Systems", count: ALL_PROJECTS.filter((p) => p.category === "bots").length },
+    { id: "web", label: "Web & Tools", count: ALL_PROJECTS.filter((p) => p.category === "web").length },
   ];
 
   const filteredProjects =
     activeCategory === "all"
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.category === activeCategory);
+      ? ALL_PROJECTS
+      : ALL_PROJECTS.filter((p) => p.category === activeCategory);
 
   return (
     <div className="space-y-6">
@@ -49,7 +49,7 @@ export default function ProjectsPage() {
         ))}
       </div>
 
-      {/* 12 Projects Grid */}
+      {/* Projects Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         {filteredProjects.map((project) => (
           <ProjectCard key={project.slug} project={project} />
