@@ -58,6 +58,15 @@ describe("agent-facing endpoints", () => {
     expect(await head.text()).toBe("");
   });
 
+  it("uses the forwarded canonical pathname for rewritten Markdown requests", async () => {
+    const request = new Request("https://aedwon.com/projects", {
+      headers: { "x-aedwon-markdown-path": "/projects" },
+    });
+    const response = await getMarkdown(request);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain("# Projects");
+  });
+
   it("rewrites Markdown requests and rejects unsupported representations", () => {
     const markdownRequest = new NextRequest("https://aedwon.com/projects", {
       headers: { accept: "text/markdown, text/html;q=0.8" },
