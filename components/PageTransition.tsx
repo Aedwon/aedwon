@@ -1,11 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
 interface PageTransitionProps {
   children: React.ReactNode;
+}
+
+interface RouteTransitionState {
+  path: string;
+  previousIndex: number;
+  hasNavigated: boolean;
 }
 
 function getRouteIndex(path: string): number {
@@ -18,18 +24,28 @@ function getRouteIndex(path: string): number {
 export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
-  const previousPathRef = useRef(pathname);
-  const mountedRef = useRef(false);
+  const [routeState, setRouteState] = useState<RouteTransitionState>(() => ({
+    path: pathname,
+    previousIndex: getRouteIndex(pathname),
+    hasNavigated: false,
+  }));
+
+  if (routeState.path !== pathname) {
+    setRouteState({
+      path: pathname,
+      previousIndex: getRouteIndex(routeState.path),
+      hasNavigated: true,
+    });
+  }
 
   const currentIndex = getRouteIndex(pathname);
-  const previousIndex = getRouteIndex(previousPathRef.current);
-  const direction = currentIndex === previousIndex ? 0 : currentIndex > previousIndex ? 1 : -1;
-  const shouldAnimate = mountedRef.current && !reduceMotion;
-
-  useEffect(() => {
-    previousPathRef.current = pathname;
-    mountedRef.current = true;
-  }, [pathname]);
+  const direction =
+    currentIndex === routeState.previousIndex
+      ? 0
+      : currentIndex > routeState.previousIndex
+        ? 1
+        : -1;
+  const shouldAnimate = routeState.hasNavigated && !reduceMotion;
 
   return (
     <motion.div
