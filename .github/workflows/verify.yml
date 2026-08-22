@@ -43,10 +43,7 @@ jobs:
 
           npm run start -- -p 3000 > /tmp/aedwon-next.log 2>&1 &
           SERVER_PID=$!
-          cleanup() {
-            kill "$SERVER_PID" 2>/dev/null || true
-          }
-          trap cleanup EXIT
+          trap 'STATUS=$?; kill "$SERVER_PID" 2>/dev/null || true; if [ "$STATUS" -ne 0 ]; then echo "--- next server log ---"; cat /tmp/aedwon-next.log; fi; exit "$STATUS"' EXIT
 
           READY=0
           for _ in {1..30}; do
@@ -56,18 +53,17 @@ jobs:
             fi
             sleep 1
           done
-
-          if [ "$READY" -ne 1 ]; then
-            cat /tmp/aedwon-next.log
-            exit 1
-          fi
+          test "$READY" = "1"
 
           assert_status() {
             local path="$1"
             local expected="$2"
             local actual
             actual=$(curl -sS -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000${path}")
-            test "$actual" = "$expected"
+            if [ "$actual" != "$expected" ]; then
+              echo "Expected ${path} to return ${expected}, got ${actual}"
+              return 1
+            fi
           }
 
           assert_status "/path-that-does-not-exist" "404"
@@ -79,30 +75,38 @@ jobs:
           assert_status "/privacy" "200"
           assert_status "/opengraph-image" "200"
 
-          curl -fsS http://127.0.0.1:3000/llms.txt | grep -q "When to use this site"
-          curl -fsS http://127.0.0.1:3000/sitemap.xml | grep -q "<lastmod>"
-          curl -fsS http://127.0.0.1:3000/robots.txt | grep -q "Sitemap: https://aedwon.com/sitemap.xml"
+          LLMS_BODY=$(curl -fsS http://127.0.0.1:3000/llms.txt)
+          grep -Fq "When to use this site" <<< "$LLMS_BODY"
+
+          SITEMAP_BODY=$(curl -fsS http://127.0.0.1:3000/sitemap.xml)
+          grep -Fq "<lastmod>" <<< "$SITEMAP_BODY"
+
+          ROBOTS_BODY=$(curl -fsS http://127.0.0.1:3000/robots.txt)
+          grep -Fq "Sitemap: https://aedwon.com/sitemap.xml" <<< "$ROBOTS_BODY"
 
           MARKDOWN_HEADERS=$(curl -sSI -H "Accept: text/markdown" http://127.0.0.1:3000/projects | tr -d '\r')
-          echo "$MARKDOWN_HEADERS" | grep -qi '^content-type: text/markdown; charset=utf-8$'
-          echo "$MARKDOWN_HEADERS" | grep -qi '^vary: .*accept'
+          grep -Eqi '^content-type: text/markdown; charset=utf-8$' <<< "$MARKDOWN_HEADERS"
+          grep -Eqi '^vary: .*accept' <<< "$MARKDOWN_HEADERS"
+
+          MARKDOWN_BODY=$(curl -fsS -H "Accept: text/markdown" http://127.0.0.1:3000/projects)
+          grep -Fq "# Projects" <<< "$MARKDOWN_BODY"
 
           HTML_HEADERS=$(curl -sSI -H "Accept: text/html" http://127.0.0.1:3000/ | tr -d '\r')
-          echo "$HTML_HEADERS" | grep -qi '^vary: .*accept'
+          grep -Eqi '^vary: .*accept' <<< "$HTML_HEADERS"
 
           UNSUPPORTED_STATUS=$(curl -sS -o /dev/null -w "%{http_code}" -H "Accept: application/pdf" http://127.0.0.1:3000/)
           test "$UNSUPPORTED_STATUS" = "406"
 
           MARKDOWN_404_STATUS=$(curl -sS -o /tmp/markdown-404.txt -w "%{http_code}" -H "Accept: text/markdown" http://127.0.0.1:3000/path-that-does-not-exist)
           test "$MARKDOWN_404_STATUS" = "404"
-          grep -q "llms.txt" /tmp/markdown-404.txt
-          grep -q "sitemap.xml" /tmp/markdown-404.txt
+          grep -Fq "llms.txt" /tmp/markdown-404.txt
+          grep -Fq "sitemap.xml" /tmp/markdown-404.txt
 
           HOME_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/)
-          echo "$HOME_HTML" | grep -qi '<h1'
-          echo "$HOME_HTML" | grep -q 'rel="canonical"'
-          echo "$HOME_HTML" | grep -q 'property="og:type"'
-          echo "$HOME_HTML" | grep -q '"@type":"Person"'
+          grep -Eqi '<h1' <<< "$HOME_HTML"
+          grep -Fq 'rel="canonical"' <<< "$HOME_HTML"
+          grep -Fq 'property="og:type"' <<< "$HOME_HTML"
+          grep -Fq '"@type":"Person"' <<< "$HOME_HTML"
 
           OG_HEADERS=$(curl -sSI http://127.0.0.1:3000/opengraph-image | tr -d '\r')
-          echo "$OG_HEADERS" | grep -qi '^content-type: image/png'
+          grep -Eqi '^content-type: image/png' <<< "$OG_HEADERS"
