@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./tech-brand-icons.css";
 import { ThemeProvider } from "@/components/ThemeContext";
@@ -106,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </DiscordLayout>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
