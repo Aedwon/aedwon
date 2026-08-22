@@ -23,7 +23,7 @@ export function proxy(request: NextRequest) {
 
   if (representation === "text/markdown") {
     const rewriteUrl = request.nextUrl.clone();
-    rewriteUrl.pathname = "/_agent-markdown";
+    rewriteUrl.pathname = "/agent-markdown";
     rewriteUrl.searchParams.set("path", request.nextUrl.pathname);
 
     const response = NextResponse.rewrite(rewriteUrl);
@@ -41,6 +41,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|_agent-markdown|favicon.ico|icon.svg|apple-icon|manifest.webmanifest|robots.txt|sitemap.xml|llms.txt|.*\\.[^/]+$).*)",
+    "/((?!_next/static|_next/image|agent-markdown|favicon.ico|icon.svg|apple-icon|manifest.webmanifest|robots.txt|sitemap.xml|llms.txt|.*\\.[^/]+$).*)",
   ],
 };
