@@ -48,6 +48,12 @@ export interface ProjectItem {
   results: string;
   metrics?: ProjectMetric[];
   retrospective?: string;
+  articleSections?: {
+    title: string;
+    paragraphs: string[];
+    codeSnippet?: string;
+    codeLanguage?: string;
+  }[];
 }
 
 export const PROJECTS: ProjectItem[] = [
@@ -237,12 +243,12 @@ async def verify_student(ctx, student_id: str, school_code: str):
   {
     slug: 'qr-studio',
     title: 'QR Studio',
-    tagline: 'Zero-backend client-side custom QR code generator with gradient styling and crisp vector SVG/PNG export.',
+    tagline: 'Browser QR code editor built with vanilla JavaScript and qr-code-styling, with live customization and local file export.',
     category: 'web',
     categoryLabel: 'Web & Tools',
     tier: 'focused',
     role: 'Creator & Frontend Engineer',
-    timeline: '2024',
+    timeline: '2026',
     featured: true,
     order: 3,
     glowColor: 'pink',
@@ -252,26 +258,46 @@ async def verify_student(ctx, student_id: str, school_code: str):
       { name: 'Web', icon: 'web' },
     ],
     stack: [
-      { name: 'TypeScript', icon: 'typescript' },
-      { name: 'HTML5 Canvas', icon: 'canvas' },
+      { name: 'JavaScript', icon: 'javascript' },
       { name: 'Vite', icon: 'vite' },
-      { name: 'Tailwind CSS', icon: 'tailwind' },
+      { name: 'HTML5 Canvas', icon: 'canvas' },
+      { name: 'qr-code-styling', icon: 'qr-code' },
     ],
-    summary: 'In-browser QR code builder with gradient styling and SVG export that runs entirely client-side without backend requests.',
-    problem: 'Most web QR code generators are bloated with popups, require account sign-ups, or transmit user payloads and Wi-Fi credentials to remote tracking servers.',
-    architecture: [
+    githubUrl: 'https://github.com/Aedwon/QR-Code-Maker',
+    summary: 'Static Vite QR editor that keeps QR payload generation and logo processing in the browser while using qr-code-styling for rendering and export.',
+    problem: 'QR Studio is a static Vite QR editor built around qr-code-styling. Payload changes, styling controls, uploaded-logo processing, and file export run in the browser.',
+    architecture: [],
+    results: 'The current editor supports live styling, logo compositing, error-correction controls, responsive editing, capacity warnings, and PNG, SVG, and JPEG export.',
+    articleSections: [
       {
-        title: 'Client-Side Canvas & Vector Matrix Engine',
-        description: 'Generates the Reed-Solomon error correction matrix and encodes payload bits in-memory. Renders real-time gradient patterns directly on an HTML5 canvas and exports clean SVG path strings for print-ready vector files.',
-        tradeOff: 'Pure browser computation means zero server upkeep costs, zero user tracking, and sub-1ms re-renders during live color edits.',
+        title: 'Building the editor around one QR instance',
+        paragraphs: [
+          'QR Studio is a static Vite app written in vanilla JavaScript and CSS. I did not implement the QR encoding algorithm myself. The app wraps `qr-code-styling` and keeps one `QRCodeStyling` instance mounted in the preview. The controls mutate a shared options object, then a 150 millisecond debounce rebuilds those options and passes them to `update()` instead of recreating the QR object for every input event.',
+          'Presets and manual controls use the same state. Applying a preset deep-copies its dot, corner, and background settings before syncing the visible controls. A manual edit clears the active preset. There is also a library-specific state problem to handle. `qr-code-styling` shallow-merges updates, so removing a gradient from the local options is not enough to clear a previously rendered one. `buildOptions()` explicitly passes `gradient: undefined` for the dot and corner groups whenever they switch back to a flat color.',
+        ],
+      },
+      {
+        title: 'Processing logos before rendering',
+        paragraphs: [
+          'Logo uploads are read with `FileReader` and kept as data URLs in memory. I store the original image separately from the version passed into the QR renderer because QR Studio can add a circle, square, or rounded background behind the logo. When one of those backgrounds is selected, the app creates an off-screen canvas based on the largest image dimension, adds 15 percent padding, draws the background shape, centers the original logo, and converts the result back into a PNG data URL.',
+          'Logo handling also changed after the first implementation. A later fix enabled `hideBackgroundDots` so transparent parts of an uploaded logo do not have QR modules showing through them. Uploading a logo changes the selected error-correction level from Q to H, and removing it restores Q. That does not guarantee that every heavily styled QR code will scan under every condition, but it gives embedded logos more error-correction headroom in the current editor.',
+        ],
+      },
+      {
+        title: 'Changes after the first editor',
+        paragraphs: [
+          'The first commit already contained the main editor with presets, gradient controls, logo embedding, error-correction settings, and PNG, SVG, and JPEG export. The next substantial change was the responsive layout. At 900 pixels and below, the page reverses the main column order and makes the preview sticky above the controls. Smaller breakpoints reduce the QR preview and increase several interactive controls to touch-friendly sizes so the editor remains usable without hiding the result below a long settings panel.',
+          'The latest feature in the repository is the input capacity indicator. It measures the payload with `Blob([value]).size`, so non-ASCII text is counted as UTF-8 bytes instead of JavaScript string length. The configured limit changes with the selected L, M, Q, or H error-correction level. The progress bar warns after 75 percent of that limit and marks the input as too long once it passes the configured maximum.',
+        ],
+      },
+      {
+        title: 'What stays local',
+        paragraphs: [
+          'The QR generation path does not require an application backend. Payload changes, styling, uploaded-logo processing, and file export happen in the browser. The deployment configuration builds the Vite project into a static `dist` directory, and PNG, SVG, and JPEG files are exported through the `qr-code-styling` download API.',
+          'The page itself is not completely network-free. It loads Google Analytics and Google Fonts, and the optional feedback form posts to Web3Forms. The useful boundary is narrower. QR payloads and uploaded logos are processed locally by the application, while those separate page services still make external requests.',
+        ],
       },
     ],
-    results: 'Instant in-browser generator with zero network latency, complete data privacy, and clean vector exports.',
-    metrics: [
-      { value: '0ms', label: 'Network latency with zero backend requests' },
-      { value: '100%', label: 'Client-side privacy and vector precision' },
-    ],
-    retrospective: 'Adding support for animated SVG QR codes and micro-logos in the center matrix is the logical next step.',
   },
   {
     slug: 'kiosk-survey',
