@@ -48,6 +48,12 @@ export interface ProjectItem {
   results: string;
   metrics?: ProjectMetric[];
   retrospective?: string;
+  articleSections?: {
+    title: string;
+    paragraphs: string[];
+    codeSnippet?: string;
+    codeLanguage?: string;
+  }[];
 }
 
 export const PROJECTS: ProjectItem[] = [
@@ -454,13 +460,13 @@ def compute_scores(raw_matrix: np.ndarray, answer_key: np.ndarray, weights: np.n
   },
   {
     slug: 'msl-collegiate-cup-bot',
-    title: 'MSL Cup Tournament Bot',
-    tagline: 'Tournament operations engine for collegiate MLBB competitions automating match lobbies, bracket updates, and ticketing for 3,000+ student players.',
+    title: 'MSL Collegiate Cup Bot',
+    tagline: 'Discord operations bot for the MSL Collegiate Cup with roster verification, persistent match handling, support tickets, and Challonge bracket commands.',
     category: 'bots',
     categoryLabel: 'Bots & Systems',
     tier: 'focused',
-    role: 'Head of League Operations & Developer',
-    timeline: '2024 to 2025',
+    role: 'Developer',
+    timeline: '2025 to 2026',
     featured: false,
     order: 8,
     glowColor: 'purple',
@@ -468,29 +474,52 @@ def compute_scores(raw_matrix: np.ndarray, answer_key: np.ndarray, weights: np.n
     icon: 'trophy',
     platforms: [
       { name: 'Discord', icon: 'server' },
-      { name: 'Hostinger (KVM2 VPS)', icon: 'server' },
     ],
     stack: [
       { name: 'Python', icon: 'python' },
       { name: 'Discord.py', icon: 'bot' },
-      { name: 'MySQL', icon: 'mysql' },
-      { name: 'Hostinger (KVM2 VPS)', icon: 'hostinger' },
-      { name: 'Google Sheets API', icon: 'sheets' },
+      { name: 'Google Sheets', icon: 'sheets' },
+      { name: 'requests', icon: 'web' },
+      { name: 'aiohttp', icon: 'async' },
+      { name: 'Challonge API', icon: 'challonge' },
+      { name: 'JSON & CSV', icon: 'storage' },
     ],
-    summary: 'Tournament bot automating match sessions, team check-ins, rulebook enforcement, and dispute ticketing for 3,000+ collegiate competitors on Hostinger VPS with MySQL.',
-    problem: 'Operating a nationwide tournament for 3,000+ collegiate competitors across 180+ universities with referee arbitration and match scheduling.',
-    architecture: [
+    summary: 'Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.',
+    problem: 'The bot coordinates roster verification, match acknowledgements and disputes, support tickets, and bracket operations inside Discord while preserving enough state to recover active workflows after restarts.',
+    architecture: [],
+    results: 'The current repository includes persistent verification mappings, restart-aware match sessions, persistent support tickets with HTML transcripts, and explicit Challonge bracket reporting commands.',
+    articleSections: [
       {
-        title: 'Match Lobby & Ticketing Pipeline',
-        description: 'Automated match lobby creation, team verification, bracket sync, and multi-tier support ticketing with HTML transcript logging on Hostinger KVM2 VPS with MySQL backend.',
+        title: 'Roster verification feeds match acknowledgement',
+        paragraphs: [
+          "The verification flow starts from the current Group Stage Teams sheet. `^verify` accepts a Mobile Legends UID and server pair, fetches the sheet's CSV export, rejects a pair already claimed by another Discord account, then looks for the matching roster row. A successful match assigns the verification role, changes the member nickname to `[ABBREV] IGN`, and appends the Discord ID, team abbreviation, IGN, UID, server, and timestamp to `data/verified_users.csv`.",
+          "That local mapping is reused by the match cog. When someone replies `I acknowledge` after a game result, the bot looks up the Discord account in the verified-user file and records the team abbreviation along with the member name and acknowledgement time. The game moves on after two different team abbreviations have acknowledged it. Verification therefore does more than assign a Discord role. It gives the match workflow a persistent link between an account and the team it represents.",
+        ],
+      },
+      {
+        title: 'Match handling became restart-aware',
+        paragraphs: [
+          "The Git history shows the match cog arriving first as game-result tracking, then gaining dispute timing and persistence in follow-up commits. Each Discord channel can hold one `MatchSession` with its best-of format, marshal, game list, current status, acknowledgement timing, dispute timing, and last result message ID.",
+          "`/game_result` moves the session into `checking_ack` and starts its acknowledgement timer. Filing a dispute records when the dispute began and pauses the effective timer. The elapsed-time calculation subtracts both completed dispute time and an active dispute, so `/match_force_ack` still requires five active minutes even when the process was paused. Resolving a dispute is limited to the session marshal, an administrator, or someone with the configured Marshal role.",
+          "The session is written to `data/active_matches.json` whenever its state changes. When the cog loads again, it reconstructs those sessions and reattaches either the dispute or resolve view to the saved Discord message ID. The deserializer also accepts the older acknowledgement-list format and converts it into the newer per-team dictionary. That matches the repository history where acknowledgements later gained the name and timestamp of the person who submitted them.",
+        ],
+      },
+      {
+        title: 'Tickets became a second persistent workflow',
+        paragraphs: [
+          "The ticket system arrived later in December 2025 and grew through a series of smaller commits. A user chooses among League Operations, Rewards & Payouts, Contents & Socials, and General & Tech Support, then submits a subject and description through a modal. The bot creates a `[tag]-username` channel whose permission overwrites expose it to the creator, the bot, the relevant category role, and the support role. Creation time, category, creator, claim state, added users, and reminder state are stored in `data/active_tickets.json`.",
+          "Claiming a ticket has its own permission checks. The creator and manually added users cannot claim it. Category staff and administrators can, while an escalated ticket can also become claimable by League Operations. A task runs every ten minutes and sends a reminder after an unclaimed ticket has been open for 24 hours. Rewards and Contents tickets receive an additional escalation after 48 hours.",
+          "Closing a ticket reads up to 500 channel messages in chronological order and turns them into an HTML transcript. The renderer handles Discord mentions, basic message formatting, attachments, and embeds. The transcript is sent to the log channel and directly to the ticket creator, while manually added users receive their own copy. The creator also gets a rating prompt before the ticket channel is deleted. The Git history around this code includes separate passes for embed rendering, mention parsing, transcript layout, and Discord interaction-response handling instead of one large ticket-system commit.",
+        ],
+      },
+      {
+        title: 'Challonge was added after the Discord workflows',
+        paragraphs: [
+          "Challonge support was added in January 2026. A marshal or administrator can link a bracket to the current Discord channel with `/challonge_link`. The bot validates the tournament, fetches its participants, and stores the channel-to-bracket mapping in `data/challonge_brackets.json`. Other commands can list bracket matches or explicitly report a winner and score.",
+          "The current client is a small asynchronous wrapper over Challonge API v1 using `aiohttp`. The Git history briefly moved the integration to the v2.1 OAuth flow before reverting to the API-key version that remains in the repository. The current code keeps this bracket state separate from `MatchSession`. Discord acknowledgements do not automatically submit a result to Challonge. Reporting the bracket result is still an explicit marshal or administrator action.",
+        ],
       },
     ],
-    results: 'Cut tournament administrative delays by 90% across full season schedule.',
-    metrics: [
-      { value: '3,000+', label: 'Collegiate competitors managed' },
-      { value: '90%', label: 'Reduction in manual referee operations' },
-    ],
-    retrospective: 'Integrating Discord modal forms directly into match lobbies would make screenshot submission for match results even faster.',
   },
   {
     slug: 'ilocos-sur-esports-bot',
