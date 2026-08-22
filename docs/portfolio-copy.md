@@ -309,15 +309,37 @@ Get in touch for software projects or community infrastructure:
 ### 2.9 Ilocos Sur Festival Esports Bot (`/projects/ilocos-sur-esports-bot`) — Focused
 - **Tier:** Focused
 - **Category:** Bots & Systems
-- **Role:** Bot Developer & Operations Lead
-- **Timeline:** 2024
-- **Platform:** Discord, Hostinger (KVM2 VPS)
-- **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Challonge API
-- **Why I Built This:** Running multi-game municipal qualifiers (MLBB, CODM) during the provincial festival without manual bracket delays.
-- **How It Works:** Synced Discord player registrations directly with live brackets on Hostinger KVM2 VPS with MySQL backend, handling automated match alerts and ticketing.
-- **Results & Numbers:** Smooth tournament execution for 250+ provincial competitors across municipal qualifiers.
-- **Metrics:**
-  - `250+`: Players coordinated across municipal brackets
+- **Role:** Bot Developer
+- **Timeline:** 2026
+- **Platform:** Discord
+- **Stack:** Python, Discord.py, MySQL, Challonge API
+- **GitHub URL:** https://github.com/Aedwon/isfe-discord-bot
+- **Tagline:** Discord operations bot for festival esports that handles MLBB and CODM team verification, Challonge result reporting, support tickets, and batch match threads.
+- **Summary:** Festival esports bot built with Discord.py and MySQL. Players verify against game-specific team lists, while admins manage rosters, create match threads, handle support tickets, and report results to linked Challonge brackets.
+
+#### Verification grew out of registration
+
+The repository started as a general league operations bot in January 2026. Player registration was added a few days later, then the flow changed in several small commits. Team selection gained pagination around Discord's 25-option select limit. The registration panel was then replaced with a persistent verification panel that checks a member's game roles before showing the corresponding team list.
+
+The current verification path covers MLBB and CODM. A member selects a game role first, chooses a team from the MySQL-backed list, and enters an IGN through a modal. Re-verifying for the same game deletes the previous registration before inserting the new one, so the one-registration-per-game rule is enforced in application code. Members verified for both games can choose a nickname based on either IGN, both IGNs, or the current IGN without a game prefix. The final nickname is truncated to Discord's 32-character limit.
+
+The same team and registration tables feed the administrative commands. `/teams` handles the team list, `/entries` summarizes teams with verified players, and `/mention` and `/roster` query those registrations for league operations. That keeps the roster commands on the same data the verification panel writes instead of maintaining a second copy.
+
+#### Challonge stays separate from verification
+
+Player registrations are not pushed into Challonge in the current implementation. An administrator or member with the configured Marshal role links an existing Challonge tournament to a Discord channel. Those channel mappings live in `data/challonge_brackets.json`, while teams and player registrations remain in MySQL. When a bracket is linked, the bot fetches its participants from Challonge and keeps an ID-to-name cache for match displays and command autocomplete.
+
+From a linked channel, `/challonge_matches` reads the bracket and formats its matches with participant names. `/challonge_report` validates the score format, resolves the requested match, checks that both participant slots are populated, finds the proposed winner in the current Challonge participant list, and verifies that the winner belongs to that match before sending the result back through the API.
+
+Challonge support landed after the verification work. The first version covered linking, unlinking, viewing matches, reporting results, and showing bracket information. A later commit added winner autocomplete, participant-cache refresh, completed-match reopening, and retry handling for server errors, timeouts, and network failures. The API client retries with exponential backoff instead of treating every temporary failure as a final error.
+
+#### Operations around the tournament
+
+The bot has utilities for repetitive Discord setup alongside the registration and bracket commands. `/createthreads` can create a numbered batch of private threads from a prefix and a set of roles. It pauses between groups of thread creations and has explicit handling for Discord rate-limit responses. Afterward it posts the created thread links back to the parent channel. `/deletethreads` finds active and archived threads matching a prefix and puts the batch deletion behind a confirmation step.
+
+Support requests use a separate ticket cog. A member chooses a category and submits a subject and description, then the bot creates a private text channel with access for the requester and the corresponding support role. Open tickets are recorded in MySQL. Closing one collects up to 500 messages into an HTML transcript, marks the database row closed, sends the transcript to the configured log channel when one is available, and removes the ticket channel. A background task also checks open tickets every ten minutes and posts a reminder once a ticket has been open for more than 24 hours.
+
+Deployment is kept small in the repository. Pushes to `main` run a GitHub Actions workflow that sends a restart signal to a Pterodactyl server through its client API. The repository does not identify the underlying hosting provider, so the project does not need a provider-specific hosting claim.
 
 ### 2.10 OPPO Smooth / Hyper Legend Cup Bot (`/projects/oppo-legend-cup-bot`) — Focused
 - **Tier:** Focused
