@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ALL_PROJECTS } from "@/lib/data/project-registry";
+import { PORTFOLIO_PROJECTS as ALL_PROJECTS } from "@/lib/data/project-article-overrides";
 import ProjectCard from "@/components/ProjectCard";
 
 export default function ProjectsPage() {

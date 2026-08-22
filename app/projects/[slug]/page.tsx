@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { ALL_PROJECTS } from "@/lib/data/project-registry";
+import { PORTFOLIO_PROJECTS as ALL_PROJECTS } from "@/lib/data/project-article-overrides";
 import ProjectCaseStudyClient from "@/components/ProjectCaseStudyClient";
 import type { Metadata } from "next";
 
