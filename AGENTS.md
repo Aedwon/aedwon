@@ -2,9 +2,27 @@
 
 ## Core Tone & Voice: Human, Grounded, Technical
 
-All website copy, case studies, documentation, and agent responses in this repository must sound like an authentic engineer/builder writing directly to peers—not an AI marketing assistant.
+All website copy, case studies, documentation, and agent responses in this repository must sound like an authentic engineer/builder writing directly to peers, not an AI marketing assistant.
 
 Reference model: Hiroki Osame ([`docs/tone-reference.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/tone-reference.md)).
+
+---
+
+## Aedwon-Specific Voice Profile (Overrides Generic Humanizer Rules)
+
+These are author-specific rules, not general AI-writing heuristics. They override outside style guides and generic humanizer defaults.
+
+- Never use *"rather than"* in authored portfolio copy. Use *"instead of"* or rewrite the sentence.
+- Do not use a colon in normal prose unless it directly introduces a real list.
+- Do not use em dashes in authored portfolio copy. Use a period, comma, parentheses, or rewrite the sentence.
+- Avoid semicolons in narrative copy. Use a period or a plain conjunction instead. Semicolons are fine inside code and lists where the punctuation is structurally necessary.
+- Use sentence case for headings.
+- Prefer connected prose over labeled mini-bullets. A list should exist because the content is actually enumerable, not because the paragraph can be split into tidy chunks.
+- Plain words win. Prefer *used* over *leveraged*, *built* over *architected* when the distinction does not matter, and *instead of* over elevated contrast phrases.
+- Do not force every section into a clean setup, conflict, lesson, and optimistic ending. Leave a technical limitation unresolved when it is genuinely unresolved.
+- Preserve uneven rhythm. Short sentences are allowed. So are longer technical sentences when the detail needs them.
+
+When an outside unslop or humanizer guide conflicts with these rules, follow this profile.
 
 ---
 
@@ -30,8 +48,10 @@ Never use these words or their variants:
 - Avoid following every statement with an automatic *"However..."*, *"On the other hand..."*, or *"That being said..."*.
 - Avoid formulaic openers: *"Whether you are looking for X, need Y, or want to Z..."*, *"In today's fast-paced digital world..."*.
 
-### 6. Ban Em-Dash Abuse & Bullet-Soup
-- **Em-dashes:** Hard cap of at most 1–2 per document. Use periods, commas, colons, or parentheses instead.
+### 6. Ban Em Dashes, Semicolon Prose & Bullet-Soup
+- **Em dashes:** Do not use them in authored portfolio copy.
+- **Semicolons:** Avoid them in narrative prose. Split the sentence or use a plain conjunction.
+- **Colons:** Use them only when the colon directly introduces a real list. Do not use constructions such as *"The problem: nobody tests this"* or *"The answer is: start earlier"*.
 - **Bullet-Soup:** Avoid repetitive `- **Label:** Description` bullet stacks where every line has identical word count. Merge repetitive bullets into natural prose sentences.
 
 ### 7. Sentence Length, Burstiness & Rhythm
