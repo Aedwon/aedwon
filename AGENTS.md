@@ -63,7 +63,7 @@ Never use these words or their variants:
 - **Subtract slop:** Do not "warm up" text with fake empathy, polite cheerleading, or customer-service tone.
 - **Contraction rate:** Use natural contractions (*I'm, don't, wasn't, it's*) matching real speech.
 - **Concrete nouns over abstract ones:** Specific examples, real constraints, and exact technical tools over vague categories.
-- **Calibrated uncertainty:** Use honest phrasing (*"I think"*, *"probably"*, *"seems to"*) when something isn't certain rather than asserting false robotic confidence.
+- **Calibrated uncertainty:** Use honest phrasing (*"I think"*, *"probably"*, *"seems to"*) when something isn't certain instead of asserting false robotic confidence.
 
 ### 9. Concrete Numbers & Ground Truth Sources
 Before writing or revising any portfolio copy, project descriptions, or stats, cross-reference these ground truth sources:
@@ -75,7 +75,7 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 
 ### 10. Living Copy Reference File
 - All active copy, project descriptions, and case study notes must be maintained in [`docs/portfolio-copy.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/portfolio-copy.md).
-- Edit that file directly when refining text rather than dumping walls of copy into conversation.
+- Edit that file directly when refining text instead of dumping walls of copy into conversation.
 
 ### 11. Skill Evaluation & User Confirmation Gate
 - For every user request, actively evaluate if a specialized skill applies (e.g. Visual Companion for UI brainstorming, Prototype for interactive exploration, TDD for feature code, Subagent-Driven Development for execution).
