@@ -8,7 +8,6 @@ import {
   getDiscordRouteState,
   getDiscordThreadPath,
   type DiscordChannel,
-  type DiscordThreadRoute,
 } from "@/lib/discord-routing";
 import DiscordServerRail from "./discord/DiscordServerRail";
 import DiscordChannelSidebar from "./discord/DiscordChannelSidebar";
@@ -121,7 +120,7 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
               }`}
               onClick={() => setIsMemberListOpen((open) => !open)}
               aria-expanded={isMemberListOpen}
-              aria-controls="discord-member-sidebar"
+              aria-controls="member-sidebar"
               aria-label="Toggle member list"
             >
               <MembersIcon />
