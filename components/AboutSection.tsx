@@ -11,7 +11,7 @@ export default function AboutSection() {
           I spend around 80% of any project on research and planning before writing code. I obsess over hyper-optimization, always evaluating whether an architecture or workflow is truly the most optimal choice for the problem.
         </p>
         <p>
-          My daily stack for agentic engineering includes Claude Code, Codex, the using-superpowers skill framework, Matt Pocock's engineering skills, and Gemini's Deep Research.
+          My daily stack for agentic engineering includes Claude Code, Codex, the using-superpowers skill framework, Matt Pocock&apos;s engineering skills, and Gemini&apos;s Deep Research.
         </p>
       </div>
     </section>
