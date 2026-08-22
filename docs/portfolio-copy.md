@@ -22,7 +22,7 @@ I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following 
 Featured projects [See all projects →]
 
 • Pantas
-  Summary: Mobile exam reviewer for Philippine civil service and university entrance tests, with adaptive spaced repetition and OMR answer sheets.
+  Summary: Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.
   Stack: [Flutter, Dart, Drift, SQLCipher, Riverpod, FSRS, Sanity, RevenueCat]
   Link: [View case study →]
 
@@ -165,28 +165,46 @@ Get in touch for software projects or community infrastructure:
 - **Tier:** Flagship
 - **Category:** Mobile & Offline
 - **Role:** Lead Architect & Developer
-- **Timeline:** 2024 to Present
-- **Platform:** Android, iOS (Flutter)
+- **Timeline:** 2026 to Present
+- **Platform:** Android (Flutter)
 - **Stack:** Flutter 3.41+, Dart, Drift (SQLite), SQLCipher, Riverpod 2.x, Open Spaced Repetition (FSRS), Firebase Firestore, Sanity CMS, RevenueCat
 - **Live URL:** https://pantas.app
-- **Problem & Constraints:** I built Pantas because Civil Service Exam and UPCAT preparation in the Philippines still relies on bulky 500-page printed reviewers or web apps that break when mobile data drops during long jeepney and bus commutes. Commercial review centers charge upwards of ₱10,000, while cheap digital reviewers are often bloated with synthetic passing probabilities and paywalled basic explanations. I wanted to give reviewees a guaranteed offline study tool that accurately tracks memory decay without consuming expensive mobile data buckets.
-- **How It's Built:**
-  - **Editorial "Ink & Rule" Design System & Source Sans 3:** I stripped away the generic AI aesthetic (Poppins bold, stock blue `#1F6BFF`, drop shadows, emoji icons, pastel pills) in favor of an editorial printed-workbook identity. I used warm paper surfaces (`#FBF9F4`), near-black ink (`#26221B`), 1px hairline rules (`#E5DFD3`), and tabular figures, budgeting Board Green (`#1D5C50`) strictly for the single primary CTA per screen. I originally tried pairing a serif with sans, but on a phone screen the serif became an eyesore at small sizes and distracted from the content. I standardized on Source Sans 3 across all 15 typography roles to keep the focus entirely on reading.
-  - **Local-First Encrypted Persistence via Drift SQLite & SQLCipher:** I designed the app under one core rule: studying is never blocked by the network; only account and money are. All question banks, user response logs, and scheduled drill states live in an encrypted local database using Drift SQLite with 256-bit AES SQLCipher for RA 10173 compliance. I replaced dynamic runtime CMS queries with an immutable, pre-compiled static SQLite seed (`content.db` / `assets/seed/v1.json`), ensuring cold boots and drill queries stay instant.
-  - **Pure Dart FSRS-6 Spaced Repetition Engine & On-Device Optimizer:** I implemented the FSRS-6 algorithm locally in pure Dart using the 21-parameter weight vector with dedicated same-day stability formulas for exam cramming behavior. To personalize intervals without sending study logs to a cloud server, I designed an on-device optimizer that fits parameters directly on device once a student logs 200 reviews (compared to Anki's 400+ threshold), guarded by a held-out test split to prevent overfitting.
-  - **Assessment Hub & Distractor Misconception Explanations:** I replaced generic topic queues with an Assessment Hub (`Today's Session`, `Drill`, `Retake`, `Mock Exam`). Instead of showing a simple green checkmark or red cross, I authored answer reveals that explicitly explain why each incorrect choice (distractor) is wrong. To recreate real exam pressure, I wrote a custom canvas OMR bubble sheet with strict section boundary timers, question jump grids, and blueprint-weighted subject ratios.
-  - **Psychometric Integrity ("Never Invent a Figure"):** I instituted a strict rule: never invent a figure. I banned synthetic score predictions and fake readiness percentages ('Passing Probability: 92%'). Instead, I structured the Progress tab around four honest questions: The Diagnosis (where points leak and why), The Mirror (behavioral archetypes like stamina drop-off and pacing under pressure), The Record (measurable movement over time), and What's Fading (FSRS decay curves). I show score impact strictly as point deltas ('Fixing these weak topics is worth +9 points').
-- **Hurdles & Solutions:**
-  - **SQLCipher Database Migration Deadlocks on Budget Devices:** When I ran question bank migrations and schema updates during cold boot on low-RAM Android devices, the SQLite database locked up and threw unhandled exceptions before the home view could mount. I decoupled static question banks from mutable user response tables and moved schema migrations into a background isolate with a dedicated write-ahead log (WAL) pool, unblocking the main UI thread.
-  - **FSRS-4.5 Cramming Flaws & Same-Day Review Drift:** In FSRS-4.5, repeating the same card multiple times during intense last-minute cram sessions had no stability formula, causing intervals to distort and easy cards to bury high-yield civil service and UPCAT topics. I upgraded to FSRS-6's 21-parameter weight vector with dedicated same-day review stability calculations (w[17..19]) and trainable decay. I built a local Dart optimizer with a 200-review threshold and held-out validation guard, giving cramming reviewees accurate intervals without cloud dependencies.
-  - **Cold-Start Entitlement Race Conditions in Offline Posture:** Standard subscription SDKs fail closed when network requests time out. A student studying on an offline commute could lose Pro access if a check failed. I instituted a fail-open local cache rule: the last known entitlement state stands until positively contradicted by a successful server verification. Cached subscription tokens survive cold starts and are read before the first frame renders.
-- **Results & Numbers:** I delivered sub-15ms local query performance across 2,216+ question bank items with 100% offline study operation. The app runs without network dependencies during drills, eliminates synthetic passing metrics, and complies with RA 10173 on-device data encryption.
-- **Metrics:**
-  - `100%`: Offline study drills with zero cloud blockers
-  - `< 15ms`: SQLite query latency for 50-item exam drills
-  - `21`: FSRS-6 parameter weights with on-device optimizer
-  - `RA 10173`: Compliant on-device 256-bit AES encryption
-- **Retrospective:** If I were starting over today, I would build the question validation toolchain as a standalone CLI to catch distractor formatting anomalies and schema typos before compiling the static SQLite seed.
+- **Tagline:** Android-first exam reviewer for Philippine civil service and university entrance preparation, with encrypted local study state and on-device FSRS-6 scheduling.
+- **Summary:** Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.
+
+#### Keeping study state local
+
+Pantas stores its mutable study state in a Drift database instead of depending on a network request before a quiz can work. The database includes attempts, review state, quiz sessions, lesson progress, preferences, review logs, and a queue of changes waiting to sync.
+
+The database is opened through Drift's background native database path. Pantas generates a 32-byte key with `Random.secure()`, stores that key through `flutter_secure_storage`, and supplies it to SQLite3MultipleCiphers in SQLCipher compatibility mode. The repository also records the migration details because changing the encryption library or secure-storage format incorrectly could leave an existing install unable to open its own database.
+
+The sync layer was built around that local state. Changes such as an updated review schedule are added to a persistent pending queue, which keeps failed operations available for another attempt. The Firestore mappers, push and pull paths, and conflict handling exist in the repository. They are not live in the current build because Firebase bootstrap is still intentionally unwired.
+
+#### What happens after an answer
+
+A practice answer feeds directly into the review scheduler. `SubmitAnswer` checks the selected choice, derives a scheduler rating from correctness and response time, loads the existing review state or creates a new one, runs the FSRS scheduler, and saves the next due state. The same operation writes a review log containing the state from before the review, the rating that was actually used, correctness, response duration, and the version of the rating heuristic.
+
+That log was added when the scheduler moved from FSRS-4.5 to FSRS-6. The original implementation landed in May with separate paths for new questions, successful reviews, and lapses. In July, the scheduler moved to FSRS-6's 21 default weights, a trainable decay parameter, and a separate same-day stability formula. Tests were updated with reference values and migration cases so existing review states could continue through the new formulas.
+
+The current build still uses the published default weight vector. There is a separate design for fitting weights from a student's review history on the device, but that optimizer has not been implemented. Keeping that distinction in the article matters because the scheduling code is real today while personalized parameter fitting is not.
+
+#### Fixing passage ordering at the session boundary
+
+Reading-comprehension passages exposed a problem in how quiz sessions were assembled. Quick Quiz shuffled individual questions, which could split questions from one passage across different parts of the session. A student could read the same passage, answer something unrelated, then encounter another question from that passage later.
+
+The first fix grouped passage questions in the Quick Quiz path. That did not solve the general case because other use cases could create sessions through different routes. The grouping logic was moved into `QuizSession.start`, which is the shared constructor for new quiz sessions. Every new session now runs its questions through `groupPassageSets` before the first answer is recorded.
+
+Resumed sessions deliberately keep their stored order. Answer outcomes are indexed by question position, so regrouping a session after answers already exist could attach those outcomes to different questions. The common constructor is therefore the right boundary for new-session ordering, while resume restores the order that was originally saved.
+
+#### Building content before it reaches the app
+
+Questions are authored as structured files and pass through tooling before they are packed into the application. The authoring runbook has a validator for schema and content errors, followed by a Question Studio review step for flagged issues and duplicate stems. Questions that need a figure can stay inactive until the required illustration and renderer exist.
+
+The content model also separates two meanings of difficulty. Authored difficulty is only used to organize the writing progression from easier questions toward exam-level ones. It is not written into the runtime question model. FSRS difficulty belongs to an individual student's review state and changes from their actual review history instead.
+
+For the SQLite content path, the seed writer takes exported JSON and passes exams, subjects, topics, passages, questions, choices, lessons, and related records through the project's content parsers before writing `content.db`. When it builds the shipped database asset, it hashes the finished SQLite file and writes a shortened digest into `content_seed_version.dart`. The installer can use that digest to tell that bundled content changed instead of relying on somebody remembering to update a date or version string by hand.
+
+Pantas is still in active pre-launch development. The local study and scheduling paths are implemented, while Firebase-backed account sync and the mock-exam content path are not currently usable in the running build. I am keeping those unfinished pieces out of the feature claims until their runtime paths are actually connected.
 
 ### 2.2 The MSL Network & Verification Platform (`/projects/msl-network`) — Flagship
 - **Tier:** Flagship
