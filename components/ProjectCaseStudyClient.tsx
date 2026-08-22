@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ProjectItem } from "@/lib/data/projects";
+import type { RegisteredProject } from "@/lib/data/project-registry";
 import { TechIcon } from "@/components/TechIcons";
 import { ProjectArt } from "@/components/ProjectCard";
 import { ArrowRight } from "lucide-react";
@@ -25,8 +25,8 @@ const NEOBRUTALIST_COLORS: Record<string, string> = {
 };
 
 interface ProjectCaseStudyClientProps {
-  project: ProjectItem;
-  nextProject: ProjectItem;
+  project: RegisteredProject;
+  nextProject: RegisteredProject;
 }
 
 export default function ProjectCaseStudyClient({
@@ -263,257 +263,297 @@ export default function ProjectCaseStudyClient({
           isNeobrutalist ? "text-black" : "text-[var(--text-muted)]"
         }`}
       >
-        {/* Section 1: Problem & Constraints (or Why I Built This) */}
-        <section className="space-y-3">
-          <h2
-            className={
-              isNeobrutalist
-                ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
-                : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
-            }
-          >
-            {project.tier === "flagship" ? "Problem & Constraints" : "Why I Built This"}
-          </h2>
-          <p
-            className={
-              isNeobrutalist
-                ? "leading-relaxed bg-white border-2 border-black p-4 shadow-[3px_3px_0px_#000000] font-medium"
-                : "leading-relaxed text-[var(--text-muted)]"
-            }
-          >
-            {project.problem}
-          </p>
-        </section>
-
-        {/* Section 2: How It's Built (or How It Works) */}
-        <section className="space-y-4">
-          <h2
-            className={
-              isNeobrutalist
-                ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
-                : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
-            }
-          >
-            {project.tier === "flagship" ? "How It's Built" : "How It Works"}
-          </h2>
-          <div className="space-y-8">
-            {project.architecture.map((arch, idx) => (
-              <div
-                key={idx}
-                className={
-                  isNeobrutalist
-                    ? "border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_#000000] space-y-3"
-                    : "space-y-2.5"
-                }
-              >
-                <h3
+        {project.articleSections?.length ? (
+          <>
+            {project.articleSections.map((section, idx) => (
+              <section key={`${section.title}-${idx}`} className="space-y-3">
+                <h2
                   className={
                     isNeobrutalist
-                      ? "text-[15px] font-black uppercase text-black"
-                      : "text-[15px] font-semibold text-[var(--text-primary)]"
+                      ? "text-[18px] font-black text-black border-b-2 border-black pb-1.5"
+                      : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
                   }
                 >
-                  {idx + 1}. {arch.title}
-                </h3>
-                <p
-                  className={
-                    isNeobrutalist
-                      ? "text-[14px] leading-relaxed font-medium text-black"
-                      : "leading-relaxed text-[var(--text-muted)]"
-                  }
-                >
-                  {arch.description}
-                </p>
-
-                {arch.tradeOff && (
-                  <p
-                    className={
-                      isNeobrutalist
-                        ? "text-[13px] font-bold text-black pt-1"
-                        : "text-[13.5px] leading-relaxed text-[var(--text-dim)] pt-0.5"
-                    }
-                  >
-                    <span
+                  {section.title}
+                </h2>
+                <div className="space-y-3">
+                  {section.paragraphs.map((paragraph, paragraphIdx) => (
+                    <p
+                      key={paragraphIdx}
                       className={
                         isNeobrutalist
-                          ? "font-black uppercase text-black mr-1"
-                          : "font-medium text-[var(--text-primary)] mr-1.5"
+                          ? "leading-relaxed bg-white border-2 border-black p-4 shadow-[3px_3px_0px_#000000] font-medium"
+                          : "leading-relaxed text-[var(--text-muted)]"
                       }
                     >
-                      Trade-off:
-                    </span>
-                    {arch.tradeOff}
-                  </p>
-                )}
-
-                {arch.codeSnippet && (
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+                {section.codeSnippet && (
                   <CodeBlock
-                    code={arch.codeSnippet}
-                    language={arch.codeLanguage || "dart"}
+                    code={section.codeSnippet}
+                    language={section.codeLanguage || "text"}
                   />
                 )}
-              </div>
+              </section>
             ))}
-          </div>
-        </section>
-
-        {/* Section 3: Hurdles & Solutions (Flagship Tier Only) */}
-        {project.tier === "flagship" && project.hurdles && project.hurdles.length > 0 && (
-          <section className="space-y-4">
-            <h2
-              className={
-                isNeobrutalist
-                  ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
-                  : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
-              }
-            >
-              Hurdles &amp; Solutions
-            </h2>
-            <div className="space-y-6">
-              {project.hurdles.map((hurdle, idx) => (
-                <div
-                  key={idx}
-                  className={
-                    isNeobrutalist
-                      ? "border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_#000000] space-y-2.5"
-                      : "space-y-2"
-                  }
-                >
-                  <h3
-                    className={
-                      isNeobrutalist
-                        ? "text-[14.5px] font-black uppercase text-black bg-[#FFE600] inline-block px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000000]"
-                        : "text-[14.5px] font-semibold text-[var(--text-primary)]"
-                    }
-                  >
-                    {hurdle.title}
-                  </h3>
-                  <p
-                    className={
-                      isNeobrutalist
-                        ? "text-black font-medium text-[13.5px]"
-                        : "text-[14px] leading-relaxed text-[var(--text-muted)]"
-                    }
-                  >
-                    <span
-                      className={
-                        isNeobrutalist
-                          ? "text-black font-black uppercase mr-1"
-                          : "text-[var(--text-primary)] font-medium mr-1.5"
-                      }
-                    >
-                      Problem:
-                    </span>
-                    {hurdle.issue}
-                  </p>
-                  <p
-                    className={
-                      isNeobrutalist
-                        ? "text-black font-medium text-[13.5px]"
-                        : "text-[14px] leading-relaxed text-[var(--text-muted)]"
-                    }
-                  >
-                    <span
-                      className={
-                        isNeobrutalist
-                          ? "text-black font-black uppercase mr-1"
-                          : "text-[var(--text-primary)] font-medium mr-1.5"
-                      }
-                    >
-                      Resolution:
-                    </span>
-                    {hurdle.solution}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Section 4: Results & Numbers */}
-        <section className="space-y-4">
-          <h2
-            className={
-              isNeobrutalist
-                ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
-                : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
-            }
-          >
-            Results &amp; Numbers
-          </h2>
-          <p
-            className={
-              isNeobrutalist
-                ? "leading-relaxed text-black font-medium"
-                : "leading-relaxed text-[var(--text-muted)]"
-            }
-          >
-            {project.results}
-          </p>
-
-          {/* Metrics Band */}
-          {project.metrics && project.metrics.length > 0 && (
-            <div
-              className={
-                isNeobrutalist
-                  ? "grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2"
-                  : "grid grid-cols-2 sm:grid-cols-4 gap-6 py-4 border-y border-[var(--border-subtle)] my-6"
-              }
-            >
-              {project.metrics.map((m, idx) => (
-                <div
-                  key={idx}
-                  className={
-                    isNeobrutalist
-                      ? "bg-white border-2 border-black p-3 text-center shadow-[3px_3px_0px_#000000]"
-                      : ""
-                  }
-                >
-                  <div
-                    className={
-                      isNeobrutalist
-                        ? "text-[18px] font-black text-black font-mono"
-                        : "text-[22px] font-bold text-[var(--text-primary)] font-mono tracking-tight"
-                    }
-                  >
-                    {m.value}
-                  </div>
-                  <div
-                    className={
-                      isNeobrutalist
-                        ? "text-[11px] font-bold text-black uppercase mt-1"
-                        : "text-[12px] text-[var(--text-dim)] mt-0.5 leading-snug"
-                    }
-                  >
-                    {m.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Retrospective Note */}
-          {project.retrospective && (
-            <div
-              className={
-                isNeobrutalist
-                  ? "mt-4 p-4 border-2 border-black bg-[#BBF7D0] shadow-[3px_3px_0px_#000000] text-[13.5px] leading-relaxed text-black font-medium"
-                  : "pt-2 text-[14px] leading-relaxed text-[var(--text-muted)]"
-              }
-            >
-              <span
+          </>
+        ) : (
+          <>
+            {/* Section 1: Problem & Constraints (or Why I Built This) */}
+            <section className="space-y-3">
+              <h2
                 className={
                   isNeobrutalist
-                    ? "font-black uppercase text-black block mb-1"
-                    : "font-medium text-[var(--text-primary)] mr-1.5"
+                    ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
+                    : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
                 }
               >
-                Retrospective:
-              </span>
-              <span>{project.retrospective}</span>
-            </div>
-          )}
-        </section>
+                {project.tier === "flagship" ? "Problem & Constraints" : "Why I Built This"}
+              </h2>
+              <p
+                className={
+                  isNeobrutalist
+                    ? "leading-relaxed bg-white border-2 border-black p-4 shadow-[3px_3px_0px_#000000] font-medium"
+                    : "leading-relaxed text-[var(--text-muted)]"
+                }
+              >
+                {project.problem}
+              </p>
+            </section>
+
+            {/* Section 2: How It's Built (or How It Works) */}
+            <section className="space-y-4">
+              <h2
+                className={
+                  isNeobrutalist
+                    ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
+                    : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
+                }
+              >
+                {project.tier === "flagship" ? "How It's Built" : "How It Works"}
+              </h2>
+              <div className="space-y-8">
+                {project.architecture.map((arch, idx) => (
+                  <div
+                    key={idx}
+                    className={
+                      isNeobrutalist
+                        ? "border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_#000000] space-y-3"
+                        : "space-y-2.5"
+                    }
+                  >
+                    <h3
+                      className={
+                        isNeobrutalist
+                          ? "text-[15px] font-black uppercase text-black"
+                          : "text-[15px] font-semibold text-[var(--text-primary)]"
+                      }
+                    >
+                      {idx + 1}. {arch.title}
+                    </h3>
+                    <p
+                      className={
+                        isNeobrutalist
+                          ? "text-[14px] leading-relaxed font-medium text-black"
+                          : "leading-relaxed text-[var(--text-muted)]"
+                      }
+                    >
+                      {arch.description}
+                    </p>
+
+                    {arch.tradeOff && (
+                      <p
+                        className={
+                          isNeobrutalist
+                            ? "text-[13px] font-bold text-black pt-1"
+                            : "text-[13.5px] leading-relaxed text-[var(--text-dim)] pt-0.5"
+                        }
+                      >
+                        <span
+                          className={
+                            isNeobrutalist
+                              ? "font-black uppercase text-black mr-1"
+                              : "font-medium text-[var(--text-primary)] mr-1.5"
+                          }
+                        >
+                          Trade-off:
+                        </span>
+                        {arch.tradeOff}
+                      </p>
+                    )}
+
+                    {arch.codeSnippet && (
+                      <CodeBlock
+                        code={arch.codeSnippet}
+                        language={arch.codeLanguage || "dart"}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Section 3: Hurdles & Solutions (Flagship Tier Only) */}
+            {project.tier === "flagship" && project.hurdles && project.hurdles.length > 0 && (
+              <section className="space-y-4">
+                <h2
+                  className={
+                    isNeobrutalist
+                      ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
+                      : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
+                  }
+                >
+                  Hurdles &amp; Solutions
+                </h2>
+                <div className="space-y-6">
+                  {project.hurdles.map((hurdle, idx) => (
+                    <div
+                      key={idx}
+                      className={
+                        isNeobrutalist
+                          ? "border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_#000000] space-y-2.5"
+                          : "space-y-2"
+                      }
+                    >
+                      <h3
+                        className={
+                          isNeobrutalist
+                            ? "text-[14.5px] font-black uppercase text-black bg-[#FFE600] inline-block px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000000]"
+                            : "text-[14.5px] font-semibold text-[var(--text-primary)]"
+                        }
+                      >
+                        {hurdle.title}
+                      </h3>
+                      <p
+                        className={
+                          isNeobrutalist
+                            ? "text-black font-medium text-[13.5px]"
+                            : "text-[14px] leading-relaxed text-[var(--text-muted)]"
+                        }
+                      >
+                        <span
+                          className={
+                            isNeobrutalist
+                              ? "text-black font-black uppercase mr-1"
+                              : "text-[var(--text-primary)] font-medium mr-1.5"
+                          }
+                        >
+                          Problem:
+                        </span>
+                        {hurdle.issue}
+                      </p>
+                      <p
+                        className={
+                          isNeobrutalist
+                            ? "text-black font-medium text-[13.5px]"
+                            : "text-[14px] leading-relaxed text-[var(--text-muted)]"
+                        }
+                      >
+                        <span
+                          className={
+                            isNeobrutalist
+                              ? "text-black font-black uppercase mr-1"
+                              : "text-[var(--text-primary)] font-medium mr-1.5"
+                          }
+                        >
+                          Resolution:
+                        </span>
+                        {hurdle.solution}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Section 4: Results & Numbers */}
+            <section className="space-y-4">
+              <h2
+                className={
+                  isNeobrutalist
+                    ? "text-[18px] font-black uppercase text-black border-b-2 border-black pb-1.5"
+                    : "text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] font-[var(--font-heading)] border-b border-[var(--border-subtle)] pb-1.5"
+                }
+              >
+                Results &amp; Numbers
+              </h2>
+              <p
+                className={
+                  isNeobrutalist
+                    ? "leading-relaxed text-black font-medium"
+                    : "leading-relaxed text-[var(--text-muted)]"
+                }
+              >
+                {project.results}
+              </p>
+
+              {/* Metrics Band */}
+              {project.metrics && project.metrics.length > 0 && (
+                <div
+                  className={
+                    isNeobrutalist
+                      ? "grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2"
+                      : "grid grid-cols-2 sm:grid-cols-4 gap-6 py-4 border-y border-[var(--border-subtle)] my-6"
+                  }
+                >
+                  {project.metrics.map((m, idx) => (
+                    <div
+                      key={idx}
+                      className={
+                        isNeobrutalist
+                          ? "bg-white border-2 border-black p-3 text-center shadow-[3px_3px_0px_#000000]"
+                          : ""
+                      }
+                    >
+                      <div
+                        className={
+                          isNeobrutalist
+                            ? "text-[18px] font-black text-black font-mono"
+                            : "text-[22px] font-bold text-[var(--text-primary)] font-mono tracking-tight"
+                        }
+                      >
+                        {m.value}
+                      </div>
+                      <div
+                        className={
+                          isNeobrutalist
+                            ? "text-[11px] font-bold text-black uppercase mt-1"
+                            : "text-[12px] text-[var(--text-dim)] mt-0.5 leading-snug"
+                        }
+                      >
+                        {m.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Retrospective Note */}
+              {project.retrospective && (
+                <div
+                  className={
+                    isNeobrutalist
+                      ? "mt-4 p-4 border-2 border-black bg-[#BBF7D0] shadow-[3px_3px_0px_#000000] text-[13.5px] leading-relaxed text-black font-medium"
+                      : "pt-2 text-[14px] leading-relaxed text-[var(--text-muted)]"
+                  }
+                >
+                  <span
+                    className={
+                      isNeobrutalist
+                        ? "font-black uppercase text-black block mb-1"
+                        : "font-medium text-[var(--text-primary)] mr-1.5"
+                    }
+                  >
+                    Retrospective:
+                  </span>
+                  <span>{project.retrospective}</span>
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </article>
 
       {/* Next Project Footer */}
