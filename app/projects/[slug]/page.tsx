@@ -1,11 +1,11 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { ALL_PROJECTS } from "@/lib/data/project-registry";
+import { PORTFOLIO_PROJECTS } from "@/lib/data/project-overrides";
 import ProjectCaseStudyClient from "@/components/ProjectCaseStudyClient";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
-  return ALL_PROJECTS.map((p) => ({
+  return PORTFOLIO_PROJECTS.map((p) => ({
     slug: p.slug,
   }));
 }
@@ -16,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = ALL_PROJECTS.find((p) => p.slug === slug);
+  const project = PORTFOLIO_PROJECTS.find((p) => p.slug === slug);
   if (!project) return { title: "Project Not Found" };
   return {
     title: `${project.title} — Case Study | Aerol (Aedwon)`,
@@ -30,14 +30,14 @@ export default async function ProjectCaseStudyPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const projectIndex = ALL_PROJECTS.findIndex((p) => p.slug === slug);
+  const projectIndex = PORTFOLIO_PROJECTS.findIndex((p) => p.slug === slug);
 
   if (projectIndex === -1) {
     notFound();
   }
 
-  const project = ALL_PROJECTS[projectIndex];
-  const nextProject = ALL_PROJECTS[(projectIndex + 1) % ALL_PROJECTS.length];
+  const project = PORTFOLIO_PROJECTS[projectIndex];
+  const nextProject = PORTFOLIO_PROJECTS[(projectIndex + 1) % PORTFOLIO_PROJECTS.length];
 
   return (
     <ProjectCaseStudyClient project={project} nextProject={nextProject} />
