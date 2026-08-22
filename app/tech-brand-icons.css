@@ -33,14 +33,16 @@
   display: none;
 }
 
-/* These two retained additions use their actual project marks. */
+/* Retained additions use their actual project marks. */
 .has-tooltip[data-tooltip="WebAssembly"] > .tech-stack-icon,
-.has-tooltip[data-tooltip="Pterodactyl"] > .tech-stack-icon {
+.has-tooltip[data-tooltip="Pterodactyl"] > .tech-stack-icon,
+.has-tooltip[data-tooltip="Vercel"] > .tech-stack-icon {
   display: none;
 }
 
 .has-tooltip[data-tooltip="WebAssembly"]::before,
-.has-tooltip[data-tooltip="Pterodactyl"]::before {
+.has-tooltip[data-tooltip="Pterodactyl"]::before,
+.has-tooltip[data-tooltip="Vercel"]::before {
   content: "";
   display: block;
   width: 14px;
@@ -59,6 +61,11 @@
 .has-tooltip[data-tooltip="Pterodactyl"] {
   --tech-icon-mask: url("/tech-icons/pterodactyl.svg");
   --tech-icon-color: #105289;
+}
+
+.has-tooltip[data-tooltip="Vercel"] {
+  --tech-icon-mask: url("/tech-icons/vercel.svg");
+  --tech-icon-color: currentColor;
 }
 
 [data-theme="neobrutalist"] .has-tooltip::before {
