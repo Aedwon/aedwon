@@ -15,38 +15,37 @@ export const metadata: Metadata = {
       { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "32x32" },
     ],
-    apple: [
-      { url: "/apple-icon", sizes: "180x180", type: "image/png" },
-    ],
+    apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="default" data-mode="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/favicon.ico" />
-        {/* Anti-Flash Theme Script */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  const theme = localStorage.getItem('aedwon-theme') || 'default';
-                  const mode = localStorage.getItem('aedwon-mode') || 'dark';
-                  let effectiveMode = mode === 'system' 
+                  var storedTheme = localStorage.getItem('aedwon-theme');
+                  var storedMode = localStorage.getItem('aedwon-mode');
+                  var theme = storedTheme === 'neobrutalist' || storedTheme === 'discord' || storedTheme === 'default'
+                    ? storedTheme
+                    : 'default';
+                  var mode = storedMode === 'system' || storedMode === 'light' || storedMode === 'dark'
+                    ? storedMode
+                    : 'dark';
+                  var effectiveMode = mode === 'system'
                     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                     : mode;
                   if (theme === 'discord') effectiveMode = 'dark';
                   if (theme === 'neobrutalist') effectiveMode = 'light';
                   document.documentElement.setAttribute('data-theme', theme);
                   document.documentElement.setAttribute('data-mode', effectiveMode);
-                } catch (e) {}
+                } catch (error) {}
               })();
             `,
           }}
