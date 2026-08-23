@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BLOG_POSTS } from "@/lib/data/blogs";
+import { BlogContent } from "@/components/blog-content";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -49,41 +50,43 @@ export default async function BlogArticlePage({
   }
 
   return (
-    <div className="space-y-6 max-w-[760px] mx-auto">
-      {/* Breadcrumb */}
+    <div className="max-w-[760px] mx-auto">
       <Link
         href="/blogs"
-        className="inline-flex items-center gap-1.5 text-[13px] font-mono text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors mb-2"
+        className="inline-flex items-center gap-1.5 text-[13px] font-mono text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors mb-8"
       >
         ← Back to all blogs
       </Link>
 
-      {/* Article Header */}
-      <header className="space-y-3 pb-6 border-b border-[var(--border-subtle)]">
-        <h1 className="text-[26px] sm:text-[30px] font-bold text-[var(--text-primary)] tracking-[-0.02em] leading-[1.3] font-[var(--font-heading)]">
-          {post.title}
-        </h1>
-        <div className="flex items-center gap-3 text-[12.5px] font-mono text-[var(--text-dim)]">
-          <span>{post.date}</span>
-          <span>·</span>
-          <span>{post.readTime}</span>
-          <span>·</span>
-          <div className="flex gap-1.5">
-            {post.tags.map((tag, idx) => (
-              <span key={idx} className="bg-white/[0.04] px-2 py-0.5 rounded text-[var(--text-muted)]">
-                #{tag}
-              </span>
-            ))}
+      <article>
+        <header className="pb-7 mb-9 border-b border-[var(--border-subtle)]">
+          <h1 className="max-w-[720px] text-[28px] sm:text-[34px] font-bold text-[var(--text-primary)] tracking-[-0.025em] leading-[1.22] font-[var(--font-heading)]">
+            {post.title}
+          </h1>
+          <p className="mt-4 max-w-[680px] text-[14.5px] sm:text-[15px] leading-[1.65] text-[var(--text-muted)]">
+            {post.summary}
+          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] font-mono text-[var(--text-dim)]">
+            <span>{post.date}</span>
+            <span aria-hidden="true">·</span>
+            <span>{post.readTime}</span>
+            <span aria-hidden="true">·</span>
+            <div className="flex flex-wrap gap-1.5">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded border border-[var(--border-subtle)] px-2 py-0.5 text-[var(--text-muted)]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Article Prose */}
-      <article className="space-y-6 text-[15px] leading-[1.75] text-[var(--text-muted)] pt-2 whitespace-pre-line font-sans">
-        {post.content.trim()}
+        <BlogContent blocks={post.blocks} />
       </article>
 
-      {/* Back to all blogs footer */}
       <div className="mt-14 pt-8 border-t border-[var(--border-subtle)]">
         <Link
           href="/blogs"
