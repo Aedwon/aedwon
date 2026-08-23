@@ -1,4 +1,5 @@
 import { BLOG_POSTS } from "@/lib/data/blogs";
+import { OPEN_SOURCE_PROJECTS } from "@/lib/data/open-source";
 import {
   ALL_PROJECTS,
   getFeaturedProjects,
@@ -41,6 +42,16 @@ function trustPageMarkdown(content: TrustPageContent): string {
   return `# ${content.title}\n\n${content.intro}\n\n${sections}\n`;
 }
 
+function openSourceMarkdown(): string {
+  return OPEN_SOURCE_PROJECTS.map((project) => {
+    const projectUrl = project.external ? project.href : absolute(project.href);
+    const prs = project.pullRequests
+      .map((pr) => `- [PR #${pr.number}](${pr.url}) · ${pr.status}: ${pr.title}`)
+      .join("\n");
+    return `### [${project.name}](${projectUrl})\n\n${project.summary}\n\n- Repository: ${project.repository}\n- Status: ${project.statusLabel}\n${prs}`;
+  }).join("\n\n");
+}
+
 function homeMarkdown(): string {
   const featured = getFeaturedProjects()
     .map(
@@ -49,14 +60,12 @@ function homeMarkdown(): string {
     )
     .join("\n\n");
 
-  return `# ${SITE_NAME} — Aerol Balayon\n\nI'm Aerol. You might also know me as Aedwon. I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following high school at Philippine Science High School. I build software across offline-first mobile systems, Discord automation, civic technology, browser tools, and event operations.\n\n## Featured projects\n\n${featured}\n\n## Open source\n\n### [BetterGov PH](https://bettergov.ph)\n\nContributor to civic tech initiatives modernizing Philippine government web services and open public data.\n\n## About this portfolio\n\n${SITE_DESCRIPTION} Project pages are the canonical source for current implementation details. Technical notes live under /blogs.\n\n## Contact\n\n- Email: [${CONTACT.email}](mailto:${CONTACT.email})\n- GitHub: [Aedwon](${CONTACT.github})\n- LinkedIn: [Aedwon](${CONTACT.linkedin})\n- Discord: ${CONTACT.discord}\n\n## Site map\n\n- [Projects](${absolute("/projects")})\n- [Blogs](${absolute("/blogs")})\n- [About](${absolute("/about")})\n- [Contact](${absolute("/contact")})\n- [Privacy](${absolute("/privacy")})\n- [llms.txt](${absolute("/llms.txt")})\n- [sitemap.xml](${absolute("/sitemap.xml")})\n`;
+  return `# ${SITE_NAME} — Aerol Balayon\n\nI'm Aerol. You might also know me as Aedwon. I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following high school at Philippine Science High School. I build software across offline-first mobile systems, Discord automation, civic technology, browser tools, and event operations.\n\n## Featured projects\n\n${featured}\n\n## Open source\n\nRecent upstream pull requests. Status checked August 24, 2026.\n\n${openSourceMarkdown()}\n\n## About this portfolio\n\n${SITE_DESCRIPTION} Project pages are the canonical source for current implementation details. Technical notes live under /blogs.\n\n## Contact\n\n- Email: [${CONTACT.email}](mailto:${CONTACT.email})\n- GitHub: [Aedwon](${CONTACT.github})\n- LinkedIn: [Aedwon](${CONTACT.linkedin})\n- Discord: ${CONTACT.discord}\n\n## Site map\n\n- [Projects](${absolute("/projects")})\n- [Blogs](${absolute("/blogs")})\n- [About](${absolute("/about")})\n- [Contact](${absolute("/contact")})\n- [Privacy](${absolute("/privacy")})\n- [llms.txt](${absolute("/llms.txt")})\n- [sitemap.xml](${absolute("/sitemap.xml")})\n`;
 }
 
 function projectsMarkdown(): string {
   const projects = ALL_PROJECTS.map((project) => {
-    const url = project.slug === "bettergov-ph"
-      ? project.liveUrl ?? project.githubUrl ?? SITE_URL
-      : absolute(`/projects/${project.slug}`);
+    const url = absolute(`/projects/${project.slug}`);
     return `## [${project.title}](${url})\n\n${project.summary}\n\n- Category: ${project.categoryLabel}\n- Role: ${project.role}\n- Timeline: ${project.timeline}\n- Stack: ${project.stack.map((tech) => tech.name).join(", ")}`;
   }).join("\n\n");
 
@@ -72,15 +81,6 @@ function projectMarkdown(slug: string): AgentMarkdownResult {
       status: 308,
       location: absolute(`/projects/${project.slug}`),
       body: `# Permanent redirect\n\nUse [${project.title}](${absolute(`/projects/${project.slug}`)}).\n`,
-    };
-  }
-
-  if (project.slug === "bettergov-ph") {
-    const destination = project.liveUrl ?? project.githubUrl ?? SITE_URL;
-    return {
-      status: 308,
-      location: destination,
-      body: `# Permanent redirect\n\nBetterGov PH is documented at [${destination}](${destination}).\n`,
     };
   }
 
@@ -106,9 +106,13 @@ function projectMarkdown(slug: string): AgentMarkdownResult {
         .filter(Boolean)
         .join("\n\n");
 
+  const contributionLinks = project.slug === "bettergov-ph"
+    ? `- Pull requests: ${OPEN_SOURCE_PROJECTS.find((entry) => entry.id === "bettergov-ph")?.pullRequests.map((pr) => `[#${pr.number}](${pr.url})`).join(", ") ?? ""}\n`
+    : "";
+
   return {
     status: 200,
-    body: `# ${project.title}\n\n${project.tagline}\n\n- Category: ${project.categoryLabel}\n- Role: ${project.role}\n- Timeline: ${project.timeline}\n- Stack: ${project.stack.map((tech) => tech.name).join(", ")}\n${project.liveUrl ? `- Live: ${project.liveUrl}\n` : ""}${project.githubUrl ? `- Source: ${project.githubUrl}\n` : ""}\n${articleSections}\n`,
+    body: `# ${project.title}\n\n${project.tagline}\n\n- Category: ${project.categoryLabel}\n- Role: ${project.role}\n- Timeline: ${project.timeline}\n- Stack: ${project.stack.map((tech) => tech.name).join(", ")}\n${project.liveUrl ? `- Live: ${project.liveUrl}\n` : ""}${project.githubUrl ? `- Source: ${project.githubUrl}\n` : ""}${contributionLinks}\n${articleSections}\n`,
   };
 }
 

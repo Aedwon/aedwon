@@ -21,6 +21,10 @@ describe("agent-facing portfolio content", () => {
     expect(result.status).toBe(200);
     expect(result.body).toContain("# Aedwon — Aerol Balayon");
     expect(result.body).toContain("## Featured projects");
+    expect(result.body).toContain("## Open source");
+    expect(result.body).toContain("Microsoft Aspire");
+    expect(result.body).toContain("OpenSRE");
+    expect(result.body).toContain("DockRoute");
     expect(result.body).toContain("Pantas");
     expect(result.body.length).toBeGreaterThan(500);
   });
@@ -34,6 +38,15 @@ describe("agent-facing portfolio content", () => {
     const alias = markdownForPath("/projects/sb-norala");
     expect(alias.status).toBe(308);
     expect(alias.location).toBe("https://aedwon.com/projects/norala-sb-portal");
+  });
+
+  it("serves BetterGov contribution details instead of an external redirect", () => {
+    const result = markdownForPath("/projects/bettergov-ph");
+    expect(result.status).toBe(200);
+    expect(result.body).toContain("Upstream PR Author");
+    expect(result.body).toContain("[#706](https://github.com/bettergovph/bettergov/pull/706)");
+    expect(result.body).toContain("[#744](https://github.com/bettergovph/bettergov/pull/744)");
+    expect(result.body).toContain("closed without merge");
   });
 
   it("returns an agent-friendly Markdown 404 with recovery indexes", () => {

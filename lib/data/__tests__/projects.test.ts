@@ -8,7 +8,7 @@ import {
   resolveProjectSlug,
 } from "../project-registry";
 
-describe("project registry", () => {
+ describe("project registry", () => {
   it("keeps one ordered record per canonical slug", () => {
     expect(ALL_PROJECTS).toHaveLength(PROJECTS.length);
     expect(new Set(ALL_PROJECTS.map((project) => project.slug)).size).toBe(ALL_PROJECTS.length);
@@ -36,8 +36,18 @@ describe("project registry", () => {
 
   it("uses registry ordering for next-project navigation", () => {
     expect(getNextProject("pantas")?.slug).toBe("msl-network");
-    expect(getNextProject("bettergov-ph")).toBeUndefined();
+    expect(getNextProject("bettergov-ph")?.slug).toBe("msl-collegiate-cup-bot");
     expect(getNextProject("webp-unli")?.slug).toBe("pantas");
+  });
+
+  it("keeps BetterGov scoped to submitted upstream work", () => {
+    const project = getProjectBySlug("bettergov-ph");
+    expect(project?.role).toBe("Upstream PR Author");
+    expect(project?.timeline).toBe("2026");
+    expect(project?.summary).toContain("Two open upstream BetterGov PRs");
+    expect(project?.results).toContain("PR #706");
+    expect(project?.results).toContain("PR #744");
+    expect(project?.results).toContain("closed without merge");
   });
 
   it("keeps current MSL bot facts and rejects stale project claims", () => {

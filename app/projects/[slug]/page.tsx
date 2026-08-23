@@ -8,6 +8,7 @@ import {
   getProjectBySlug,
 } from "@/lib/data/project-registry";
 import ProjectCaseStudyClient from "@/components/ProjectCaseStudyClient";
+import BetterGovContributionPage from "@/components/BetterGovContributionPage";
 import type { Metadata } from "next";
 
 const UNDER_CONSTRUCTION_PROJECTS = new Set([
@@ -33,9 +34,12 @@ export async function generateMetadata({
 
   const canonicalSlug = project.slug;
   const isUnderConstruction = UNDER_CONSTRUCTION_PROJECTS.has(canonicalSlug);
+  const isOpenSourceContribution = canonicalSlug === "bettergov-ph";
   const title = isUnderConstruction
     ? `${project.title} — Under Construction | Aerol (Aedwon)`
-    : `${project.title} — Case Study | Aerol (Aedwon)`;
+    : isOpenSourceContribution
+      ? `${project.title} — Open Source Contributions | Aerol (Aedwon)`
+      : `${project.title} — Case Study | Aerol (Aedwon)`;
   const description = isUnderConstruction
     ? `The case study for ${project.title} is still under construction.`
     : project.summary;
@@ -69,7 +73,7 @@ export default async function ProjectCaseStudyPage({
   }
 
   if (project.slug === "bettergov-ph") {
-    redirect(project.liveUrl ?? project.githubUrl ?? "/projects");
+    return <BetterGovContributionPage />;
   }
 
   if (UNDER_CONSTRUCTION_PROJECTS.has(project.slug)) {

@@ -29,4 +29,17 @@ describe("ProjectCaseStudyPage", () => {
     expect(screen.getByText("Results & Numbers")).toBeInTheDocument();
     expect(screen.queryByText("Hurdles & Solutions")).not.toBeInTheDocument();
   });
+
+  it("renders BetterGov as an open-source contribution page", async () => {
+    const component = await ProjectCaseStudyPage({
+      params: Promise.resolve({ slug: "bettergov-ph" }),
+    });
+    render(component);
+
+    expect(screen.getByText("BetterGov PH")).toBeInTheDocument();
+    expect(screen.getByText("Current pull requests")).toBeInTheDocument();
+    expect(screen.getByText("PR #706")).toBeInTheDocument();
+    expect(screen.getByText("PR #744")).toBeInTheDocument();
+    expect(screen.getByText("Review history")).toBeInTheDocument();
+  });
 });

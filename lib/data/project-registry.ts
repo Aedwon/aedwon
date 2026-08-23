@@ -1,4 +1,5 @@
 import { PROJECTS, type ProjectItem } from "@/lib/data/projects";
+import { BETTERGOV_PROJECT } from "@/lib/data/open-source";
 
 export type RegisteredProject = ProjectItem;
 
@@ -13,7 +14,11 @@ export const PROJECT_ALIASES = {
   "agent-framework": "ai-agent-framework",
 } as const satisfies Record<string, string>;
 
-export const ALL_PROJECTS: RegisteredProject[] = [...PROJECTS].sort(
+const PORTFOLIO_PROJECTS = PROJECTS.map((project) =>
+  project.slug === "bettergov-ph" ? BETTERGOV_PROJECT : project,
+);
+
+export const ALL_PROJECTS: RegisteredProject[] = [...PORTFOLIO_PROJECTS].sort(
   (a, b) => a.order - b.order,
 );
 
@@ -48,7 +53,7 @@ export function getFeaturedProjects(): RegisteredProject[] {
 }
 
 export function getCaseStudyProjects(): RegisteredProject[] {
-  return ALL_PROJECTS.filter((project) => project.slug !== "bettergov-ph");
+  return ALL_PROJECTS;
 }
 
 export function getNextProject(slug: string): RegisteredProject | undefined {
