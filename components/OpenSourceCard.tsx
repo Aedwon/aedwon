@@ -1,7 +1,7 @@
 import Link from "next/link";
-import type { OpenSourceProject } from "@/lib/data/open-source";
+import { OPEN_SOURCE_PROJECTS, type OpenSourceProject } from "@/lib/data/open-source";
 
-function OpenSourceArt({ project }: { project: OpenSourceProject }) {
+export function OpenSourceArt({ project }: { project: OpenSourceProject }) {
   const common = "transition-transform duration-200 group-hover:scale-105";
 
   if (project.id === "microsoft-aspire") {
@@ -110,8 +110,6 @@ export function OpenSourceCard({ project }: { project: OpenSourceProject }) {
 }
 
 export function OpenSourceGrid() {
-  const { OPEN_SOURCE_PROJECTS } = require("@/lib/data/open-source") as typeof import("@/lib/data/open-source");
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {OPEN_SOURCE_PROJECTS.map((project) => (
