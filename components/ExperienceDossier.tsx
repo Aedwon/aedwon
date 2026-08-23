@@ -33,10 +33,9 @@ export default function ExperienceDossier() {
           isNeobrutalist ? "text-black font-black" : "font-semibold text-[var(--text-primary)] font-[var(--font-heading)]"
         }`}
       >
-        Experience
+        Other experience
       </h2>
 
-      {/* Dossier Container */}
       <div
         className={`grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[210px_1fr] md:grid-rows-1 bg-[var(--bg-card)] overflow-hidden h-[350px] transition-all ${
           isNeobrutalist
@@ -44,7 +43,6 @@ export default function ExperienceDossier() {
             : "rounded-[var(--card-radius)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)]"
         }`}
       >
-        {/* Left: Entity Navigation */}
         <div
           className={`flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto p-2.5 md:p-3 shrink-0 gap-1.5 ${
             isNeobrutalist
@@ -87,7 +85,6 @@ export default function ExperienceDossier() {
           })}
         </div>
 
-        {/* Right: Scrollable Roles Stack */}
         <div
           ref={scrollRef}
           className={`min-h-0 p-6 overflow-y-auto ${
