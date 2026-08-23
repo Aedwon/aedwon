@@ -45,13 +45,6 @@ export default function BlogsPage() {
             <p className="mt-2 max-w-[700px] text-[13.5px] sm:text-[14px] text-[var(--text-muted)] leading-[1.65]">
               {post.summary}
             </p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {post.tags.map((tag) => (
-                <span key={tag} className="text-[11.5px] font-mono text-[var(--text-dim)]">
-                  {tag}
-                </span>
-              ))}
-            </div>
           </Link>
         ))}
       </div>

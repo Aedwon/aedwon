@@ -6,6 +6,10 @@ All website copy, case studies, documentation, and agent responses in this repos
 
 Reference model: Hiroki Osame ([`docs/tone-reference.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/tone-reference.md)).
 
+### Mandatory blog-specific rules
+
+Any agent drafting, revising, formatting, or publishing a blog post must read and follow [`docs/blog-writing.md`](docs/blog-writing.md) before editing blog content. The blog standard supplements this file and contains the repository's rules for traditional long-form essays, first-person voice, research, references, quotations, pull quotes, editing, short links, and low-cost validation. If a blog-specific rule is stricter than a general rule here, use the stricter rule.
+
 ---
 
 ## Aedwon-Specific Voice Profile (Overrides Generic Humanizer Rules)
@@ -90,7 +94,8 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 
 ### 10. Living Copy Reference File
 - All active copy, project descriptions, and case study notes must be maintained in [`docs/portfolio-copy.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/portfolio-copy.md).
-- Edit that file directly when refining text instead of dumping walls of copy into conversation.
+- Blog posts are stored in `lib/data/blogs.ts` and additionally follow [`docs/blog-writing.md`](docs/blog-writing.md).
+- Edit the relevant source file directly when refining text instead of dumping walls of copy into conversation.
 
 ### 11. Skill Evaluation & User Confirmation Gate
 - For every user request, actively evaluate if a specialized skill applies (e.g. Visual Companion for UI brainstorming, Prototype for interactive exploration, TDD for feature code, Subagent-Driven Development for execution).

@@ -70,17 +70,6 @@ export default async function BlogArticlePage({
             <span>{post.date}</span>
             <span aria-hidden="true">·</span>
             <span>{post.readTime}</span>
-            <span aria-hidden="true">·</span>
-            <div className="flex flex-wrap gap-1.5">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded border border-[var(--border-subtle)] px-2 py-0.5 text-[var(--text-muted)]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
           </div>
         </header>
 
