@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/data/blogs";
+import { OPEN_SOURCE_PROJECTS } from "@/lib/data/open-source";
 import { getCaseStudyProjects } from "@/lib/data/project-registry";
 import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/site-content";
 
@@ -50,6 +51,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: project.featured ? 0.85 : 0.7,
   }));
 
+  const contributionRoutes: MetadataRoute.Sitemap = OPEN_SOURCE_PROJECTS
+    .filter((project) => project.id !== "bettergov-ph")
+    .map((project) => ({
+      url: new URL(project.pageHref, SITE_URL).toString(),
+      lastModified: SITE_LAST_MODIFIED,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+
   const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
     url: `${SITE_URL}/blogs/${post.slug}`,
     lastModified: new Date(post.date),
@@ -57,5 +67,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.65,
   }));
 
-  return [...staticRoutes, ...projectRoutes, ...blogRoutes];
+  return [...staticRoutes, ...projectRoutes, ...contributionRoutes, ...blogRoutes];
 }
