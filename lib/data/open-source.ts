@@ -12,12 +12,16 @@ export interface OpenSourceProject {
   id: string;
   name: string;
   repository: string;
+  repositoryUrl: string;
+  projectUrl?: string;
+  pageHref: string;
   summary: string;
   statusLabel: string;
   statusChecked: string;
-  href: string;
-  external: boolean;
+  glowColor: "blue" | "purple" | "pink" | "violet" | "green" | "amber" | "cyan";
+  brandColor: string;
   pullRequests: UpstreamPullRequest[];
+  reviewNotes?: string[];
 }
 
 export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
@@ -25,11 +29,13 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     id: "microsoft-aspire",
     name: "Microsoft Aspire",
     repository: "microsoft/aspire",
+    repositoryUrl: "https://github.com/microsoft/aspire",
+    pageHref: "/projects/contributions/microsoft-aspire",
     summary: "CLI resource-command help for invalid arguments, with focused regression coverage.",
     statusLabel: "Draft PR",
     statusChecked: "2026-08-24",
-    href: "https://github.com/microsoft/aspire/pull/19614",
-    external: true,
+    glowColor: "blue",
+    brandColor: "#00A4EF",
     pullRequests: [
       {
         number: 19614,
@@ -44,11 +50,13 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     id: "opensre",
     name: "OpenSRE",
     repository: "Tracer-Cloud/opensre",
+    repositoryUrl: "https://github.com/Tracer-Cloud/opensre",
+    pageHref: "/projects/contributions/opensre",
     summary: "VictoriaLogs citeable evidence mapping, revised after reviewer feedback.",
     statusLabel: "Draft PR",
     statusChecked: "2026-08-24",
-    href: "https://github.com/Tracer-Cloud/opensre/pull/5634",
-    external: true,
+    glowColor: "purple",
+    brandColor: "#818CF8",
     pullRequests: [
       {
         number: 5634,
@@ -58,16 +66,21 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
         summary: "Adds a VictoriaLogs evidence mapper and focused regression coverage, with repeated-query behavior removed after review identified an unsupported aggregation path.",
       },
     ],
+    reviewNotes: [
+      "Reviewer feedback identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
+    ],
   },
   {
     id: "dockroute",
     name: "DockRoute",
     repository: "Dockroute/Dockroute",
+    repositoryUrl: "https://github.com/Dockroute/Dockroute",
+    pageHref: "/projects/contributions/dockroute",
     summary: "Troubleshooting documentation that maps current warning behavior to concrete fixes.",
     statusLabel: "Open PR",
     statusChecked: "2026-08-24",
-    href: "https://github.com/Dockroute/Dockroute/pull/41",
-    external: true,
+    glowColor: "cyan",
+    brandColor: "#06B6D4",
     pullRequests: [
       {
         number: 41,
@@ -82,11 +95,14 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     id: "bettergov-ph",
     name: "BetterGov PH",
     repository: "bettergovph/bettergov",
+    repositoryUrl: "https://github.com/bettergovph/bettergov",
+    projectUrl: "https://bettergov.ph",
+    pageHref: "/projects/bettergov-ph",
     summary: "Government acronym UI work and contributor documentation across two open upstream pull requests.",
     statusLabel: "2 open PRs",
     statusChecked: "2026-08-24",
-    href: "/projects/bettergov-ph",
-    external: false,
+    glowColor: "green",
+    brandColor: "#34D399",
     pullRequests: [
       {
         number: 706,
@@ -102,6 +118,9 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
         url: "https://github.com/bettergovph/bettergov/pull/744",
         summary: "Recreates the documentation-only contribution on current upstream main after maintainer feedback and aligns CONTRIBUTING guidance with the repository PR template.",
       },
+    ],
+    reviewNotes: [
+      "The first documentation submission, PR #707, was closed without merge. A maintainer asked for the change to be recreated from current upstream main. PR #744 is that clean revision, limited to the contributor documentation update. I count #707 and #744 as one contribution thread, not two separate contributions.",
     ],
   },
 ];
