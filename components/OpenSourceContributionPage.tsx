@@ -5,9 +5,15 @@ import { OpenSourceArt } from "@/components/OpenSourceCard";
 function getStatusColor(status: string) {
   const normalized = status.toLowerCase();
 
-  if (normalized.includes("merged")) return "var(--status-merged)";
-  if (normalized.includes("draft")) return "var(--status-draft)";
-  if (normalized.includes("open")) return "var(--status-open)";
+  if (normalized.includes("merged")) {
+    return "color-mix(in srgb, var(--text-primary) 58%, #4f8a5f 42%)";
+  }
+  if (normalized.includes("draft")) {
+    return "color-mix(in srgb, var(--text-primary) 58%, #8b7447 42%)";
+  }
+  if (normalized.includes("open")) {
+    return "color-mix(in srgb, var(--text-primary) 58%, #527895 42%)";
+  }
 
   return "var(--text-primary)";
 }
