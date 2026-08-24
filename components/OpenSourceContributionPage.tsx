@@ -2,6 +2,31 @@ import Link from "next/link";
 import type { OpenSourceProject } from "@/lib/data/open-source";
 import { OpenSourceArt } from "@/components/OpenSourceCard";
 
+function getStatusColor(status: string) {
+  const normalized = status.toLowerCase();
+
+  if (normalized.includes("merged")) return "var(--status-merged)";
+  if (normalized.includes("draft")) return "var(--status-draft)";
+  if (normalized.includes("open")) return "var(--status-open)";
+
+  return "var(--text-primary)";
+}
+
+function StatusText({ status }: { status: string }) {
+  const color = getStatusColor(status);
+
+  return (
+    <span className="inline-flex items-center gap-2 font-medium" style={{ color }}>
+      <span
+        aria-hidden="true"
+        className="h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      <span>{status}</span>
+    </span>
+  );
+}
+
 export default function OpenSourceContributionPage({
   project,
 }: {
@@ -75,8 +100,8 @@ export default function OpenSourceContributionPage({
             <span className="text-[10.5px] font-mono uppercase tracking-wider text-[var(--text-dim)] block mb-1">
               Status
             </span>
-            <span className="text-[13.5px] font-medium text-[var(--text-primary)]">
-              {project.statusLabel}
+            <span className="text-[13.5px]">
+              <StatusText status={project.statusLabel} />
             </span>
           </div>
         </div>
@@ -106,8 +131,8 @@ export default function OpenSourceContributionPage({
                       {pr.title}
                     </h3>
                   </div>
-                  <span className="shrink-0 text-[11px] font-mono text-[var(--text-dim)]">
-                    {pr.status}
+                  <span className="shrink-0 text-[11px] font-mono">
+                    <StatusText status={pr.status} />
                   </span>
                 </div>
                 <p>{pr.summary}</p>
