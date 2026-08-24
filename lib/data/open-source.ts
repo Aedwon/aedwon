@@ -3,7 +3,7 @@ import type { ProjectItem } from "@/lib/data/projects";
 export interface UpstreamPullRequest {
   number: number;
   title: string;
-  status: "Open PR" | "Draft PR";
+  status: "Open PR" | "Draft PR" | "Merged";
   url: string;
   summary: string;
 }
@@ -45,6 +45,9 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
         summary: "Shows resolved command help after invalid command-specific arguments without changing the machine-readable load-arguments path.",
       },
     ],
+    reviewNotes: [
+      "The current draft includes the fixes requested in review around output ordering, end-to-end coverage, and the machine-readable `--load-arguments` path. Upstream workflows are waiting for repository approval before CI can run on the latest head.",
+    ],
   },
   {
     id: "opensre",
@@ -68,6 +71,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     ],
     reviewNotes: [
       "Reviewer feedback identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
+      "The revised head now has a 5/5 Greptile confidence score with no blocking failure reported. The upstream GitHub Actions workflows are still waiting for repository approval, so the pull request remains a draft until CI can run.",
     ],
   },
   {
@@ -76,8 +80,8 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     repository: "Dockroute/Dockroute",
     repositoryUrl: "https://github.com/Dockroute/Dockroute",
     pageHref: "/projects/contributions/dockroute",
-    summary: "Troubleshooting documentation that maps current warning behavior to concrete fixes.",
-    statusLabel: "Open PR",
+    summary: "Troubleshooting documentation for current warning behavior, now merged and included in DockRoute v0.3.2.",
+    statusLabel: "Merged · v0.3.2",
     statusChecked: "2026-08-24",
     glowColor: "cyan",
     brandColor: "#06B6D4",
@@ -85,10 +89,13 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       {
         number: 41,
         title: "docs: document warning troubleshooting",
-        status: "Open PR",
+        status: "Merged",
         url: "https://github.com/Dockroute/Dockroute/pull/41",
         summary: "Documents current warning patterns against the source and explains the matching label, environment, DNS, ingress, and ownership remedies.",
       },
+    ],
+    reviewNotes: [
+      "The maintainer checked all twelve documented warning strings against the implementation, approved the change, and merged it on August 24, 2026. The contribution shipped in DockRoute v0.3.2.",
     ],
   },
   {
