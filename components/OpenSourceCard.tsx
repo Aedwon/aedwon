@@ -73,8 +73,6 @@ export function OpenSourceArt({ project }: { project: OpenSourceProject }) {
 }
 
 export function OpenSourceCard({ project }: { project: OpenSourceProject }) {
-  const prLabel = project.pullRequests.map((pr) => `#${pr.number}`).join(" · ");
-
   return (
     <Link
       href={project.pageHref}
@@ -95,12 +93,7 @@ export function OpenSourceCard({ project }: { project: OpenSourceProject }) {
         {project.summary}
       </p>
 
-      <div className="flex justify-between items-end gap-4 pt-1.5 mt-auto">
-        <div className="text-[11px] leading-[1.45] font-mono text-[var(--text-dim)]">
-          <span className="text-[var(--text-muted)]">{project.statusLabel}</span>
-          <span className="mx-1.5">·</span>
-          <span>{prLabel}</span>
-        </div>
+      <div className="flex justify-end items-end pt-1.5 mt-auto">
         <span className="text-[14px] text-[var(--text-arrow)] group-hover:text-[var(--text-primary)] group-hover:translate-x-1 transition-all">
           →
         </span>
