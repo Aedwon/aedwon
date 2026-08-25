@@ -24,7 +24,7 @@ export const AI_AGENT_CONFIG_PROJECT: ProjectItem = {
   ],
   githubUrl: "https://github.com/Aedwon/ai-agent-config",
   summary:
-    "Portable configuration system for coding agents that composes shared policy, project rules, and selected workflows into provider-specific instruction files.",
+    "Portable configuration system for coding agents that composes shared policy with project-owned rules and renders the selected result into provider-specific instruction files.",
   problem:
     "Agent instructions tend to become tied to one provider or get copied between repositories until the copies drift. AI Agent Config keeps the durable policy in one provider-neutral system and makes each project's selected configuration explicit.",
   architecture: [],
