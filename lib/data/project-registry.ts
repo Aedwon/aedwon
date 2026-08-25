@@ -1,4 +1,5 @@
 import { PROJECTS, type ProjectItem } from "@/lib/data/projects";
+import { AI_AGENT_CONFIG_PROJECT } from "@/lib/data/ai-agent-config";
 import { BETTERGOV_PROJECT } from "@/lib/data/open-source";
 
 export type RegisteredProject = ProjectItem;
@@ -12,11 +13,14 @@ export const PROJECT_ALIASES = {
   "oppo-bot": "oppo-legend-cup-bot",
   "gi-calculator": "gi-damage-calculator",
   "agent-framework": "ai-agent-framework",
+  "ai-agent-config": "ai-agent-framework",
 } as const satisfies Record<string, string>;
 
-const PORTFOLIO_PROJECTS = PROJECTS.map((project) =>
-  project.slug === "bettergov-ph" ? BETTERGOV_PROJECT : project,
-);
+const PORTFOLIO_PROJECTS = PROJECTS.map((project) => {
+  if (project.slug === "bettergov-ph") return BETTERGOV_PROJECT;
+  if (project.slug === "ai-agent-framework") return AI_AGENT_CONFIG_PROJECT;
+  return project;
+});
 
 export const ALL_PROJECTS: RegisteredProject[] = [...PORTFOLIO_PROJECTS].sort(
   (a, b) => a.order - b.order,
