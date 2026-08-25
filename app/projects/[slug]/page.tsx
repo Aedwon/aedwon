@@ -12,7 +12,6 @@ import BetterGovContributionPage from "@/components/BetterGovContributionPage";
 import type { Metadata } from "next";
 
 const UNDER_CONSTRUCTION_PROJECTS = new Set([
-  "ai-agent-framework",
   "pso-scoring-model",
   "gi-damage-calculator",
 ]);
