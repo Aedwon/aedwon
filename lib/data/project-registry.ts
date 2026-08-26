@@ -16,6 +16,11 @@ export const PROJECT_ALIASES = {
   "ai-agent-config": "ai-agent-framework",
 } as const satisfies Record<string, string>;
 
+export const UNDER_CONSTRUCTION_PROJECT_SLUGS = new Set([
+  "pso-scoring-model",
+  "gi-damage-calculator",
+]);
+
 const PORTFOLIO_PROJECTS = PROJECTS.map((project) => {
   if (project.slug === "bettergov-ph") return BETTERGOV_PROJECT;
   if (project.slug === "ai-agent-framework") return AI_AGENT_CONFIG_PROJECT;
@@ -58,6 +63,10 @@ export function getFeaturedProjects(): RegisteredProject[] {
 
 export function getCaseStudyProjects(): RegisteredProject[] {
   return ALL_PROJECTS;
+}
+
+export function isProjectIndexable(slug: string): boolean {
+  return !UNDER_CONSTRUCTION_PROJECT_SLUGS.has(slug);
 }
 
 export function getNextProject(slug: string): RegisteredProject | undefined {
