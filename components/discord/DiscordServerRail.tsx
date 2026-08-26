@@ -10,12 +10,12 @@ export default function DiscordServerRail({ onSelectChannel }: DiscordServerRail
   return (
     <nav
       style={{ width: "72px", minWidth: "72px", maxWidth: "72px" }}
-      className="h-screen bg-[#1e1f22] flex flex-col items-center py-3 gap-2 shrink-0 z-40 border-r border-[#111214]/40"
-      aria-label="Servers"
+      className="hidden sm:flex h-screen bg-[#1e1f22] flex-col items-center py-3 gap-2 shrink-0 z-40 border-r border-[#111214]/40"
+      aria-label="Servers and profiles"
     >
       <button
         type="button"
-        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] rounded-[24px]"
+        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF] rounded-[24px]"
         onClick={() => onSelectChannel?.("home")}
         aria-label="Open home channel"
       >
@@ -30,10 +30,10 @@ export default function DiscordServerRail({ onSelectChannel }: DiscordServerRail
 
       <button
         type="button"
-        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] rounded-[16px]"
+        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF] rounded-[16px]"
         onClick={() => onSelectChannel?.("home")}
         title="aedwon.dev"
-        aria-label="Open aedwon.dev home channel"
+        aria-label="Open Aedwon home channel"
       >
         <span className="absolute -left-3 top-1/2 -translate-y-1/2 w-2 h-10 bg-white rounded-r-full" aria-hidden="true" />
         <span className="w-12 h-12 rounded-[16px] bg-[#5865F2] flex items-center justify-center text-white font-bold text-lg shadow-lg transition-all duration-200">
@@ -45,7 +45,7 @@ export default function DiscordServerRail({ onSelectChannel }: DiscordServerRail
 
       <a
         href="mailto:aerol.balayon@gmail.com"
-        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] rounded-[24px]"
+        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF] rounded-[24px]"
         title="Email: aerol.balayon@gmail.com"
         aria-label="Email Aerol Balayon"
       >
@@ -67,7 +67,7 @@ export default function DiscordServerRail({ onSelectChannel }: DiscordServerRail
         href="https://github.com/Aedwon"
         target="_blank"
         rel="noopener noreferrer"
-        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] rounded-[24px]"
+        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF] rounded-[24px]"
         title="GitHub: /Aedwon"
         aria-label="Open Aedwon on GitHub"
       >
@@ -82,7 +82,7 @@ export default function DiscordServerRail({ onSelectChannel }: DiscordServerRail
         href="https://linkedin.com/in/aedwon"
         target="_blank"
         rel="noopener noreferrer"
-        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] rounded-[24px]"
+        className="relative group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF] rounded-[24px]"
         title="LinkedIn: /in/aedwon"
         aria-label="Open Aedwon on LinkedIn"
       >
