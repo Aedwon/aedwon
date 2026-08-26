@@ -1,19 +1,16 @@
 import React from "react";
 import Link from "next/link";
 import { BLOG_POSTS } from "@/lib/data/blogs";
-import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Blogs — Aerol (Aedwon)",
-  description: "Notes on software, products, and the way I build them.",
-  alternates: { canonical: "/blogs" },
-  openGraph: {
-    title: "Blogs — Aerol (Aedwon)",
-    description: "Notes on software, products, and the way I build them.",
-    url: "/blogs",
-    type: "website",
-  },
-};
+const title = "Blogs — Aerol (Aedwon)";
+const description = "Notes on software, products, and the way I build them.";
+
+export const metadata = buildPageMetadata({
+  title,
+  description,
+  path: "/blogs",
+});
 
 export default function BlogsPage() {
   return (
@@ -32,14 +29,14 @@ export default function BlogsPage() {
           <Link
             key={post.slug}
             href={`/blogs/${post.slug}`}
-            className="group block py-6"
+            className="group block py-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-5">
               <h2 className="text-[17px] sm:text-[18px] font-semibold leading-[1.4] text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors font-[var(--font-heading)]">
                 {post.title}
               </h2>
               <span className="text-[12px] font-mono text-[var(--text-dim)] shrink-0 whitespace-nowrap">
-                {post.date} · {post.readTime}
+                <time dateTime={new Date(post.date).toISOString()}>{post.date}</time> · {post.readTime}
               </span>
             </div>
             <p className="mt-2 max-w-[700px] text-[13.5px] sm:text-[14px] text-[var(--text-muted)] leading-[1.65]">
