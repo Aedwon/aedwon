@@ -4,6 +4,14 @@ import { notFound } from "next/navigation";
 import { BLOG_POSTS } from "@/lib/data/blogs";
 import { BlogContent } from "@/components/blog-content";
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site-content";
+import {
+  absoluteUrl,
+  breadcrumbJsonLd,
+  buildPageMetadata,
+  PERSON_JSON_LD_REF,
+  serializeJsonLd,
+} from "@/lib/seo";
 
 export async function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({
@@ -18,23 +26,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = BLOG_POSTS.find((p) => p.slug === slug);
-  if (!post) return { title: "Post Not Found" };
+  if (!post) return { title: "Post Not Found", robots: { index: false } };
 
   const title = `${post.title} — Aerol (Aedwon)`;
   const canonical = `/blogs/${post.slug}`;
+  const publishedTime = new Date(post.date).toISOString();
 
-  return {
+  return buildPageMetadata({
     title,
     description: post.summary,
-    alternates: { canonical },
-    openGraph: {
-      title,
-      description: post.summary,
-      url: canonical,
-      type: "article",
-      publishedTime: new Date(post.date).toISOString(),
-    },
-  };
+    path: canonical,
+    type: "article",
+    publishedTime,
+  });
 }
 
 export default async function BlogArticlePage({
@@ -49,11 +53,42 @@ export default async function BlogArticlePage({
     notFound();
   }
 
+  const canonicalPath = `/blogs/${post.slug}`;
+  const publishedTime = new Date(post.date).toISOString();
+  const jsonLd = serializeJsonLd({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${absoluteUrl(canonicalPath)}#article`,
+        headline: post.title,
+        description: post.summary,
+        url: absoluteUrl(canonicalPath),
+        mainEntityOfPage: absoluteUrl(canonicalPath),
+        datePublished: publishedTime,
+        author: PERSON_JSON_LD_REF,
+        image: `${SITE_URL}/opengraph-image`,
+        keywords: post.tags,
+        inLanguage: "en",
+      },
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Blogs", path: "/blogs" },
+        { name: post.title, path: canonicalPath },
+      ]),
+    ],
+  });
+
   return (
     <div className="max-w-[760px] mx-auto">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
+      />
+
       <Link
         href="/blogs"
-        className="inline-flex items-center gap-1.5 text-[13px] font-mono text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-[13px] font-mono text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors mb-8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
       >
         ← Back to all blogs
       </Link>
@@ -67,7 +102,7 @@ export default async function BlogArticlePage({
             {post.summary}
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] font-mono text-[var(--text-dim)]">
-            <span>{post.date}</span>
+            <time dateTime={publishedTime}>{post.date}</time>
             <span aria-hidden="true">·</span>
             <span>{post.readTime}</span>
           </div>
@@ -79,7 +114,7 @@ export default async function BlogArticlePage({
       <div className="mt-14 pt-8 border-t border-[var(--border-subtle)]">
         <Link
           href="/blogs"
-          className="inline-flex items-center gap-1.5 text-[13.5px] font-mono text-[var(--accent)] hover:underline"
+          className="inline-flex items-center gap-1.5 text-[13.5px] font-mono text-[var(--accent)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
         >
           ← Read more articles on /blogs
         </Link>
