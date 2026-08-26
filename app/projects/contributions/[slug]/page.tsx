@@ -5,6 +5,13 @@ import {
   OPEN_SOURCE_PROJECTS,
   getOpenSourceProject,
 } from "@/lib/data/open-source";
+import {
+  absoluteUrl,
+  breadcrumbJsonLd,
+  buildPageMetadata,
+  PERSON_JSON_LD_REF,
+  serializeJsonLd,
+} from "@/lib/seo";
 
 const CONTRIBUTION_PROJECTS = OPEN_SOURCE_PROJECTS.filter(
   (project) => project.id !== "bettergov-ph",
@@ -24,23 +31,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = getOpenSourceProject(slug);
   if (!project || project.id === "bettergov-ph") {
-    return { title: "Contribution Not Found" };
+    return { title: "Contribution Not Found", robots: { index: false } };
   }
 
-  const canonical = project.pageHref;
   const title = `${project.name} — Open Source Contribution | Aerol (Aedwon)`;
 
-  return {
+  return buildPageMetadata({
     title,
     description: project.summary,
-    alternates: { canonical },
-    openGraph: {
-      title,
-      description: project.summary,
-      url: canonical,
-      type: "article",
-    },
-  };
+    path: project.pageHref,
+    type: "article",
+  });
 }
 
 export default async function ContributionPage({
@@ -53,5 +54,40 @@ export default async function ContributionPage({
 
   if (!project || project.id === "bettergov-ph") notFound();
 
-  return <OpenSourceContributionPage project={project} />;
+  const jsonLd = serializeJsonLd({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        "@id": `${absoluteUrl(project.pageHref)}#contribution-record`,
+        name: `${project.name} contribution record`,
+        description: project.summary,
+        url: absoluteUrl(project.pageHref),
+        creator: PERSON_JSON_LD_REF,
+        about: {
+          "@type": "SoftwareSourceCode",
+          name: project.name,
+          codeRepository: project.repositoryUrl,
+          url: project.projectUrl || project.repositoryUrl,
+        },
+        sameAs: project.pullRequests.map((pullRequest) => pullRequest.url),
+        inLanguage: "en",
+      },
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Projects", path: "/projects" },
+        { name: project.name, path: project.pageHref },
+      ]),
+    ],
+  });
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
+      />
+      <OpenSourceContributionPage project={project} />
+    </>
+  );
 }
