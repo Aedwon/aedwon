@@ -12,7 +12,7 @@ interface PageMetadataOptions {
   title: string;
   description: string;
   path: string;
-  article?: boolean;
+  type?: "website" | "article" | "profile";
   publishedTime?: string;
   robots?: Metadata["robots"];
 }
@@ -21,29 +21,45 @@ export function buildPageMetadata({
   title,
   description,
   path,
-  article = false,
+  type = "website",
   publishedTime,
   robots,
 }: PageMetadataOptions): Metadata {
-  const openGraph: Metadata["openGraph"] = article
-    ? {
-        title,
-        description,
-        url: path,
-        siteName: SITE_NAME,
-        type: "article",
-        publishedTime,
-        authors: [`${SITE_URL}/about`],
-        images: [SOCIAL_IMAGE],
-      }
-    : {
-        title,
-        description,
-        url: path,
-        siteName: SITE_NAME,
-        type: "website",
-        images: [SOCIAL_IMAGE],
-      };
+  let openGraph: Metadata["openGraph"];
+
+  if (type === "article") {
+    openGraph = {
+      title,
+      description,
+      url: path,
+      siteName: SITE_NAME,
+      type: "article",
+      publishedTime,
+      authors: [`${SITE_URL}/about`],
+      images: [SOCIAL_IMAGE],
+    };
+  } else if (type === "profile") {
+    openGraph = {
+      title,
+      description,
+      url: path,
+      siteName: SITE_NAME,
+      type: "profile",
+      firstName: "Aerol",
+      lastName: "Balayon",
+      username: SITE_NAME,
+      images: [SOCIAL_IMAGE],
+    };
+  } else {
+    openGraph = {
+      title,
+      description,
+      url: path,
+      siteName: SITE_NAME,
+      type: "website",
+      images: [SOCIAL_IMAGE],
+    };
+  }
 
   return {
     title,
