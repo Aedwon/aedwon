@@ -96,25 +96,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const supportsColorMode = theme === "default";
 
   useEffect(() => {
-    let cancelled = false;
+    const storedTheme = readStorage(THEME_KEY);
+    const storedMode = readStorage(MODE_KEY);
+    const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
+    const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
+    const initialResolvedMode = resolveMode(initialTheme, initialMode);
 
-    queueMicrotask(() => {
-      if (cancelled) return;
-      const storedTheme = readStorage(THEME_KEY);
-      const storedMode = readStorage(MODE_KEY);
-      const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
-      const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
-      const initialResolvedMode = resolveMode(initialTheme, initialMode);
-
-      if (initialTheme !== "default") setThemeState(initialTheme);
-      if (initialMode !== "dark") setModeState(initialMode);
-      if (initialResolvedMode !== "dark") setResolvedMode(initialResolvedMode);
-      applyDocumentTheme(initialTheme, initialResolvedMode);
-    });
-
-    return () => {
-      cancelled = true;
-    };
+    if (initialTheme !== "default") setThemeState(initialTheme);
+    if (initialMode !== "dark") setModeState(initialMode);
+    if (initialResolvedMode !== "dark") setResolvedMode(initialResolvedMode);
+    applyDocumentTheme(initialTheme, initialResolvedMode);
   }, []);
 
   useEffect(() => {
