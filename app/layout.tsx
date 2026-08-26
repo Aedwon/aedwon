@@ -13,7 +13,9 @@ import {
   SITE_DESCRIPTION,
   SITE_NAME,
   SITE_URL,
+  WEBSITE_JSON_LD,
 } from "@/lib/site-content";
+import { serializeJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -52,7 +54,8 @@ export const metadata: Metadata = {
   },
 };
 
-const personJsonLd = JSON.stringify(PERSON_JSON_LD).replace(/</g, "\\u003c");
+const personJsonLd = serializeJsonLd(PERSON_JSON_LD);
+const websiteJsonLd = serializeJsonLd(WEBSITE_JSON_LD);
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -63,6 +66,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: personJsonLd }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: websiteJsonLd }}
         />
         <script
           dangerouslySetInnerHTML={{
