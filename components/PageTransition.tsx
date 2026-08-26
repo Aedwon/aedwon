@@ -1,17 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
 
 interface PageTransitionProps {
   children: React.ReactNode;
-}
-
-interface RouteTransitionState {
-  path: string;
-  previousIndex: number;
-  hasNavigated: boolean;
 }
 
 function getRouteIndex(path: string): number {
@@ -23,43 +16,49 @@ function getRouteIndex(path: string): number {
 
 export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
-  const [routeState, setRouteState] = useState<RouteTransitionState>(() => ({
-    path: pathname,
-    previousIndex: getRouteIndex(pathname),
-    hasNavigated: false,
-  }));
+  const containerRef = useRef<HTMLDivElement>(null);
+  const previousPathRef = useRef(pathname);
+  const hasMountedRef = useRef(false);
 
-  if (routeState.path !== pathname) {
-    setRouteState({
-      path: pathname,
-      previousIndex: getRouteIndex(routeState.path),
-      hasNavigated: true,
-    });
-  }
+  useEffect(() => {
+    const element = containerRef.current;
+    const previousPath = previousPathRef.current;
+    previousPathRef.current = pathname;
 
-  const currentIndex = getRouteIndex(pathname);
-  const direction =
-    currentIndex === routeState.previousIndex
-      ? 0
-      : currentIndex > routeState.previousIndex
-        ? 1
-        : -1;
-  const shouldAnimate = routeState.hasNavigated && !reduceMotion;
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
+    if (!element) return;
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    const previousIndex = getRouteIndex(previousPath);
+    const currentIndex = getRouteIndex(pathname);
+    const direction =
+      currentIndex === previousIndex ? 0 : currentIndex > previousIndex ? 1 : -1;
+
+    const animation = element.animate(
+      [
+        { opacity: 0, transform: `translateX(${direction * 20}px)` },
+        { opacity: 1, transform: "translateX(0)" },
+      ],
+      {
+        duration: 220,
+        easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+    );
+
+    return () => animation.cancel();
+  }, [pathname]);
 
   return (
-    <motion.div
-      key={pathname}
-      initial={shouldAnimate ? { opacity: 0, x: direction * 20 } : false}
-      animate={{ opacity: 1, x: 0 }}
-      transition={
-        reduceMotion
-          ? { duration: 0 }
-          : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
-      }
-      className="w-full"
-    >
+    <div ref={containerRef} className="w-full">
       {children}
-    </motion.div>
+    </div>
   );
 }

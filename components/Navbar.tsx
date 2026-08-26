@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
 import { Circle, Monitor, Moon, Palette, Square, Sun } from "lucide-react";
 import { useTheme, type ThemeMode, type ThemeStyle } from "./ThemeContext";
 import { prewarmThemeTarget } from "@/lib/utils/asset-prewarmer";
@@ -12,7 +11,6 @@ const POPOVER_ID = "theme-settings-popover";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
   const {
     theme,
     mode,
@@ -165,18 +163,19 @@ export default function Navbar() {
           }`}
         >
           {pillPosition && (
-            <motion.div
+            <div
               data-testid="navbar-active-pill"
               aria-hidden="true"
-              className={`absolute top-0.5 bottom-0.5 pointer-events-none ${
+              className={`absolute top-0.5 bottom-0.5 pointer-events-none transition-[transform,width] duration-200 ease-out motion-reduce:transition-none ${
                 isNeobrutalist
                   ? "rounded-none bg-[#FFE600] border-2 border-black shadow-[2px_2px_0px_#000000]"
                   : "rounded-full bg-[var(--bg-card)] border border-black/[0.04] dark:border-white/[0.08] shadow-xs"
               }`}
-              initial={false}
-              animate={{ x: pillPosition.left, width: pillPosition.width }}
-              transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 32 }}
-              style={{ left: 0 }}
+              style={{
+                left: 0,
+                width: pillPosition.width,
+                transform: `translateX(${pillPosition.left}px)`,
+              }}
             />
           )}
 
