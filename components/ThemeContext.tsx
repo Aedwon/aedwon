@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import React, {
   createContext,
   useCallback,
@@ -10,11 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-
-const StarVortexTransition = dynamic(
-  () => import("./ThemeTransitions/StarVortexTransition"),
-  { ssr: false },
-);
+import StarVortexTransition from "./ThemeTransitions/StarVortexTransition";
 
 export type ThemeStyle = "default" | "neobrutalist" | "discord";
 export type ThemeMode = "system" | "light" | "dark";
@@ -96,16 +91,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const supportsColorMode = theme === "default";
 
   useEffect(() => {
-    const storedTheme = readStorage(THEME_KEY);
-    const storedMode = readStorage(MODE_KEY);
-    const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
-    const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
-    const initialResolvedMode = resolveMode(initialTheme, initialMode);
+    let cancelled = false;
 
-    if (initialTheme !== "default") setThemeState(initialTheme);
-    if (initialMode !== "dark") setModeState(initialMode);
-    if (initialResolvedMode !== "dark") setResolvedMode(initialResolvedMode);
-    applyDocumentTheme(initialTheme, initialResolvedMode);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const storedTheme = readStorage(THEME_KEY);
+      const storedMode = readStorage(MODE_KEY);
+      const initialTheme = isThemeStyle(storedTheme) ? storedTheme : "default";
+      const initialMode = isThemeMode(storedMode) ? storedMode : "dark";
+      const initialResolvedMode = resolveMode(initialTheme, initialMode);
+
+      if (initialTheme !== "default") setThemeState(initialTheme);
+      if (initialMode !== "dark") setModeState(initialMode);
+      if (initialResolvedMode !== "dark") setResolvedMode(initialResolvedMode);
+      applyDocumentTheme(initialTheme, initialResolvedMode);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
