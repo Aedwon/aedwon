@@ -31,7 +31,7 @@ export default function DiscordUserSettingsModal({
 
     previouslyFocusedRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const frame = requestAnimationFrame(() => closeButtonRef.current?.focus());
+    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -66,7 +66,6 @@ export default function DiscordUserSettingsModal({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => {
-      cancelAnimationFrame(frame);
       document.removeEventListener("keydown", handleKeyDown);
       previouslyFocusedRef.current?.focus();
     };
