@@ -69,14 +69,19 @@ describe("ThemeProvider", () => {
     expect(screen.getByTestId("resolved")).toHaveTextContent("light");
   });
 
-  it("tracks OS color changes while system mode is active", () => {
+  it("tracks OS color changes while persisted system mode is active", async () => {
+    localStorage.setItem("aedwon-mode", "system");
     render(
       <ThemeProvider>
         <Consumer />
       </ThemeProvider>,
     );
-    fireEvent.click(screen.getByText("System"));
-    expect(screen.getByTestId("resolved")).toHaveTextContent("light");
+
+    await waitFor(() => {
+      expect(screen.getByTestId("mode")).toHaveTextContent("system");
+      expect(screen.getByTestId("resolved")).toHaveTextContent("light");
+      expect(colorSchemeListener).not.toBeNull();
+    });
 
     act(() => colorSchemeListener?.({ matches: true }));
     expect(screen.getByTestId("resolved")).toHaveTextContent("dark");

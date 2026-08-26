@@ -43,9 +43,9 @@ describe("Discord message feeds", () => {
     if (link) fireEvent.click(link);
   });
 
-  it("renders blogs feed with articles", () => {
+  it("renders blogs feed with current canonical articles", () => {
     render(<DiscordBlogsFeed onOpenThread={vi.fn()} />);
-    expect(screen.getByText("Offline-First Architecture for Unreliable Event Venues")).toBeInTheDocument();
+    expect(screen.getByText("A perfect factory can still make something nobody wants")).toBeInTheDocument();
     expect(screen.getByText("Agentic Engineering: Moving Fast with Precision")).toBeInTheDocument();
   });
 

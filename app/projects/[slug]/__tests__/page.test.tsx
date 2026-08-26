@@ -37,7 +37,7 @@ describe("ProjectCaseStudyPage", () => {
     render(component);
 
     expect(screen.getByText("BetterGov PH")).toBeInTheDocument();
-    expect(screen.getByText("Current pull requests")).toBeInTheDocument();
+    expect(screen.getByText("Submitted work")).toBeInTheDocument();
     expect(screen.getByText("PR #706")).toBeInTheDocument();
     expect(screen.getByText("PR #744")).toBeInTheDocument();
     expect(screen.getByText("Review history")).toBeInTheDocument();

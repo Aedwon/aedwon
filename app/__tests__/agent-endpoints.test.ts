@@ -20,7 +20,7 @@ describe("agent-facing endpoints", () => {
     ).toBeTruthy();
     expect(
       entries.find((entry) => entry.url === "https://aedwon.com/projects/bettergov-ph"),
-    ).toBeFalsy();
+    ).toBeTruthy();
     expect(entries.every((entry) => entry.lastModified)).toBe(true);
   });
 
