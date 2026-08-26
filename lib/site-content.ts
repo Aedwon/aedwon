@@ -1,7 +1,7 @@
-export const SITE_URL = "https://aedwon.com";
+export const SITE_URL = "https://www.aedwon.com";
 export const SITE_NAME = "Aedwon";
 export const PERSON_NAME = "Aerol Balayon";
-export const SITE_LAST_MODIFIED = new Date("2026-08-22T00:00:00.000Z");
+export const SITE_LAST_MODIFIED = new Date("2026-08-27T00:00:00.000Z");
 export const SITE_DESCRIPTION =
   "Personal software portfolio for Aerol Balayon (Aedwon), covering mobile and offline systems, Discord automation, civic technology, web tools, and technical writing.";
 
@@ -98,19 +98,19 @@ export const PRIVACY_CONTENT: TrustPageContent = {
   title: "Privacy",
   description: "Privacy notes for the Aedwon personal portfolio.",
   intro:
-    "Aedwon.com is a personal portfolio and does not currently provide accounts, a contact form, purchases, or other features that ask you to submit personal information directly on the site. The analytics component in this repository is intentionally not mounted, so this version of the portfolio does not deliberately initialize PostHog, Microsoft Clarity, Vercel Analytics, or Vercel Speed Insights in the application interface.",
+    "Aedwon.com is a personal portfolio and does not currently provide accounts, a contact form, purchases, or other features that ask you to submit personal information directly on the site. Vercel Speed Insights is enabled to measure site performance. This version of the portfolio does not deliberately initialize PostHog, Microsoft Clarity, or Vercel Web Analytics in the application interface.",
   sections: [
     {
       heading: "What the site handles",
       paragraphs: [
-        "The site is hosted through web infrastructure that may process ordinary request information needed to deliver pages, such as an IP address, user agent, requested URL, timestamp, and network diagnostics. That infrastructure-level processing is separate from a portfolio feature collecting information from you. This site does not currently set up a user database, newsletter list, advertising profile, or first-party contact-form submission store.",
-        "If you choose an email link, GitHub link, LinkedIn link, Discord link, or another external project link, your interaction leaves this site and is governed by the policies and account settings of that service. Email messages you send are processed by the mail providers used by the sender and recipient.",
+        "The site is hosted through web infrastructure that may process ordinary request information needed to deliver pages, such as an IP address, user agent, requested URL, timestamp, and network diagnostics. Performance telemetry may also be processed by Vercel Speed Insights. That infrastructure-level processing is separate from a portfolio feature collecting information from you. This site does not currently set up a user database, newsletter list, advertising profile, or first-party contact-form submission store.",
+        "If you choose an email link, GitHub link, LinkedIn link, Discord handle, or another external project link, your interaction leaves this site and is governed by the policies and account settings of that service. Email messages you send are processed by the mail providers used by the sender and recipient.",
       ],
     },
     {
       heading: "Changes and questions",
       paragraphs: [
-        "If tracking, forms, accounts, or another data-collection feature is enabled later, this page should be updated before that feature is treated as part of the public portfolio. Questions about this page can be sent to the public email address on the contact page. The goal is to keep the statement aligned with what the deployed site actually does rather than publish a generic business privacy template that claims systems this portfolio does not have.",
+        "If tracking, forms, accounts, or another data-collection feature is enabled later, this page should be updated before that feature is treated as part of the public portfolio. Questions about this page can be sent to the public email address on the contact page. The goal is to keep the statement aligned with what the deployed site actually does instead of publish a generic business privacy template that claims systems this portfolio does not have.",
       ],
       links: [
         { label: "Contact", href: "/contact", description: "Public contact channels." },
@@ -122,6 +122,7 @@ export const PRIVACY_CONTENT: TrustPageContent = {
 export const PERSON_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "Person",
+  "@id": `${SITE_URL}/#person`,
   name: PERSON_NAME,
   alternateName: SITE_NAME,
   url: SITE_URL,
@@ -139,4 +140,15 @@ export const PERSON_JSON_LD = {
     "Web development",
   ],
   description: SITE_DESCRIPTION,
+} as const;
+
+export const WEBSITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
+  url: SITE_URL,
+  name: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  author: { "@id": `${SITE_URL}/#person` },
+  inLanguage: "en",
 } as const;
