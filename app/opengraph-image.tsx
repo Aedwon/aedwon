@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { PERSON_NAME, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site-content";
+import { PERSON_NAME, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site-content";
 
 export const alt = `${SITE_NAME} — ${PERSON_NAME}`;
 export const size = { width: 1200, height: 630 };
@@ -22,7 +22,9 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 30, color: "#A1A1AA" }}>aedwon.com</div>
+          <div style={{ fontSize: 30, color: "#A1A1AA" }}>
+            {new URL(SITE_URL).host}
+          </div>
           <div style={{ fontSize: 72, fontWeight: 700, letterSpacing: -2 }}>
             {SITE_NAME}
           </div>
