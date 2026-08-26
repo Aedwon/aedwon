@@ -10,7 +10,6 @@ import React, {
   useState,
 } from "react";
 import StarVortexTransition from "./ThemeTransitions/StarVortexTransition";
-import { scheduleIdlePrewarm } from "@/lib/utils/asset-prewarmer";
 
 export type ThemeStyle = "default" | "neobrutalist" | "discord";
 export type ThemeMode = "system" | "light" | "dark";
@@ -85,7 +84,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>("dark");
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>("dark");
   const [activeTransition, setActiveTransition] = useState<ActiveTransition | null>(null);
-  const cancelPrewarmRef = useRef<(() => void) | null>(null);
   const transitionFlippedRef = useRef(false);
 
   const isNeobrutalist = theme === "neobrutalist";
@@ -109,10 +107,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       applyDocumentTheme(initialTheme, initialResolvedMode);
     });
 
-    cancelPrewarmRef.current = scheduleIdlePrewarm(1000);
     return () => {
       cancelled = true;
-      cancelPrewarmRef.current?.();
     };
   }, []);
 
