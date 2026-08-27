@@ -81,6 +81,17 @@ jobs:
             echo "PASS content: ${label}"
           }
 
+          assert_not_contains() {
+            local label="$1"
+            local value="$2"
+            local needle="$3"
+            if grep -Fq -- "$needle" <<< "$value"; then
+              echo "FAIL content: ${label} unexpectedly contained ${needle}"
+              return 1
+            fi
+            echo "PASS content absent: ${label}"
+          }
+
           assert_regex() {
             local label="$1"
             local value="$2"
@@ -108,9 +119,15 @@ jobs:
 
           SITEMAP_BODY=$(curl -fsS http://127.0.0.1:3000/sitemap.xml)
           assert_contains "sitemap lastmod" "$SITEMAP_BODY" "<lastmod>"
+          assert_contains "sitemap canonical origin" "$SITEMAP_BODY" "https://www.aedwon.com"
+          assert_not_contains "sitemap thin PSO placeholder" "$SITEMAP_BODY" "/projects/pso-scoring-model"
+          assert_not_contains "sitemap thin Genshin placeholder" "$SITEMAP_BODY" "/projects/gi-damage-calculator"
 
           ROBOTS_BODY=$(curl -fsS http://127.0.0.1:3000/robots.txt)
-          assert_contains "robots sitemap" "$ROBOTS_BODY" "Sitemap: https://aedwon.com/sitemap.xml"
+          assert_contains "robots sitemap" "$ROBOTS_BODY" "Sitemap: https://www.aedwon.com/sitemap.xml"
+          assert_contains "robots host" "$ROBOTS_BODY" "Host: https://www.aedwon.com"
+          assert_not_contains "robots logo cropper crawl block" "$ROBOTS_BODY" "/logo-cropper"
+          assert_not_contains "robots logo sizing crawl block" "$ROBOTS_BODY" "/logo-sizing"
 
           MARKDOWN_HEADERS=$(curl -sSI -H "Accept: text/markdown" http://127.0.0.1:3000/projects | tr -d '\r')
           assert_regex "markdown content-type" "$MARKDOWN_HEADERS" '^content-type: text/markdown; charset=utf-8$'
@@ -140,9 +157,26 @@ jobs:
 
           HOME_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/)
           assert_regex "homepage h1" "$HOME_HTML" '<h1'
-          assert_contains "homepage canonical" "$HOME_HTML" 'rel="canonical"'
+          assert_contains "homepage canonical" "$HOME_HTML" 'rel="canonical" href="https://www.aedwon.com"'
           assert_contains "homepage og:type" "$HOME_HTML" 'property="og:type"'
           assert_contains "homepage Person JSON-LD" "$HOME_HTML" '"@type":"Person"'
+          assert_contains "homepage WebSite JSON-LD" "$HOME_HTML" '"@type":"WebSite"'
+
+          BLOG_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/blogs/a-perfect-factory-can-still-make-something-nobody-wants)
+          assert_contains "blog canonical" "$BLOG_HTML" 'href="https://www.aedwon.com/blogs/a-perfect-factory-can-still-make-something-nobody-wants"'
+          assert_contains "blog Twitter title" "$BLOG_HTML" 'name="twitter:title"'
+          assert_contains "blog BlogPosting JSON-LD" "$BLOG_HTML" '"@type":"BlogPosting"'
+          assert_contains "blog breadcrumb JSON-LD" "$BLOG_HTML" '"@type":"BreadcrumbList"'
+
+          PROJECT_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/projects/pantas)
+          assert_contains "project SoftwareSourceCode JSON-LD" "$PROJECT_HTML" '"@type":"SoftwareSourceCode"'
+          assert_contains "project breadcrumb JSON-LD" "$PROJECT_HTML" '"@type":"BreadcrumbList"'
+
+          PLACEHOLDER_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/projects/pso-scoring-model)
+          assert_regex "placeholder noindex" "$PLACEHOLDER_HTML" '<meta name="robots" content="[^"]*noindex'
+
+          LOGO_TOOL_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/logo-cropper)
+          assert_regex "logo tool noindex" "$LOGO_TOOL_HTML" '<meta name="robots" content="[^"]*noindex'
 
           OG_HEADERS=$(curl -sSI http://127.0.0.1:3000/opengraph-image | tr -d '\r')
           assert_regex "Open Graph image content-type" "$OG_HEADERS" '^content-type: image/png'
