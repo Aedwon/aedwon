@@ -168,9 +168,15 @@ jobs:
           assert_contains "blog BlogPosting JSON-LD" "$BLOG_HTML" '"@type":"BlogPosting"'
           assert_contains "blog breadcrumb JSON-LD" "$BLOG_HTML" '"@type":"BreadcrumbList"'
 
-          PROJECT_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/projects/pantas)
-          assert_contains "project SoftwareSourceCode JSON-LD" "$PROJECT_HTML" '"@type":"SoftwareSourceCode"'
-          assert_contains "project breadcrumb JSON-LD" "$PROJECT_HTML" '"@type":"BreadcrumbList"'
+          PRIVATE_PROJECT_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/projects/pantas)
+          assert_contains "private project CreativeWork JSON-LD" "$PRIVATE_PROJECT_HTML" '"@type":"CreativeWork"'
+          assert_contains "private project breadcrumb JSON-LD" "$PRIVATE_PROJECT_HTML" '"@type":"BreadcrumbList"'
+          assert_not_contains "private project code repository claim" "$PRIVATE_PROJECT_HTML" '"codeRepository"'
+
+          PUBLIC_PROJECT_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/projects/ai-agent-framework)
+          assert_contains "public project SoftwareSourceCode JSON-LD" "$PUBLIC_PROJECT_HTML" '"@type":"SoftwareSourceCode"'
+          assert_contains "public project code repository" "$PUBLIC_PROJECT_HTML" '"codeRepository":"https://github.com/Aedwon/ai-agent-config"'
+          assert_contains "public project breadcrumb JSON-LD" "$PUBLIC_PROJECT_HTML" '"@type":"BreadcrumbList"'
 
           PLACEHOLDER_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/projects/pso-scoring-model)
           assert_regex "placeholder noindex" "$PLACEHOLDER_HTML" '<meta name="robots" content="[^"]*noindex'
