@@ -11,24 +11,35 @@ import {
 } from "../agent-markdown/route";
 import { proxy } from "../../proxy";
 
+const CANONICAL_ORIGIN = "https://www.aedwon.com";
+
 describe("agent-facing endpoints", () => {
   it("publishes canonical sitemap entries with lastmod values", () => {
     const entries = sitemap();
-    expect(entries.find((entry) => entry.url === "https://aedwon.com")).toBeTruthy();
+    expect(entries.find((entry) => entry.url === CANONICAL_ORIGIN)).toBeTruthy();
     expect(
-      entries.find((entry) => entry.url === "https://aedwon.com/projects/msl-network"),
+      entries.find((entry) => entry.url === `${CANONICAL_ORIGIN}/projects/msl-network`),
     ).toBeTruthy();
     expect(
-      entries.find((entry) => entry.url === "https://aedwon.com/projects/bettergov-ph"),
+      entries.find((entry) => entry.url === `${CANONICAL_ORIGIN}/projects/bettergov-ph`),
     ).toBeTruthy();
+    expect(
+      entries.find((entry) => entry.url === `${CANONICAL_ORIGIN}/projects/pso-scoring-model`),
+    ).toBeFalsy();
+    expect(
+      entries.find((entry) => entry.url === `${CANONICAL_ORIGIN}/projects/gi-damage-calculator`),
+    ).toBeFalsy();
+    expect(entries.every((entry) => entry.url.startsWith(CANONICAL_ORIGIN))).toBe(true);
     expect(entries.every((entry) => entry.lastModified)).toBe(true);
   });
 
   it("publishes robots rules and the canonical sitemap URL", () => {
     const value = robots();
-    expect(value.sitemap).toBe("https://aedwon.com/sitemap.xml");
-    expect(value.host).toBe("https://aedwon.com");
+    expect(value.sitemap).toBe(`${CANONICAL_ORIGIN}/sitemap.xml`);
+    expect(value.host).toBe(CANONICAL_ORIGIN);
     expect(value.rules).toMatchObject({ disallow: expect.arrayContaining(["/agent-markdown"]) });
+    expect(JSON.stringify(value.rules)).not.toContain("/logo-cropper");
+    expect(JSON.stringify(value.rules)).not.toContain("/logo-sizing");
   });
 
   it("serves llms.txt with explicit usage guidance", async () => {
@@ -40,7 +51,7 @@ describe("agent-facing endpoints", () => {
 
   it("serves Markdown GET and HEAD responses with the protocol headers", async () => {
     const request = new Request(
-      "https://aedwon.com/agent-markdown?path=%2Fprojects",
+      `${CANONICAL_ORIGIN}/agent-markdown?path=%2Fprojects`,
     );
     const response = await getMarkdown(request);
     expect(response.status).toBe(200);
@@ -59,7 +70,7 @@ describe("agent-facing endpoints", () => {
   });
 
   it("uses the forwarded canonical pathname for rewritten Markdown requests", async () => {
-    const request = new Request("https://aedwon.com/projects", {
+    const request = new Request(`${CANONICAL_ORIGIN}/projects`, {
       headers: { "x-aedwon-markdown-path": "/projects" },
     });
     const response = await getMarkdown(request);
@@ -68,7 +79,7 @@ describe("agent-facing endpoints", () => {
   });
 
   it("rewrites Markdown requests and rejects unsupported representations", () => {
-    const markdownRequest = new NextRequest("https://aedwon.com/projects", {
+    const markdownRequest = new NextRequest(`${CANONICAL_ORIGIN}/projects`, {
       headers: { accept: "text/markdown, text/html;q=0.8" },
     });
     const markdownResponse = proxy(markdownRequest);
@@ -78,14 +89,14 @@ describe("agent-facing endpoints", () => {
     );
 
     const htmlResponse = proxy(
-      new NextRequest("https://aedwon.com/projects", {
+      new NextRequest(`${CANONICAL_ORIGIN}/projects`, {
         headers: { accept: "text/html" },
       }),
     );
     expect(htmlResponse.headers.get("vary")).toContain("Accept");
 
     const unsupported = proxy(
-      new NextRequest("https://aedwon.com/projects", {
+      new NextRequest(`${CANONICAL_ORIGIN}/projects`, {
         headers: { accept: "application/pdf" },
       }),
     );
