@@ -18,6 +18,8 @@ import DiscordBlogsFeed from "./discord/DiscordBlogsFeed";
 import DiscordThreadFeed from "./discord/DiscordThreadFeed";
 import DiscordUserSettingsModal from "./discord/DiscordUserSettingsModal";
 
+const MOBILE_CHANNELS: DiscordChannel[] = ["home", "projects", "blogs"];
+
 export default function DiscordLayout({ children }: { children: React.ReactNode }) {
   const { isDiscord } = useTheme();
   const pathname = usePathname() || "/";
@@ -50,11 +52,17 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
     router.push(getDiscordChannelPath(activeThread?.parent ?? activeChannel));
   }, [activeChannel, activeThread, router]);
 
+  const handleOpenSettings = useCallback(() => setIsSettingsOpen(true), []);
+  const handleCloseSettings = useCallback(() => setIsSettingsOpen(false), []);
+
   if (!isDiscord) return <>{children}</>;
 
   const chatPlaceholder = activeThread
     ? `Message #${activeThread.slug}`
     : `Message #${activeChannel}`;
+  const routeAnnouncement = activeThread
+    ? `Viewing ${activeThread.slug} in ${activeThread.parent}`
+    : `Viewing ${activeChannel} channel`;
 
   return (
     <div
@@ -68,24 +76,32 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
         activeThread={activeThread}
         onSelectChannel={handleSelectChannel}
         onCloseThread={handleCloseThread}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenSettings={handleOpenSettings}
       />
 
-      <main className="flex-1 flex flex-col min-w-0 bg-[#313338] relative overflow-hidden">
-        <header className="h-12 border-b border-[#1f2023] px-4 flex items-center justify-between shrink-0 bg-[#313338] z-10 shadow-sm">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex-1 flex flex-col min-w-0 bg-[#313338] relative overflow-hidden"
+      >
+        <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {routeAnnouncement}
+        </p>
+
+        <header className="h-12 border-b border-[#1f2023] px-3 sm:px-4 flex items-center justify-between shrink-0 bg-[#313338] z-10 shadow-sm">
           <div className="flex items-center gap-2 min-w-0">
             {activeThread ? (
               <div className="flex items-center gap-1.5 text-sm min-w-0">
                 <button
                   type="button"
                   onClick={handleCloseThread}
-                  className="text-gray-400 hover:text-white font-medium flex items-center gap-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2]"
+                  className="text-[#B5BAC1] hover:text-white font-medium flex items-center gap-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF]"
                   aria-label={`Back to ${activeThread.parent}`}
                 >
                   <span aria-hidden="true">#</span>
                   <span>{activeThread.parent}</span>
                 </button>
-                <span className="text-gray-500" aria-hidden="true">/</span>
+                <span className="text-[#B5BAC1]" aria-hidden="true">/</span>
                 <div className="flex items-center gap-1 text-white font-semibold min-w-0">
                   <ThreadIcon />
                   <span className="truncate">{activeThread.slug}</span>
@@ -95,7 +111,7 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
               <div className="flex items-center gap-2 min-w-0">
                 <ChannelIcon />
                 <span className="font-bold text-white text-[15px]">{activeChannel}</span>
-                <span className="text-xs text-[#949ba4] border-l border-gray-600 pl-2 hidden sm:inline truncate">
+                <span className="text-xs text-[#B5BAC1] border-l border-gray-600 pl-2 hidden sm:inline truncate">
                   {activeChannel === "home" && "Computer Science @ UP Diliman · Software Engineer"}
                   {activeChannel === "projects" && "Software builds, client-side tools, and platforms"}
                   {activeChannel === "blogs" && "Technical notes and architecture writeups"}
@@ -104,7 +120,7 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
             )}
           </div>
 
-          <div className="flex items-center gap-3 text-[#b5bac1]">
+          <div className="flex items-center gap-2 sm:gap-3 text-[#b5bac1]">
             <div className="hidden md:flex items-center gap-3" aria-hidden="true">
               <ThreadIcon />
               <BellIcon />
@@ -112,7 +128,15 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
             </div>
             <button
               type="button"
-              className={`p-1 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] ${
+              className="sm:hidden p-1.5 rounded text-[#B5BAC1] hover:text-white hover:bg-[#35373c] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF]"
+              onClick={handleOpenSettings}
+              aria-label="Open theme settings"
+            >
+              <SettingsIcon />
+            </button>
+            <button
+              type="button"
+              className={`hidden lg:inline-flex p-1 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8C95FF] ${
                 isMemberListOpen ? "text-white" : "text-[#b5bac1] hover:text-white"
               }`}
               onClick={() => setIsMemberListOpen((open) => !open)}
@@ -123,7 +147,7 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
               <MembersIcon />
             </button>
             <div
-              className="hidden lg:flex w-36 items-center justify-between rounded bg-[#1e1f22] px-2 py-1 text-xs text-gray-400"
+              className="hidden lg:flex w-36 items-center justify-between rounded bg-[#1e1f22] px-2 py-1 text-xs text-[#B5BAC1]"
               aria-hidden="true"
             >
               <span>Search</span>
@@ -131,6 +155,30 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
             </div>
           </div>
         </header>
+
+        <nav
+          aria-label="Discord channels"
+          className="sm:hidden grid grid-cols-3 gap-1 border-b border-[#1f2023] bg-[#2b2d31] p-1.5 shrink-0"
+        >
+          {MOBILE_CHANNELS.map((channel) => {
+            const current = activeChannel === channel && !activeThread;
+            return (
+              <button
+                key={channel}
+                type="button"
+                onClick={() => handleSelectChannel(channel)}
+                aria-current={current ? "page" : undefined}
+                className={`min-h-9 rounded px-2 text-xs font-semibold capitalize cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8C95FF] ${
+                  current
+                    ? "bg-[#3f4248] text-white"
+                    : "text-[#B5BAC1] hover:bg-[#35373c] hover:text-white"
+                }`}
+              >
+                {channel}
+              </button>
+            );
+          })}
+        </nav>
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 custom-scroll select-text">
           {activeThread ? (
@@ -148,7 +196,7 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
         </div>
 
         <div className="px-4 pb-4 pt-1 shrink-0 bg-[#313338]" aria-hidden="true">
-          <div className="bg-[#383a40] rounded-lg px-4 py-2.5 flex items-center gap-3 shadow-inner text-[#949ba4]">
+          <div className="bg-[#383a40] rounded-lg px-4 py-2.5 flex items-center gap-3 shadow-inner text-[#B5BAC1]">
             <span className="w-6 h-6 rounded-full bg-[#4e5058] text-white flex items-center justify-center text-sm font-bold shrink-0">+</span>
             <span className="flex-1 text-sm truncate">{chatPlaceholder}</span>
             <div className="hidden sm:flex items-center gap-2 text-xs font-bold">
@@ -162,12 +210,12 @@ export default function DiscordLayout({ children }: { children: React.ReactNode 
       <DiscordMemberSidebar
         isOpen={isMemberListOpen}
         onClose={() => setIsMemberListOpen(false)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenSettings={handleOpenSettings}
       />
 
       <DiscordUserSettingsModal
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={handleCloseSettings}
       />
     </div>
   );
@@ -217,6 +265,15 @@ function MembersIcon() {
       <circle cx="9" cy="7" r="4" />
       <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function SettingsIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.12.6.65 1 1.26 1H21a2 2 0 1 1 0 4h-.34c-.61 0-1.14.4-1.26 1Z" />
     </svg>
   );
 }

@@ -15,14 +15,11 @@ describe("DiscordChannelSidebar & Thread Engine", () => {
         activeThread={null}
         onSelectChannel={handleSelect}
         onOpenSettings={vi.fn()}
-      />
+      />,
     );
 
-    expect(screen.getByText("home")).toBeInTheDocument();
-    expect(screen.getByText("projects")).toBeInTheDocument();
-    expect(screen.getByText("blogs")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("projects"));
+    expect(screen.getByRole("button", { name: "home" })).toHaveAttribute("aria-current", "page");
+    fireEvent.click(screen.getByRole("button", { name: "projects" }));
     expect(handleSelect).toHaveBeenCalledWith("projects");
   });
 
@@ -35,27 +32,33 @@ describe("DiscordChannelSidebar & Thread Engine", () => {
         onSelectChannel={vi.fn()}
         onCloseThread={handleCloseThread}
         onOpenSettings={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("pantas")).toBeInTheDocument();
     const closeBtn = screen.getByTitle("Close Thread");
-    expect(closeBtn).toBeInTheDocument();
     fireEvent.click(closeBtn);
     expect(handleCloseThread).toHaveBeenCalled();
   });
 
-  it("renders user settings modal and allows theme selection", () => {
+  it("exposes theme settings as a modal dialog with keyboard-operable choices", () => {
     const handleClose = vi.fn();
     render(
       <ThemeProvider>
         <DiscordUserSettingsModal isOpen={true} onClose={handleClose} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    expect(screen.getByText(/User Settings & Theme Switcher/i)).toBeInTheDocument();
-    expect(screen.getByText("Default")).toBeInTheDocument();
-    expect(screen.getByText("Neobrutalist")).toBeInTheDocument();
-    expect(screen.getByText("Discord")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /User Settings & Theme Switcher/i })).toHaveAttribute(
+      "aria-modal",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Default" })).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Neobrutalist" }));
+    expect(screen.getByRole("button", { name: "Neobrutalist" })).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(handleClose).toHaveBeenCalled();
   });
 });

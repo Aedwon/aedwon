@@ -33,37 +33,37 @@ export default function DiscordMemberSidebar({
     <aside
       id="member-sidebar"
       style={{ width: "240px", minWidth: "240px", maxWidth: "240px" }}
-      className="h-screen bg-[#2b2d31] flex flex-col shrink-0 border-l border-[#1f2023]/60 overflow-y-auto px-3 py-3 space-y-4 custom-scroll z-20"
-      aria-label="Member List"
+      className="hidden lg:flex h-screen bg-[#2b2d31] flex-col shrink-0 border-l border-[#1f2023]/60 overflow-y-auto px-3 py-3 space-y-4 custom-scroll z-20"
+      aria-label="Member list"
     >
       <div>
-        <div className="text-[11px] font-bold text-[#949ba4] uppercase tracking-wider mb-1 px-1">
-          OWNER — 1
+        <div className="text-[11px] font-bold text-[#B5BAC1] uppercase tracking-wider mb-1 px-1">
+          Owner — 1
         </div>
         <button
           type="button"
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-[#35373c] cursor-pointer group text-left focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#5865F2]"
+          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-[#35373c] cursor-pointer group text-left focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8C95FF]"
           onClick={onOpenSettings}
           aria-label="Open Aerol user settings"
         >
           <div className="relative shrink-0" aria-hidden="true">
-            <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold text-xs ring-2 ring-[#5865F2]">
+            <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center text-white font-bold text-xs ring-2 ring-[#8C95FF]">
               A
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#23a55a] rounded-full border-2 border-[#2b2d31]" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-bold text-white truncate group-hover:text-[#5865F2] transition-colors">
+            <div className="text-[13px] font-bold text-white truncate group-hover:text-[#AAB1FF] transition-colors">
               Aerol (Aedwon)
             </div>
-            <div className="text-[11px] text-[#949ba4] truncate">Online</div>
+            <div className="text-[11px] text-[#B5BAC1] truncate">Online</div>
           </div>
         </button>
       </div>
 
       <div>
-        <div className="text-[11px] font-bold text-[#949ba4] uppercase tracking-wider mb-1.5 px-1">
-          ORGANIZATIONS &amp; LGUS — {orgGroup?.items.length ?? 0}
+        <div className="text-[11px] font-bold text-[#B5BAC1] uppercase tracking-wider mb-1.5 px-1">
+          Organizations &amp; LGUs — {orgGroup?.items.length ?? 0}
         </div>
         <div className="space-y-1 text-xs">
           {orgGroup?.items.map((badge) => (
@@ -73,8 +73,8 @@ export default function DiscordMemberSidebar({
       </div>
 
       <div>
-        <div className="text-[11px] font-bold text-[#949ba4] uppercase tracking-wider mb-1.5 px-1">
-          EVENT &amp; BRAND PARTNERS — {partnerGroup?.items.length ?? 0}
+        <div className="text-[11px] font-bold text-[#B5BAC1] uppercase tracking-wider mb-1.5 px-1">
+          Event &amp; brand partners — {partnerGroup?.items.length ?? 0}
         </div>
         <div className="space-y-1 text-xs">
           {partnerGroup?.items.map((badge) => (

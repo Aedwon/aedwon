@@ -37,7 +37,11 @@ export default function ProjectsPage() {
           </p>
         </div>
 
-        <div className="flex gap-2 flex-wrap pt-1" aria-label="Project categories">
+        <div
+          role="group"
+          className="flex gap-2 flex-wrap pt-1"
+          aria-label="Project categories"
+        >
           {CATEGORY_OPTIONS.map((category) => {
             const count =
               category.id === "all"
@@ -51,7 +55,7 @@ export default function ProjectsPage() {
                 type="button"
                 onClick={() => setActiveCategory(category.id)}
                 aria-pressed={isActive}
-                className={`px-3.5 py-1.5 rounded-full text-[12.5px] font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-full text-[12.5px] font-medium transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                   isActive
                     ? "bg-[var(--text-primary)] text-[var(--bg-canvas)] font-semibold shadow-xs"
                     : "bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] shadow-xs"
@@ -62,6 +66,10 @@ export default function ProjectsPage() {
             );
           })}
         </div>
+
+        <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {filteredProjects.length} {filteredProjects.length === 1 ? "project" : "projects"} shown.
+        </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           {filteredProjects.map((project) => (

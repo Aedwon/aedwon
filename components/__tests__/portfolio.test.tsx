@@ -56,7 +56,8 @@ describe("Portfolio data layer integrity", () => {
     BLOG_POSTS.forEach((post) => {
       expect(post.slug).toBeTruthy();
       expect(post.title).toBeTruthy();
-      expect(post.content).toBeTruthy();
+      expect(post.blocks.length).toBeGreaterThan(0);
+      expect(post.blocks.every((block) => block.type)).toBe(true);
     });
   });
 });

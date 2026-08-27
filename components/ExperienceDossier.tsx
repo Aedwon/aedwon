@@ -44,6 +44,8 @@ export default function ExperienceDossier() {
         }`}
       >
         <div
+          role="group"
+          aria-label="Experience organizations"
           className={`flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto p-2.5 md:p-3 shrink-0 gap-1.5 ${
             isNeobrutalist
               ? "bg-[#F4F4F5] border-b md:border-b-0 md:border-r-[3px] border-black"
@@ -52,13 +54,19 @@ export default function ExperienceDossier() {
         >
           {EXPERIENCES.map((entity) => {
             const isActive = activeEntityId === entity.id;
+            const sharedProps = {
+              type: "button" as const,
+              "aria-pressed": isActive,
+              "aria-controls": "experience-details",
+              onClick: () => handleTabChange(entity.id),
+            };
 
             if (isNeobrutalist) {
               return (
                 <button
                   key={entity.id}
-                  onClick={() => handleTabChange(entity.id)}
-                  className={`text-left px-3 py-2 text-[13px] transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none ${
+                  {...sharedProps}
+                  className={`text-left px-3 py-2 text-[13px] transition-all whitespace-nowrap md:whitespace-normal cursor-pointer select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
                     isActive
                       ? "bg-[#FFE600] text-black font-black border-2 border-black shadow-[3px_3px_0px_#000000] rounded-none active:translate-x-[1px] active:translate-y-[1px]"
                       : "bg-white text-black font-bold border-2 border-black/60 hover:bg-[#FEF08A] hover:border-black rounded-none"
@@ -72,8 +80,8 @@ export default function ExperienceDossier() {
             return (
               <button
                 key={entity.id}
-                onClick={() => handleTabChange(entity.id)}
-                className={`text-left px-3 py-2 rounded-lg text-[13px] transition-all whitespace-nowrap md:whitespace-normal cursor-pointer ${
+                {...sharedProps}
+                className={`text-left px-3 py-2 rounded-lg text-[13px] transition-all whitespace-nowrap md:whitespace-normal cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                   isActive
                     ? "bg-black/[0.08] dark:bg-white/[0.08] text-[var(--text-primary)] font-semibold shadow-xs"
                     : "text-[var(--text-muted)] font-medium hover:text-[var(--text-primary)] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
@@ -86,7 +94,11 @@ export default function ExperienceDossier() {
         </div>
 
         <div
+          id="experience-details"
           ref={scrollRef}
+          role="region"
+          aria-live="polite"
+          aria-label={`${activeEntity.shortName} experience details`}
           className={`min-h-0 p-6 overflow-y-auto ${
             isNeobrutalist ? "bg-white" : "dossier-scroll-viewport"
           }`}

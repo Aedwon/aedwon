@@ -34,7 +34,7 @@ describe("DiscordLayout shell", () => {
     expect(document.querySelector("#discord-client-root")).toBeNull();
   });
 
-  it("renders the Discord shell with a decorative composer", () => {
+  it("renders the Discord shell with named landmarks and a decorative composer", () => {
     render(
       <ThemeProvider>
         <div>
@@ -48,9 +48,11 @@ describe("DiscordLayout shell", () => {
 
     fireEvent.click(screen.getByText("Activate Discord"));
 
-    expect(screen.getByLabelText("Servers")).toBeInTheDocument();
-    expect(screen.getByLabelText("Channels")).toBeInTheDocument();
-    expect(screen.getByLabelText("Member List")).toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: "Servers and profiles" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Channels" })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Member list" })).toBeInTheDocument();
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.getByText("Message #home")).toBeInTheDocument();
   });
@@ -72,13 +74,13 @@ describe("DiscordLayout shell", () => {
     const memberToggle = screen.getByRole("button", { name: "Toggle member list" });
     expect(memberToggle).toHaveAttribute("aria-controls", "member-sidebar");
     expect(memberToggle).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByLabelText("Member List")).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Member list" })).toBeInTheDocument();
 
     fireEvent.click(memberToggle);
     expect(memberToggle).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByLabelText("Member List")).toBeNull();
+    expect(screen.queryByRole("complementary", { name: "Member list" })).toBeNull();
 
     fireEvent.click(memberToggle);
-    expect(screen.getByLabelText("Member List")).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Member list" })).toBeInTheDocument();
   });
 });

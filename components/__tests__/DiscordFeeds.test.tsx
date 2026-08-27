@@ -7,6 +7,7 @@ import DiscordProjectsFeed from "../discord/DiscordProjectsFeed";
 import DiscordBlogsFeed from "../discord/DiscordBlogsFeed";
 import DiscordThreadFeed from "../discord/DiscordThreadFeed";
 import { ALL_PROJECTS } from "@/lib/data/project-registry";
+import { BLOG_POSTS } from "@/lib/data/blogs";
 
 describe("Discord message feeds", () => {
   it("renders home feed from the canonical featured project set", () => {
@@ -43,10 +44,11 @@ describe("Discord message feeds", () => {
     if (link) fireEvent.click(link);
   });
 
-  it("renders blogs feed with articles", () => {
+  it("renders blogs feed from the canonical blog registry", () => {
     render(<DiscordBlogsFeed onOpenThread={vi.fn()} />);
-    expect(screen.getByText("Offline-First Architecture for Unreliable Event Venues")).toBeInTheDocument();
-    expect(screen.getByText("Agentic Engineering: Moving Fast with Precision")).toBeInTheDocument();
+    for (const post of BLOG_POSTS) {
+      expect(screen.getByText(post.title)).toBeInTheDocument();
+    }
   });
 
   it("renders canonical article sections in a project thread", () => {

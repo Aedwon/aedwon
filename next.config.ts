@@ -6,11 +6,19 @@ const blogShortLinks = {
 
 const nextConfig: NextConfig = {
   async redirects() {
-    return Object.entries(blogShortLinks).map(([key, destination]) => ({
-      source: `/b/${key}`,
-      destination,
-      permanent: true,
-    }));
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "aedwon.com" }],
+        destination: "https://www.aedwon.com/:path*",
+        permanent: true,
+      },
+      ...Object.entries(blogShortLinks).map(([key, destination]) => ({
+        source: `/b/${key}`,
+        destination,
+        permanent: true,
+      })),
+    ];
   },
 };
 

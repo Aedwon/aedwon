@@ -1,7 +1,10 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/data/blogs";
 import { OPEN_SOURCE_PROJECTS } from "@/lib/data/open-source";
-import { getCaseStudyProjects } from "@/lib/data/project-registry";
+import {
+  getCaseStudyProjects,
+  isProjectIndexable,
+} from "@/lib/data/project-registry";
 import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/site-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -44,18 +47,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const projectRoutes: MetadataRoute.Sitemap = getCaseStudyProjects().map((project) => ({
-    url: `${SITE_URL}/projects/${project.slug}`,
-    lastModified: SITE_LAST_MODIFIED,
-    changeFrequency: "monthly",
-    priority: project.featured ? 0.85 : 0.7,
-  }));
+  const projectRoutes: MetadataRoute.Sitemap = getCaseStudyProjects()
+    .filter((project) => isProjectIndexable(project.slug))
+    .map((project) => ({
+      url: `${SITE_URL}/projects/${project.slug}`,
+      lastModified: SITE_LAST_MODIFIED,
+      changeFrequency: "monthly",
+      priority: project.featured ? 0.85 : 0.7,
+    }));
 
   const contributionRoutes: MetadataRoute.Sitemap = OPEN_SOURCE_PROJECTS
     .filter((project) => project.id !== "bettergov-ph")
     .map((project) => ({
       url: new URL(project.pageHref, SITE_URL).toString(),
-      lastModified: SITE_LAST_MODIFIED,
+      lastModified: new Date(`${project.statusChecked}T00:00:00.000Z`),
       changeFrequency: "monthly",
       priority: 0.7,
     }));

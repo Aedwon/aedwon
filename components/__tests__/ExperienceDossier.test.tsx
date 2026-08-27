@@ -6,7 +6,7 @@ describe("ExperienceDossier", () => {
   it("keeps the mobile entity navigation row content-sized", () => {
     render(<ExperienceDossier />);
 
-    const heading = screen.getByRole("heading", { name: "Experience" });
+    const heading = screen.getByRole("heading", { name: "Other experience" });
     const dossier = heading.nextElementSibling as HTMLElement;
     const rolesViewport = dossier.children[1] as HTMLElement;
 

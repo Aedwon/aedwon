@@ -6,11 +6,11 @@ import DiscordServerRail from "../discord/DiscordServerRail";
 import DiscordMemberSidebar from "../discord/DiscordMemberSidebar";
 
 describe("Discord Chrome Components", () => {
-  it("renders server rail with external links", () => {
-    render(<DiscordServerRail activeChannel="home" onSelectChannel={() => {}} />);
-    expect(screen.getByTitle(/Email: aerol.balayon@gmail.com/i)).toBeInTheDocument();
-    expect(screen.getByTitle(/GitHub: \/Aedwon/i)).toBeInTheDocument();
-    expect(screen.getByTitle(/LinkedIn: \/in\/aedwon/i)).toBeInTheDocument();
+  it("renders server rail with named external links", () => {
+    render(<DiscordServerRail onSelectChannel={() => {}} />);
+    expect(screen.getByRole("link", { name: /Email Aerol Balayon/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Open Aedwon on GitHub/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Open Aedwon on LinkedIn/i })).toBeInTheDocument();
   });
 
   it("renders member list with organizations and brand partners", () => {

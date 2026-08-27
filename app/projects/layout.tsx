@@ -1,18 +1,14 @@
-import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Projects — Aerol (Aedwon)",
-  description:
-    "Software projects by Aerol Balayon (Aedwon), including offline-first mobile systems, Discord automation, civic technology, and browser tools.",
-  alternates: { canonical: "/projects" },
-  openGraph: {
-    title: "Projects — Aerol (Aedwon)",
-    description:
-      "Software projects by Aerol Balayon (Aedwon), including offline-first mobile systems, Discord automation, civic technology, and browser tools.",
-    url: "/projects",
-    type: "website",
-  },
-};
+const title = "Projects — Aerol (Aedwon)";
+const description =
+  "Software projects by Aerol Balayon (Aedwon), including offline-first mobile systems, Discord automation, civic technology, and browser tools.";
+
+export const metadata = buildPageMetadata({
+  title,
+  description,
+  path: "/projects",
+});
 
 export default function ProjectsLayout({ children }: { children: React.ReactNode }) {
   return children;

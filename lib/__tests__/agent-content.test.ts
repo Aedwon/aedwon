@@ -4,6 +4,7 @@ import {
   ABOUT_CONTENT,
   CONTACT_CONTENT,
   PRIVACY_CONTENT,
+  SITE_URL,
 } from "../site-content";
 
 function flattenedLength(content: {
@@ -37,7 +38,7 @@ describe("agent-facing portfolio content", () => {
 
     const alias = markdownForPath("/projects/sb-norala");
     expect(alias.status).toBe(308);
-    expect(alias.location).toBe("https://aedwon.com/projects/norala-sb-portal");
+    expect(alias.location).toBe(`${SITE_URL}/projects/norala-sb-portal`);
   });
 
   it("serves BetterGov contribution details instead of an external redirect", () => {
@@ -53,8 +54,8 @@ describe("agent-facing portfolio content", () => {
     const result = markdownForPath("/this-does-not-exist");
     expect(result.status).toBe(404);
     expect(result.body).toContain("# 404: Not found");
-    expect(result.body).toContain("https://aedwon.com/llms.txt");
-    expect(result.body).toContain("https://aedwon.com/sitemap.xml");
+    expect(result.body).toContain(`${SITE_URL}/llms.txt`);
+    expect(result.body).toContain(`${SITE_URL}/sitemap.xml`);
   });
 
   it("publishes explicit when-to-use guidance without business claims", () => {
