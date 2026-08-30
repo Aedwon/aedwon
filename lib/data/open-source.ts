@@ -57,22 +57,22 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     repositoryUrl: "https://github.com/Tracer-Cloud/opensre",
     pageHref: "/projects/contributions/opensre",
     summary: "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.",
-    statusLabel: "Open PR",
-    statusChecked: "2026-08-28",
+    statusLabel: "Merged",
+    statusChecked: "2026-08-31",
     glowColor: "purple",
     brandColor: "#818CF8",
     pullRequests: [
       {
         number: 5634,
         title: "feat(victoria_logs): add citeable query evidence",
-        status: "Open PR",
+        status: "Merged",
         url: "https://github.com/Tracer-Cloud/opensre/pull/5634",
         summary: "Adds a VictoriaLogs evidence mapper and focused regression coverage, with repeated-query behavior removed after review identified an unsupported aggregation path.",
       },
     ],
     reviewNotes: [
       "Reviewer feedback identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
-      "The current head has a 5/5 Greptile confidence score with no blocking failure reported and is ready for review. The upstream GitHub Actions workflows are still waiting for repository approval before they can run.",
+      "PR #5634 passed the upstream CI and synthetic deterministic test suites, received a 5/5 Greptile confidence score with no blocking failure reported, and was merged upstream on August 30, 2026.",
     ],
   },
   {
