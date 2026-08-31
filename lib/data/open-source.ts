@@ -57,7 +57,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     repositoryUrl: "https://github.com/Tracer-Cloud/opensre",
     pageHref: "/projects/contributions/opensre",
     summary: "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.",
-    statusLabel: "Merged",
+    statusLabel: "Released · v0.1.2026.8.31",
     statusChecked: "2026-08-31",
     glowColor: "purple",
     brandColor: "#818CF8",
@@ -72,7 +72,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     ],
     reviewNotes: [
       "Reviewer feedback identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
-      "PR #5634 passed the upstream CI and synthetic deterministic test suites, received a 5/5 Greptile confidence score with no blocking failure reported, and was merged upstream on August 30, 2026.",
+      "PR #5634 passed the upstream CI and synthetic deterministic test suites, received a 5/5 Greptile confidence score with no blocking failure reported, and was merged upstream on August 30, 2026. The merged commit shipped in OpenSRE v0.1.2026.8.31 on August 31, 2026.",
     ],
   },
   {
