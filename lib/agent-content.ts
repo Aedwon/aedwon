@@ -2,6 +2,7 @@ import { BLOG_POSTS, type BlogBlock } from "@/lib/data/blogs";
 import {
   OPEN_SOURCE_PROJECTS,
   getOpenSourceProject,
+  getPullRequestStatusLabel,
 } from "@/lib/data/open-source";
 import {
   ALL_PROJECTS,
@@ -48,7 +49,10 @@ function trustPageMarkdown(content: TrustPageContent): string {
 function openSourceMarkdown(): string {
   return OPEN_SOURCE_PROJECTS.map((project) => {
     const prs = project.pullRequests
-      .map((pr) => `- [PR #${pr.number}](${pr.url}) · ${pr.status}: ${pr.title}`)
+      .map(
+        (pr) =>
+          `- [PR #${pr.number}](${pr.url}) · ${getPullRequestStatusLabel(pr)}: ${pr.title}`,
+      )
       .join("\n");
     return `### [${project.name}](${absolute(project.pageHref)})\n\n${project.summary}\n\n- Repository: [${project.repository}](${project.repositoryUrl})\n- Status: ${project.statusLabel}\n${prs}`;
   }).join("\n\n");
@@ -130,7 +134,7 @@ function contributionMarkdown(slug: string): AgentMarkdownResult {
   const prs = project.pullRequests
     .map(
       (pr) =>
-        `## PR #${pr.number}: ${pr.title}\n\n${pr.summary}\n\n- Status: ${pr.status}\n- Pull request: ${pr.url}`,
+        `## PR #${pr.number}: ${pr.title}\n\n${pr.summary}\n\n- Status: ${getPullRequestStatusLabel(pr)}\n- Pull request: ${pr.url}`,
     )
     .join("\n\n");
 
