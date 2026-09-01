@@ -113,7 +113,7 @@ describe("open-source contribution lifecycle", () => {
 });
 
 describe("portfolio verification runtime contract", () => {
-  it("keeps GitHub verification on Node 24 and verifies branches only through pull requests", () => {
+  it("keeps GitHub verification on Node 24 with PR-only branch checks and isolated concurrency", () => {
     const packageJson = JSON.parse(
       readFileSync(join(process.cwd(), "package.json"), "utf8"),
     ) as { engines?: { node?: string } };
@@ -131,7 +131,7 @@ describe("portfolio verification runtime contract", () => {
     expect(workflow).toContain("pull_request:");
     expect(workflow).toContain("concurrency:");
     expect(workflow).toContain(
-      "group: portfolio-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}",
+      "group: portfolio-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref_name }}",
     );
     expect(workflow).toContain("cancel-in-progress: true");
   });
