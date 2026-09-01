@@ -1,9 +1,23 @@
 import type { ProjectItem } from "@/lib/data/projects";
 
+export type PullRequestState = "draft" | "open" | "merged" | "closed";
+export type PullRequestReviewState =
+  | "pending"
+  | "approved"
+  | "changes_requested"
+  | "not_applicable";
+
+export interface PullRequestRelease {
+  version: string;
+  releasedAt?: string;
+}
+
 export interface UpstreamPullRequest {
   number: number;
   title: string;
-  status: "Open PR" | "Draft PR" | "Merged";
+  state: PullRequestState;
+  reviewState: PullRequestReviewState;
+  release?: PullRequestRelease;
   url: string;
   summary: string;
 }
@@ -24,6 +38,69 @@ export interface OpenSourceProject {
   reviewNotes?: string[];
 }
 
+export function getPullRequestStatusLabel(
+  pullRequest: Pick<UpstreamPullRequest, "state" | "reviewState" | "release">,
+): string {
+  if (pullRequest.state === "merged" && pullRequest.release) {
+    return `Released · ${pullRequest.release.version}`;
+  }
+
+  if (pullRequest.state === "merged") return "Merged";
+  if (pullRequest.state === "draft") return "Draft PR";
+  if (pullRequest.state === "closed") return "Closed";
+  if (pullRequest.reviewState === "approved") return "Approved";
+  if (pullRequest.reviewState === "changes_requested") return "Changes requested";
+  return "Open PR";
+}
+
+export function validateOpenSourceProjects(projects: unknown[]): string[] {
+  const errors: string[] = [];
+  const seenPullRequests = new Set<string>();
+
+  for (const project of projects) {
+    if (!project || typeof project !== "object") {
+      errors.push("project record must be an object");
+      continue;
+    }
+
+    const projectRecord = project as Record<string, unknown>;
+    const repository =
+      typeof projectRecord.repository === "string" ? projectRecord.repository : "";
+    const pullRequests = Array.isArray(projectRecord.pullRequests)
+      ? projectRecord.pullRequests
+      : [];
+
+    for (const pullRequest of pullRequests) {
+      if (!pullRequest || typeof pullRequest !== "object") {
+        errors.push(`${repository || "unknown repository"}: pull request record must be an object`);
+        continue;
+      }
+
+      const record = pullRequest as Record<string, unknown>;
+      const number = typeof record.number === "number" ? record.number : NaN;
+      const identity = `${repository}#${String(record.number)}`;
+
+      if (seenPullRequests.has(identity)) {
+        errors.push(`${identity}: duplicate pull request`);
+      }
+      seenPullRequests.add(identity);
+
+      if (record.release && record.state !== "merged") {
+        errors.push(`${identity}: release requires merged state`);
+      }
+
+      const expectedUrl = Number.isFinite(number)
+        ? `https://github.com/${repository}/pull/${number}`
+        : null;
+      if (!expectedUrl || record.url !== expectedUrl) {
+        errors.push(`${identity}: URL does not match repository/number`);
+      }
+    }
+  }
+
+  return errors;
+}
+
 export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
   {
     id: "microsoft-aspire",
@@ -41,7 +118,8 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       {
         number: 19614,
         title: "fix(cli): show resource command help for invalid arguments",
-        status: "Draft PR",
+        state: "draft",
+        reviewState: "pending",
         url: "https://github.com/microsoft/aspire/pull/19614",
         summary: "Shows resolved command help after invalid command-specific arguments without changing the machine-readable load-arguments path.",
       },
@@ -65,7 +143,9 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       {
         number: 5634,
         title: "feat(victoria_logs): add citeable query evidence",
-        status: "Merged",
+        state: "merged",
+        reviewState: "approved",
+        release: { version: "v0.1.2026.8.31", releasedAt: "2026-08-31" },
         url: "https://github.com/Tracer-Cloud/opensre/pull/5634",
         summary: "Adds a VictoriaLogs evidence mapper and focused regression coverage, with repeated-query behavior removed after review identified an unsupported aggregation path.",
       },
@@ -91,7 +171,9 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       {
         number: 41,
         title: "docs: document warning troubleshooting",
-        status: "Merged",
+        state: "merged",
+        reviewState: "approved",
+        release: { version: "v0.3.2" },
         url: "https://github.com/Dockroute/Dockroute/pull/41",
         summary: "Documents current warning patterns against the source and explains the matching label, environment, DNS, ingress, and ownership remedies.",
       },
@@ -116,14 +198,16 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       {
         number: 706,
         title: "feat: add government acronym tooltip wrapper",
-        status: "Open PR",
+        state: "open",
+        reviewState: "pending",
         url: "https://github.com/bettergovph/bettergov/pull/706",
         summary: "Adds a reusable React wrapper for Philippine government acronyms using Radix UI tooltips, backed by acronym data and tests.",
       },
       {
         number: 744,
         title: "docs: align PR instructions with pull request template",
-        status: "Open PR",
+        state: "open",
+        reviewState: "approved",
         url: "https://github.com/bettergovph/bettergov/pull/744",
         summary: "Recreates the documentation-only contribution on current upstream main after maintainer feedback and aligns CONTRIBUTING guidance with the repository PR template.",
       },

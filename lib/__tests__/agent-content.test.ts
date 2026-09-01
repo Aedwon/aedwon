@@ -30,6 +30,18 @@ describe("agent-facing portfolio content", () => {
     expect(result.body.length).toBeGreaterThan(500);
   });
 
+  it("renders structured OSS lifecycle labels in Markdown", () => {
+    const result = markdownForPath("/");
+    expect(result.status).toBe(200);
+    expect(result.body).toContain(
+      "[PR #5634](https://github.com/Tracer-Cloud/opensre/pull/5634) · Released · v0.1.2026.8.31",
+    );
+    expect(result.body).toContain(
+      "[PR #744](https://github.com/bettergovph/bettergov/pull/744) · Approved",
+    );
+    expect(result.body).not.toContain(" · undefined:");
+  });
+
   it("uses canonical project facts and redirects legacy aliases", () => {
     const project = markdownForPath("/projects/msl-network");
     expect(project.status).toBe(200);

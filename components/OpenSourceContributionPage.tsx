@@ -1,15 +1,24 @@
 import Link from "next/link";
-import type { OpenSourceProject } from "@/lib/data/open-source";
+import {
+  getPullRequestStatusLabel,
+  type OpenSourceProject,
+} from "@/lib/data/open-source";
 import { OpenSourceArt } from "@/components/OpenSourceCard";
 
 function getStatusColor(status: string) {
   const normalized = status.toLowerCase();
 
-  if (normalized.includes("merged")) {
+  if (normalized.includes("merged") || normalized.includes("released")) {
     return "color-mix(in srgb, var(--text-primary) 58%, #4f8a5f 42%)";
   }
   if (normalized.includes("draft")) {
     return "color-mix(in srgb, var(--text-primary) 58%, #8b7447 42%)";
+  }
+  if (normalized.includes("approved")) {
+    return "color-mix(in srgb, var(--text-primary) 58%, #4f8a5f 42%)";
+  }
+  if (normalized.includes("changes requested")) {
+    return "color-mix(in srgb, var(--text-primary) 58%, #9b5d50 42%)";
   }
   if (normalized.includes("open")) {
     return "color-mix(in srgb, var(--text-primary) 58%, #527895 42%)";
@@ -138,7 +147,7 @@ export default function OpenSourceContributionPage({
                     </h3>
                   </div>
                   <span className="shrink-0 text-[11px] font-mono">
-                    <StatusText status={pr.status} />
+                    <StatusText status={getPullRequestStatusLabel(pr)} />
                   </span>
                 </div>
                 <p>{pr.summary}</p>
