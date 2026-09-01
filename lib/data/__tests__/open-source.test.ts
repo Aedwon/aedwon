@@ -50,6 +50,20 @@ describe("open-source contribution lifecycle", () => {
     ).toBe("Released · v1.2.3");
   });
 
+  it("does not render a release claim unless the PR is merged", () => {
+    expect(moduleUnderTest.getPullRequestStatusLabel).toBeTypeOf("function");
+    if (!moduleUnderTest.getPullRequestStatusLabel) return;
+
+    expect(
+      moduleUnderTest.getPullRequestStatusLabel({
+        number: 4,
+        state: "open",
+        reviewState: "approved",
+        release: { version: "v9.9.9", releasedAt: "2026-09-02" },
+      }),
+    ).toBe("Approved");
+  });
+
   it("validates impossible and duplicate contribution records", () => {
     expect(moduleUnderTest.validateOpenSourceProjects).toBeTypeOf("function");
     if (!moduleUnderTest.validateOpenSourceProjects) return;
@@ -84,6 +98,17 @@ describe("open-source contribution lifecycle", () => {
         expect.stringContaining("does not match repository/number"),
       ]),
     );
+  });
+
+  it("keeps the shipped contribution registry internally consistent", () => {
+    expect(moduleUnderTest.validateOpenSourceProjects).toBeTypeOf("function");
+    if (!moduleUnderTest.validateOpenSourceProjects) return;
+
+    expect(
+      moduleUnderTest.validateOpenSourceProjects(
+        openSourceModule.OPEN_SOURCE_PROJECTS,
+      ),
+    ).toEqual([]);
   });
 });
 
