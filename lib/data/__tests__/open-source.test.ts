@@ -113,7 +113,7 @@ describe("open-source contribution lifecycle", () => {
 });
 
 describe("portfolio verification runtime contract", () => {
-  it("keeps GitHub verification on Node 24 and deduplicates branch verification across event types", () => {
+  it("keeps GitHub verification on Node 24 and verifies branches only through pull requests", () => {
     const packageJson = JSON.parse(
       readFileSync(join(process.cwd(), "package.json"), "utf8"),
     ) as { engines?: { node?: string } };
@@ -126,6 +126,9 @@ describe("portfolio verification runtime contract", () => {
     expect(workflow).toContain("uses: actions/checkout@v7");
     expect(workflow).toContain("uses: actions/setup-node@v7");
     expect(workflow).toContain("node-version: 24");
+    expect(workflow).toContain("- main");
+    expect(workflow).not.toContain("- codex/**");
+    expect(workflow).toContain("pull_request:");
     expect(workflow).toContain("concurrency:");
     expect(workflow).toContain(
       "group: portfolio-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}",
