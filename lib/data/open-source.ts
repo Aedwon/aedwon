@@ -163,7 +163,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     projectUrl: "https://www.dockroute.dev",
     pageHref: "/projects/contributions/dockroute",
     summary: "External-DNS for plain Docker hosts, keeping DNS records aligned with container routes.",
-    statusLabel: "Merged · v0.3.2",
+    statusLabel: "Released · v0.3.2",
     statusChecked: "2026-08-24",
     glowColor: "cyan",
     brandColor: "#06B6D4",
