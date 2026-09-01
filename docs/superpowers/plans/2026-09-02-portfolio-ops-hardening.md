@@ -32,20 +32,20 @@
 - Produces `PullRequestReviewState = "pending" | "approved" | "changes_requested" | "not_applicable"`.
 - Produces `getPullRequestStatusLabel(pr: UpstreamPullRequest): string` for UI rendering.
 
-- [ ] **Step 1: Write failing lifecycle invariant tests**
+- [x] **Step 1: Write failing lifecycle invariant tests**
 
 Add Vitest tests proving that approved open PRs render `Approved`, merged PRs render `Merged`, released merged PRs render `Released · <version>`, a released open PR is rejected by validation, duplicate repository/PR identities are rejected, and PR URLs must match the declared repository and number.
 
-- [ ] **Step 2: Run the focused test and verify RED**
+- [x] **Step 2: Run the focused test and verify RED**
 
 Run: `npm test -- lib/data/__tests__/open-source.test.ts`
-Expected: FAIL because structured lifecycle helpers and validation do not exist.
+Observed in GitHub Actions run 205: the new test file produced 4 expected failures while the pre-existing suite had 80 passing tests.
 
-- [ ] **Step 3: Implement the minimal structured model**
+- [x] **Step 3: Implement the minimal structured model**
 
 Replace presentation-only `status` with `state`, `reviewState`, and optional `release`. Add pure helpers that derive the visible status string and validate the static registry. Migrate existing Aspire, OpenSRE, DockRoute, and BetterGov records without changing their truthful public meaning.
 
-- [ ] **Step 4: Update the contribution page to use the derived label**
+- [x] **Step 4: Update the contribution page to use the derived label**
 
 Change the PR status rendering to call `getPullRequestStatusLabel(pr)`.
 
@@ -64,18 +64,18 @@ Expected: PASS.
 - Node runtime contract: `>=24 <25`.
 - Workflow concurrency group: `portfolio-${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true`.
 
-- [ ] **Step 1: Add a repository test for runtime/workflow contracts**
+- [x] **Step 1: Add a repository test for runtime/workflow contracts**
 
-Extend `lib/data/__tests__/open-source.test.ts` or create a small configuration contract test that reads `package.json` and `.github/workflows/verify.yml`, asserting Node 24 is declared consistently and concurrency cancellation exists.
+`lib/data/__tests__/open-source.test.ts` reads `package.json` and `.github/workflows/verify.yml` and asserts Node 24 is declared consistently and concurrency cancellation exists.
 
-- [ ] **Step 2: Run the test and verify RED**
+- [x] **Step 2: Run the test and verify RED**
 
 Run: `npm test -- lib/data/__tests__/open-source.test.ts`
-Expected: FAIL on the current Node 22 workflow/no package engine/no concurrency contract.
+Observed in GitHub Actions run 205: the runtime contract failed because the package engine was absent and the workflow still selected Node 22.
 
-- [ ] **Step 3: Make the minimal config changes**
+- [x] **Step 3: Make the minimal config changes**
 
-Add `"engines": { "node": ">=24 <25" }` to `package.json`; change setup-node to `24`; add top-level workflow concurrency keyed by workflow and ref with cancellation enabled.
+Added `"engines": { "node": ">=24 <25" }` to `package.json`; changed setup-node to `24`; added top-level workflow concurrency keyed by workflow and ref with cancellation enabled.
 
 - [ ] **Step 4: Run the focused test and verify GREEN**
 
