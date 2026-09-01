@@ -108,8 +108,8 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     projectUrl: "https://bettergov.ph",
     pageHref: "/projects/bettergov-ph",
     summary: "Open-source effort building a better national website for the Philippines.",
-    statusLabel: "2 open PRs",
-    statusChecked: "2026-08-24",
+    statusLabel: "1 approved · 1 open PR",
+    statusChecked: "2026-09-01",
     glowColor: "green",
     brandColor: "#34D399",
     pullRequests: [
@@ -130,6 +130,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     ],
     reviewNotes: [
       "The first documentation submission, PR #707, was closed without merge. A maintainer asked for the change to be recreated from current upstream main. PR #744 is that clean revision, limited to the contributor documentation update. I count #707 and #744 as one contribution thread, not two separate contributions.",
+      "Maintainer KishonShrill approved PR #744 on September 1, 2026. The PR remains open upstream, so the portfolio records it as approved but not merged.",
     ],
   },
 ];
@@ -157,10 +158,10 @@ export const BETTERGOV_PROJECT: ProjectItem = {
   ],
   liveUrl: "https://bettergov.ph",
   githubUrl: "https://github.com/bettergovph/bettergov/pulls?q=is%3Apr+author%3AAedwon",
-  summary: "Two open upstream BetterGov PRs covering a reusable government-acronym tooltip component and contributor documentation aligned with the repository's PR template.",
-  problem: "This entry documents submitted upstream work to bettergovph/bettergov. I do not own or maintain BetterGov, and neither current pull request is presented as merged.",
+  summary: "Two open upstream BetterGov PRs covering a reusable government-acronym tooltip component and contributor documentation aligned with the repository's PR template. PR #744 has maintainer approval and is awaiting merge.",
+  problem: "This entry documents submitted upstream work to bettergovph/bettergov. I do not own or maintain BetterGov. PR #744 is maintainer-approved but still open, while PR #706 remains submitted and open.",
   architecture: [],
-  results: "PR #706 and PR #744 are open upstream as of August 24, 2026. The earlier documentation PR #707 was closed without merge and was replaced by #744 after maintainer feedback.",
+  results: "PR #744 received maintainer approval on September 1, 2026 and remains open upstream. PR #706 is also open. The earlier documentation PR #707 was closed without merge and was replaced by #744 after maintainer feedback.",
   articleSections: [
     {
       title: "Government acronym tooltip",
@@ -173,7 +174,7 @@ export const BETTERGOV_PROJECT: ProjectItem = {
       title: "Contributor documentation after maintainer feedback",
       paragraphs: [
         "The first documentation PR, #707, updated the CONTRIBUTING guidance but was closed without merge. A maintainer asked for a fresh revision based on current upstream main. PR #744 recreates only that documentation change and aligns the contribution instructions with the repository's actual pull request template.",
-        "PR #744 is open upstream. I count #707 and #744 as one contribution thread, not two separate contributions.",
+        "PR #744 received maintainer approval on September 1, 2026 and remains open upstream. I count #707 and #744 as one contribution thread, not two separate contributions.",
       ],
     },
     {
