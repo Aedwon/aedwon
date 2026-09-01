@@ -41,7 +41,7 @@ export interface OpenSourceProject {
 export function getPullRequestStatusLabel(
   pullRequest: Pick<UpstreamPullRequest, "state" | "reviewState" | "release">,
 ): string {
-  if (pullRequest.release) {
+  if (pullRequest.state === "merged" && pullRequest.release) {
     return `Released · ${pullRequest.release.version}`;
   }
 
