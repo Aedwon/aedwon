@@ -135,7 +135,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     repositoryUrl: "https://github.com/Tracer-Cloud/opensre",
     pageHref: "/projects/contributions/opensre",
     summary: "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.",
-    statusLabel: "1 released · 1 draft PR",
+    statusLabel: "1 released · 1 closed PR",
     statusChecked: "2026-09-03",
     glowColor: "purple",
     brandColor: "#818CF8",
@@ -152,7 +152,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       {
         number: 5959,
         title: "feat(cloudwatch): add citeable Lambda inspection evidence",
-        state: "draft",
+        state: "closed",
         reviewState: "pending",
         url: "https://github.com/Tracer-Cloud/opensre/pull/5959",
         summary: "Adds compact citeable evidence for successful AWS Lambda inspections while excluding environment variables, source contents, ARNs, and other sensitive or oversized fields.",
@@ -161,7 +161,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     reviewNotes: [
       "Reviewer feedback on PR #5634 identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
       "PR #5634 passed the upstream CI and synthetic deterministic test suites, received a 5/5 Greptile confidence score with no blocking failure reported, and was merged upstream on August 30, 2026. The merged commit shipped in OpenSRE v0.1.2026.8.31 on August 31, 2026.",
-      "PR #5959 is a new draft contribution for AWS Lambda inspection evidence. On September 3, 2026, upstream CI, Synthetic Deterministic Tests, and the interactive-shell workflow passed on head `35bbe29bfd9f8d0459836eb8ac8b9dba08fb23a0`; no maintainer review has been submitted yet.",
+      "PR #5959 passed upstream CI, Synthetic Deterministic Tests, the interactive-shell workflow, and reached Greptile 5/5 on head `35bbe29bfd9f8d0459836eb8ac8b9dba08fb23a0`. Maintainer cerencamkiran closed the draft without merge on September 3, 2026 and did not leave an explanatory maintainer comment, so the portfolio records the closure without inferring a reason.",
     ],
   },
   {
