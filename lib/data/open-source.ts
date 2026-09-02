@@ -135,8 +135,8 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     repositoryUrl: "https://github.com/Tracer-Cloud/opensre",
     pageHref: "/projects/contributions/opensre",
     summary: "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.",
-    statusLabel: "Released · v0.1.2026.8.31",
-    statusChecked: "2026-08-31",
+    statusLabel: "1 released · 1 draft PR",
+    statusChecked: "2026-09-03",
     glowColor: "purple",
     brandColor: "#818CF8",
     pullRequests: [
@@ -149,10 +149,19 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
         url: "https://github.com/Tracer-Cloud/opensre/pull/5634",
         summary: "Adds a VictoriaLogs evidence mapper and focused regression coverage, with repeated-query behavior removed after review identified an unsupported aggregation path.",
       },
+      {
+        number: 5959,
+        title: "feat(cloudwatch): add citeable Lambda inspection evidence",
+        state: "draft",
+        reviewState: "pending",
+        url: "https://github.com/Tracer-Cloud/opensre/pull/5959",
+        summary: "Adds compact citeable evidence for successful AWS Lambda inspections while excluding environment variables, source contents, ARNs, and other sensitive or oversized fields.",
+      },
     ],
     reviewNotes: [
-      "Reviewer feedback identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
+      "Reviewer feedback on PR #5634 identified an unsupported repeated-query aggregation path. I removed that behavior and kept the contribution focused on the evidence-mapping path supported by the existing implementation.",
       "PR #5634 passed the upstream CI and synthetic deterministic test suites, received a 5/5 Greptile confidence score with no blocking failure reported, and was merged upstream on August 30, 2026. The merged commit shipped in OpenSRE v0.1.2026.8.31 on August 31, 2026.",
+      "PR #5959 is a new draft contribution for AWS Lambda inspection evidence. On September 3, 2026, upstream CI, Synthetic Deterministic Tests, and the interactive-shell workflow passed on head `35bbe29bfd9f8d0459836eb8ac8b9dba08fb23a0`; no maintainer review has been submitted yet.",
     ],
   },
   {
