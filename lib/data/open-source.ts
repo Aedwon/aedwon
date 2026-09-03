@@ -200,7 +200,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     pageHref: "/projects/bettergov-ph",
     summary: "Open-source effort building a better national website for the Philippines.",
     statusLabel: "1 approved · 1 open PR",
-    statusChecked: "2026-09-01",
+    statusChecked: "2026-09-03",
     glowColor: "green",
     brandColor: "#34D399",
     pullRequests: [
@@ -222,6 +222,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       },
     ],
     reviewNotes: [
+      "Maintainer KishonShrill put PR #706 on standby on July 31, 2026 because they did not yet have a clear place to use the feature. The PR remains open, so its lifecycle state stays open instead of being recorded as rejected or closed.",
       "The first documentation submission, PR #707, was closed without merge. A maintainer asked for the change to be recreated from current upstream main. PR #744 is that clean revision, limited to the contributor documentation update. I count #707 and #744 as one contribution thread, not two separate contributions.",
       "Maintainer KishonShrill approved PR #744 on September 1, 2026. The PR remains open upstream, so the portfolio records it as approved but not merged.",
     ],
@@ -251,16 +252,16 @@ export const BETTERGOV_PROJECT: ProjectItem = {
   ],
   liveUrl: "https://bettergov.ph",
   githubUrl: "https://github.com/bettergovph/bettergov/pulls?q=is%3Apr+author%3AAedwon",
-  summary: "Two open upstream BetterGov PRs covering a reusable government-acronym tooltip component and contributor documentation aligned with the repository's PR template. PR #744 has maintainer approval and is awaiting merge.",
-  problem: "This entry documents submitted upstream work to bettergovph/bettergov. I do not own or maintain BetterGov. PR #744 is maintainer-approved but still open, while PR #706 remains submitted and open.",
+  summary: "Two open upstream BetterGov PRs. PR #706 is on maintainer standby, while PR #744 has maintainer approval and is awaiting merge.",
+  problem: "This entry documents submitted upstream work to bettergovph/bettergov. I do not own or maintain BetterGov. PR #706 remains open but is on maintainer standby, while PR #744 is maintainer-approved and still open.",
   architecture: [],
-  results: "PR #744 received maintainer approval on September 1, 2026 and remains open upstream. PR #706 is also open. The earlier documentation PR #707 was closed without merge and was replaced by #744 after maintainer feedback.",
+  results: "PR #744 received maintainer approval on September 1, 2026 and remains open upstream. PR #706 remains open and has been on maintainer standby since July 31, 2026. The earlier documentation PR #707 was closed without merge and was replaced by #744 after maintainer feedback.",
   articleSections: [
     {
       title: "Government acronym tooltip",
       paragraphs: [
         "PR #706 adds a reusable `TextWithAcronyms` React component that wraps known Philippine government acronyms with Radix UI tooltips. The pull request also adds the acronym data and focused tests.",
-        "The pull request is open upstream. It has not been merged, so this portfolio treats it as submitted work instead of shipped BetterGov functionality.",
+        "The pull request remains open upstream. On July 31, 2026, maintainer KishonShrill put it on standby because they did not yet have a clear place to use the feature, so this portfolio records it as submitted work instead of shipped BetterGov functionality.",
       ],
     },
     {
