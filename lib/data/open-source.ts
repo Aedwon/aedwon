@@ -111,7 +111,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     pageHref: "/projects/contributions/microsoft-aspire",
     summary: "Code-first tooling for building, observing, and deploying distributed applications.",
     statusLabel: "Draft PR",
-    statusChecked: "2026-08-24",
+    statusChecked: "2026-09-04",
     glowColor: "blue",
     brandColor: "#00A4EF",
     pullRequests: [
@@ -125,7 +125,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       },
     ],
     reviewNotes: [
-      "The current draft includes the fixes requested in review around output ordering, end-to-end coverage, and the machine-readable `--load-arguments` path. Upstream workflows are waiting for repository approval before CI can run on the latest head.",
+      "The draft remains open with unresolved review threads around extension output ordering, bounded drain behavior, metadata-missing or zero-argument command validation, explicit hosting failure classification, and extension-specific regression coverage. The latest upstream workflows on the current head are still `action_required`, so repository CI has not run without maintainer approval.",
     ],
   },
   {
