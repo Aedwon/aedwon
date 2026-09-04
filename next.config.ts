@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
         destination: "https://www.aedwon.com/:path*",
         permanent: true,
       },
+      {
+        source: "/resume",
+        destination:
+          "https://drive.google.com/file/d/1F2tjvYSaHlApExmlhdLqtmnN9JdSPb_B/view?usp=drivesdk",
+        permanent: false,
+      },
       ...Object.entries(blogShortLinks).map(([key, destination]) => ({
         source: `/b/${key}`,
         destination,
