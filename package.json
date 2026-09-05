@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "wishes:import": "node scripts/import-genshin-wishes.mjs"
   },
   "dependencies": {
     "@next/font": "^14.2.15",
