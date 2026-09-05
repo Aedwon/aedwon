@@ -29,4 +29,13 @@ describe("Genshin wish counter project page", () => {
     expect(table.firstElementChild?.tagName).toBe("THEAD");
     expect(screen.getByRole("img", { name: "Ineffa portrait" })).toBeInTheDocument();
   });
+
+  it("gives known pity values a visual scale with an accessible range label", () => {
+    render(<GenshinWishCounterProjectPage />);
+
+    const pity = screen.getByLabelText("Pity 44 of 90");
+    expect(pity).toHaveStyle({ display: "inline-flex" });
+    expect(pity.style.backgroundColor).not.toBe("");
+    expect(pity.style.color).not.toBe("");
+  });
 });
