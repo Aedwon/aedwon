@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Sparkles, ShieldCheck, Star } from "lucide-react";
+import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 import {
   calculateWishStats,
@@ -15,6 +16,32 @@ const BANNERS: { id: GenshinBannerType; label: string; hardPity: number }[] = [
   { id: "standard", label: "Standard", hardPity: 90 },
 ];
 
+const PAIMON_CHARACTER_ASSET_BASE =
+  "https://raw.githubusercontent.com/MadeBaruna/paimon-moe/main/static/images/characters";
+
+const CHARACTER_PORTRAITS: Record<string, string> = {
+  Citlali: "citlali.png",
+  Columbina: "columbina.png",
+  Dehya: "dehya.png",
+  Diluc: "diluc.png",
+  Durin: "durin.png",
+  Escoffier: "escoffier.png",
+  Ineffa: "ineffa.png",
+  Keqing: "keqing.png",
+  Odette: "odette.png",
+  Sandrone: "sandrone.png",
+  Tighnari: "tighnari.png",
+};
+
+type PityScaleStyle = CSSProperties & {
+  "--pity-bg-light": string;
+  "--pity-fg-light": string;
+  "--pity-border-light": string;
+  "--pity-bg-dark": string;
+  "--pity-fg-dark": string;
+  "--pity-border-dark": string;
+};
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", {
     year: "numeric",
@@ -27,6 +54,36 @@ function formatDate(value: string) {
 function formatAverage(value: number | null) {
   if (value === null) return "—";
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+function characterPortraitUrl(name: string) {
+  const filename = CHARACTER_PORTRAITS[name];
+  return filename ? `${PAIMON_CHARACTER_ASSET_BASE}/${filename}` : null;
+}
+
+function getPityScaleStyle(pity: number, hardPity: number): PityScaleStyle {
+  const clamped = Math.max(1, Math.min(hardPity, pity));
+  const progress = (clamped - 1) / Math.max(1, hardPity - 1);
+  const hue = Math.round(128 * (1 - progress));
+  const lightBackground = Math.round(96 - 56 * progress);
+  const lightForeground = progress < 0.62 ? 24 : 96;
+  const lightBorder = Math.round(80 - 43 * progress);
+  const darkBackground = Math.round(14 + 6 * progress);
+  const darkForeground = Math.round(82 - 10 * progress);
+  const darkBorder = Math.round(36 + 8 * progress);
+
+  return {
+    display: "inline-flex",
+    backgroundColor: "var(--pity-bg)",
+    color: "var(--pity-fg)",
+    borderColor: "var(--pity-border)",
+    "--pity-bg-light": `hsl(${hue} 62% ${lightBackground}%)`,
+    "--pity-fg-light": `hsl(${hue} 66% ${lightForeground}%)`,
+    "--pity-border-light": `hsl(${hue} 45% ${lightBorder}%)`,
+    "--pity-bg-dark": `hsl(${hue} 54% ${darkBackground}%)`,
+    "--pity-fg-dark": `hsl(${hue} 72% ${darkForeground}%)`,
+    "--pity-border-dark": `hsl(${hue} 48% ${darkBorder}%)`,
+  };
 }
 
 export default function GenshinWishCounterPage({
@@ -166,46 +223,83 @@ export default function GenshinWishCounterPage({
             <Metric label="Average 5★ pity" value={formatAverage(stats.averageFiveStarPity)} />
           </dl>
 
-          <section className="overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-[var(--card-shadow)]">
-            <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] px-5 py-4 sm:px-6">
+          <section className="space-y-3" aria-labelledby="five-star-history-heading">
+            <div className="flex items-center gap-2 px-1">
               <Star aria-hidden="true" size={15} strokeWidth={1.8} className="text-[var(--text-dim)]" />
-              <h2 className="text-[15px] font-semibold text-[var(--text-primary)] font-[var(--font-heading)]">
+              <h2
+                id="five-star-history-heading"
+                className="text-[15px] font-semibold text-[var(--text-primary)] font-[var(--font-heading)]"
+              >
                 5★ history
               </h2>
             </div>
 
-            {stats.fiveStarHistory.length === 0 ? (
-              <p className="px-5 py-8 text-[13px] text-[var(--text-muted)] sm:px-6">
-                No five-star pulls in this banner history yet.
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[460px] border-collapse text-left">
-                  <thead>
-                    <tr className="text-[10.5px] font-mono uppercase tracking-[0.1em] text-[var(--text-dim)]">
-                      <th className="px-5 py-3 font-normal sm:px-6">Pull</th>
-                      <th className="px-4 py-3 font-normal">Pity</th>
-                      <th className="px-5 py-3 text-right font-normal sm:px-6">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.fiveStarHistory.map((wish) => (
-                      <tr key={wish.id} className="border-t border-[var(--border-subtle)] text-[13px]">
-                        <td className="px-5 py-3.5 font-medium text-[var(--text-primary)] sm:px-6">
-                          {wish.name}
-                        </td>
-                        <td className="px-4 py-3.5 font-mono text-[var(--text-muted)]">
-                          {wish.pity ?? "—"}
-                        </td>
-                        <td className="px-5 py-3.5 text-right text-[var(--text-muted)] sm:px-6">
-                          {formatDate(wish.time)}
-                        </td>
+            <div
+              role="group"
+              aria-labelledby="five-star-history-heading"
+              className="overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-[var(--card-shadow)]"
+            >
+              {stats.fiveStarHistory.length === 0 ? (
+                <p className="px-5 py-8 text-[13px] text-[var(--text-muted)] sm:px-6">
+                  No five-star pulls in this banner history yet.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[500px] border-collapse text-left">
+                    <thead>
+                      <tr className="text-[10.5px] font-mono uppercase tracking-[0.1em] text-[var(--text-dim)]">
+                        <th className="px-5 py-3 font-normal sm:px-6">Pull</th>
+                        <th className="px-4 py-3 font-normal">Pity</th>
+                        <th className="px-5 py-3 text-right font-normal sm:px-6">Date</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    </thead>
+                    <tbody>
+                      {stats.fiveStarHistory.map((wish) => {
+                        const portraitUrl = characterPortraitUrl(wish.name);
+                        return (
+                          <tr key={wish.id} className="border-t border-[var(--border-subtle)] text-[13px]">
+                            <td className="px-5 py-2.5 font-medium text-[var(--text-primary)] sm:px-6">
+                              <div className="flex min-h-9 items-center gap-3">
+                                {portraitUrl ? (
+                                  // Paimon.moe maintains these small Genshin portrait assets in its public repository.
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={portraitUrl}
+                                    alt={`${wish.name} portrait`}
+                                    width={36}
+                                    height={36}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="h-9 w-9 shrink-0 rounded-[9px] border border-[var(--border-subtle)] bg-[var(--bg-card-hover)] object-cover"
+                                  />
+                                ) : null}
+                                <span>{wish.name}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-2.5 font-mono text-[var(--text-muted)]">
+                              {wish.pity === null ? (
+                                "—"
+                              ) : (
+                                <span
+                                  aria-label={`Pity ${wish.pity} of ${banner.hardPity}`}
+                                  style={getPityScaleStyle(wish.pity, banner.hardPity)}
+                                  className="genshin-pity items-center justify-center rounded-full border px-2.5 py-1 text-[11.5px] font-semibold tabular-nums"
+                                >
+                                  {wish.pity}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-5 py-2.5 text-right text-[var(--text-muted)] sm:px-6">
+                              {formatDate(wish.time)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </section>
         </>
       )}
