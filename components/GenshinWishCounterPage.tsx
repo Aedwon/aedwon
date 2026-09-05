@@ -9,6 +9,7 @@ import {
   type GenshinBannerType,
   type GenshinWishRecord,
 } from "@/lib/genshin-wish-stats";
+import styles from "./GenshinWishCounterPage.module.css";
 
 const BANNERS: { id: GenshinBannerType; label: string; hardPity: number }[] = [
   { id: "character", label: "Character", hardPity: 90 },
@@ -283,7 +284,7 @@ export default function GenshinWishCounterPage({
                                 <span
                                   aria-label={`Pity ${wish.pity} of ${banner.hardPity}`}
                                   style={getPityScaleStyle(wish.pity, banner.hardPity)}
-                                  className="genshin-pity items-center justify-center rounded-full border px-2.5 py-1 text-[11.5px] font-semibold tabular-nums"
+                                  className={`${styles.pity} items-center justify-center rounded-full border px-2.5 py-1 text-[11.5px] font-semibold tabular-nums`}
                                 >
                                   {wish.pity}
                                 </span>
