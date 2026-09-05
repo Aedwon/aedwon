@@ -1,0 +1,13 @@
+.pity {
+  --pity-bg: var(--pity-bg-dark);
+  --pity-fg: var(--pity-fg-dark);
+  --pity-border: var(--pity-border-dark);
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+:global([data-mode="light"]) .pity,
+:global([data-theme="neobrutalist"]) .pity {
+  --pity-bg: var(--pity-bg-light);
+  --pity-fg: var(--pity-fg-light);
+  --pity-border: var(--pity-border-light);
+}
