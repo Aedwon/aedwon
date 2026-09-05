@@ -14,7 +14,7 @@ export interface FiveStarHistoryEntry {
   id: string;
   name: string;
   time: string;
-  pity: number;
+  pity: number | null;
   featured?: boolean;
 }
 
@@ -50,6 +50,7 @@ export function calculateWishStats(
 
   let fiveStarPity = 0;
   let fourStarPity = 0;
+  let hasObservedFiveStar = false;
   const fiveStarHistory: FiveStarHistoryEntry[] = [];
 
   for (const record of bannerRecords) {
@@ -65,19 +66,22 @@ export function calculateWishStats(
         id: record.id,
         name: record.name,
         time: record.time,
-        pity: fiveStarPity,
+        pity: hasObservedFiveStar ? fiveStarPity : null,
         featured: record.featured,
       });
+      hasObservedFiveStar = true;
       fiveStarPity = 0;
     }
   }
 
   const latestFirst = [...fiveStarHistory].reverse();
   const lastFiveStar = latestFirst[0] ?? null;
+  const knownPities = fiveStarHistory
+    .map((wish) => wish.pity)
+    .filter((pity): pity is number => pity !== null);
   const averageFiveStarPity =
-    fiveStarHistory.length > 0
-      ? fiveStarHistory.reduce((sum, wish) => sum + wish.pity, 0) /
-        fiveStarHistory.length
+    knownPities.length > 0
+      ? knownPities.reduce((sum, pity) => sum + pity, 0) / knownPities.length
       : null;
 
   return {

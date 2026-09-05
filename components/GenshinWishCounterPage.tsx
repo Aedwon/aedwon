@@ -195,7 +195,7 @@ export default function GenshinWishCounterPage({
                           {wish.name}
                         </td>
                         <td className="px-4 py-3.5 font-mono text-[var(--text-muted)]">
-                          {wish.pity}
+                          {wish.pity ?? "—"}
                         </td>
                         <td className="px-5 py-3.5 text-right text-[var(--text-muted)] sm:px-6">
                           {formatDate(wish.time)}

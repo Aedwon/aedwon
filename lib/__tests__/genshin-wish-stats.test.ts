@@ -32,13 +32,19 @@ describe("calculateWishStats", () => {
     expect(stats?.fiveStarCount).toBe(2);
     expect(stats?.currentFiveStarPity).toBe(3);
     expect(stats?.currentFourStarPity).toBe(3);
-    expect(stats?.averageFiveStarPity).toBe(4.5);
+    expect(stats?.averageFiveStarPity).toBe(5);
     expect(stats?.guaranteedNextFiveStar).toBe(false);
     expect(stats?.lastFiveStar?.name).toBe("Furina");
     expect(stats?.fiveStarHistory.map((entry) => [entry.name, entry.pity])).toEqual([
       ["Furina", 5],
-      ["Diluc", 4],
+      ["Diluc", null],
     ]);
+  });
+
+  it("does not invent pity for the oldest visible five-star in a truncated history window", () => {
+    const stats = calculateWishStats(CHARACTER_WISHES.slice(0, 4), "character");
+    expect(stats?.fiveStarHistory[0]?.pity).toBeNull();
+    expect(stats?.averageFiveStarPity).toBeNull();
   });
 
   it("marks the next event five-star guaranteed after losing the latest 50/50", () => {
