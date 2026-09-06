@@ -13,6 +13,7 @@ export interface GenshinWishRecord {
 export interface FiveStarHistoryEntry {
   id: string;
   name: string;
+  itemType: "Character" | "Weapon";
   time: string;
   pity: number | null;
   featured?: boolean;
@@ -65,6 +66,7 @@ export function calculateWishStats(
       fiveStarHistory.push({
         id: record.id,
         name: record.name,
+        itemType: record.itemType,
         time: record.time,
         pity: hasObservedFiveStar ? fiveStarPity : null,
         featured: record.featured,

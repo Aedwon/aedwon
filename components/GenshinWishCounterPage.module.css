@@ -1,13 +1,28 @@
 .pity {
-  --pity-bg: var(--pity-bg-dark);
-  --pity-fg: var(--pity-fg-dark);
-  --pity-border: var(--pity-border-dark);
-  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+  --pity-color: var(--pity-color-dark);
+  color: var(--pity-color);
+  transition: color 120ms ease;
+}
+
+.fiveStarPity {
+  color: hsl(43 90% 68%);
+}
+
+.fourStarPity {
+  color: hsl(270 82% 76%);
 }
 
 :global([data-mode="light"]) .pity,
 :global([data-theme="neobrutalist"]) .pity {
-  --pity-bg: var(--pity-bg-light);
-  --pity-fg: var(--pity-fg-light);
-  --pity-border: var(--pity-border-light);
+  --pity-color: var(--pity-color-light);
+}
+
+:global([data-mode="light"]) .fiveStarPity,
+:global([data-theme="neobrutalist"]) .fiveStarPity {
+  color: hsl(38 82% 31%);
+}
+
+:global([data-mode="light"]) .fourStarPity,
+:global([data-theme="neobrutalist"]) .fourStarPity {
+  color: hsl(270 58% 40%);
 }
