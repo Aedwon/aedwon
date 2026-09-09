@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { BLOG_POSTS } from "@/lib/data/blogs";
+import { BLOG_POSTS } from "@/lib/data/blog-posts";
 import { buildPageMetadata } from "@/lib/seo";
 
 const title = "Blogs — Aerol (Aedwon)";
