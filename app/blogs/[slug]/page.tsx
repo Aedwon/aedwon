@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BLOG_POSTS } from "@/lib/data/blogs";
+import { BLOG_POSTS } from "@/lib/data/blog-posts";
 import { BlogContent } from "@/components/blog-content";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site-content";
