@@ -1,6 +1,7 @@
 import { PROJECTS, type ProjectItem } from "@/lib/data/projects";
 import { AI_AGENT_CONFIG_PROJECT } from "@/lib/data/ai-agent-config";
 import { BETTERGOV_PROJECT } from "@/lib/data/open-source";
+import { GENSHIN_WISH_COUNTER_PROJECT } from "@/lib/data/genshin-wish-counter";
 
 export type RegisteredProject = ProjectItem;
 
@@ -21,11 +22,14 @@ export const UNDER_CONSTRUCTION_PROJECT_SLUGS = new Set([
   "gi-damage-calculator",
 ]);
 
-const PORTFOLIO_PROJECTS = PROJECTS.map((project) => {
-  if (project.slug === "bettergov-ph") return BETTERGOV_PROJECT;
-  if (project.slug === "ai-agent-framework") return AI_AGENT_CONFIG_PROJECT;
-  return project;
-});
+const PORTFOLIO_PROJECTS = [
+  ...PROJECTS.map((project) => {
+    if (project.slug === "bettergov-ph") return BETTERGOV_PROJECT;
+    if (project.slug === "ai-agent-framework") return AI_AGENT_CONFIG_PROJECT;
+    return project;
+  }),
+  GENSHIN_WISH_COUNTER_PROJECT,
+];
 
 export const ALL_PROJECTS: RegisteredProject[] = [...PORTFOLIO_PROJECTS].sort(
   (a, b) => a.order - b.order,

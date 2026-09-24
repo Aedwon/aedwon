@@ -445,3 +445,17 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
   - **Getting wasm-vips through a static build:** The worker first lived in lib/worker.ts and was constructed from a module URL. Turbopack emitted it as a raw TypeScript asset in production, which the browser could not execute. The worker never sent its ready message, so the page stayed on the loading screen. I moved the worker to public/worker.js as plain JavaScript and load that static asset directly instead.
 
     That fixed the worker asset, but wasm-vips still depended on cross-origin isolation because its SharedArrayBuffer and pthread path needs COOP and COEP. For local development, next.config.js sends Cross-Origin-Opener-Policy as same-origin and Cross-Origin-Embedder-Policy as require-corp. The Vercel deployment repeats those headers in vercel.json because the static export does not carry the Next.js header configuration into the built site.
+
+### 2.14 Genshin Wish Counter (`/projects/genshin-wish-counter`) — Focused
+- **Tier:** Focused
+- **Category:** Web & Tools
+- **Role:** Creator & Developer
+- **Timeline:** 2026
+- **Platform:** Web
+- **Stack:** Next.js 16, React 19, TypeScript, Vitest
+- **Tagline:** Read-only dashboard for my Genshin Impact wish history and pity statistics.
+- **Summary:** Read-only portfolio dashboard for my Genshin Impact wish history, with pity and five-star pull statistics derived from static normalized records.
+- **Problem:** I wanted a small personal wish counter inside my portfolio without turning the site into a public tracker or storing temporary HoYoVerse credentials.
+- **Results:** The page is designed to render my saved wish history as a compact read-only dashboard. Real statistics are published only after the normalized history is imported.
+- **About:** An at-a-glance view of my saved Genshin Impact wish history across Character, Weapon, and Standard banners. It tracks current 5★ and 4★ pity, totals, average 5★ pity, and the five-star pulls behind those numbers.
+- **Implementation:** Wish history is pulled privately from HoYoVerse, cleaned into a consistent format, and combined with older records I had already saved through Paimon.moe. The page then calculates pity and pull statistics from that history before publishing only the sanitized results to the site. Character and weapon artwork is sourced from community-maintained Genshin resources, including the Genshin Wiki and Paimon.moe. The temporary credentials used to refresh the data never become part of the public dataset.

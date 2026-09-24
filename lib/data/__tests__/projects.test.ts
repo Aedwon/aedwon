@@ -10,7 +10,7 @@ import {
 
  describe("project registry", () => {
   it("keeps one ordered record per canonical slug", () => {
-    expect(ALL_PROJECTS).toHaveLength(PROJECTS.length);
+    expect(ALL_PROJECTS).toHaveLength(PROJECTS.length + 1);
     expect(new Set(ALL_PROJECTS.map((project) => project.slug)).size).toBe(ALL_PROJECTS.length);
 
     for (let index = 1; index < ALL_PROJECTS.length; index += 1) {
@@ -37,7 +37,8 @@ import {
   it("uses registry ordering for next-project navigation", () => {
     expect(getNextProject("pantas")?.slug).toBe("msl-network");
     expect(getNextProject("bettergov-ph")?.slug).toBe("msl-collegiate-cup-bot");
-    expect(getNextProject("webp-unli")?.slug).toBe("pantas");
+    expect(getNextProject("webp-unli")?.slug).toBe("genshin-wish-counter");
+    expect(getNextProject("genshin-wish-counter")?.slug).toBe("pantas");
   });
 
   it("keeps BetterGov scoped to submitted upstream work", () => {
