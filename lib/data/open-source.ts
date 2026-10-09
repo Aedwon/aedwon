@@ -199,15 +199,15 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
     projectUrl: "https://bettergov.ph",
     pageHref: "/projects/bettergov-ph",
     summary: "Open-source effort building a better national website for the Philippines.",
-    statusLabel: "1 approved · 1 open PR",
-    statusChecked: "2026-09-03",
+    statusLabel: "1 approved · 1 closed PR",
+    statusChecked: "2026-10-09",
     glowColor: "green",
     brandColor: "#34D399",
     pullRequests: [
       {
         number: 706,
         title: "feat: add government acronym tooltip wrapper",
-        state: "open",
+        state: "closed",
         reviewState: "pending",
         url: "https://github.com/bettergovph/bettergov/pull/706",
         summary: "Adds a reusable React wrapper for Philippine government acronyms using Radix UI tooltips, backed by acronym data and tests.",
@@ -222,7 +222,7 @@ export const OPEN_SOURCE_PROJECTS: OpenSourceProject[] = [
       },
     ],
     reviewNotes: [
-      "Maintainer KishonShrill put PR #706 on standby on July 31, 2026 because they did not yet have a clear place to use the feature. The PR remains open, so its lifecycle state stays open instead of being recorded as rejected or closed.",
+      "Maintainer KishonShrill put PR #706 on standby on July 31, 2026 because they did not yet have a clear place to use the feature. The PR was closed without merge on October 6, 2026, so the portfolio records the closure without inferring a reason beyond the earlier standby note.",
       "The first documentation submission, PR #707, was closed without merge. A maintainer asked for the change to be recreated from current upstream main. PR #744 is that clean revision, limited to the contributor documentation update. I count #707 and #744 as one contribution thread, not two separate contributions.",
       "Maintainer KishonShrill approved PR #744 on September 1, 2026. The PR remains open upstream, so the portfolio records it as approved but not merged.",
     ],
@@ -252,16 +252,16 @@ export const BETTERGOV_PROJECT: ProjectItem = {
   ],
   liveUrl: "https://bettergov.ph",
   githubUrl: "https://github.com/bettergovph/bettergov/pulls?q=is%3Apr+author%3AAedwon",
-  summary: "Two open upstream BetterGov PRs. PR #706 is on maintainer standby, while PR #744 has maintainer approval and is awaiting merge.",
-  problem: "This entry documents submitted upstream work to bettergovph/bettergov. I do not own or maintain BetterGov. PR #706 remains open but is on maintainer standby, while PR #744 is maintainer-approved and still open.",
+  summary: "One approved BetterGov PR remains open. PR #706 was closed without merge after previously being placed on maintainer standby.",
+  problem: "This entry documents submitted upstream work to bettergovph/bettergov. I do not own or maintain BetterGov. PR #706 was closed without merge, while PR #744 is maintainer-approved and still open.",
   architecture: [],
-  results: "PR #744 received maintainer approval on September 1, 2026 and remains open upstream. PR #706 remains open and has been on maintainer standby since July 31, 2026. The earlier documentation PR #707 was closed without merge and was replaced by #744 after maintainer feedback.",
+  results: "PR #744 received maintainer approval on September 1, 2026 and remains open upstream. PR #706 was closed without merge on October 6, 2026 after previously being placed on maintainer standby. The earlier documentation PR #707 was closed without merge and was replaced by #744 after maintainer feedback.",
   articleSections: [
     {
       title: "Government acronym tooltip",
       paragraphs: [
         "PR #706 adds a reusable `TextWithAcronyms` React component that wraps known Philippine government acronyms with Radix UI tooltips. The pull request also adds the acronym data and focused tests.",
-        "The pull request remains open upstream. On July 31, 2026, maintainer KishonShrill put it on standby because they did not yet have a clear place to use the feature, so this portfolio records it as submitted work instead of shipped BetterGov functionality.",
+        "On July 31, 2026, maintainer KishonShrill put the pull request on standby because they did not yet have a clear place to use the feature. It was closed without merge on October 6, 2026, so this portfolio records it as submitted work instead of shipped BetterGov functionality.",
       ],
     },
     {
