@@ -60,3 +60,12 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 ### 11. Skill Evaluation & User Confirmation Gate
 - For every user request, actively evaluate if a specialized skill applies (e.g. Visual Companion for UI brainstorming, Prototype for interactive exploration, TDD for feature code, Subagent-Driven Development for execution).
 - Proactively tell the user which skill fits the task and ask for their confirmation before launching or proceeding.
+
+## Delegate Bulk Work to a Haiku Subagent
+
+- Run test suites, lint/typecheck runs, mechanical edits, and broad codebase crawling through a Haiku 5.5 subagent (`model: "haiku"`). Do not do them in the main thread.
+- Tell the subagent to return a short summary: pass/fail, the exact failing assertions or errors, and file paths touched. Do not pull raw logs or file dumps into the main context.
+- Keep in the main thread: design decisions, debugging reasoning, review of the subagent's result, and any single-file read or one-line edit where spawning costs more than doing it.
+- If a failure needs full output to diagnose, ask the subagent for that specific output.
+- The user approved this standing delegation, so no per-task confirmation is needed to spawn these subagents.
+- Escalate when the task needs higher reasoning: if Haiku's result is unclear, contradictory, or the task turns out to need judgment (subtle debugging, design, security), take it over in the main thread or use a stronger model. Do not accept a weak result to save usage.
