@@ -10,6 +10,7 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
+import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
 import { FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
@@ -255,11 +256,17 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       } else s.kbH = 0;
       // finish whatever the book is doing (Mobile:439-442)
       if (s.turn && (s.reduced || now - s.turn.t0 > s.turn.dur)) {
-        const tr = s.turn; s.turn = null; setTurn(null);
+        const tr = s.turn; s.turn = null;
         const endSide = tr.to > tr.from ? 'L' : 'R';
-        s.sp = tr.to; s.side = endSide; setSp(tr.to); setSide(endSide);
-        s.pan = null; setPan(null);
-        if (tr.then && tr.then !== endSide) { s.pan = { from: sx(endSide), t0: now }; setPan({ from: sx(endSide), t0: now }); s.side = tr.then; setSide(tr.then); }
+        s.sp = tr.to; s.side = endSide;
+        s.pan = null;
+        const thenPan = !!(tr.then && tr.then !== endSide);
+        if (thenPan) { s.pan = { from: sx(endSide), t0: now }; s.side = tr.then!; }
+        // commit the new spread before this frame hides the leaf, or one frame shows the old page
+        flushSync(() => {
+          setTurn(null); setSp(tr.to); setSide(endSide); setPan(null);
+          if (thenPan) { setPan({ from: sx(endSide), t0: now }); setSide(tr.then!); }
+        });
       }
       if (s.pan && now - s.pan.t0 > 450) { s.pan = null; setPan(null); }
       if (s.opening && (s.reduced || now - s.opening.t0 > 640)) {
@@ -294,7 +301,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       // ---- the book, per frame
       const v = V[s.vol], blank: BookPageDef = { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
       const pg = (i: number) => v.all[i] || blank;
-      const sh = (g: number) => (0.42 * (1 - Math.cos(g)) / 2).toFixed(3), shb = (g: number) => (0.06 + 0.26 * (1 + Math.cos(g)) / 2).toFixed(3);
+      const sh = (g: number) => (0.42 * (1 - Math.cos(g)) / 2).toFixed(3), shb = (g: number) => (0.26 * (1 + Math.cos(g)) / 2).toFixed(3); // 0 at rest, to match the unshaded static page
       const tr = s.turn;
       let cov = false;
       if (tr) {
