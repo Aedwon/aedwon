@@ -496,7 +496,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const pg = (i: number) => v.all[i] || { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
   // structural pages for the static L/R boards and the leaf faces
   const lt = turn ?? hold; // the leaf keeps its pages while it fades out after landing
-  const covNow = lt ? lt.from < 0 && lt.to > lt.from : closedIdle;
+  const covNow = lt ? Math.min(lt.from, lt.to) < 0 : closedIdle; // a turn to or from the cover carries the cover on its front
   const aNow = lt ? (lt.to > lt.from ? lt.from : lt.to) : -1;
   const bNow = lt ? (lt.to > lt.from ? lt.to : lt.from) : 0;
   const leafA = covNow ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * aNow + 1);
