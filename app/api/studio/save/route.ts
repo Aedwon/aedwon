@@ -7,7 +7,9 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   try {
     guard(req);
-    const id = await assertProject(new URL(req.url).searchParams.get('id'));
+    const param = new URL(req.url).searchParams.get('id');
+    if (param === null) return respond({ ok: true }); // is the studio on? (the bar asks before it shows itself)
+    const id = await assertProject(param);
     return respond({ ok: true, project: await readProject(id) });
   } catch (e) { return fail(e); }
 }

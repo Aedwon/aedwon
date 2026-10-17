@@ -4,7 +4,7 @@ Project content lives in `content/projects/<id>.json`, one file per project, in 
 
 ## Use it
 
-1. Run `npm run dev` and open any project page (for example `http://localhost:3000/work/pantas`).
+1. Run `npm run dev` and open any project page (for example `http://localhost:3000/work/pantas`). That script listens on `127.0.0.1` only and turns the studio on. `npm run dev:lan` starts the site on your network (for testing on a real phone) with the studio off.
 2. Press **Edit** in the bar at the bottom. Dashed outlines mark every editable line.
 3. Click text, type, press Enter (or click away). Escape puts the old text back. Each change saves to the JSON file at once and the page updates in place.
 4. Drop an image onto a picture slot (hero, a section figure, or the two tiles on a note), or click the slot to choose one. Add alt text in the slot's bar.
@@ -21,7 +21,8 @@ To publish, review with `git diff`, commit the changed files and push. Vercel re
 
 ## Safety
 
-- The API in `app/api/studio` answers only when `NODE_ENV` is not production, the request is for `localhost`, `127.0.0.1` or `[::1]`, the origin (if any) is local, and the `x-studio` header is present.
+- The site must be started by `npm run dev`, which sets `STUDIO_LOCAL=1` and binds `127.0.0.1`, so nothing else on your network can reach it. A plain `next dev` listens on the network, so the studio refuses to run there. This is the real protection: the Host header can be forged by a peer on your network, so it is not trusted on its own.
+- On top of that, the API in `app/api/studio` answers only when `NODE_ENV` is not production, the request is for `localhost`, `127.0.0.1` or `[::1]`, the origin (if any) is local, and the `x-studio` header is present. These checks stop other websites open in your browser.
 - It can write only `content/projects/<known id>.json` and `public/projects/<known id>/`. Paths and ids are checked, prototype keys are refused, and every write is validated before it is saved.
 - Uploads are type-checked by their bytes (PNG, JPEG, WebP, GIF, AVIF), capped at 12 MB, and re-encoded.
 - The studio interface is loaded only in development, so it is not in the production bundle. Production builds still contain the two API routes, which return 404.

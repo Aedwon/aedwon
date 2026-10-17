@@ -11,6 +11,7 @@ export interface StudioApi {
 
 export interface StudioState {
   available: boolean;
+  off: string; // why the studio is off on this localhost server, if it is
   api: StudioApi | null;
   editing: boolean;
   status: 'idle' | 'saving' | 'saved' | 'error';
@@ -18,7 +19,7 @@ export interface StudioState {
   drawer: boolean;
 }
 
-const SERVER: StudioState = { available: false, api: null, editing: false, status: 'idle', message: '', drawer: false };
+const SERVER: StudioState = { available: false, off: '', api: null, editing: false, status: 'idle', message: '', drawer: false };
 let state: StudioState = SERVER;
 const subs = new Set<() => void>();
 

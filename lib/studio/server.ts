@@ -18,9 +18,14 @@ export class StudioError extends Error {
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '::1']);
 const hostOf = (value: string) => { try { return new URL(value).hostname; } catch { return ''; } };
 
-// Refuse everything unless this is the dev server, reached as localhost, from a localhost page.
+// Refuse everything unless this is the dev server started loopback-only (`npm run dev` sets STUDIO_LOCAL and
+// binds 127.0.0.1), reached as localhost, from a localhost page. The Host and Origin checks stop other
+// websites in your browser; they can not stop a peer on your network who forges a Host header, which is why
+// the server must not be listening on the network at all (the STUDIO_LOCAL gate). `npm run dev:lan` leaves
+// the studio off.
 export function guard(req: Request) {
   if (process.env.NODE_ENV === 'production') throw new StudioError(404, 'Not found');
+  if (process.env.STUDIO_LOCAL !== '1') throw new StudioError(403, 'The studio is off. Start the site with npm run dev (it listens on 127.0.0.1 only and turns the studio on).');
   if (!LOCAL_HOSTS.has(hostOf(req.url))) throw new StudioError(403, 'The studio only runs on localhost');
   const origin = req.headers.get('origin');
   if (origin && !LOCAL_HOSTS.has(hostOf(origin))) throw new StudioError(403, 'Foreign origin');

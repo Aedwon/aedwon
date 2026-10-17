@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import {
@@ -9,6 +9,8 @@ import {
 const req = (url: string, headers: Record<string, string> = {}) => new Request(url, { method: 'POST', headers });
 const status = (fn: () => unknown) => { try { fn(); return 200; } catch (e) { return e instanceof StudioError ? e.status : -1; } };
 
+// the studio is on only when the site was started by `npm run dev` (STUDIO_LOCAL=1, loopback-only)
+beforeEach(() => vi.stubEnv('STUDIO_LOCAL', '1'));
 afterEach(() => vi.unstubAllEnvs());
 
 describe('guard', () => {
@@ -20,10 +22,18 @@ describe('guard', () => {
     vi.stubEnv('NODE_ENV', 'production');
     expect(status(() => guard(req('http://localhost:3000/x', { 'x-studio': '1' })))).toBe(404);
     vi.unstubAllEnvs();
+    vi.stubEnv('STUDIO_LOCAL', '1');
     expect(status(() => guard(req('http://192.168.1.5:3000/x', { 'x-studio': '1' })))).toBe(403);
     expect(status(() => guard(req('https://aedwon.com/x', { 'x-studio': '1' })))).toBe(403);
     expect(status(() => guard(req('http://localhost:3000/x', { 'x-studio': '1', origin: 'https://evil.example' })))).toBe(403);
     expect(status(() => guard(req('http://localhost:3000/x')))).toBe(403);
+  });
+});
+
+describe('guard without the loopback-only start', () => {
+  it('stays off when the site was not started by npm run dev, even for a localhost request', () => {
+    vi.stubEnv('STUDIO_LOCAL', '');
+    expect(status(() => guard(req('http://localhost:3000/api/studio/save', { 'x-studio': '1', origin: 'http://localhost:3000' })))).toBe(403);
   });
 });
 

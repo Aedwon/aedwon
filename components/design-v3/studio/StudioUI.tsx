@@ -4,7 +4,7 @@
 // Loaded only in development (see Site.tsx) and shown only on localhost, on a project page.
 import { useEffect, useState } from 'react';
 import { LOGO } from '@/lib/design-v3/data/icons';
-import { loadProject, saveOp, uploadImage } from './actions';
+import { loadProject, ping, saveOp, uploadImage } from './actions';
 import { setStudio, useStudio } from './store';
 
 const LOCAL = ['localhost', '127.0.0.1', '[::1]', '::1'];
@@ -66,7 +66,11 @@ function useProjectId() {
 export default function StudioUI() {
   const st = useStudio();
   const id = useProjectId();
-  useEffect(() => { if (LOCAL.includes(location.hostname)) setStudio({ available: true, api: { saveOp, uploadImage } }); }, []);
+  useEffect(() => {
+    if (!LOCAL.includes(location.hostname)) return;
+    ping().then((why) => setStudio(why ? { off: why } : { available: true, off: '', api: { saveOp, uploadImage } }));
+  }, []);
+  if (st.off && id) return <><style>{CSS}</style><div className="studio-bar" role="status"><span>Studio off: restart the site with <code>npm run dev</code></span></div></>;
   if (!st.available) return null;
   return (
     <>

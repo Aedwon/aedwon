@@ -37,6 +37,14 @@ export function uploadImage(id: string, slot: string, file: File) {
   return call('/api/studio/upload', { method: 'POST', body: form });
 }
 
+// Asks the server whether the studio is on. Resolves to an empty string when it is, otherwise the reason.
+export async function ping(): Promise<string> {
+  try {
+    const data = await (await fetch('/api/studio/save', { headers: { 'x-studio': '1' } })).json();
+    return data.ok ? '' : data.error || 'The studio is off';
+  } catch { return 'The studio is off'; }
+}
+
 export async function loadProject(id: string): Promise<Record<string, unknown>> {
   const res = await fetch('/api/studio/save?id=' + encodeURIComponent(id), { headers: { 'x-studio': '1' } });
   const data = await res.json();
