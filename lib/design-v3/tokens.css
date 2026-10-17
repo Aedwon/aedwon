@@ -1,0 +1,316 @@
+/* Design tokens for the v3 build. Dark values are the prototype values; light values
+   come from reference/generators/light.py via spec/tokens.md. Values must not change. */
+
+/* Room nav button (Room.dc.html:14-16). --c is the per-button colour. */
+.v3rn {
+  border: none;
+  background: none;
+  padding: 0;
+  height: 44px;
+  width: 72px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--c, var(--text-primary));
+  transition: color 0.3s ease;
+}
+.v3rn:hover { color: var(--text-primary); }
+.v3rn:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; border-radius: 4px; }
+
+/* WallIndex2 chrome (WallIndex2.dc.html:12-50), theme-aware */
+.v3tile { -webkit-user-drag: none; user-select: none; }
+.v3tile:focus-visible, .v3gh:focus-visible, .v3kd:focus-visible, .v3sh:focus-visible, .v3tick:focus-visible, .v3row:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 4px; }
+.v3gh { transition: color 0.25s ease; }
+.v3kd, .v3sh { border: none; background: none; padding: 0; font-family: inherit; cursor: pointer; color: var(--c, var(--text-primary)); transition: color 0.25s ease; }
+.v3kd { transition: color 0.3s ease; }
+.v3kd[aria-pressed='false']:hover, .v3sh[aria-pressed='false']:hover { color: var(--text-hover-soft); }
+.v3row { transition: background-color 0.2s ease; }
+.v3row:hover, .v3row:focus-visible { background-color: var(--surface-row-hover); }
+/* the arrow only shows up on the row you're on */
+.v3arr { opacity: 0; translate: -10px 0; transition: opacity 0.2s ease, translate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.v3row:hover .v3arr, .v3row:focus-visible .v3arr { opacity: 1; translate: 0 0; }
+/* type: an icon; its name only on the row you're on */
+.v3tyl { opacity: 0; translate: -4px 0; transition: opacity 0.2s ease, translate 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.v3row:hover .v3tyl, .v3row:focus-visible .v3tyl { opacity: 1; translate: 0 0; }
+/* stack: logos in grey, in their own colours on the row you're on */
+.v3lg path { fill: var(--text-logo-rest); transition: fill 0.3s ease; }
+.v3row:hover .v3lg path, .v3row:focus-visible .v3lg path { fill: var(--b); }
+.v3caret { display: inline-block; width: 2px; height: 30px; margin-left: 4px; vertical-align: -3px; background: var(--text-primary); animation: v3blink 1.05s steps(1) infinite; }
+@keyframes v3blink { 50% { opacity: 0; } }
+.v3ix { scrollbar-width: none; }
+.v3ix::-webkit-scrollbar { width: 0; }
+/* nothing changes size when you switch: a line slides under the icon, the name swaps in one fixed spot */
+.v3kind-line { transition: translate 0.5s cubic-bezier(0.34, 1.3, 0.64, 1); }
+.v3kind-name { transition: opacity 0.28s ease, translate 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.v3kdt { position: absolute; left: 50%; top: 62px; translate: -50% -4px; opacity: 0; pointer-events: none; white-space: nowrap; font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--text-secondary); transition: opacity 0.2s ease, translate 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.v3kd[aria-pressed='false']:hover .v3kdt, .v3kd[aria-pressed='false']:focus-visible .v3kdt { opacity: 1; translate: -50% 0; }
+.v3tick .tl { transition: width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.25s ease; }
+.v3tick .tn { transition: opacity 0.25s ease, translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.v3tick:hover .tn, .v3tick:focus-visible .tn { opacity: 1; translate: 0 0; }
+.v3tick:hover .tl { background-color: var(--text-primary); }
+
+/* Mobile chrome (Mobile.dc.html:12-25), theme-aware */
+.v3ms { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.v3ms::-webkit-scrollbar { width: 0; height: 0; }
+.v3tbtn { border: none; background: none; padding: 0; font-family: inherit; cursor: pointer; color: var(--c, var(--text-secondary)); transition: color 0.25s ease; }
+.v3lg path { fill: var(--text-label); }
+.v3field { width: 100%; box-sizing: border-box; height: 44px; border: none; border-bottom: 1px solid var(--line-hairline-2); background: transparent; color: var(--text-primary); font-family: inherit; font-size: 16px; /* iOS: never below 16px, or focus zooms the page */ padding: 0 0 0 30px; outline: none; }
+.v3field:focus { border-bottom-color: var(--text-primary); }
+.v3field::placeholder { color: var(--text-tertiary); }
+.v3ms a:focus-visible, .v3ms button:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.v3face { position: absolute; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.v3shade { position: absolute; inset: 0; background: #000; pointer-events: none; }
+.v3edgeV { background-color: #E4E2DB; background-image: repeating-linear-gradient(to right, #E4E2DB 0px, #E4E2DB 2px, #cfcdc5 2px, #cfcdc5 3px); }
+
+
+:root {
+  /* room + glass (§2.1) */
+  --room-bg: #0A0A0C;
+  --room-bg-0: #0A0A0C00;
+  --room-bg-gallery: #17171B;
+  --nav-glass: #0A0A0CB8;
+  --glass-room-72: rgba(10, 10, 12, 0.72);
+  --glass-room-78: rgba(10, 10, 12, 0.78);
+  --glass-room-80: rgba(10, 10, 12, 0.8);
+  --glass-room-86: rgba(10, 10, 12, 0.86);
+  --glass-panel-84: rgba(17, 17, 20, 0.84);
+  --glass-panel-90: rgba(17, 17, 20, 0.9);
+  --glass-panel-92: rgba(17, 17, 20, 0.92);
+  --glass-panel-97: rgba(17, 17, 20, 0.97);
+
+  /* surfaces (§2.1) */
+  --surface-media: #131317;
+  --surface-frame: #0F0F12;
+  --surface-terminal: #08080A;
+  --surface-row-hover: #101013;
+  --surface-hover: #121215;
+  --surface-control-hover: #1A1A1F;
+  --surface-sunken: #141418;
+  --surface-404-frame: #232329;
+
+  /* lines (§2.2) */
+  --line-hairline: #1C1C22;
+  --line-hairline-2: #26262C;
+  --line-divider: #2A2A30;
+  --line-divider-alt: #2A2A31;
+  --line-panel: #222228;
+  --line-track: #1F1F24;
+  --line-hover: #3A3A42;
+  --line-underline: #4A4A52;
+  --line-frame: #5A5A63;
+  --line-bezel: #2E2E35;
+  --line-shelf-top: #34343B;
+
+  /* text + fills (§2.3) */
+  --text-primary: #EDEDED;
+  --text-strong: #D4D4D8;
+  --text-hover-soft: #C4C4CC;
+  --text-secondary: #A1A1AA;
+  --text-label: #8A8A93;
+  --text-logo-rest: #7A7A83;
+  --text-404: #71717A;
+  --text-figure: #6B6F7C;
+  --text-tertiary: #61616A;
+  --text-on-inverse: #0A0A0C;
+  --fill-inverse: #EDEDED;
+  --fill-inverse-hover: #FFFFFF;
+
+  /* status (§2.4) */
+  --status-live: #4ADE80;
+  --status-live-ring: rgba(74, 222, 128, 0.18);
+  --status-wip: #F0B45A;
+  --status-wip-ring: rgba(240, 180, 90, 0.16);
+  --status-none: #61616A;
+  --status-none-ring: rgba(97, 97, 106, 0.2);
+
+  /* placeholders (§2.5) */
+  --ph-dot: #2C2C32;
+  --ph-block: #2C2C34;
+  --ph-line: #1F1F25;
+  --ph-avatar: #1E1E24;
+  --ph-rail: #0D0D10;
+  --ph-titlebar: #18181C;
+
+  /* shadows (§5). shadow-object is light-only; dark tiles/tiles cast no drop shadow. */
+  --shadow-object: none;
+  --room-shadow-book: rgba(0, 0, 0, 0.5);
+  --shadow-frame: 0 30px 60px rgba(0, 0, 0, 0.45);
+  --shadow-nail: 0 2px 4px rgba(0, 0, 0, 0.6);
+  --shadow-panel: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --shadow-book-phone: 0 24px 60px rgba(0, 0, 0, 0.45);
+  --shadow-spine-phone: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -5px 10px rgba(0, 0, 0, 0.22);
+
+  /* per-media-kind maps (§3). The terminal keeps its dark body in light. */
+  --dev-body: #050506;
+  --dev-bezel: #2E2E35;
+  --dev-screen: #131317;
+  --dev-label: #8A8A93;
+  --tv-neck: #141418;
+  --tv-foot: #1C1C21;
+  --web-border: #26262C;
+  --web-body: #0F0F12;
+  --web-dot: #2C2C32;
+  --web-bar: #1C1C22;
+  --web-page: #131317;
+  --dc-border: #26262C;
+  --dc-rail: #0D0D10;
+  --dc-icon: #2C2C34;
+  --dc-avatar: #1E1E24;
+  --dc-channels: #121215;
+  --dc-lines: #1F1F25;
+  --dc-chat: #17171B;
+  --dc-label: #8A8A93;
+  --term-border: #26262C;
+  --repo-name: #EDEDED;
+  --repo-label: #8A8A93;
+  --repo-desc: #A1A1AA;
+  --repo-rule: #1C1C22;
+  --data-border: #26262C;
+  --data-body: #131317;
+  --term-dot: #2C2C32;
+  --term-label: #8A8A93;
+  --term-titlebar: #18181C;
+  --term-prompt: #4ADE80;
+  --sheet-bg: #ECEBE6;
+  --sheet-border: transparent;
+
+  /* shelf (§7.4) */
+  --shelf-top-edge: #34343B;
+  --shelf-front: #141418;
+  --shelf-front-shadow: none;
+  --shelf-under: #0E0E11;
+  --shelf-lying1: #1C1C21;
+  --shelf-lying1-top: #2C2C33;
+  --shelf-lying2: #25252B;
+  --shelf-lying2-top: #34343B;
+  --shelf-lying3: #18181D;
+  --shelf-lying3-top: #2A2A30;
+  --shelf-lying3-inset: none;
+  --shelf-bookend: #1F1F25;
+  --shelf-bookend-left: #34343B;
+
+  /* paper (§7.3, identical in both themes) */
+  --paper-bg: #ECEBE6;
+  --paper-ink: #111113;
+  --paper-body: #3F3F46;
+  --paper-meta: #61616A;
+  --paper-rule: #D3D1C9;
+  --paper-field: #C9C7BF;
+  --paper-field-title: #A9A79F;
+  --paper-placeholder: #8B8A84;
+  --paper-placeholder-title: #A3A29B;
+  --paper-slot: #B6B4AC;
+  --paper-hover: rgba(17, 17, 19, 0.06);
+  --paper-focus: rgba(17, 17, 19, 0.035);
+}
+
+[data-theme='light'],
+[data-v3='light'] {
+  --room-bg: #F2F1ED;
+  --room-bg-0: #F2F1ED00;
+  --room-bg-gallery: #EEEDE8;
+  --nav-glass: #F2F1EDB8;
+  --glass-room-72: rgba(242, 241, 237, 0.72);
+  --glass-room-78: rgba(242, 241, 237, 0.78);
+  --glass-room-80: rgba(242, 241, 237, 0.8);
+  --glass-room-86: rgba(242, 241, 237, 0.86);
+  --glass-panel-84: rgba(255, 255, 255, 0.84);
+  --glass-panel-90: rgba(255, 255, 255, 0.9);
+  --glass-panel-92: rgba(255, 255, 255, 0.92);
+  --glass-panel-97: rgba(255, 255, 255, 0.97);
+
+  --surface-media: #FFFFFF;
+  --surface-frame: #FFFFFF;
+  --surface-terminal: #08080A;
+  --surface-row-hover: #FAFAF8;
+  --surface-hover: #FAFAF8;
+  --surface-control-hover: #E9E7E2;
+  --surface-sunken: #EFEEE9;
+  --surface-404-frame: #232329;
+
+  --line-hairline: #E6E4DE;
+  --line-hairline-2: #DCDAD3;
+  --line-divider: #D6D4CD;
+  --line-divider-alt: #D6D4CD;
+  --line-panel: #E2E0DA;
+  --line-track: #E3E1DB;
+  --line-hover: #C4C2BC;
+  --line-underline: #B3B1AB;
+  --line-frame: #A3A29C;
+  --line-bezel: #D3D1CA;
+  --line-shelf-top: #CFCDC6;
+
+  --text-primary: #111114;
+  --text-strong: #2E2E34;
+  --text-hover-soft: #3A3A40;
+  --text-secondary: #56565E;
+  --text-label: #6A6A72;
+  --text-logo-rest: #76767E;
+  --text-404: #7E7E86;
+  --text-figure: #8A8A92;
+  --text-tertiary: #8E8E95;
+  --text-on-inverse: #F2F1ED;
+  --fill-inverse: #111114;
+  --fill-inverse-hover: #2A2A30;
+
+  --status-live: #16A34A;
+  --status-wip: #B7791F;
+  --status-none: #8E8E95;
+
+  --ph-dot: #DCDAD4;
+  --ph-block: #DCDAD4;
+  --ph-line: #E3E1DB;
+  --ph-avatar: #E5E3DD;
+  --ph-rail: #F7F6F3;
+  --ph-titlebar: #ECEAE5;
+
+  --shadow-object: 0 1px 2px rgba(17, 17, 20, 0.05), 0 16px 36px -18px rgba(17, 17, 20, 0.28);
+  --room-shadow-book: rgba(17, 17, 20, 0.175);
+  --shadow-frame: 0 30px 60px rgba(17, 17, 20, 0.158);
+  --shadow-nail: 0 2px 4px rgba(17, 17, 20, 0.21);
+  --shadow-panel: 0 24px 60px rgba(17, 17, 20, 0.175);
+  --shadow-book-phone: 0 24px 60px rgba(17, 17, 20, 0.158);
+
+  --dev-body: #1B1B1F;
+  --dev-bezel: #1B1B1F;
+  --dev-screen: #FFFFFF;
+  --dev-label: #8E8E95;
+  --tv-neck: #2A2A2F;
+  --tv-foot: #3A3A40;
+  --web-border: #E3E1DB;
+  --web-body: #FFFFFF;
+  --web-dot: #E2E0DA;
+  --web-bar: #EEECE7;
+  --web-page: #FAFAF8;
+  --dc-border: #E3E1DB;
+  --dc-rail: #E3E5E8;
+  --dc-icon: #C4C8CE;
+  --dc-avatar: #D3D6DB;
+  --dc-channels: #F2F3F5;
+  --dc-lines: #DEE1E5;
+  --dc-chat: #FFFFFF;
+  --dc-label: #80848E;
+  --term-border: #1E1E22;
+  --repo-name: #111114;
+  --repo-label: #6A6A72;
+  --repo-desc: #56565E;
+  --repo-rule: #ECEAE5;
+  --data-border: #E3E1DB;
+  --data-body: #FFFFFF;
+  --sheet-bg: #FFFFFF;
+  --sheet-border: #E6E4DE;
+
+  --shelf-top-edge: #FFFFFF;
+  --shelf-front: #E1DFD8;
+  --shelf-front-shadow: 0 10px 22px -10px rgba(17, 17, 20, 0.25);
+  --shelf-under: linear-gradient(rgba(17, 17, 20, 0.07), rgba(17, 17, 20, 0));
+  --shelf-lying1: #DAD8D1;
+  --shelf-lying1-top: #E8E6E0;
+  --shelf-lying2: #26262B;
+  --shelf-lying2-top: #3A3A40;
+  --shelf-lying3: #FBFAF7;
+  --shelf-lying3-top: #FFFFFF;
+  --shelf-lying3-inset: inset 0 -1px 0 #E3E1DB;
+  --shelf-bookend: #2A2A30;
+  --shelf-bookend-left: #3A3A42;
+}

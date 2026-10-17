@@ -1,0 +1,47 @@
+    this.V = [
+      { n: '01', title: 'Aerol', tone: L, ink: D, D: 84, pages: [
+        { t: 'Hello', kind: 'text', eyebrow: 'CHAPTER 1', title: 'Hi. I’m Aerol.', titleSize: '50px', body: 'I design and build apps, bots and websites, mostly for communities, events and people studying for something hard.', meta: 'Manila · [open to freelance and full-time work]' },
+        { t: 'A photo', kind: 'photo', slot: '[a photo of you]', caption: '[where this was taken]' },
+        { kind: 'text', eyebrow: 'CHAPTER 2', title: 'High school', titleSize: '44px', body: '[Where you went, and what you were into back then. The first thing you ever built, if you remember it.]', meta: '[School] · [years]' },
+        { kind: 'text', eyebrow: 'CHAPTER 3', title: 'College', titleSize: '44px', body: '[What you studied, and what you ended up doing outside class: the orgs, the events, the first real projects.]', meta: '[University] · [course] · [years]' },
+        { t: 'Why “Aedwon”', kind: 'big', eyebrow: 'CHAPTER 4 · ONLINE, I GO BY', big: 'Aedwon', bigSize: '86px', body: 'Online, that’s me. [Where the name comes from, in two sentences.]' }
+      ] },
+      { n: '02', title: 'How I work', tone: '#26262c', ink: L, D: 68, pages: [
+        { t: 'Research first', kind: 'big', eyebrow: 'CHAPTER 1 · RESEARCH FIRST', big: '80%', bigSize: '176px', body: 'of every project is research and planning, before any code.' },
+        { t: 'The optimal choice', kind: 'text', eyebrow: 'CHAPTER 2 · OPTIMIZE', title: 'Is this the most optimal choice?', titleSize: '40px', body: 'I obsess over it. Every architecture and every workflow gets the same question before it stays.' },
+        { t: 'Daily kit', kind: 'list', eyebrow: 'CHAPTER 3 · DAILY KIT', title: 'What I build with', items: [{ a: 'Claude Code', b: 'agentic coding' }, { a: 'Codex', b: 'agentic coding' }, { a: 'using-superpowers', b: 'skill framework' }, { a: 'Matt Pocock’s skills', b: 'engineering' }, { a: 'Gemini Deep Research', b: 'research' }] }
+      ] },
+      { n: '03', title: 'Guilds', tone: '#15151a', ink: L, D: 76, pages: [
+        { kind: 'guild', eyebrow: 'GAMES & ESPORTS', title: 'Games and esports', cols: 2, orgs: ['MOONTON', 'HoYoverse', 'Dark League Studios', 'UP Oblation Esports'] },
+        { kind: 'guild', eyebrow: 'BRANDS', title: 'Brands', cols: 1, orgs: ['OPPO Philippines'] },
+        { kind: 'guild', eyebrow: 'GOVERNMENT', title: 'Government', cols: 1, orgs: ['Ilocos Sur Provincial Government'] },
+        { kind: 'guild', eyebrow: 'EDUCATION & SCIENCE', title: 'Education and science', cols: 1, orgs: ['PSYSC', '3STUDYANTE'] },
+        { kind: 'guild', eyebrow: 'UNIVERSITY', title: 'University', cols: 1, orgs: ['UP Diliman', 'UP Fighting Maroons', 'UP Fair 2024'] }
+      ] },
+      { n: '04', title: 'Training arc', tone: '#202026', ink: L, D: 96, pages: [
+        { kind: 'org', eyebrow: 'TRAINING ARC', org: 'PSYSC', roles: [
+          { title: 'Marketing Associate', dates: 'Feb 2024 – Present', desc: 'Secured corporate sponsorships generating over ₱800,000 in funding for a national science competition.' },
+          { title: 'Regional Head, Region I/II/NCR', dates: 'May – Sep 2024', desc: 'Directed regional elimination rounds and MathSciAKa workshops, coordinating 30+ volunteers.' },
+          { title: 'Science Olympiad Core', dates: 'May – Sep 2024', desc: 'Co-authored 500+ questions and built the scoring model for 4,000+ competitors.' }] },
+        ph('MOONTON Games'), ph('UP Fighting Maroons'), ph('UP Oblation Esports'), ph('Dark League Studios'), ph('UP Fair 2024'), ph('miHoYo (HoYoverse)')
+      ] },
+      { n: '05', title: 'Off the clock', tone: '#18181d', ink: L, D: 64, pages: [
+        { t: 'Manhwa', kind: 'read', eyebrow: 'READING · MANHWA' }, { t: 'Manga', kind: 'read', eyebrow: 'READING · MANGA' }, { t: 'Isekai and fantasy anime', kind: 'read', eyebrow: 'WATCHING · ISEKAI & FANTASY' }
+      ] },
+      { n: '06', title: 'Next volume', tone: L, ink: D, D: 56, contact: true, pages: [
+        { kind: 'titleit' }, { kind: 'write' }, { kind: 'contact', quickTitle: 'Or the quick way' }
+      ] }
+    ];
+    // page 0 of every volume (inside the cover) is its contents; the last spread closes the volume
+    this.V.forEach((v, vi) => {
+      const body = v.pages.map((p, i) => ({ ...p, vol: v.n, running: v.title }));
+      let all;
+      if (v.contact) all = body;
+      else {
+        const toc = body.map((p, i) => ({ title: p.t || p.title || p.org || p.big, page: i + 1, n: String(i + 1).padStart(2, '0') }));
+        all = [{ kind: 'contents', vol: v.n, title: v.title, toc }, ...body];
+      }
+      if (all.length % 2) { const nx = this.V[vi + 1]; all.push({ kind: 'end', vol: v.n, nextVol: nx ? nx.n : '', nextTitle: nx ? nx.title : '' }); }
+      all.forEach((p, i) => { if (i > 0 && p.kind !== 'end') p.folio = String(i).padStart(2, '0'); });
+      v.all = all; v.spreads = all.length / 2;
+    });

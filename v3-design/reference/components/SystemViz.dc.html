@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pantas system visual</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; box-sizing: border-box; background: #0c0c0e; color: #ededed; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; gap: 16px">
+
+<div aria-hidden="true" style="position: relative; height: {{ vizH }}">
+
+<!-- ROADMAP: two weeks planning themselves -->
+<sc-if value="{{ is.roadmap }}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 5px; height: 22px">
+<span style="grid-column: 1 / 10; grid-row: 1; align-self: end; font-size: 11px; font-style: italic; color: #a1a1aa; white-space: nowrap; opacity: {{ cal.orderOp }}; transform: translateX({{ cal.orderX }}); transition: opacity .6s ease, transform .9s cubic-bezier(.22,1,.36,1)">weakest topics first →</span>
+<span style="grid-row: 1; grid-column: {{ cal.bracketCols }}; border-top: 1px solid #8a8a93; border-left: 1px solid #8a8a93; border-right: 1px solid #8a8a93; height: 6px; margin-top: 16px; opacity: {{ cal.bracketOp }}; clip-path: {{ cal.bracketClip }}; transition: opacity .4s ease, clip-path .8s cubic-bezier(.65,0,.35,1); position: relative"><span style="position: absolute; left: 50%; top: -17px; transform: translateX(-50%); font-size: 11px; font-style: italic; color: #a1a1aa; white-space: nowrap">review only</span></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 5px; height: 190px">
+<sc-for list="{{ cal.cols }}" as="c" hint-placeholder-count="14">
+<div style="position: relative; box-sizing: border-box; border: 1px solid {{ c.border }}; border-radius: 3px; padding: 3px; display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; background: {{ c.bg }}; transition: border-color .4s ease">
+<sc-if value="{{ c.showTop }}" hint-placeholder-val="{{ false }}">
+<span style="position: absolute; left: 0; top: -1px; transform: translateY(-100%); padding-bottom: 4px; font-size: 10.5px; font-family: 'Geist Mono', monospace; color: #ededed; white-space: nowrap">{{ c.top }}</span>
+</sc-if>
+<span style="height: {{ c.mockH }}; background: #ededed; border-radius: 2px; transition: height .8s cubic-bezier(.22,1,.36,1) {{ c.delay }}; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #0c0c0e; overflow: hidden">{{ c.mockLabel }}</span>
+<span style="height: {{ c.revH }}; box-sizing: border-box; border: {{ c.revB }}; border-radius: 2px; transition: height .8s cubic-bezier(.22,1,.36,1) {{ c.delay }}"></span>
+<span style="height: {{ c.newH }}; background: #55555d; border-radius: 2px; transition: height .8s cubic-bezier(.22,1,.36,1) {{ c.delay }}; position: relative; overflow: hidden"><span style="position: absolute; left: 0; right: 0; top: 33%; height: {{ c.splitH }}; background: #0c0c0e"></span><span style="position: absolute; left: 0; right: 0; top: 66%; height: {{ c.splitH }}; background: #0c0c0e"></span></span>
+<span style="height: {{ c.lesH }}; background: #ededed; border-radius: 2px; transition: height .8s cubic-bezier(.22,1,.36,1) {{ c.delay }}"></span>
+<sc-if value="{{ c.isOff }}" hint-placeholder-val="{{ false }}">
+<span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-style: italic; color: #8a8a93">off</span>
+</sc-if>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; justify-content: flex-end; border-left: 1px solid #ededed; padding-left: 6px"><span style="font-size: 11.5px; font-weight: 600">Exam</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 5px; font-family: 'Geist Mono', monospace; font-size: 10px; color: #8a8a93; text-align: center">
+<sc-for list="{{ cal.cols }}" as="c" hint-placeholder-count="14"><span style="color: {{ c.dayColor }}">{{ c.day }}</span></sc-for>
+<span></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 18px; padding-top: 4px; font-size: 11.5px; color: #8a8a93">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 9px; height: 9px; border-radius: 2px; background: #ededed"></span>lessons</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 9px; height: 9px; border-radius: 2px; background: #55555d"></span>new questions</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 9px; height: 9px; box-sizing: border-box; border-radius: 2px; border: 1px solid #a1a1aa"></span>reviews</span>
+</div>
+</div>
+</sc-if>
+
+<!-- STUDY LOOP: one question, then the review dates spreading out -->
+<sc-if value="{{ is.study }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; top: 0; width: 44%; box-sizing: border-box; padding: 14px; border: 1px solid {{ st.cardBorder }}; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; transition: border-color .3s ease">
+<span style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; height: 3px; border-radius: 2px; background: #1f1f24; position: relative"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{ st.timerW }}; border-radius: 2px; background: {{ st.timerColor }}"></span><span style="position: absolute; left: 62.5%; top: -4px; width: 1px; height: 11px; background: #6b6b73"></span><span style="position: absolute; left: 62.5%; top: 9px; transform: translateX(-50%); font-family: 'Geist Mono', monospace; font-size: 9.5px; color: #8a8a93">25 s</span></span>
+<span style="width: 34px; text-align: right; font-family: 'Geist Mono', monospace; font-size: 11.5px; color: {{ st.timerColor }}">{{ st.secs }} s</span>
+</span>
+<span style="height: 6px; width: 90%; border-radius: 3px; background: #2a2a30; margin-top: 12px"></span>
+<span style="height: 6px; width: 60%; border-radius: 3px; background: #2a2a30; margin-bottom: 4px"></span>
+<sc-for list="{{ st.choices }}" as="ch" hint-placeholder-count="4">
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 9px; height: 9px; flex-shrink: 0; border-radius: 99px; box-sizing: border-box; border: 1px solid {{ ch.ring }}; background: {{ ch.dot }}; transform: scale({{ ch.s }}); transition: background-color .25s ease, border-color .25s ease, transform .5s cubic-bezier(.34,1.56,.64,1)"></span><span style="height: 5px; width: {{ ch.w }}; border-radius: 3px; background: {{ ch.bar }}; transition: background-color .3s ease"></span><span style="font-size: 11px; color: {{ ch.ring }}">{{ ch.mark }}</span></span>
+</sc-for>
+</div>
+<div style="position: absolute; left: 52%; top: 0; display: flex; gap: 14px; font-family: 'Geist Mono', monospace; font-size: 11.5px">
+<sc-for list="{{ st.ratings }}" as="r" hint-placeholder-count="4">
+<span style="color: {{ r.color }}; border-bottom: 1px solid {{ r.line }}; padding-bottom: 3px; transition: color .3s ease, border-color .3s ease">{{ r.t }}</span>
+</sc-for>
+</div>
+<span style="position: absolute; left: 52%; top: 40px; font-size: 12.5px; line-height: 1.6; color: #a1a1aa; opacity: {{ st.outcomeOp }}; transform: translateY({{ st.outcomeY }}); transition: opacity .45s ease, transform .6s cubic-bezier(.22,1,.36,1)">{{ st.outcome }}</span>
+<sc-for list="{{ st.arcs }}" as="ar" hint-placeholder-count="3">
+<span style="position: absolute; left: {{ ar.left }}; width: {{ ar.width }}; top: {{ ar.top }}; height: {{ ar.h }}; box-sizing: border-box; border: 1px solid #6b6b73; border-bottom: none; border-radius: 50% 50% 0 0 / 100% 100% 0 0; clip-path: {{ ar.clip }}; transition: {{ ar.tr }}"></span>
+</sc-for>
+<span style="position: absolute; left: 0; right: 0; top: 240px; height: 1px; background: #3a3a42"></span>
+<sc-for list="{{ st.dots }}" as="d" hint-placeholder-count="3">
+<span style="position: absolute; left: {{ d.left }}; top: 235px; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 99px; background: #ededed; opacity: {{ d.op }}; transform: scale({{ d.s }}); transition: {{ d.tr }}"></span>
+<span style="position: absolute; left: {{ d.left }}; top: 214px; transform: translate(-50%, {{ d.ly }}); font-family: 'Geist Mono', monospace; font-size: 10.5px; color: #a1a1aa; opacity: {{ d.op }}; transition: {{ d.ltr }}">{{ d.label }}</span>
+</sc-for>
+<sc-for list="{{ st.ticks }}" as="tk" hint-placeholder-count="5">
+<span style="position: absolute; left: {{ tk.left }}; top: 254px; transform: {{ tk.shift }}; font-family: 'Geist Mono', monospace; font-size: 10px; color: #8a8a93">{{ tk.t }}</span>
+</sc-for>
+<span style="position: absolute; left: 0; top: 278px; font-size: 11px; font-style: italic; color: #8a8a93">example intervals</span>
+<span style="position: absolute; right: 0; top: 278px; font-size: 11px; font-style: italic; color: #8a8a93">per-student tuning: planned</span>
+</sc-if>
+
+<!-- CONTENT: question cards moving across a board, left to right -->
+<sc-if value="{{ is.content }}" hint-placeholder-val="{{ false }}">
+<sc-for list="{{ ct.cols }}" as="col" hint-placeholder-count="4">
+<div style="position: absolute; left: {{ col.left }}; top: 0; width: 25%; height: 300px; box-sizing: border-box; border-left: {{ col.rule }}; padding-left: 12px">
+<span style="font-size: 12px; color: {{ col.color }}; transition: color .3s ease">{{ col.t }}</span>
+</div>
+</sc-for>
+<span style="position: absolute; left: 75%; top: -2px; width: 25%; height: 286px; box-sizing: border-box; border: 1px solid {{ ct.appBorder }}; border-radius: 8px; transition: border-color .5s ease"></span>
+<span style="position: absolute; left: 50%; top: 236px; width: calc(25% - 12px); margin-left: 6px; height: 30px; box-sizing: border-box; border: 1px dashed {{ ct.laneBorder }}; border-radius: 6px; transition: border-color .3s ease"></span>
+<span style="position: absolute; left: 50%; top: 272px; margin-left: 12px; font-size: 11px; font-style: italic; color: {{ ct.laneColor }}; transition: color .3s ease">needs a figure</span>
+<sc-for list="{{ ct.cards }}" as="q" hint-placeholder-count="8">
+<span style="position: absolute; left: {{ q.left }}; top: {{ q.top }}; width: calc(25% - 24px); margin-left: 12px; height: 22px; box-sizing: border-box; border-radius: 4px; border: 1px {{ q.style }} {{ q.border }}; background: {{ q.bg }}; opacity: {{ q.op }}; transform: scale({{ q.s }}); display: flex; align-items: center; gap: 6px; padding: 0 8px; transition: left .75s cubic-bezier(.34,1.25,.64,1) {{ q.delay }}, top .75s cubic-bezier(.34,1.25,.64,1) {{ q.delay }}, background-color .35s ease {{ q.delay }}, border-color .35s ease {{ q.delay }}, opacity .35s ease, transform .5s cubic-bezier(.34,1.56,.64,1)">
+<span style="height: 3px; width: 40%; border-radius: 2px; background: {{ q.line }}"></span><span style="height: 3px; width: 22%; border-radius: 2px; background: {{ q.line }}"></span>
+</span>
+</sc-for>
+</sc-if>
+
+<!-- INSIGHTS: stamina. The habit is fixed; only the app's certainty changes as mocks come in. -->
+<sc-if value="{{ is.insights }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<span style="font-size: 14px; font-weight: 600">Stamina <span style="font-weight: 400; color: #8a8a93">first half vs. second half</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8a8a93">Pro</span>
+</div>
+<div style="position: absolute; left: 0; right: 0; top: 28px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; font-size: 12.5px">
+<span style="display: flex; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 11.5px">
+<sc-for list="{{ ins.states }}" as="x" hint-placeholder-count="3"><span style="color: {{ x.color }}; border-bottom: 1px solid {{ x.line }}; padding-bottom: 2px; transition: color .3s ease, border-color .3s ease">{{ x.t }}</span></sc-for>
+</span>
+<span style="color: #a1a1aa">{{ ins.reason }}</span>
+</div>
+
+<!-- the two columns -->
+<sc-for list="{{ ins.cols }}" as="c" hint-placeholder-count="2">
+<div style="position: absolute; left: {{ c.left }}; top: 66px; width: 46%; display: flex; gap: 16px; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 92px">
+<span style="font-size: 12px; color: #8a8a93">{{ c.label }}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 26px; letter-spacing: -0.02em; color: #ededed">{{ c.pct }}</span>
+<span style="font-size: 10.5px; color: #8a8a93">answers so far: {{ c.n }}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 3px; width: 128px; padding-top: 4px">
+<sc-for list="{{ c.dots }}" as="d" hint-placeholder-count="20"><span style="width: 7px; height: 7px; box-sizing: border-box; border-radius: 99px; border: 1px solid #a1a1aa; background: {{ d.bg }}; opacity: {{ d.op }}; transform: scale({{ d.s }}); transition: opacity .25s ease, transform .45s cubic-bezier(.34,1.56,.64,1), background-color .3s ease"></span></sc-for>
+</div>
+</div>
+</sc-for>
+
+<!-- shared accuracy scale: ranges narrow around a fixed true habit -->
+<div style="position: absolute; left: 0; right: 0; top: 158px; display: flex; justify-content: space-between; font-size: 11px; color: #8a8a93">
+<span>accuracy · range of what this could be</span>
+<span>┆ true habit (example)</span>
+</div>
+<div style="position: absolute; left: 0; right: 0; top: 180px; height: 52px">
+<sc-for list="{{ ins.lanes }}" as="l" hint-placeholder-count="2">
+<span style="position: absolute; left: 0; top: {{ l.top }}; font-size: 10.5px; color: #8a8a93; line-height: 12px">{{ l.label }}</span>
+<span style="position: absolute; left: {{ l.habit }}; top: {{ l.habitTop }}; height: 18px; border-left: 1px dashed #8a8a93"></span>
+<span style="position: absolute; left: {{ l.lo }}; width: {{ l.w }}; top: {{ l.bandTop }}; height: 8px; border-radius: 2px; background: {{ l.fill }}; opacity: {{ l.op }}; transition: left 1s cubic-bezier(.22,1,.36,1), width 1s cubic-bezier(.22,1,.36,1), opacity .5s ease"></span>
+<span style="position: absolute; left: {{ l.mid }}; top: {{ l.markTop }}; width: 2px; height: 14px; margin-left: -1px; background: #ededed; opacity: {{ l.op }}; transition: left 1s cubic-bezier(.22,1,.36,1), opacity .5s ease"></span>
+</sc-for>
+</div>
+<sc-for list="{{ ins.ticks }}" as="tk" hint-placeholder-count="4">
+<span style="position: absolute; left: {{ tk.left }}; top: 234px; transform: translateX(-50%); font-family: 'Geist Mono', monospace; font-size: 10px; color: #8a8a93">{{ tk.t }}</span>
+</sc-for>
+
+<!-- the sentence, only when clear -->
+<span style="position: absolute; left: 0; top: 260px; font-size: 13.5px; color: #ededed; opacity: {{ ins.sentenceOp }}; transform: translateY({{ ins.sentenceY }}); transition: opacity .6s ease, transform .8s cubic-bezier(.22,1,.36,1)"><span style="color: #f2555a">↓</span> Accuracy drops <span style="color: #f2555a">{{ ins.gap }}%</span> in the second half of a mock.</span>
+
+<!-- mocks taken over 28 days -->
+<span style="position: absolute; left: 0; top: 292px; font-size: 11px; color: #8a8a93">mocks taken</span>
+<span style="position: absolute; left: 84px; right: 0; top: 299px; height: 1px; background: #2a2a30"></span>
+<div style="position: absolute; left: 84px; right: 0; top: 292px; height: 40px">
+<sc-for list="{{ ins.mocks }}" as="m" hint-placeholder-count="7">
+<span style="position: absolute; left: {{ m.left }}; top: 3px; width: 9px; height: 9px; margin-left: -4.5px; box-sizing: border-box; border-radius: 2px; border: 1px solid {{ m.border }}; background: {{ m.bg }}; transform: scale({{ m.s }}); transition: background-color .3s ease, border-color .3s ease, transform .5s cubic-bezier(.34,1.56,.64,1)"></span>
+</sc-for>
+<span style="position: absolute; left: 0; top: 18px; font-family: 'Geist Mono', monospace; font-size: 10px; color: #8a8a93">day 0</span>
+<span style="position: absolute; left: 50%; top: 18px; transform: translateX(-50%); font-family: 'Geist Mono', monospace; font-size: 10px; color: #8a8a93">day 14</span>
+<span style="position: absolute; right: 0; top: 18px; font-family: 'Geist Mono', monospace; font-size: 10px; color: #8a8a93">day 28</span>
+</div>
+</sc-if>
+
+<!-- PRO AND BACKUP: three checks open the line, then answers flow to the backup and the second phone -->
+<sc-if value="{{ is.pro }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; right: 0; top: 0; display: flex; flex-wrap: wrap; gap: 8px 26px">
+<sc-for list="{{ pro.checks }}" as="ck" hint-placeholder-count="3">
+<span style="display: inline-flex; align-items: center; gap: 9px; font-size: 13px; color: {{ ck.color }}; transition: color .3s ease">
+<span style="width: 16px; height: 16px; box-sizing: border-box; border-radius: 4px; border: 1px solid {{ ck.border }}; background: {{ ck.bg }}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #0c0c0e; transform: scale({{ ck.s }}); transition: background-color .25s ease, border-color .25s ease, transform .5s cubic-bezier(.34,1.56,.64,1)">{{ ck.mark }}</span>{{ ck.t }}</span>
+</sc-for>
+</div>
+
+<!-- Pro confirmation: the phone asks RevenueCat; RevenueCat tells the server; the server's flag comes back to the phone -->
+<span style="position: absolute; left: calc(50% - 150px); top: 34px; width: 110px; height: 26px; box-sizing: border-box; border: 1px solid {{ pro.rcBorder }}; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 11px; color: {{ pro.rcColor }}; transition: border-color .3s ease, color .3s ease">{{ pro.rcText }}</span>
+<span style="position: absolute; left: calc(50% - 40px); right: calc(50% - 40px); top: 47px; border-top: 1px dashed #3a3a42"></span>
+<span style="position: absolute; left: calc(50% + 40px); top: 34px; width: 110px; height: 26px; box-sizing: border-box; border: 1px solid {{ pro.svBorder }}; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 11px; color: {{ pro.svColor }}; transition: border-color .3s ease, color .3s ease">{{ pro.svText }}</span>
+<span style="position: absolute; left: {{ pro.cpX }}; top: {{ pro.cpY }}; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 99px; background: #ededed; opacity: {{ pro.cpOp }}"></span>
+
+<!-- the two lines: dashed while backup is off, solid once all three checks pass -->
+<span style="position: absolute; left: 104px; right: calc(50% + 62px); top: 152px; border-top: 1px {{ pro.lineStyle }} {{ pro.lineColor }}; transition: border-color .4s ease"></span>
+<span style="position: absolute; left: calc(50% + 62px); right: 104px; top: 152px; border-top: 1px {{ pro.lineStyle }} {{ pro.lineColor }}; transition: border-color .4s ease"></span>
+
+<sc-for list="{{ pro.boxes }}" as="bx" hint-placeholder-count="3">
+<div style="position: absolute; left: {{ bx.left }}; top: {{ bx.top }}; width: {{ bx.w }}; height: {{ bx.h }}; margin-left: {{ bx.ml }}; box-sizing: border-box; border: {{ bx.border }}; border-radius: {{ bx.r }}; padding: 14px 12px; display: flex; flex-direction: column; gap: 12px; background: #0c0c0e; transition: border-color .4s ease">
+<span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: #8a8a93">{{ bx.label }}</span>
+<span style="display: grid; grid-template-columns: repeat(3, 12px); gap: 6px">
+<sc-for list="{{ bx.tiles }}" as="tl" hint-placeholder-count="12"><span style="width: 12px; height: 12px; box-sizing: border-box; border-radius: 3px; border: 1px solid {{ tl.border }}; background: {{ tl.bg }}; transform: scale({{ tl.s }}); transition: background-color .3s ease, border-color .3s ease, transform .5s cubic-bezier(.34,1.56,.64,1)"></span></sc-for>
+</span>
+</div>
+</sc-for>
+
+<sc-for list="{{ pro.packets }}" as="pk" hint-placeholder-count="3">
+<span style="position: absolute; left: {{ pk.left }}; top: 148px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 2px; background: #ededed; opacity: {{ pk.op }}"></span>
+</sc-for>
+
+<!-- status of the backup on this phone -->
+<span style="position: absolute; left: 0; top: 248px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8a8a93">backup: <span style="color: {{ pro.statusColor }}; opacity: {{ pro.statusOp }}">{{ pro.status }}</span></span>
+<div style="position: absolute; left: 0; right: 0; top: 274px; display: flex; align-items: center; gap: 12px; opacity: {{ pro.waitOp }}; transition: opacity .3s ease">
+<span style="width: 104px; height: 3px; border-radius: 2px; background: #1f1f24; position: relative; overflow: hidden"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{ pro.waitW }}; background: #ededed"></span></span>
+<span style="font-size: 11.5px; color: #8a8a93">uploads 5 s after the last change</span>
+</div>
+</sc-if>
+
+</div>
+
+<!-- caption: which step, plus pause -->
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 12px; border-top: 1px solid #1f1f24">
+<span style="font-size: 13px; color: #a1a1aa"><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #8a8a93">{{ stepNum }}</span>&#160;&#160;{{ stepName }}</span>
+<button onClick="{{ togglePause }}" style="min-height: 44px; padding: 0; border: none; background: none; font-family: inherit; font-size: 13px; color: #a1a1aa; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #4a4a52; cursor: pointer">{{ pauseLabel }}</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"which":{"editor":"enum","options":["roadmap","study","content","insights","pro"],"default":"roadmap"},"$preview":{"width":600,"height":370}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { paused: false, reduced: false, tick: 0 };
+    this.elapsed = 0;
+  }
+  componentDidMount() {
+    const reduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) this.setState({ reduced: true, paused: true });
+    if (reduced) return;
+    // one clock per visual, driven by the display's frame rate for smooth motion
+    let last = 0;
+    const loop = (now) => {
+      if (!last) last = now;
+      const dt = Math.min(now - last, 100);
+      last = now;
+      if (!this.state.paused) {
+        this.elapsed += dt;
+        this.setState({ tick: this.elapsed });
+      }
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+  renderVals() {
+    const which = this.props.which || 'roadmap';
+    const PH = {
+      roadmap: ['Read the inputs', 'Plan the stretch', 'Order topics', 'Size each day', 'Add reviews', 'Place the mock', 'Split into sittings', 'Freeze today'],
+      study: ['Try 1', 'Try 2', 'Try 3', 'Try 4'],
+      content: ['Written', 'Checked and blind-solved', 'Sent back, fixed', 'Approved', 'Figure added', 'Shipped in the app'],
+      insights: ['early', 'forming', 'clear'],
+      pro: ['Signed in', 'Pro on this phone', 'Server confirms Pro', 'Up to date', 'A new answer', 'Pro ends']
+    };
+    const phases = PH[which];
+    const n = which === 'insights' ? 4 : phases.length;
+    const STEP = which === 'study' ? 3800 : which === 'insights' ? 3400 : which === 'pro' ? 2800 : 2400;
+    const reduced = this.state.reduced;
+    const el = this.elapsed;
+    const cycleNo = Math.floor(el / (n * STEP));
+    const t = el % (n * STEP);
+    // reduced motion shows one representative still: the last step, or "up to date" for backup
+    const a = reduced ? (which === 'pro' ? 3 : n - 1) : Math.floor(t / STEP);
+    const p = reduced ? 1 : (t % STEP) / STEP;
+    const out = {
+      is: { roadmap: which === 'roadmap', study: which === 'study', content: which === 'content', insights: which === 'insights', pro: which === 'pro' },
+      stepNum: String(a + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0'),
+      stepName: phases[a],
+      vizH: '300px',
+      pauseLabel: this.state.paused ? 'Play' : 'Pause',
+      togglePause: () => this.setState({ paused: !this.state.paused })
+    };
+    const lerp = (x, y, k) => x + (y - x) * Math.max(0, Math.min(1, k));
+    const clamp01 = (k) => Math.max(0, Math.min(1, k));
+    const easeInOut = (k) => { k = clamp01(k); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+    const easeOut = (k) => 1 - Math.pow(1 - clamp01(k), 3);
+
+    if (which === 'roadmap') {
+      const names = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      const study = [];
+      for (let i = 0; i < 14; i++) if (i % 7 !== 6) study.push(i);
+      const ro = study.slice(-4);
+      const mockDay = 11;
+      const cols = [];
+      for (let i = 0; i < 14; i++) {
+        const off = i % 7 === 6;
+        const isRo = ro.includes(i);
+        const learn = !off && !isRo;
+        const today = i === 0;
+        let top = '';
+        if (today && a >= 6) top = '5 · 10 · 20';
+        if (today && a >= 7) top = 'today · frozen';
+        cols.push({
+          day: names[i % 7], dayColor: today ? '#ededed' : '#8a8a93', isOff: off,
+          border: today && a >= 7 ? '#ededed' : off ? '#18181b' : '#26262c',
+          bg: off ? 'repeating-linear-gradient(135deg, #111114 0 4px, #0c0c0e 4px 8px)' : 'transparent',
+          lesH: learn && a >= 3 ? '14px' : '0px',
+          newH: learn && a >= 3 ? '42px' : '0px',
+          revH: !off && a >= 4 ? Math.min(40, 12 + i * 3) + 'px' : '0px',
+          revB: !off && a >= 4 ? '1px solid #a1a1aa' : '0 solid transparent',
+          mockH: i === mockDay && a >= 5 ? '32px' : '0px',
+          mockLabel: i === mockDay && a >= 5 ? 'MOCK' : '',
+          splitH: today && a >= 6 ? '2px' : '0px',
+          delay: (i * 45) + 'ms',
+          showTop: !!top, top
+        });
+      }
+      // order step: new-question blocks appear weakest-first (left to right)
+      out.cal = { cols, bracketCols: (ro[0] + 1) + ' / ' + (ro[ro.length - 1] + 2), bracketOp: a >= 1 ? 1 : 0, bracketClip: a >= 1 ? 'inset(-20px 0 0 0)' : 'inset(-20px 50% 0 50%)', orderOp: a >= 2 ? 1 : 0, orderX: a >= 2 ? '0px' : '-12px' };
+    }
+
+    if (which === 'study') {
+      // four attempts at the same question; intervals are examples, not scheduler output
+      const tries = [
+        { right: true, secs: 12, rating: 'Good', gap: 3, outcome: 'Right, under 25 s. Back in 3 days.' },
+        { right: true, secs: 38, rating: 'Hard', gap: 4, outcome: 'Right, but slow. Back a little sooner.' },
+        { right: false, secs: 9, rating: 'Again', gap: 1, outcome: 'Wrong. Back tomorrow.' },
+        { right: true, secs: 14, rating: 'Good', gap: 5, outcome: 'Right again. The gap grows.' }
+      ];
+      const cur = tries[a];
+      const answered = p >= 0.38;
+      const rated = p >= 0.5;
+      const placed = p >= 0.6;
+      const secs = answered ? cur.secs : Math.round(cur.secs * easeOut(p / 0.38));
+      const GREEN = '#4ade80', RED = '#f2555a';
+      const chosen = cur.right ? 1 : 3;
+      const days = [0];
+      tries.forEach((tr) => days.push(days[days.length - 1] + tr.gap));
+      const xs = days.map((d) => (d / 15) * 100);
+      const shown = (k) => k === 0 || k - 1 < a || (k - 1 === a && placed);
+      out.st = {
+        cardBorder: answered ? (cur.right ? GREEN : RED) : '#2a2a30',
+        secs: String(secs),
+        timerW: (Math.min(secs, 40) / 40 * 100).toFixed(1) + '%',
+        timerColor: secs > 25 ? '#a1a1aa' : '#ededed',
+        choices: [0, 1, 2, 3].map((i) => {
+          const isChosen = answered && i === chosen;
+          const showCorrect = answered && !cur.right && i === 1;
+          const col = isChosen ? (cur.right ? GREEN : RED) : showCorrect ? GREEN : '#4a4a52';
+          return {
+            w: ['70%', '55%', '80%', '45%'][i],
+            ring: col,
+            dot: isChosen ? col : 'transparent',
+            bar: isChosen || showCorrect ? col : '#2a2a30',
+            s: isChosen ? 1.35 : 1,
+            mark: isChosen ? (cur.right ? '✓' : '✗') : showCorrect ? '✓' : ''
+          };
+        }),
+        ratings: ['Again', 'Hard', 'Good', 'Easy'].map((r) => {
+          const on = rated && r === cur.rating;
+          return { t: r, color: r === 'Easy' ? '#4a4a52' : on ? '#ededed' : '#8a8a93', line: on ? '#ededed' : 'transparent' };
+        }),
+        outcome: cur.outcome,
+        outcomeOp: placed ? 1 : 0,
+        outcomeY: placed ? '0px' : '6px',
+        dots: days.map((d, i) => {
+          const on = shown(i);
+          return {
+            left: xs[i] + '%', op: on ? 1 : 0, s: on ? 1 : 0.2, ly: on ? '0px' : '6px',
+            label: i === 0 ? 'now' : '+' + tries[i - 1].gap + 'd',
+            // the dot lands right as its arc finishes drawing
+            tr: on ? 'opacity .2s ease .55s, transform .55s cubic-bezier(.34,1.56,.64,1) .55s' : 'opacity .3s ease, transform .3s ease',
+            ltr: on ? 'opacity .4s ease .7s, transform .6s cubic-bezier(.22,1,.36,1) .7s' : 'opacity .3s ease, transform .3s ease'
+          };
+        }),
+        arcs: days.slice(1).map((d, i) => {
+          const w = xs[i + 1] - xs[i];
+          const h = Math.min(80, 16 + w * 1.7);
+          const on = shown(i + 1);
+          return {
+            left: xs[i] + '%', width: w + '%', h: h + 'px', top: (240 - h) + 'px',
+            clip: on ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)',
+            tr: on ? 'clip-path .7s cubic-bezier(.65,0,.35,1)' : 'clip-path .35s ease-in'
+          };
+        }),
+        ticks: [['today', 0], ['+5 d', 33.3], ['+10 d', 66.7], ['+15 d', 100]].map(([tt, x], i) => ({ t: tt, left: x + '%', shift: i === 0 ? 'none' : i === 3 ? 'translateX(-100%)' : 'translateX(-50%)' }))
+      };
+      out.stepName = cur.right ? (cur.secs > 25 ? 'Right, slow → Hard' : 'Right, fast → Good') : 'Wrong → Again';
+    }
+
+    if (which === 'content') {
+      const N = 8;
+      const back = [2, 6];
+      const fig = 4;
+      const colOf = (i) => {
+        if (a === 0) return 0;
+        if (a === 1) return back.includes(i) ? 0 : 1;
+        if (a === 2) return 1;
+        if (a === 3) return i === fig ? 'lane' : 2;
+        if (a === 4) return i === fig && p < 0.4 ? 'lane' : 2;
+        return 3;
+      };
+      const cols = Array.from({ length: N }, (_, i) => colOf(i));
+      const activeCol = [0, 1, 1, 2, 2, 3][a];
+      const cards = cols.map((c, i) => {
+        const red = back.includes(i) && (a === 1 || (a === 2 && p < 0.3));
+        const lane = c === 'lane';
+        const approved = !lane && typeof c === 'number' && c >= 2;
+        const slot = lane ? 0 : cols.slice(0, i).filter((x) => x === c).length;
+        return {
+          left: lane ? '50%' : (c * 25) + '%',
+          top: lane ? '240px' : (30 + slot * 25) + 'px',
+          delay: (i * 50) + 'ms',
+          style: lane ? 'dashed' : 'solid',
+          border: red ? '#f2555a' : lane ? '#8a8a93' : approved ? '#ededed' : '#3a3a42',
+          bg: approved ? '#ededed' : lane || red ? 'transparent' : '#16161a',
+          line: approved ? '#8a8a93' : red ? '#f2555a' : '#4a4a52',
+          op: a === 0 ? (p > (i / N) * 0.6 ? 1 : 0) : 1,
+          s: a === 0 ? (p > (i / N) * 0.6 ? 1 : 0.6) : 1
+        };
+      });
+      out.ct = {
+        cards,
+        cols: ['Written', 'Checked', 'Approved', 'In the app'].map((tt, i) => ({ t: tt, left: (i * 25) + '%', rule: i === 0 ? 'none' : '1px solid #1a1a1e', color: i === activeCol ? '#ededed' : '#8a8a93' })),
+        appBorder: a === 5 ? '#ededed' : 'transparent',
+        laneBorder: a === 3 || a === 4 ? '#8a8a93' : '#26262c',
+        laneColor: a === 3 || a === 4 ? '#ededed' : '#8a8a93'
+      };
+    }
+
+    if (which === 'insights') {
+      // Example student, CSE Professional mocks (170 items, 85 per half).
+      // True habit is fixed: ~82% first half, ~71% second half. Each row = correct answers [first half, second half] in one mock.
+      const MOCKS = [[70, 60], [69, 61], [70, 60], [69, 60], [70, 61], [70, 60], [69, 60]];
+      const DAYS = [2, 6, 9, 13, 17, 21, 25];
+      const HALF = 85;
+      const HABIT = [0.82, 0.71];
+      const pre = 1800, mockDur = 1500, hold = 2800;
+      const total = pre + MOCKS.length * mockDur + hold;
+      const ti = reduced ? total - 1 : el % total;
+      let m = 0, q = 1;
+      if (ti >= pre) {
+        const idx = Math.floor((ti - pre) / mockDur);
+        if (idx >= MOCKS.length) { m = MOCKS.length; q = 1; }
+        else { m = idx + 1; q = easeInOut(((ti - pre) % mockDur) / (mockDur * 0.6)); }
+      }
+      const done = q >= 1 ? m : m - 1;
+      const sum = (k, side) => MOCKS.slice(0, k).reduce((s, r) => s + r[side], 0);
+      const n = done * HALF;
+      const c = [sum(done, 0), sum(done, 1)];
+      const p = c.map((x) => (n ? x / n : 0));
+      // Ranges drawn at ~84% so that "ranges stop overlapping" matches a 95% two-proportion z-test.
+      const half = p.map((x) => (n ? 1.405 * Math.sqrt(x * (1 - x) / n) : 0));
+      let state = 0;
+      if (done > 0) {
+        const pp = (c[0] + c[1]) / (2 * n);
+        const z = (p[0] - p[1]) / Math.sqrt(pp * (1 - pp) * (2 / n));
+        state = Math.abs(z) >= 1.96 ? 2 : 1;
+      }
+      const reasons = ['Finish one full length mock', 'Enough answers to judge, but the ranges still overlap.', 'The ranges no longer overlap.'];
+      const X = (v) => Math.max(0, Math.min(100, (v - 0.6) / 0.3 * 100));
+      const scaleL = 34;
+      const inScale = (v) => 'calc(' + scaleL + 'px + (100% - ' + scaleL + 'px) * ' + (X(v) / 100).toFixed(4) + ')';
+      const widthOf = (a1, b1) => 'calc((100% - ' + scaleL + 'px) * ' + ((X(b1) - X(a1)) / 100).toFixed(4) + ')';
+      const partial = m > done ? q : 0;
+      const cols = [0, 1].map((side) => {
+        const answers = done * HALF + Math.round(partial * HALF);
+        const correct = c[side] + Math.round(partial * (m > 0 ? MOCKS[m - 1][side] : 0));
+        const dots = Math.round(answers / 10);
+        const filled = Math.round(correct / 10);
+        return {
+          left: side === 0 ? '0%' : '54%',
+          label: side === 0 ? 'first half' : 'second half',
+          pct: n ? Math.round(p[side] * 100) + '%' : '—',
+          n: String(answers),
+          // fixed 60 slots so each new dot can pop in instead of the grid re-rendering
+          dots: Array.from({ length: 60 }, (_, i) => ({ bg: i < filled ? '#ededed' : 'transparent', op: i < dots ? 1 : 0, s: i < dots ? 1 : 0.2 }))
+        };
+      });
+      out.ins = {
+        cols,
+        lanes: [0, 1].map((side) => ({
+          label: side === 0 ? '1st' : '2nd',
+          top: (side * 26 + 2) + 'px',
+          habit: inScale(HABIT[side]), habitTop: (side * 26 - 3) + 'px',
+          lo: inScale(p[side] - half[side]), w: widthOf(p[side] - half[side], p[side] + half[side]),
+          mid: inScale(p[side]),
+          bandTop: (side * 26 + 2) + 'px', markTop: (side * 26 - 1) + 'px',
+          fill: side === 0 ? 'rgba(237,237,237,0.55)' : 'rgba(237,237,237,0.22)',
+          op: n ? 1 : 0
+        })),
+        ticks: [['60%', 0.6], ['70%', 0.7], ['80%', 0.8], ['90%', 0.9]].map(([t2, v]) => ({ t: t2, left: inScale(v) })),
+        states: ['early', 'forming', 'clear'].map((s, i) => ({ t: s, color: i === state ? '#ededed' : '#8a8a93', line: i === state ? '#ededed' : 'transparent' })),
+        reason: reasons[state],
+        gap: String(Math.round((p[0] - p[1]) * 100)),
+        sentenceOp: state === 2 ? 1 : 0,
+        sentenceY: state === 2 ? '0px' : '8px',
+        mocks: DAYS.map((d, i) => ({ left: (d / 28 * 100) + '%', border: i < m ? '#ededed' : '#3a3a42', bg: i < done ? '#ededed' : 'transparent', s: i < m ? 1.15 : 1 }))
+      };
+      out.vizH = '340px';
+      out.stepNum = '';
+      out.stepName = 'Example student · CSE mocks, 170 items each';
+    }
+
+    if (which === 'pro') {
+      // 0 signed in · 1 Pro on the phone (activating) · 2 server confirms, first upload
+      // 3 up to date, second phone catches up · 4 a new answer, 5 s wait, upload · 5 Pro ends, backup stops
+      const signed = a > 0 || p > 0.3;
+      const proOn = (a > 1 || (a === 1 && p > 0.72)) && !(a === 5 && p > 0.25);
+      const flag = (a > 2 || (a === 2 && p > 0.68)) && !(a === 5 && p > 0.25);
+      const on = signed && proOn && flag;
+      const pulse = 0.55 + 0.45 * Math.cos(this.elapsed / 180);
+      let status = 'off', statusOp = 1;
+      if (a === 1 && p > 0.72) { status = 'activating…'; statusOp = pulse; }
+      if (a === 2) { status = p > 0.68 ? 'syncing' : 'activating…'; statusOp = p > 0.68 ? 1 : pulse; }
+
+      // Pro confirmation dot: phone → RevenueCat → phone (step 1), RevenueCat → server → phone (step 2)
+      let cpX = '52px', cpY = '72px', cpOp = 0;
+      const toRc = (k) => { cpX = 'calc(52px + (50% - 147px) * ' + k.toFixed(4) + ')'; cpY = (72 - 25 * k) + 'px'; };
+      const rcToSv = (k) => { cpX = 'calc(50% - 95px + ' + (190 * k).toFixed(1) + 'px)'; cpY = '47px'; };
+      const svToPhone = (k) => { cpX = 'calc(52px + (50% + 43px) * ' + (1 - k).toFixed(4) + ')'; cpY = (47 + 25 * k) + 'px'; };
+      if (a === 1) {
+        if (p < 0.35) { toRc(easeInOut(p / 0.35)); cpOp = 1; }
+        else if (p < 0.72) { toRc(1 - easeInOut((p - 0.35) / 0.37)); cpOp = 1; }
+      }
+      if (a === 2) {
+        if (p < 0.33) { rcToSv(easeInOut(p / 0.33)); cpOp = 1; }
+        else if (p < 0.68) { svToPhone(easeInOut((p - 0.33) / 0.35)); cpOp = 1; }
+      }
+      const rcSaid = (a === 1 && p > 0.35) || (a >= 2 && !(a === 5 && p > 0.25));
+      const rcBusy = (a === 1 && p > 0.25 && p < 0.5) || (a === 2 && p < 0.1);
+      const svSet = (a === 2 && p > 0.33) || (a > 2 && !(a === 5 && p > 0.25));
+      const svBusy = a === 2 && p > 0.25 && p < 0.45;
+      if (a === 3) status = p < 0.55 ? 'syncing' : 'up to date ✓';
+      if (a === 4) status = p > 0.55 && p < 0.95 ? 'syncing' : 'up to date ✓';
+      if (a === 5) status = p > 0.25 ? 'off · data stays on this phone' : 'up to date ✓';
+
+      // how many answers each place holds
+      const mine = a === 5 || (a === 4 && p > 0.08) ? 9 : 8;
+      let cloud = 0;
+      if (a === 2) cloud = Math.round(8 * easeInOut((p - 0.72) / 0.26));
+      if (a === 3) cloud = 8;
+      if (a === 4) cloud = p > 0.75 ? 9 : 8;
+      if (a === 5) cloud = 9;
+      let other = 0;
+      if (a === 3) other = Math.round(8 * easeInOut((p - 0.1) / 0.5));
+      if (a === 4) other = p > 0.95 ? 9 : 8;
+      if (a === 5) other = 9;
+      const tiles = (count) => Array.from({ length: 12 }, (_, i) => ({ bg: i < count ? '#ededed' : 'transparent', border: i < count ? '#ededed' : '#26262c', s: i < count ? 1 : 0.85 }));
+
+      // packets travel along the line: left segment = phone → backup, right segment = backup → second phone
+      const leftSeg = (k) => 'calc(104px + (50% - 166px) * ' + clamp01(k).toFixed(4) + ')';
+      const rightSeg = (k) => 'calc(50% + 62px + (50% - 166px) * ' + clamp01(k).toFixed(4) + ')';
+      const packets = [0, 1, 2].map((i) => {
+        const off = i * 0.15;
+        if (a === 2) { const k = easeInOut((p - 0.7 - off * 0.5) / 0.2); return { left: leftSeg(k), op: k > 0 && k < 1 ? 1 : 0 }; }
+        if (a === 3) { const k = easeInOut((p - off) / 0.4); return { left: rightSeg(k), op: k > 0 && k < 1 ? 1 : 0 }; }
+        if (a === 4 && i === 0) {
+          if (p < 0.75) { const k = easeInOut((p - 0.55) / 0.2); return { left: leftSeg(k), op: k > 0 && k < 1 ? 1 : 0 }; }
+          const k = easeInOut((p - 0.75) / 0.2); return { left: rightSeg(k), op: k > 0 && k < 1 ? 1 : 0 };
+        }
+        return { left: '0px', op: 0 };
+      });
+      const check = (t2, ok) => ({ t: t2, mark: ok ? '✓' : '', bg: ok ? '#ededed' : 'transparent', border: ok ? '#ededed' : '#4a4a52', color: ok ? '#ededed' : '#8a8a93', s: ok ? 1 : 0.9 });
+      out.pro = {
+        checks: [check('Signed in with Google', signed), check('Pro on this phone', proOn), check('Pro confirmed by server', flag)],
+        rcText: rcSaid ? 'RevenueCat · Pro' : 'RevenueCat',
+        rcBorder: rcBusy ? '#ededed' : rcSaid ? '#6b6b73' : '#2e2e35',
+        rcColor: rcBusy || rcSaid ? '#ededed' : '#8a8a93',
+        svText: svSet ? 'server · pro ✓' : 'server',
+        svBorder: svBusy ? '#ededed' : svSet ? '#6b6b73' : '#2e2e35',
+        svColor: svBusy || svSet ? '#ededed' : '#8a8a93',
+        cpX, cpY, cpOp,
+        lineStyle: on ? 'solid' : 'dashed',
+        lineColor: on ? '#8a8a93' : '#2e2e35',
+        boxes: [
+          { label: 'this phone', left: '0%', ml: '0px', top: '72px', w: '104px', h: '160px', r: '16px', border: '1.5px solid #3a3a42', tiles: tiles(mine) },
+          { label: 'backup', left: '50%', ml: '-62px', top: '92px', w: '124px', h: '120px', r: '10px', border: '1px solid ' + (on ? '#8a8a93' : '#2e2e35'), tiles: tiles(cloud) },
+          { label: 'other phone', left: 'calc(100% - 104px)', ml: '0px', top: '72px', w: '104px', h: '160px', r: '16px', border: '1.5px solid #3a3a42', tiles: tiles(other) }
+        ],
+        packets,
+        status, statusOp: statusOp.toFixed(2),
+        statusColor: status.indexOf('off') === 0 ? '#8a8a93' : '#ededed',
+        waitOp: a === 4 && p < 0.7 ? 1 : 0,
+        waitW: (clamp01((p - 0.08) / 0.47) * 100).toFixed(1) + '%'
+      };
+    }
+
+    return out;
+  }
+}
+</script>
+</body>
+</html>
