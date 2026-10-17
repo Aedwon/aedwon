@@ -803,6 +803,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
               return (
                 <button
                   key={b.n}
+                  ref={(el) => { bookBtnRefs.current[i] = el; }}
                   className="v3tbtn"
                   type="button"
                   aria-label={`Volume ${b.n}: ${b.title}`}
