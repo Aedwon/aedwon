@@ -456,7 +456,7 @@ function StudyViz({ P }: { P: Pal }) {
             <span
               key={i}
               ref={arcAt(i)}
-              style={{ position: 'absolute', left: ST_XS[i] + '%', width: w + '%', top: (240 - h) + 'px', height: h + 'px', boxSizing: 'border-box', border: `1px solid ${P.frame}`, borderBottom: 'none', borderRadius: '50% 50% 0 0 / 100% 100% 0 0', clipPath: 'inset(0 100% 0 0)', transition: 'clip-path .35s ease-in' }}
+              style={{ position: 'absolute', left: ST_XS[i] + '%', width: w + '%', top: (240 - h) + 'px', height: h + 'px', boxSizing: 'border-box', borderTop: `1px solid ${P.frame}`, borderLeft: `1px solid ${P.frame}`, borderRight: `1px solid ${P.frame}`, borderRadius: '50% 50% 0 0 / 100% 100% 0 0', clipPath: 'inset(0 100% 0 0)', transition: 'clip-path .35s ease-in' }}
             />
           );
         })}
