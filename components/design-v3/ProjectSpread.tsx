@@ -23,7 +23,7 @@ import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
-import { useStudio } from './studio/store';
+import { setStudio, useStudio } from './studio/store';
 import SystemViz from './SystemViz';
 import { useTheme } from '@/lib/design-v3/theme';
 
@@ -123,6 +123,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const p = PROJECTS[pi] as unknown as FullProject;
   const secs = (p.sections || []) as unknown as Sec[];
   const { editing } = useStudio();
+  // tell the studio which project is on screen (the address does not change when you step with Next and Previous)
+  useEffect(() => { setStudio({ project: open ? p.id : null }); }, [open, p.id]);
 
   const applySwapAt = (now: number) => {
     const f = reducedRef.current ? 1 : out((now - swapAtRef.current) / 420);

@@ -12,14 +12,16 @@ export interface StudioApi {
 export interface StudioState {
   available: boolean;
   off: string; // why the studio is off on this localhost server, if it is
+  project: string | null; // the project the page is showing (set by the project page itself)
   api: StudioApi | null;
   editing: boolean;
   status: 'idle' | 'saving' | 'saved' | 'error';
   message: string;
   drawer: boolean;
+  publish: boolean;
 }
 
-const SERVER: StudioState = { available: false, off: '', api: null, editing: false, status: 'idle', message: '', drawer: false };
+const SERVER: StudioState = { available: false, off: '', project: null, api: null, editing: false, status: 'idle', message: '', drawer: false, publish: false };
 let state: StudioState = SERVER;
 const subs = new Set<() => void>();
 

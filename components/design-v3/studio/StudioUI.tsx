@@ -2,9 +2,9 @@
 
 // The studio's own interface: a small bar (Edit, Details, save status) and a details drawer.
 // Loaded only in development (see Site.tsx) and shown only on localhost, on a project page.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LOGO } from '@/lib/design-v3/data/icons';
-import { loadProject, ping, saveOp, uploadImage } from './actions';
+import { gitPublish, gitStatus, loadProject, ping, saveOp, uploadImage, type PublishStatus } from './actions';
 import { setStudio, useStudio } from './store';
 
 const LOCAL = ['localhost', '127.0.0.1', '[::1]', '::1'];
@@ -37,6 +37,16 @@ const CSS = `
 .studio-bar button{height:30px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:transparent;color:#eee;cursor:pointer;font:13px system-ui}
 .studio-bar button[aria-pressed=true]{background:#2563EB;border-color:#2563EB;color:#fff}
 .studio-bar code{opacity:.55;font:12px ui-monospace,Menlo,monospace}
+.studio-pub{position:fixed;left:50%;bottom:74px;translate:-50% 0;width:440px;max-width:calc(100vw - 24px);z-index:2147483001;max-height:70vh;overflow:auto;background:#101014;color:#e8e8ec;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px;font:13px/1.45 system-ui;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.studio-pub h4{margin:0 0 10px;font:600 14px system-ui}
+.studio-pub code,.studio-pub pre{font:12px/1.5 ui-monospace,Menlo,monospace}
+.studio-pub pre{margin:8px 0;padding:10px;border-radius:8px;background:#18181d;overflow:auto;white-space:pre-wrap}
+.studio-pub ul{margin:8px 0;padding:0;list-style:none;font:12px ui-monospace,Menlo,monospace;color:#c9c9d2}
+.studio-pub input{width:100%;box-sizing:border-box;height:34px;padding:0 10px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#18181d;color:#f2f2f2;font:13px system-ui}
+.studio-pub .go{height:34px;padding:0 16px;border-radius:8px;border:1px solid #2563EB;background:#2563EB;color:#fff;cursor:pointer;font:13px system-ui}
+.studio-pub .go:disabled{opacity:.4;cursor:default}
+.studio-pub a{color:#60A5FA}
+.studio-badge{display:inline-block;min-width:18px;margin-left:8px;padding:0 6px;border-radius:99px;background:#D97706;color:#fff;font:600 11px/18px system-ui;text-align:center}
 .studio-drawer{position:fixed;top:0;right:0;bottom:0;width:380px;z-index:2147483001;overflow:auto;background:#101014;color:#e8e8ec;border-left:1px solid rgba(255,255,255,.14);padding:16px 16px 90px;font:13px/1.4 system-ui;box-shadow:-14px 0 50px rgba(0,0,0,.4)}
 .studio-drawer h4{margin:22px 0 8px;font:600 12px system-ui;letter-spacing:.06em;text-transform:uppercase;color:#9a9aa6}
 .studio-drawer label{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;color:#9a9aa6;font-size:12px}
@@ -67,7 +77,22 @@ function useProjectId() {
 
 export default function StudioUI() {
   const st = useStudio();
-  const id = useProjectId();
+  const urlId = useProjectId();
+  const id = st.project ?? urlId; // the page says which project it shows; the address is the fallback (the phone layout)
+  const [git, setGit] = useState<PublishStatus | null>(null);
+  const refreshGit = useCallback(() => { gitStatus().then(setGit).catch(() => {}); }, []);
+  // what would be published: on load, after each save, and now and then
+  useEffect(() => { if (st.available) refreshGit(); }, [st.available, refreshGit]);
+  useEffect(() => {
+    if (!st.available || st.status !== 'saved') return;
+    const t = setTimeout(refreshGit, 500);
+    return () => clearTimeout(t);
+  }, [st.available, st.status, refreshGit]);
+  useEffect(() => {
+    if (!st.available) return;
+    const t = setInterval(refreshGit, 8000);
+    return () => clearInterval(t);
+  }, [st.available, refreshGit]);
   useEffect(() => {
     if (!LOCAL.includes(location.hostname)) return;
     ping().then((why) => setStudio(why ? { off: why } : { available: true, off: '', api: { saveOp, uploadImage } }));
@@ -77,22 +102,88 @@ export default function StudioUI() {
   return (
     <>
       <style>{CSS}</style>
-      {id && <Bar id={id} />}
+      {id && <Bar id={id} git={git} />}
       {id && st.drawer && <Drawer id={id} key={id} />}
+      {id && st.publish && <PublishPanel git={git} refresh={refreshGit} />}
     </>
   );
 }
 
-function Bar({ id }: { id: string }) {
+function Bar({ id, git }: { id: string; git: PublishStatus | null }) {
   const st = useStudio();
   const label = st.status === 'saving' ? 'Saving…' : st.status === 'saved' ? 'Saved' : st.status === 'error' ? st.message : st.editing ? 'Click text to edit. Enter saves.' : '';
   return (
     <div className="studio-bar" role="toolbar" aria-label="Studio">
       <button type="button" aria-pressed={st.editing} onClick={() => setStudio({ editing: !st.editing })}>{st.editing ? 'Editing' : 'Edit'}</button>
       <button type="button" aria-pressed={st.drawer} onClick={() => setStudio({ drawer: !st.drawer })}>Details</button>
+      <button type="button" aria-pressed={st.publish} onClick={() => setStudio({ publish: !st.publish })}>Publish{git && (git.changes.length > 0 || git.ahead > 0) ? <span className="studio-badge">{git.changes.length || git.ahead}</span> : null}</button>
       <span style={{ minWidth: 150, color: st.status === 'error' ? '#F87171' : undefined }}>{label}</span>
       <code>content/projects/{id}.json</code>
     </div>
+  );
+}
+
+// Commit and push the studio's own files, or show how to do it by hand.
+function PublishPanel({ git, refresh }: { git: PublishStatus | null; refresh: () => void }) {
+  const [message, setMessage] = useState('content: update projects');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [done, setDone] = useState<{ sha: string; committed: boolean } | null>(null);
+  const [hand, setHand] = useState(false);
+  const n = git?.changes.length ?? 0;
+  const onDefault = !!git && git.branch === git.defaultBranch;
+  const send = () => {
+    setBusy(true); setErr(''); setDone(null);
+    gitPublish(message.trim())
+      .then((r) => { setDone({ sha: r.sha, committed: r.committed }); refresh(); })
+      .catch((e) => setErr(e.message))
+      .finally(() => setBusy(false));
+  };
+  return (
+    <section className="studio-pub" aria-label="Publish">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h4>Publish your changes</h4>
+        <button type="button" className="studio-btn studio-btn-quiet" onClick={() => setStudio({ publish: false })}>×</button>
+      </div>
+      {!git && <p>Reading git…</p>}
+      {git && (
+        <>
+          <p style={{ margin: '0 0 6px' }}>
+            Branch <code>{git.branch}</code>
+            {git.ahead > 0 && <> · {git.ahead} commit{git.ahead === 1 ? '' : 's'} not pushed</>}
+            {git.behind > 0 && <span style={{ color: '#FBBF24' }}> · {git.behind} behind origin: run <code>git pull</code> first</span>}
+          </p>
+          {n > 0 ? (
+            <>
+              <p style={{ margin: '8px 0 0' }}>{n} changed file{n === 1 ? '' : 's'} in your content and pictures:</p>
+              <ul>{git.changes.slice(0, 8).map((c) => <li key={c.path}>{c.status} {c.path}</li>)}{n > 8 && <li>… and {n - 8} more</li>}</ul>
+            </>
+          ) : <p style={{ margin: '8px 0', color: '#9a9aa6' }}>{git.ahead > 0 ? 'Nothing new to commit.' : 'No content changes to publish.'}</p>}
+          {git.otherChanges > 0 && <p style={{ color: '#9a9aa6', margin: '6px 0' }}>{git.otherChanges} other changed file{git.otherChanges === 1 ? ' is' : 's are'} not included. Only content and pictures are published here.</p>}
+          {n > 0 && <input aria-label="Commit message" value={message} maxLength={120} onChange={(e) => setMessage(e.target.value)} />}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '12px 0 4px' }}>
+            <button type="button" className="go" disabled={busy || git.behind > 0 || (n === 0 && git.ahead === 0) || (n > 0 && !message.trim())} onClick={send}>{busy ? 'Publishing…' : n > 0 ? 'Commit and push' : 'Push'}</button>
+            <span style={{ color: '#9a9aa6' }}>{n > 0 ? 'Commits only the files listed, then pushes.' : ''}</span>
+          </div>
+          {err && <p style={{ color: '#F87171' }}>{err}</p>}
+          {done && (
+            <p style={{ color: '#34D399' }}>
+              {done.committed ? `Committed (${done.sha}) and pushed.` : 'Pushed.'}{' '}
+              {onDefault ? 'This is your main branch, so Vercel starts a production deploy.' : <>You are on <code>{git.branch}</code>, so this goes to a preview, not production.{git.compareUrl && <> <a href={git.compareUrl} target="_blank" rel="noreferrer">Open a pull request into {git.defaultBranch} ↗</a> and merge it to go live.</>}</>}
+            </p>
+          )}
+          {!done && !onDefault && n + git.ahead > 0 && git.compareUrl && <p style={{ color: '#9a9aa6', margin: '6px 0' }}>To reach production, merge <code>{git.branch}</code> into <code>{git.defaultBranch}</code> after pushing. <a href={git.compareUrl} target="_blank" rel="noreferrer">Open the pull request ↗</a></p>}
+          <button type="button" className="studio-btn studio-btn-quiet" style={{ marginTop: 6 }} onClick={() => setHand(!hand)}>{hand ? 'Hide' : 'Do it by hand'}</button>
+          {hand && (
+            <div>
+              <p style={{ margin: '10px 0 0' }}>In a terminal, from the project folder:</p>
+              <pre>{`git add content public/projects\ngit commit -m "${message.replace(/"/g, '\\"')}"\ngit push`}</pre>
+              <p style={{ margin: 0, color: '#9a9aa6' }}>With Vercel&apos;s default setup, the <code>{git.defaultBranch}</code> branch deploys to production and every other branch gets a preview link. {onDefault ? `You are on ${git.defaultBranch}, so the push deploys.` : `To go live, merge ${git.branch} into ${git.defaultBranch} (a pull request on GitHub is the usual way).`}</p>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 }
 

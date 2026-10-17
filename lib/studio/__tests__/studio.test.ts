@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   arrayAt, guard, parsePath, removeKey, saveImage, setPath, StudioError, validateProject, CONTENT_DIR,
 } from '../server';
+import { parseGithub, parsePorcelain, validateMessage } from '../git';
 
 const req = (url: string, headers: Record<string, string> = {}) => new Request(url, { method: 'POST', headers });
 const status = (fn: () => unknown) => { try { fn(); return 200; } catch (e) { return e instanceof StudioError ? e.status : -1; } };
@@ -112,5 +113,27 @@ describe('saveImage', () => {
   it('refuses a file over 12 MB', async () => {
     const e = await saveImage('x', 'hero', Buffer.alloc(13 * 1024 * 1024)).catch((err) => err);
     expect(e.status).toBe(413);
+  });
+});
+
+describe('git helpers', () => {
+  it('reads GitHub owners and repos from the usual remote forms', () => {
+    for (const url of ['git@github.com:Aedwon/aedwon.git', 'https://github.com/Aedwon/aedwon.git', 'https://github.com/Aedwon/aedwon', 'https://user@github.com/Aedwon/aedwon.git', 'ssh://git@github.com/Aedwon/aedwon.git']) {
+      expect(parseGithub(url), url).toEqual({ owner: 'Aedwon', repo: 'aedwon' });
+    }
+    expect(parseGithub('https://gitlab.com/a/b.git')).toBeNull();
+    expect(parseGithub('/some/local/path')).toBeNull();
+  });
+  it('parses porcelain status, including untracked files and renames', () => {
+    const out = ' M content/projects/qr.json\0?? public/projects/qr/hero-1.webp\0R  a.json\0b.json\0';
+    expect(parsePorcelain(out)).toEqual([
+      { status: 'M', path: 'content/projects/qr.json' },
+      { status: 'A', path: 'public/projects/qr/hero-1.webp' },
+      { status: 'R', path: 'a.json' },
+    ]);
+  });
+  it('accepts one short line as a commit message and refuses anything else', () => {
+    expect(validateMessage('  content: update qr  ')).toBe('content: update qr');
+    for (const bad of ['', '   ', 'a\nb', 'x'.repeat(121), 42, null, 'bell\u0007']) expect(status(() => validateMessage(bad)), String(bad)).toBe(400);
   });
 });

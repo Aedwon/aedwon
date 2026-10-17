@@ -12,7 +12,17 @@ Project content lives in `content/projects/<id>.json`, one file per project, in 
 6. **Details** opens a drawer: type, date, repo, stack names, facts and links. Its **JSON** tab holds the whole file for anything else.
 7. Sections can be moved, removed, added, or given a figure from the controls on each section. Paragraphs have a **×** on hover and a **+ paragraph** button.
 
-To publish, review with `git diff`, commit the changed files and push. Vercel rebuilds.
+## Publish
+
+Press **Publish** in the bar. A badge counts the changed content and picture files. The panel shows the branch and the files, a commit message, and **Commit and push**, which commits only `content/projects` and `public/projects` (never other files, even ones you have staged) and pushes the branch. It refuses if your branch is behind origin (run `git pull` first).
+
+Going live depends on Vercel's setup. By default the `main` branch deploys to production and other branches get a preview link. On another branch the panel shows an **Open the pull request** link: merge it to go live. **Do it by hand** shows the plain git commands:
+
+```
+git add content public/projects
+git commit -m "content: update projects"
+git push
+```
 
 ## What it saves
 
@@ -25,6 +35,7 @@ To publish, review with `git diff`, commit the changed files and push. Vercel re
 - The site must be started by `npm run dev`, which sets `STUDIO_LOCAL=1` and binds `127.0.0.1`, so nothing else on your network can reach it. A plain `next dev` listens on the network, so the studio refuses to run there. This is the real protection: the Host header can be forged by a peer on your network, so it is not trusted on its own.
 - On top of that, the API in `app/api/studio` answers only when `NODE_ENV` is not production, the request is for `localhost`, `127.0.0.1` or `[::1]`, the origin (if any) is local, and the `x-studio` header is present. These checks stop other websites open in your browser.
 - It can write only `content/projects/<known id>.json` and `public/projects/<known id>/`. Paths and ids are checked, prototype keys are refused, and every write is validated before it is saved.
+- Publishing runs `git` without a shell, with fixed arguments, on the two studio folders only. The commit message must be one line of at most 120 characters.
 - Uploads are type-checked by their bytes (PNG, JPEG, WebP, GIF, AVIF), capped at 12 MB, and re-encoded.
 - The studio interface is loaded only in development, so it is not in the production bundle. Production builds still contain the two API routes, which return 404.
 

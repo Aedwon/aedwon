@@ -45,6 +45,25 @@ export async function ping(): Promise<string> {
   } catch { return 'The studio is off'; }
 }
 
+export interface Change { status: string; path: string }
+export interface PublishStatus {
+  branch: string; defaultBranch: string; upstream: boolean; ahead: number; behind: number;
+  changes: Change[]; otherChanges: number; github: { owner: string; repo: string } | null; compareUrl: string | null;
+}
+
+export async function gitStatus(): Promise<PublishStatus> {
+  const data = await (await fetch('/api/studio/git', { headers: { 'x-studio': '1' } })).json();
+  if (!data.ok) throw new Error(data.error || 'Could not read git');
+  return data.status;
+}
+
+export async function gitPublish(message: string): Promise<{ committed: boolean; sha: string; status: PublishStatus }> {
+  const res = await fetch('/api/studio/git', { method: 'POST', headers: { 'x-studio': '1', 'content-type': 'application/json' }, body: JSON.stringify({ message }) });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || 'Publish failed');
+  return data;
+}
+
 export async function loadProject(id: string): Promise<Record<string, unknown>> {
   const res = await fetch('/api/studio/save?id=' + encodeURIComponent(id), { headers: { 'x-studio': '1' } });
   const data = await res.json();
