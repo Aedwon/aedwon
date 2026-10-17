@@ -659,8 +659,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       </div>
 
       {/* the preview: it fades in beside the list and glides to whichever row you're on */}
-      <div aria-hidden style={{ position: 'absolute', left: 1060, width: 300, top: 0, transformOrigin: '0 50%', opacity: 0, pointerEvents: 'none' }}>
-        <div ref={pvBoxRef}>
+      <div aria-hidden style={{ position: 'absolute', left: 1060, width: 300, top: 0, pointerEvents: 'none' }}>
+        {/* the loop drives this box's glide, scale and fade (the wrapper must stay opaque or the preview never shows) */}
+        <div ref={pvBoxRef} style={{ opacity: 0, transformOrigin: '0 50%' }}>
           <div ref={pvYRef} style={{ position: 'relative', width: 300, transition: 'height .35s cubic-bezier(.22,1,.36,1)' }}>
             {P.map((p, i) => (
               <div key={p.id} ref={(el) => { pvEls.current[i] = el; }} style={{ position: 'absolute', left: 0, top: 0, width: 520, transformOrigin: '0 0', scale: '0.5769', opacity: 0, visibility: 'hidden' }}>
