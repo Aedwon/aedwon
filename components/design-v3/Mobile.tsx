@@ -7,7 +7,7 @@
 // The simulated keyboard of the prototype is removed (owner decision): the real
 // keyboard height comes from window.visualViewport.
 
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
@@ -60,6 +60,7 @@ function bookPose(u: number, r: { x: number; y: number; w: number; h: number }) 
     phi: -90 * (1 - stand), th, sc, ss, dk,
   };
 }
+const FX_SLIDE = 620, FX_FADE = 380; // ms: Wall/Index to About and back, and Wall to Index
 const HOLD_MS = 170; // a landed leaf fades out over this long, so the page beneath settles in instead of popping
 
 type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
@@ -109,6 +110,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const [side, setSide] = useState<'L' | 'R'>('L');
   const [turn, setTurn] = useState<Turn | null>(null);
   const [hold, setHold] = useState<Turn | null>(null); // the finished turn, while its leaf fades out
+  const [leaving, setLeaving] = useState<Screen | null>(null); // the screen on its way out, kept mounted while it transitions
   const [pan, setPan] = useState<{ from: number; t0: number } | null>(null);
   const [opening, setOpening] = useState<{ i: number; t0: number } | null>(null);
   const [closing, setClosing] = useState<{ t0: number } | null>(null);
@@ -120,7 +122,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
 
   // ---- mutable scene for the loop
   const s = useRef({
-    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, pan: null as { from: number; t0: number } | null,
+    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number } | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
     wf: 0, back0: 0, reduced: false, raf: 0, last: 0,
@@ -138,6 +140,34 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   useEffect(() => { s.side = side; }, [side, s]);
   useEffect(() => { s.vol = vol; }, [vol, s]);
   useEffect(() => { s.screen = screen; }, [screen, s]);
+
+  // ---- transitions between Wall, Index and About (Room's camera, in mobile: the wall slides up and fades while the
+  // shelf rises from below; Wall and Index crossfade)
+  const wallLayerRef = useRef<HTMLDivElement>(null);
+  const indexLayerRef = useRef<HTMLDivElement>(null);
+  const shelfLayerRef = useRef<HTMLDivElement>(null);
+  const prevScreen = useRef<Screen>(screen);
+  const fxLayer = (sc: Screen) => (sc === 'wall' ? wallLayerRef.current : sc === 'index' ? indexLayerRef.current : sc === 'shelf' ? shelfLayerRef.current : null);
+  const applyFx = (now: number) => {
+    const fx = s.fx; if (!fx) return;
+    const p = ease((now - fx.t0) / fx.dur);
+    const o = fxLayer(fx.from), n = fxLayer(fx.to);
+    const set = (el: HTMLElement | null, y: number, op: number) => { if (!el) return; el.style.transform = `translateY(${y.toFixed(2)}px)`; el.style.opacity = op.toFixed(3); el.style.pointerEvents = 'none'; };
+    if (fx.from === 'shelf' || fx.to === 'shelf') {
+      if (fx.to === 'shelf') { set(o, -0.45 * MOB_H * p, 1 - cl((p - 0.15) / 0.6)); set(n, MOB_H * (1 - p), 1); }
+      else { set(o, MOB_H * p, 1); set(n, -0.45 * MOB_H * (1 - p), cl((p - 0.25) / 0.6)); }
+    } else { set(o, -10 * p, 1 - p); set(n, 10 * (1 - p), p); }
+  };
+  useLayoutEffect(() => {
+    const prev = prevScreen.current; prevScreen.current = screen;
+    const inSet = (x: Screen) => x === 'wall' || x === 'index' || x === 'shelf';
+    if (prev !== screen && inSet(prev) && inSet(screen) && !s.reduced) {
+      s.fx = { from: prev, to: screen, t0: performance.now(), dur: prev === 'shelf' || screen === 'shelf' ? FX_SLIDE : FX_FADE };
+      setLeaving(prev);
+    } else { s.fx = null; setLeaving(null); }
+  }, [screen, s]);
+  // once the outgoing layer is mounted, place both layers at the start pose before the first paint
+  useLayoutEffect(() => { if (leaving && s.fx) applyFx(s.fx.t0); });
 
   // ---- URL sync (client shell owns history)
   const push = useCallback((path: string) => {
@@ -315,6 +345,13 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
         else { s.shut = { t0: now }; s.screen = 'shelf'; flushSync(() => setScreen('shelf')); }
       }
       if (s.shut && now - s.shut.t0 > CLOSE_PRE) { s.shut = null; s.closing = null; setClosing(null); }
+      if (s.fx) {
+        if (now - s.fx.t0 >= s.fx.dur) {
+          const n = fxLayer(s.fx.to);
+          if (n) { n.style.transform = ''; n.style.opacity = ''; n.style.pointerEvents = ''; }
+          s.fx = null; setLeaving(null);
+        } else applyFx(now);
+      }
 
       // wall drum: which tile is in focus
       const wf = Math.max(0, Math.min(WALL_ORDER.length - 1, s.wf)), focusI = Math.round(wf);
@@ -579,8 +616,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       }}
     >
       {/* ===== WALL: a vertical drum. Scrolling turns it; whichever project reaches the middle is chosen. ===== */}
-      {screen === 'wall' && (
-        <>
+      {(screen === 'wall' || leaving === 'wall') && (
+        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0 }}>
           <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none' }}>
             {WALL_ORDER.map((i, k) => {
               const q2 = P[i], meta = postMeta(q2);
@@ -622,11 +659,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
             <span ref={capNameRef} style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.03em' }}>{P[WALL_ORDER[focus]].name}</span>
             <span ref={capTypeRef} style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{P[WALL_ORDER[focus]].type}</span>
           </div>
-        </>
+        </div>
       )}
 
       {/* ===== INDEX ===== */}
-      {screen === 'index' && (
+      {(screen === 'index' || leaving === 'index') && (
+        <div ref={indexLayerRef} style={{ position: 'absolute', inset: 0 }}>
         <div className="v3ms" style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
           <div style={{ padding: '76px 22px 110px' }}>
             <div role="group" aria-label="Show a type" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', height: 48 }}>
@@ -670,6 +708,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
               })}
             </div>
           </div>
+        </div>
         </div>
       )}
 
@@ -795,8 +834,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       )}
 
       {/* ===== SHELF: volumes lie in a stack, spines out ===== */}
-      {screen === 'shelf' && (
-        <>
+      {(screen === 'shelf' || leaving === 'shelf') && (
+        <div ref={shelfLayerRef} style={{ position: 'absolute', inset: 0 }}>
           <div ref={stkRef} style={{ position: 'absolute', inset: 0 }}>
             <span ref={hint1Ref} style={{ position: 'absolute', left: 0, right: 0, top: 214, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>Six volumes</span>
             {V.map((b, i) => {
@@ -868,7 +907,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
               );
             })()}
           </div>
-        </>
+        </div>
       )}
 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
