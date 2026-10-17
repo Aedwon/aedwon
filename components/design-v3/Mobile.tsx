@@ -344,7 +344,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
         else if (s.sp >= 0) { s.turn = { from: s.sp, to: -1, then: null, t0: now, dur: s.sp > 0 ? 750 : 1050, x0: camXRef.current() }; flushSync(() => setTurn(s.turn)); }
         else { s.shut = { t0: now }; s.screen = 'shelf'; flushSync(() => setScreen('shelf')); }
       }
-      if (s.shut && now - s.shut.t0 > CLOSE_PRE) { s.shut = null; s.closing = null; setClosing(null); }
+      if (s.shut && now - s.shut.t0 > CLOSE_PRE) { s.shut = null; s.closing = null; setClosing(null); push('/about'); }
       if (s.fx) {
         if (now - s.fx.t0 >= s.fx.dur) {
           const n = fxLayer(s.fx.to);
@@ -540,7 +540,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const leafB = pg(2 * bNow);
   const staticL = closedIdle ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * Math.max(0, sp));
   const staticR = pg(2 * Math.max(0, sp) + 1);
-  const tabIdx = ({ wall: 0, index: 1, project: from === 'index' ? 1 : 0, shelf: vol === V.length - 1 ? 3 : 2, book: vol === V.length - 1 ? 3 : 2 } as Record<Screen, number>)[screen];
+  const tabIdx = ({ wall: 0, index: 1, project: from === 'index' ? 1 : 0, shelf: vol === V.length - 1 && (opening || closing) ? 3 : 2, book: vol === V.length - 1 ? 3 : 2 } as Record<Screen, number>)[screen];
   const showBack = screen === 'project' || screen === 'book';
   const clock = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit' });
   const logoColor = (t: string) => (LOGO[t]?.c ?? undefined);
@@ -956,7 +956,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
       <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--glass-room-86)', borderTop: '1px solid var(--line-hairline)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
         {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
-          <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? go('shelf') : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
+          <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
         <span aria-hidden style={{ position: 'absolute', left: 0, top: 46, width: 26, height: 1.5, background: 'var(--text-primary)', translate: `${(12 + (366 / 4) * tabIdx + (366 / 4 - 26) / 2).toFixed(1)}px 0`, transition: 'translate .55s cubic-bezier(.34,1.3,.64,1)' }} />
       </nav>
