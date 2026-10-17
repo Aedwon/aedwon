@@ -320,9 +320,16 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
             <a key={l.href + l.label} className="v3ps-ul" href={l.href} style={{ fontSize: 15, color: 'var(--text-primary)' }}>{l.label} ↗</a>
           ))}
         </div>
-        <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 14 }}>
-          <button className="v3ps-tb" type="button" onClick={() => go(-1)} style={{ fontSize: 14, textAlign: 'left' }}>← {pv.name}</button>
-          <button className="v3ps-tb" type="button" onClick={() => go(1)} style={{ fontSize: 14, textAlign: 'right' }}>{nx.name} →</button>
+        <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', gap: 24, fontSize: 14 }}>
+          {/* the neighbours: a small label over a one-line name, so a long title shortens instead of wrapping the arrow */}
+          <button className="v3ps-tb" type="button" onClick={() => go(-1)} title={pv.name} style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, textAlign: 'left' }}>
+            <span style={{ ...mono, fontSize: 11.5, color: 'var(--text-label)' }}>← Previous</span>
+            <span style={{ maxWidth: '100%', fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pv.name}</span>
+          </button>
+          <button className="v3ps-tb" type="button" onClick={() => go(1)} title={nx.name} style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, textAlign: 'right' }}>
+            <span style={{ ...mono, fontSize: 11.5, color: 'var(--text-label)' }}>Next →</span>
+            <span style={{ maxWidth: '100%', fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nx.name}</span>
+          </button>
         </div>
       </div>
 
