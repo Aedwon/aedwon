@@ -384,12 +384,13 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
     let castOp = '0.000', castVis = 'hidden', castW = '0px';
     if (tr && A2 != null) {
       const e = ease(tr.t);
-      const ang = tr.dir > 0 ? -176 * e : -176 * (1 - e);
+      // the leaf lands exactly flat (180deg); stopping at 176 left a 4deg tilt that popped when the leaf was removed
+      const ang = tr.dir > 0 ? -180 * e : -180 * (1 - e);
       const lift = Math.sin(Math.PI * e);
       // the free edge lags behind the spine, so the page curls as it goes over
       const bend = lift * 6.5 * (tr.dir > 0 ? 1 : -1);
       // where the leaf is between the two stacks: 0 = lying on the right page, 1 = on the left
-      const fL = -ang / 176;
+      const fL = -ang / 180;
       const flatA = parseFloat(shadeOf(0, 0, 1, RBox, 0.45, 0));
       // the leaf's front is shaded relative to a page lying flat, so it matches the page
       // it lifts off and lands on
