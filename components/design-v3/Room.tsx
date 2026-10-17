@@ -12,19 +12,19 @@ import ProjectSpread from './ProjectSpread';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import type { AboutVolumesHandle, ProjectSpreadHandle, Req, WallIndex2Handle } from './contracts';
 import { useTheme, type Theme } from '@/lib/design-v3/theme';
-export const ROOM_W = 1440;
-export const ROOM_H = 900;
+const ROOM_W = 1440;
+const ROOM_H = 900;
 
 // ---------------------------------------------------------------- URL <-> scene
 
-export type Scene =
+type Scene =
   | { kind: 'wall' }
   | { kind: 'index' }
   | { kind: 'project'; i: number }
   | { kind: 'shelf' }
   | { kind: 'contact' };
 
-export function sceneFromPath(pathname: string): Scene {
+function sceneFromPath(pathname: string): Scene {
   if (pathname === '/index') return { kind: 'index' };
   if (pathname === '/about') return { kind: 'shelf' };
   if (pathname === '/contact') return { kind: 'contact' };
@@ -57,8 +57,6 @@ const DOT = {
   light: { rgb: '17,17,20', base: 0.11, boost: 0.3 },
 } as const;
 
-// Per-project accent (Room:77; light swaps index 12 → #B7791F). Used by tint only.
-export const ACC = ['#3DA6F5', '#5865F2', '#E0567A', '#D97757', '#3DDC84', '#E70488', '#3178C6', '#F2C14E', '#2F6BD9', '#5865F2', '#5865F2', '#2FA866', '#F0B45A', '#7B5BE6', '#FF7A45', '#2496ED', '#3E73D6'];
 
 // Nav underline anchor x positions (Room:131)
 const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 } as const;

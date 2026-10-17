@@ -16,8 +16,8 @@ import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/ic
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
 
-export const MOB_W = 390;
-export const MOB_H = 844;
+const MOB_W = 390;
+const MOB_H = 844;
 
 // five kinds + All (Mobile.dc.html / generators/mobile.py:5)
 const KINDS: [string, string, string[] | null][] = [
@@ -67,7 +67,7 @@ type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
 
 export interface MobileHandle { noop?: boolean }
 
-export function sceneFromPath(pathname: string): { screen: Screen; pi: number; contact: boolean } {
+function sceneFromPath(pathname: string): { screen: Screen; pi: number; contact: boolean } {
   if (pathname === '/index') return { screen: 'index', pi: 0, contact: false };
   if (pathname === '/about') return { screen: 'shelf', pi: 0, contact: false };
   if (pathname === '/contact') return { screen: 'shelf', pi: 0, contact: true };
@@ -744,9 +744,14 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
               ))}
               <div style={{ marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
                 <div style={{ position: 'relative', width: 346, height: Math.round(HH[p.media] * Math.min(346 / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(346 / 520, 240 / HH[p.media]).toFixed(4) }}>
-                    <MediaBlock kind={p.media as MediaKind} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
-                  </div>
+                  {p.hero?.src
+                    // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
+                    ? <img src={p.hero.src} alt={p.hero.alt || ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+                    : (
+                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(346 / 520, 240 / HH[p.media]).toFixed(4) }}>
+                        <MediaBlock kind={p.media as MediaKind} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
+                      </div>
+                    )}
                 </div>
               </div>
               {p.depth === 'case' && (
@@ -765,7 +770,14 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
                   {(sec.p || []).map((para: string, j: number) => (
                     <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
                   ))}
-                  {sec.hasFig && (
+                  {sec.img?.src && (
+                    <figure style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload */}
+                      <img src={sec.img.src} alt={sec.img.alt || ''} style={{ display: 'block', width: '100%', height: 'auto', maxHeight: 420, objectFit: 'contain', borderRadius: 10, background: 'var(--surface-media)' }} />
+                      {sec.img.caption && <figcaption style={{ fontSize: 13, color: 'var(--text-label)' }}>{sec.img.caption}</figcaption>}
+                    </figure>
+                  )}
+                  {sec.hasFig && !sec.img?.src && (
                     <div style={{ height: 220, borderRadius: 10, background: 'var(--surface-media)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11, color: 'var(--text-label)', textAlign: 'center', padding: '0 16px' }}>{sec.fig}</div>
                   )}
                   {sec.kind === 'systems' && ((sec as { items?: { h: string; p: string[]; which: string; vh: string }[] }).items || []).map((it: { h: string; p: string[]; which: string; vh: string }, k: number) => (

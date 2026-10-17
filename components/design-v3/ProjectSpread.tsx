@@ -22,6 +22,8 @@ import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
 import MediaBlock, { type MediaKind } from './MediaBlock';
+import { AddSection, Ed, ImageSlot, Paras, SectionTools } from './studio/Editable';
+import { useStudio } from './studio/store';
 import SystemViz from './SystemViz';
 import { useTheme } from '@/lib/design-v3/theme';
 
@@ -52,6 +54,7 @@ interface Sec {
   h?: string;
   p?: string[];
   fig?: string;
+  img?: import('@/lib/design-v3/data/projects').Img;
   items?: { h: string; which: string; vh: string; p: string[] }[];
   cols?: { h: string; items: string[] }[];
   link?: { label: string; href: string };
@@ -119,6 +122,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
 
   const p = PROJECTS[pi] as unknown as FullProject;
   const secs = (p.sections || []) as unknown as Sec[];
+  const { editing } = useStudio();
 
   const applySwapAt = (now: number) => {
     const f = reducedRef.current ? 1 : out((now - swapAtRef.current) / 420);
@@ -202,6 +206,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   useEffect(() => {
     if (!openRef.current) return;
     const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (e.key === 'ArrowRight') goRef.current(1);
       else if (e.key === 'ArrowLeft') goRef.current(-1);
     };
@@ -230,11 +236,11 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const hasToc = secs.length > 1;
   const points = p.points;
 
-  type Detail = { label: string; v: string; icon?: string; dot?: string; ring?: string };
+  type Detail = { label: string; v: string; icon?: string; dot?: string; ring?: string; fi?: number };
   const details: Detail[] = (() => {
     const rows: Detail[] = p.post
       ? []
-      : [{ label: 'Platform', v: p.facts.find((f) => f.k === 'Platform')?.v || p.type, icon: kindIcon }];
+      : [{ label: 'Platform', v: p.facts.find((f) => f.k === 'Platform')?.v || p.type, icon: kindIcon, fi: p.facts.findIndex((f) => f.k === 'Platform') >= 0 ? p.facts.findIndex((f) => f.k === 'Platform') : undefined }];
     p.facts.forEach((f) => {
       if (f.k === 'Platform') return;
       if (f.k === 'Status') {
@@ -242,13 +248,13 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
         const live = /live|shipped|running/.test(s);
         const wip = /pre-launch|prototype|beta|progress/.test(s);
         rows.push({
-          label: 'Status', v: f.v,
+          label: 'Status', v: f.v, fi: p.facts.indexOf(f),
           dot: live ? 'var(--status-live)' : wip ? 'var(--status-wip)' : 'var(--status-none)',
           ring: live ? 'var(--status-live-ring)' : wip ? 'var(--status-wip-ring)' : 'var(--status-none-ring)',
         });
         return;
       }
-      rows.push({ label: f.k, v: f.v, icon: FICON[FI[f.k] || 'target'] });
+      rows.push({ label: f.k, v: f.v, icon: FICON[FI[f.k] || 'target'], fi: p.facts.indexOf(f) });
     });
     return rows;
   })();
@@ -273,8 +279,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
       {/* left page: stays put. Who it is, what it is, what it's made of; then the details as glanceable icons */}
       <div ref={leftRef} style={{ position: 'absolute', left: 56, top: 108, bottom: 36, width: 392, display: 'flex', flexDirection: 'column', opacity: 1 }}>
         <button className="v3ps-tb" type="button" onClick={onBack} style={{ alignSelf: 'flex-start', fontSize: 14, height: 32, marginBottom: 22 }}>{backText}</button>
-        <h1 style={{ margin: 0, fontSize: 46, fontWeight: 600, letterSpacing: '-0.045em', lineHeight: 1.02 }}>{p.name}</h1>
-        <p style={{ margin: '16px 0 0', fontSize: 16.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
+        <Ed id={p.id} path="name" value={p.name} as="h1" style={{ margin: 0, fontSize: 46, fontWeight: 600, letterSpacing: '-0.045em', lineHeight: 1.02 }} />
+        <Ed id={p.id} path="desc" value={p.desc} as="p" style={{ margin: '16px 0 0', fontSize: 16.5, lineHeight: 1.6, color: 'var(--text-secondary)' }} />
         {/* built with: the logos, named on hover */}
         <div aria-label={stackAria} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 18, marginTop: 22, minHeight: 24 }}>
           {logos.map((g) => (
@@ -292,7 +298,9 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
               </svg>
             </span>
           ))}
-          <span style={{ ...mono, fontSize: 12.5, color: 'var(--text-label)' }}>{stackText}</span>
+          {p.stackText
+            ? <Ed id={p.id} path="stackText" value={p.stackText} style={{ ...mono, fontSize: 12.5, color: 'var(--text-label)' }} />
+            : <span style={{ ...mono, fontSize: 12.5, color: 'var(--text-label)' }}>{stackText}</span>}
         </div>
         {/* the details: an icon and the fact, nothing else to read; hover an icon for what it means */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 30, paddingTop: 22, borderTop: '1px solid var(--line-hairline)' }}>
@@ -302,7 +310,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ display: d.icon ? 'block' : 'none' }}><path d={d.icon || ''} /></svg>
                 <span style={{ display: d.dot ? 'block' : 'none', margin: 5, width: 8, height: 8, borderRadius: 99, background: d.dot || 'transparent', boxShadow: d.ring ? '0 0 0 3px ' + d.ring : undefined }} />
               </span>
-              <span><span className="v3ps-sr">{d.label}: </span>{d.v}</span>
+              <span><span className="v3ps-sr">{d.label}: </span>{d.fi !== undefined ? <Ed id={p.id} path={`facts.${d.fi}.v`} value={d.v} /> : d.v}</span>
             </div>
           ))}
         </div>
@@ -323,21 +331,26 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
         <div ref={rightRef} style={{ padding: '108px 56px 120px 0', opacity: 1 }}>
           {/* hero stage */}
           <div style={{ position: 'relative', height: 520, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
-              <MediaBlock
-                kind={p.media as MediaKind}
-                name={p.name}
-                repo={p.repo}
-                desc={p.desc}
-                date={p.date}
-                mins={p.mins}
-              />
-            </div>
+            <ImageSlot id={p.id} slot="hero" img={p.hero} frame={{ position: 'absolute', inset: 0 }}>
+              <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
+                <MediaBlock
+                  kind={p.media as MediaKind}
+                  name={p.name}
+                  repo={p.repo}
+                  desc={p.desc}
+                  date={p.date}
+                  mins={p.mins}
+                />
+              </div>
+            </ImageSlot>
           </div>
           {isNote && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, paddingTop: 16 }}>
-              <div style={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)' }}>[a detail]</div>
-              <div style={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)' }}>[another detail]</div>
+              {[0, 1].map((n) => (
+                <ImageSlot key={n} id={p.id} slot={`shots.${n}`} img={p.shots?.[n]} frame={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)' }}>{n === 0 ? '[a detail]' : '[another detail]'}</div>
+                </ImageSlot>
+              ))}
             </div>
           )}
           {/* case points: the 48px wrapper is always there so the rhythm holds */}
@@ -346,8 +359,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 32 }}>
                 {points.map((k, i) => (
                   <div key={k.h + i} style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 16, borderTop: '1px solid var(--line-divider)' }}>
-                    <span style={{ fontSize: 17, fontWeight: 600 }}>{k.h}</span>
-                    <span style={{ fontSize: 15, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{k.p}</span>
+                    <Ed id={p.id} path={`points.${i}.h`} value={k.h} style={{ fontSize: 17, fontWeight: 600 }} />
+                    <Ed id={p.id} path={`points.${i}.p`} value={k.p} style={{ fontSize: 15, lineHeight: 1.6, color: 'var(--text-secondary)' }} />
                   </div>
                 ))}
               </div>
@@ -358,25 +371,30 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
               <section
                 key={(s.h || '') + i}
                 ref={(el) => { secEls.current[i] = el; }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 56 }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 56, position: 'relative' }}
               >
-                <h2 style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>{s.h}</h2>
+                <SectionTools id={p.id} index={i} count={secs.length} hasFigure={!!(s.fig || s.img)} />
+                <Ed id={p.id} path={`sections.${i}.h`} value={s.h || ''} as="h2" style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 680, fontSize: 17, lineHeight: 1.75, color: 'var(--text-secondary)' }}>
-                  {(s.p || []).map((para, q) => <p key={q} style={{ margin: 0 }}>{para}</p>)}
+                  <Paras id={p.id} path={`sections.${i}.p`} items={s.p || []} pStyle={{ margin: 0 }} />
                 </div>
-                {s.fig && (
+                {(s.fig || s.img) && (
                   <figure style={{ margin: '10px 0 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div style={{ height: 380, borderRadius: 12, background: 'var(--surface-media)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)', textAlign: 'center', padding: '0 24px' }}>{s.fig}</div>
-                    <figcaption style={{ fontSize: 13.5, color: 'var(--text-label)' }}>[Caption: what this shows.]</figcaption>
+                    <ImageSlot id={p.id} slot={`sections.${i}.img`} img={s.img} frame={{ borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }} imgStyle={{ height: 'auto', maxHeight: 560 }}>
+                      <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)', textAlign: 'center', padding: '0 24px' }}>{s.fig}</div>
+                    </ImageSlot>
+                    {s.img
+                      ? (s.img.caption || editing) && <Ed id={p.id} path={`sections.${i}.img.caption`} value={s.img.caption || ''} as="figcaption" style={{ fontSize: 13.5, color: 'var(--text-label)' }} />
+                      : <figcaption style={{ fontSize: 13.5, color: 'var(--text-label)' }}>[Caption: what this shows.]</figcaption>}
                   </figure>
                 )}
                 {s.kind === 'systems' && (
                   <div style={{ display: 'flex', flexDirection: 'column', marginTop: 8 }}>
                     {(s.items || []).map((it, k) => (
                       <div key={it.h + k} style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '40px 0', borderTop: '1px solid var(--line-hairline)' }}>
-                        <h3 style={{ margin: 0, fontSize: 21, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>{it.h}</h3>
+                        <Ed id={p.id} path={`sections.${i}.items.${k}.h`} value={it.h} as="h3" style={{ margin: 0, fontSize: 21, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }} />
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 680, fontSize: 15.5, lineHeight: 1.7, color: 'var(--text-secondary)' }}>
-                          {(it.p || []).map((q, qi) => <p key={qi} style={{ margin: 0 }}>{q}</p>)}
+                          <Paras id={p.id} path={`sections.${i}.items.${k}.p`} items={it.p || []} pStyle={{ margin: 0 }} />
                         </div>
                         {/* holder must not clip: the viz runs 3px taller than vh by design */}
                         <div style={{ height: it.vh, marginTop: 8 }}>
@@ -391,8 +409,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '24px 32px', fontSize: 15, lineHeight: 1.7, marginTop: 8 }}>
                       {(s.cols || []).map((col, k) => (
                         <div key={col.h + k} style={{ display: 'flex', flexDirection: 'column', paddingTop: 12, borderTop: '1px solid var(--line-divider)' }}>
-                          <span style={{ fontSize: 14, color: 'var(--text-label)', paddingBottom: 6 }}>{col.h}</span>
-                          {col.items.map((li, li2) => <span key={li2} style={{ color: 'var(--text-strong)' }}>{li}</span>)}
+                          <Ed id={p.id} path={`sections.${i}.cols.${k}.h`} value={col.h} style={{ fontSize: 14, color: 'var(--text-label)', paddingBottom: 6 }} />
+                          {col.items.map((li, li2) => <Ed key={li2} id={p.id} path={`sections.${i}.cols.${k}.items.${li2}`} value={li} style={{ color: 'var(--text-strong)' }} />)}
                         </div>
                       ))}
                     </div>
@@ -401,6 +419,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 )}
               </section>
             ))}
+            <AddSection id={p.id} count={secs.length} />
           </div>
         </div>
       </div>

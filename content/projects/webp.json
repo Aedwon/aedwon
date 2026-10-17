@@ -1,0 +1,41 @@
+{
+  "id": "webp",
+  "name": "WebP Unli",
+  "type": "Web tool",
+  "media": "web",
+  "depth": "note",
+  "desc": "Next.js static export that converts supported images to WebP in a wasm-vips worker. Each queued file stores its own options, and completed results can be downloaded individually or as a ZIP.",
+  "stack": [
+    "Next.js",
+    "TypeScript",
+    "wasm-vips"
+  ],
+  "links": [
+    {
+      "label": "[webp unli url]",
+      "href": "#"
+    },
+    {
+      "label": "[Source]",
+      "href": "#"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Runs",
+      "v": "Entirely in the browser"
+    }
+  ]
+}

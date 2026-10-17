@@ -1,0 +1,54 @@
+{
+  "id": "w3",
+  "name": "[Scoring 4,000 Olympiad competitors]",
+  "type": "Writing",
+  "media": "paper",
+  "depth": "writeup",
+  "post": true,
+  "desc": "[A two-line summary: what the piece is about and who it’s for.]",
+  "stack": [],
+  "stackText": "",
+  "topic": "PSO Scorer · data",
+  "mins": "[5] min",
+  "date": "[Month DD, YYYY]",
+  "links": [],
+  "facts": [
+    {
+      "k": "Published",
+      "v": "[Month DD, YYYY]"
+    },
+    {
+      "k": "Reading time",
+      "v": "[5] min read"
+    },
+    {
+      "k": "Topic",
+      "v": "PSO Scorer · data"
+    }
+  ],
+  "sections": [
+    {
+      "kind": "text",
+      "h": "[First section]",
+      "p": [
+        "[The opening: the problem in plain words, and why it mattered to you.]",
+        "[Body copy. Short paragraphs, real numbers, honest about what isn’t built yet.]"
+      ]
+    },
+    {
+      "kind": "text",
+      "h": "[Second section]",
+      "p": [
+        "[Body copy.]"
+      ],
+      "fig": "[a figure]"
+    },
+    {
+      "kind": "text",
+      "h": "[What I’d do differently]",
+      "p": [
+        "[Body copy.]"
+      ]
+    }
+  ]
+}

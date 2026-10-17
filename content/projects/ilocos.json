@@ -1,0 +1,56 @@
+{
+  "id": "ilocos",
+  "name": "Ilocos Sur Esports Bot",
+  "type": "Discord bot",
+  "media": "discord",
+  "depth": "writeup",
+  "desc": "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.",
+  "stack": [
+    "Python",
+    "MySQL"
+  ],
+  "links": [],
+  "facts": [
+    {
+      "k": "Client",
+      "v": "Ilocos Sur Provincial Government"
+    },
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Hosting",
+      "v": "Hostinger VPS"
+    }
+  ],
+  "sections": [
+    {
+      "h": "The brief",
+      "p": [
+        "[Who it was for and what they needed, in two or three sentences.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I built",
+      "p": [
+        "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.",
+        "[One or two sentences on the hardest part, and how you solved it.]"
+      ],
+      "fig": "[Ilocos Sur Esports Bot, in use]",
+      "kind": "text"
+    },
+    {
+      "h": "How it went",
+      "p": [
+        "[The result: numbers if you have them, or what people said.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

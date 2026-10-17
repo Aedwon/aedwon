@@ -6,6 +6,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Room from './Room';
 import Mobile from './Mobile';
+import dynamic from 'next/dynamic';
 import Moments from './Moments';
 import { currentTheme, setTheme, ThemeContext, type Theme } from '@/lib/design-v3/theme';
 
@@ -73,6 +74,9 @@ export function Stage({
 
 const LoadedCtx = createContext(true);
 
+// The local studio (edit projects on the page): development only, so it never reaches the production bundle.
+const Studio = process.env.NODE_ENV === 'development' ? dynamic(() => import('./studio/StudioUI'), { ssr: false }) : null;
+
 export default function Site({ initialPath }: { initialPath: string }) {
   const theme = useThemeAttr();
   const toggle = useCallback(() => {
@@ -113,6 +117,7 @@ export default function Site({ initialPath }: { initialPath: string }) {
             </div>
           ) : null}
         </Stage>
+        {Studio ? <Studio /> : null}
       </LoadedCtx.Provider>
     </ThemeContext.Provider>
   );

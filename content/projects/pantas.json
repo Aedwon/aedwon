@@ -1,0 +1,188 @@
+{
+  "id": "pantas",
+  "name": "Pantas",
+  "type": "Mobile app",
+  "media": "phone",
+  "depth": "case",
+  "desc": "Android-first exam reviewer for Philippine civil service and university entrance preparation, with encrypted local study state and on-device FSRS-6 scheduling.",
+  "stack": [
+    "Flutter",
+    "Dart",
+    "Firebase",
+    "Drift",
+    "RevenueCat"
+  ],
+  "links": [
+    {
+      "label": "pantas.app",
+      "href": "https://pantas.app"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "Lead Architect & Developer"
+    },
+    {
+      "k": "Status",
+      "v": "Pre-launch"
+    },
+    {
+      "k": "Platform",
+      "v": "Android"
+    },
+    {
+      "k": "Timeline",
+      "v": "[Start] – present"
+    },
+    {
+      "k": "Scale",
+      "v": "158 lessons, 3,163 questions"
+    }
+  ],
+  "points": [
+    {
+      "h": "Works offline",
+      "p": "Content ships inside the app and study state lives in an encrypted local database."
+    },
+    {
+      "h": "FSRS-6 review scheduling",
+      "p": "Each student's review dates adapt to their own answer history, computed on the device."
+    },
+    {
+      "h": "A plan that adapts daily",
+      "p": "The roadmap sizes each day from the work left, the days left and how the student actually studies."
+    }
+  ],
+  "sections": [
+    {
+      "kind": "text",
+      "h": "Why Pantas",
+      "p": [
+        "[2–3 sentences: who it's for (civil service and university entrance exam takers), what's wrong with the reviewers they use today, and why working offline matters for them.]"
+      ]
+    },
+    {
+      "kind": "text",
+      "h": "Keeping study state local",
+      "p": [
+        "Pantas stores its mutable study state in a Drift database instead of depending on a network request before a quiz can work. The database includes attempts, review state, quiz sessions, lesson progress, preferences, review logs, and a queue of changes waiting to sync.",
+        "The database is opened through Drift’s background native database path. Pantas generates a 32-byte key with Random.secure(), stores that key through flutter_secure_storage, and supplies it to SQLite3MultipleCiphers in SQLCipher compatibility mode. The repository also records the migration details because changing the encryption library or secure-storage format incorrectly could leave an existing install unable to open its own database.",
+        "The sync layer was built around that local state. Changes such as an updated review schedule are added to a persistent pending queue, which keeps failed operations available for another attempt. The Firestore mappers, push and pull paths, and conflict handling exist in the repository. They are not live in the current build because Firebase bootstrap is still intentionally unwired."
+      ]
+    },
+    {
+      "kind": "text",
+      "h": "What happens after an answer",
+      "p": [
+        "[Your existing text for this section.]"
+      ],
+      "fig": "[5s silent loop: answer → next review date]"
+    },
+    {
+      "kind": "systems",
+      "h": "How Pantas works",
+      "p": [
+        "Five systems, from the daily plan to a second device. Each is labelled honestly: shipping is on main, candidate is built on a branch and still in review, planned is specified but not built."
+      ],
+      "items": [
+        {
+          "h": "Adaptive roadmap",
+          "which": "roadmap",
+          "vh": "370px",
+          "p": [
+            "Every day, Pantas plans the student's day from what's left and how they actually study. The last stretch before the exam is review-only. Topics go weakest first, prerequisites first. What's left is spread evenly over the study days left, due reviews are added up to a typical day, one mock lands 1 to 6 days before the exam, and today is split into short sittings and frozen.",
+            "It rebuilds whenever something changes, like a new exam date or new content, and logs why."
+          ]
+        },
+        {
+          "h": "Study loop",
+          "which": "study",
+          "vh": "370px",
+          "p": [
+            "The student never rates themselves. The app grades each answer from two facts: right or wrong, and how long it took. Wrong is Again, right but slower than 25 seconds is Hard, right and quick is Good. FSRS then decides when the question comes back: good recalls push it further out, a miss brings it back soon. It’s all written to the encrypted local database, so it works offline.",
+            "A per-student optimizer for the scheduler is specified but not built yet."
+          ]
+        },
+        {
+          "h": "Content",
+          "which": "content",
+          "vh": "370px",
+          "p": [
+            "Lessons are Markdown and questions are YAML. Each question passes a checklist and a blind-solve by someone other than its author, then an importer that rejects mistakes like a wrong choice without an explanation. Questions waiting on a figure stay inactive until it's drawn.",
+            "Content ships inside the app. Updates never touch a student's progress."
+          ]
+        },
+        {
+          "h": "Insights",
+          "which": "insights",
+          "vh": "410px",
+          "p": [
+            "Pantas compares a student's own answers in two conditions, computed on the phone. Figures show as soon as both sides have data, but a sentence only appears once a standard statistical test says the gap is unlikely to be chance. Nothing unlocks at a fixed day or session count.",
+            "Shown here is stamina: the first half of each mock against the second, checked with a two-proportion z-test. Other tendencies use Welch's t-test on log times, an exact binomial test and a Wilson interval. The student is an example."
+          ]
+        },
+        {
+          "h": "Pro and backup",
+          "which": "pro",
+          "vh": "370px",
+          "p": [
+            "Pro is decided on the phone from the store through RevenueCat, so it works offline and never drops a student to Free on a stale answer. Backup only turns on when three things are true: signed in with Google, Pro on the phone, and a Pro flag the server sets from RevenueCat's signed events.",
+            "From then on, changes upload 5 seconds after the last one and reach the student's other devices. If Pro ends, backup stops and everything stays on the phone."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "text",
+      "h": "Building content before it reaches the app",
+      "p": [
+        "Questions are authored as structured files and pass through tooling before they are packed into the application. The authoring runbook has a validator for schema and content errors, followed by a Question Studio review step for flagged issues and duplicate stems. Questions that need a figure can stay inactive until the required illustration and renderer exist.",
+        "The content model also separates two meanings of difficulty. Authored difficulty is only used to organize the writing progression from easier questions toward exam-level ones. It is not written into the runtime question model. FSRS difficulty belongs to an individual student's review state and changes from their actual review history instead.",
+        "For the SQLite content path, the seed writer takes exported JSON and passes exams, subjects, topics, passages, questions, choices, lessons, and related records through the project’s content parsers before writing content.db. When it builds the shipped database asset, it hashes the finished SQLite file and writes a shortened digest into content_seed_version.dart. The installer can use that digest to tell that bundled content changed instead of relying on somebody remembering to update a date or version string by hand."
+      ]
+    },
+    {
+      "kind": "status",
+      "h": "Status and what’s next",
+      "p": [
+        "Pantas is still in pre-launch development. I keep unfinished pieces out of the feature claims until their runtime paths are actually connected."
+      ],
+      "cols": [
+        {
+          "h": "Shipping (on main)",
+          "items": [
+            "Content pipeline and illustrations",
+            "Placement, study loop, mock exams",
+            "Insights, Wrapped, notifications",
+            "Pro, sync, consent-based telemetry",
+            "Build and release"
+          ]
+        },
+        {
+          "h": "Candidate (on a branch)",
+          "items": [
+            "Adaptive roadmap",
+            "Prepared Today session",
+            "Signed, encrypted content packages",
+            "Tendency confidence",
+            "Question QA round"
+          ]
+        },
+        {
+          "h": "Planned",
+          "items": [
+            "Content coverage audit",
+            "Per-student scheduler optimizer",
+            "Export link and scheduled cleanups",
+            "[Launch target]"
+          ]
+        }
+      ],
+      "link": {
+        "label": "[Join the waitlist]",
+        "href": "#"
+      }
+    }
+  ]
+}

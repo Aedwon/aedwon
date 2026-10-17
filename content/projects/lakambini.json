@@ -1,0 +1,34 @@
+{
+  "id": "lakambini",
+  "name": "Lakambini",
+  "type": "Website redesign",
+  "media": "web",
+  "depth": "note",
+  "desc": "Redesign of the website for Lakambini, an events and creative agency I worked with. [One line on what changed or the result.]",
+  "stack": [],
+  "stackText": "[stack]",
+  "links": [
+    {
+      "label": "[lakambini url]",
+      "href": "#"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Client",
+      "v": "Lakambini"
+    },
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    }
+  ]
+}

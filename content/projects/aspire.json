@@ -1,0 +1,38 @@
+{
+  "id": "aspire",
+  "name": "Microsoft Aspire",
+  "type": "Open source",
+  "media": "repo",
+  "depth": "note",
+  "repo": "microsoft/aspire",
+  "desc": "Code-first tooling for building, observing, and deploying distributed applications.",
+  "stack": [
+    "GitHub"
+  ],
+  "stackText": "microsoft/aspire",
+  "links": [
+    {
+      "label": "github.com/microsoft/aspire",
+      "href": "https://github.com/microsoft/aspire"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Contribution",
+      "v": "[your PR or contribution]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    }
+  ],
+  "sections": [
+    {
+      "h": "What I contributed",
+      "p": [
+        "[Your PR or contribution, in a sentence or two, with a link.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

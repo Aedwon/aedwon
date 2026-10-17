@@ -1,0 +1,54 @@
+{
+  "id": "w2",
+  "name": "[What 8 hours without internet taught me]",
+  "type": "Writing",
+  "media": "paper",
+  "depth": "writeup",
+  "post": true,
+  "desc": "[A two-line summary: what the piece is about and who it’s for.]",
+  "stack": [],
+  "stackText": "",
+  "topic": "Kiosk Survey · events",
+  "mins": "[4] min",
+  "date": "[Month DD, YYYY]",
+  "links": [],
+  "facts": [
+    {
+      "k": "Published",
+      "v": "[Month DD, YYYY]"
+    },
+    {
+      "k": "Reading time",
+      "v": "[4] min read"
+    },
+    {
+      "k": "Topic",
+      "v": "Kiosk Survey · events"
+    }
+  ],
+  "sections": [
+    {
+      "kind": "text",
+      "h": "[First section]",
+      "p": [
+        "[The opening: the problem in plain words, and why it mattered to you.]",
+        "[Body copy. Short paragraphs, real numbers, honest about what isn’t built yet.]"
+      ]
+    },
+    {
+      "kind": "text",
+      "h": "[Second section]",
+      "p": [
+        "[Body copy.]"
+      ],
+      "fig": "[a figure]"
+    },
+    {
+      "kind": "text",
+      "h": "[What I’d do differently]",
+      "p": [
+        "[Body copy.]"
+      ]
+    }
+  ]
+}

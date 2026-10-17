@@ -1,0 +1,38 @@
+{
+  "id": "opensre",
+  "name": "OpenSRE",
+  "type": "Open source",
+  "media": "repo",
+  "depth": "note",
+  "repo": "Tracer-Cloud/opensre",
+  "desc": "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.",
+  "stack": [
+    "GitHub"
+  ],
+  "stackText": "Tracer-Cloud/opensre",
+  "links": [
+    {
+      "label": "github.com/Tracer-Cloud/opensre",
+      "href": "https://github.com/Tracer-Cloud/opensre"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Contribution",
+      "v": "[your PR or contribution]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    }
+  ],
+  "sections": [
+    {
+      "h": "What I contributed",
+      "p": [
+        "[Your PR or contribution, in a sentence or two, with a link.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

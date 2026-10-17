@@ -1,0 +1,54 @@
+{
+  "id": "w1",
+  "name": "[On building Pantas offline-first]",
+  "type": "Writing",
+  "media": "paper",
+  "depth": "writeup",
+  "post": true,
+  "desc": "[A two-line summary: what the piece is about and who it’s for.]",
+  "stack": [],
+  "stackText": "",
+  "topic": "Pantas · offline-first",
+  "mins": "[6] min",
+  "date": "[Month DD, YYYY]",
+  "links": [],
+  "facts": [
+    {
+      "k": "Published",
+      "v": "[Month DD, YYYY]"
+    },
+    {
+      "k": "Reading time",
+      "v": "[6] min read"
+    },
+    {
+      "k": "Topic",
+      "v": "Pantas · offline-first"
+    }
+  ],
+  "sections": [
+    {
+      "kind": "text",
+      "h": "[First section]",
+      "p": [
+        "[The opening: the problem in plain words, and why it mattered to you.]",
+        "[Body copy. Short paragraphs, real numbers, honest about what isn’t built yet.]"
+      ]
+    },
+    {
+      "kind": "text",
+      "h": "[Second section]",
+      "p": [
+        "[Body copy.]"
+      ],
+      "fig": "[a figure]"
+    },
+    {
+      "kind": "text",
+      "h": "[What I’d do differently]",
+      "p": [
+        "[Body copy.]"
+      ]
+    }
+  ]
+}

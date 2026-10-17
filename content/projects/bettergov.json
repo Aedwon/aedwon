@@ -1,0 +1,38 @@
+{
+  "id": "bettergov",
+  "name": "BetterGov PH",
+  "type": "Open source",
+  "media": "repo",
+  "depth": "note",
+  "repo": "bettergovph/bettergov",
+  "desc": "Open-source effort building a better national website for the Philippines.",
+  "stack": [
+    "GitHub"
+  ],
+  "stackText": "bettergovph/bettergov",
+  "links": [
+    {
+      "label": "github.com/bettergovph/bettergov",
+      "href": "https://github.com/bettergovph/bettergov"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Contribution",
+      "v": "[your PR or contribution]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    }
+  ],
+  "sections": [
+    {
+      "h": "What I contributed",
+      "p": [
+        "[Your PR or contribution, in a sentence or two, with a link.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

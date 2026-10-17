@@ -100,6 +100,12 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 ### 11. Skill Evaluation & User Confirmation Gate
 - For every user request, actively evaluate if a specialized skill applies (e.g. Visual Companion for UI brainstorming, Prototype for interactive exploration, TDD for feature code, Subagent-Driven Development for execution).
 - Proactively tell the user which skill fits the task and ask for their confirmation before launching or proceeding.
+## Project Content and the Local Studio
+
+- Project content lives in `content/projects/<id>.json` (one file per project). `lib/design-v3/data/projects.ts` only holds the types and loads those files. Do not move copy back into TypeScript.
+- The user edits projects on the page through the local studio (localhost dev only). See [`docs/studio.md`](docs/studio.md) for use, file format, safety rules and limits.
+- `Room.tsx` and `Mobile.tsx` must export only their default component. Otherwise every content save reloads the whole page in dev.
+
 ## Delegate Bulk Work to a Haiku Subagent
 
 - Run test suites, lint/typecheck runs, mechanical edits, and broad codebase crawling through a Haiku 5.5 subagent (`model: "haiku"`). Do not do them in the main thread.
