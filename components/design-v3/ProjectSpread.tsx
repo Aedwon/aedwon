@@ -351,13 +351,22 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
               </div>
             </ImageSlot>
           </div>
+          {p.hero?.src && (p.hero.caption || editing) && (
+            <Ed id={p.id} path="hero.caption" value={p.hero.caption || ''} as="p" optional placeholder="Add a caption" style={{ margin: '12px 0 0', fontSize: 13.5, color: 'var(--text-label)' }} />
+          )}
           {isNote && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, paddingTop: 16 }}>
-              {[0, 1].map((n) => (
-                <ImageSlot key={n} id={p.id} slot={`shots.${n}`} img={p.shots?.[n]} frame={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)' }}>{n === 0 ? '[a detail]' : '[another detail]'}</div>
-                </ImageSlot>
-              ))}
+              {[0, 1].map((n) => {
+                const shot = p.shots?.[n];
+                return (
+                  <figure key={n} style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <ImageSlot id={p.id} slot={`shots.${n}`} img={shot} frame={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)' }}>{n === 0 ? '[a detail]' : '[another detail]'}</div>
+                    </ImageSlot>
+                    {shot?.src && (shot.caption || editing) && <Ed id={p.id} path={`shots.${n}.caption`} value={shot.caption || ''} as="figcaption" optional placeholder="Add a caption" style={{ fontSize: 13.5, color: 'var(--text-label)' }} />}
+                  </figure>
+                );
+              })}
             </div>
           )}
           {/* case points: the 48px wrapper is always there so the rhythm holds */}
@@ -391,7 +400,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                       <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)', textAlign: 'center', padding: '0 24px' }}>{s.fig}</div>
                     </ImageSlot>
                     {s.img
-                      ? (s.img.caption || editing) && <Ed id={p.id} path={`sections.${i}.img.caption`} value={s.img.caption || ''} as="figcaption" style={{ fontSize: 13.5, color: 'var(--text-label)' }} />
+                      ? (s.img.caption || editing) && <Ed id={p.id} path={`sections.${i}.img.caption`} value={s.img.caption || ''} as="figcaption" optional placeholder="Add a caption" style={{ fontSize: 13.5, color: 'var(--text-label)' }} />
                       : <figcaption style={{ fontSize: 13.5, color: 'var(--text-label)' }}>[Caption: what this shows.]</figcaption>}
                   </figure>
                 )}

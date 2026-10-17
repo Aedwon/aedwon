@@ -16,6 +16,7 @@ const CSS = `
 .studio-ed:hover{outline-color:rgba(96,165,250,.95)}
 .studio-ed:focus{outline:2px solid #60A5FA;background:rgba(96,165,250,.08)}
 .studio-ed:empty::before{content:'(empty)';opacity:.45}
+.studio-ed[data-ph]:empty::before{content:attr(data-ph)}
 .studio-row{position:relative}
 .studio-x{position:absolute;right:-32px;top:2px;width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.22);background:rgba(20,20,24,.92);color:#eee;cursor:pointer;opacity:0;font:14px/1 system-ui;padding:0}
 .studio-row:hover .studio-x{opacity:1}

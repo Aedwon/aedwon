@@ -754,6 +754,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
                     )}
                 </div>
               </div>
+              {p.hero?.src && p.hero.caption && <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--text-label)' }}>{p.hero.caption}</p>}
               {p.depth === 'case' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 28 }}>
                   {(p.points || []).map((k) => (

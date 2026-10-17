@@ -17,8 +17,11 @@ function useApi() {
 }
 
 // A line of text. Click to edit; Enter or clicking away saves; Escape puts it back.
-export function Ed({ id, path, value, as = 'span', style, className }: {
+// With optional, clearing the text removes the field from the file instead of saving an empty string.
+// placeholder shows (in edit mode only) while the text is empty.
+export function Ed({ id, path, value, as = 'span', style, className, optional, placeholder }: {
   id: string; path: string; value: string; as?: Tag; style?: CSSProperties; className?: string;
+  optional?: boolean; placeholder?: string;
 }) {
   const api = useApi();
   if (!api) return createElement(as, { style, className }, value);
@@ -29,9 +32,10 @@ export function Ed({ id, path, value, as = 'span', style, className }: {
     contentEditable: true,
     suppressContentEditableWarning: true,
     spellCheck: true,
+    'data-ph': placeholder,
     onBlur: (e: React.FocusEvent<HTMLElement>) => {
       const next = e.currentTarget.innerText.replace(/ /g, ' ').replace(/\s*\n+\s*/g, ' ').trim();
-      if (next !== value) quiet(api.saveOp(id, { op: 'set', path, value: next }));
+      if (next !== value) quiet(api.saveOp(id, optional && next === '' ? { op: 'unset', path } : { op: 'set', path, value: next }));
     },
     onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
       if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); }
