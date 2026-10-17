@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { BLOG_POSTS } from "@/lib/data/blogs";
+import { PROJECTS } from "@/lib/design-v3/data/projects";
 import { OPEN_SOURCE_PROJECTS } from "@/lib/data/open-source";
 import {
   getCaseStudyProjects,
@@ -20,12 +20,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: SITE_LAST_MODIFIED,
       changeFrequency: "weekly",
       priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/blogs`,
-      lastModified: SITE_LAST_MODIFIED,
-      changeFrequency: "monthly",
-      priority: 0.8,
     },
     {
       url: `${SITE_URL}/about`,
@@ -65,9 +59,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }));
 
-  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
-    url: `${SITE_URL}/blogs/${post.slug}`,
-    lastModified: new Date(post.date),
+  // the blog posts are the Writing entries; /blogs/<slug> and /b/<key> redirect here (next.config.ts)
+  const blogRoutes: MetadataRoute.Sitemap = PROJECTS.filter((post) => post.type === "Writing").map((post) => ({
+    url: `${SITE_URL}/writing/${post.id}`,
+    lastModified: new Date(post.date ?? SITE_LAST_MODIFIED),
     changeFrequency: "yearly",
     priority: 0.65,
   }));

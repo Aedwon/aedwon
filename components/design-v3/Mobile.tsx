@@ -767,7 +767,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
               )}
               {secs.map((sec) => (
                 <section key={sec.id} id={sec.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 40 }}>
-                  <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>{sec.h}</h2>
+                  {sec.h && <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>{sec.h}</h2>}
                   {(sec.p || []).map((para: string, j: number) => (
                     <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
                   ))}
@@ -837,7 +837,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
                     onClick={() => { const el = document.getElementById(sec.id); if (el && projScrollRef.current) projScrollRef.current.scrollTo({ top: el.offsetTop - 70, behavior: 'smooth' }); setTocOpen(false); }}
                     style={{ '--c': i === cur ? 'var(--text-primary)' : 'var(--text-label)', display: 'block', width: '100%', minHeight: 48, padding: '0 12px', textAlign: 'left', fontSize: 16 } as React.CSSProperties}
                   >
-                    {sec.h}
+                    {sec.h || 'Introduction'}
                   </button>
                 ))}
               </div>

@@ -16,9 +16,8 @@ import aspire from './aspire.json';
 import opensre from './opensre.json';
 import dockroute from './dockroute.json';
 import bettergov from './bettergov.json';
-import w1 from './w1.json';
-import w2 from './w2.json';
-import w3 from './w3.json';
+import spec from './spec.json';
+import factory from './factory.json';
 
 export const PROJECT_FILES = [
   pantas,
@@ -38,7 +37,6 @@ export const PROJECT_FILES = [
   opensre,
   dockroute,
   bettergov,
-  w1,
-  w2,
-  w3,
+  spec,
+  factory,
 ] as const;

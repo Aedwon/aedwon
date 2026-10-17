@@ -389,7 +389,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 56, position: 'relative' }}
               >
                 <SectionTools id={p.id} index={i} count={secs.length} hasFigure={!!(s.fig || s.img)} />
-                <Ed id={p.id} path={`sections.${i}.h`} value={s.h || ''} as="h2" style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }} />
+                {(s.h || editing) && <Ed id={p.id} path={`sections.${i}.h`} value={s.h || ''} as="h2" style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }} />}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 680, fontSize: 17, lineHeight: 1.75, color: 'var(--text-secondary)' }}>
                   <Paras id={p.id} path={`sections.${i}.p`} items={s.p || []} pStyle={{ margin: 0 }} />
                 </div>
@@ -457,7 +457,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 aria-current={i === cur ? 'true' : 'false'}
                 style={{ '--c': i === cur ? 'var(--text-primary)' : 'var(--text-label)' } as CSSProperties}
               >
-                {s.h}
+                {s.h || 'Introduction'}
               </button>
             ))}
           </div>

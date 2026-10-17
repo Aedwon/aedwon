@@ -1,8 +1,15 @@
 import type { NextConfig } from "next";
 
+// The two posts now live in the v3 Writing index (content/projects/factory.json and spec.json).
+// Old /blogs addresses and the /b/ short links all land on /writing.
+const blogPosts = {
+  "a-perfect-factory-can-still-make-something-nobody-wants": "factory",
+  "the-next-model-wont-fix-your-specification": "spec",
+} as const;
+
 const blogShortLinks = {
-  factory: "/blogs/a-perfect-factory-can-still-make-something-nobody-wants",
-  spec: "/blogs/the-next-model-wont-fix-your-specification",
+  factory: "/writing/factory",
+  spec: "/writing/spec",
 } as const;
 
 const nextConfig: NextConfig = {
@@ -17,9 +24,15 @@ const nextConfig: NextConfig = {
       {
         source: "/resume",
         destination:
-          "https://drive.google.com/file/d/1F2tjvYSaHlApExmlhdLqtmN9JdSPb_B/view?usp=drivesdk",
+          "https://drive.google.com/file/d/1F2tjvYSaHlApExmlhdLqtmnN9JdSPb_B/view?usp=drivesdk",
         permanent: false,
       },
+      { source: "/blogs", destination: "/index", permanent: true },
+      ...Object.entries(blogPosts).map(([slug, id]) => ({
+        source: `/blogs/${slug}`,
+        destination: `/writing/${id}`,
+        permanent: true,
+      })),
       ...Object.entries(blogShortLinks).map(([key, destination]) => ({
         source: `/b/${key}`,
         destination,
