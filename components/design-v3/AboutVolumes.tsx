@@ -11,6 +11,7 @@
 // because opacity would flatten the preserve-3d context (spec §7.1).
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import Link from 'next/link';
 import BookPage from './BookPage';
 import type { AboutVolumesHandle, Req } from './contracts';
@@ -524,7 +525,8 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
           st.settle = null; // snap the leaf out: L/R already show the new page, so fading causes a visible pop
           st.turn = null;
           const v = st.active != null ? vRef.current[st.active] : VOLUMES[0];
-          setDv((dd) => ({ ...dd, L: pgOf(v, 2 * done.to), R: pgOf(v, 2 * done.to + 1), barAt: done.to }));
+          // commit before renderFrame hides the leaf, or one frame shows the stale page
+          flushSync(() => setDv((dd) => ({ ...dd, L: pgOf(v, 2 * done.to), R: pgOf(v, 2 * done.to + 1), barAt: done.to })));
           if (st.queue.length) startTurn(st.queue.shift()!);
         }
       }
