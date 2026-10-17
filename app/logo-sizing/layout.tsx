@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Logo Sizing — Aedwon",
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LogoSizingLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <ThemeProvider>{children}</ThemeProvider>;
 }

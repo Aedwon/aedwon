@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The room — wall above, shelf below</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.rn{border:none;background:none;padding:0;height:44px;width:72px;font-family:inherit;font-size:14px;cursor:pointer;color:var(--c);transition:color .3s ease}
+.rn:hover{color:#EDEDED}
+.rn:focus-visible{outline:2px solid #EDEDED;outline-offset:2px;border-radius:4px}
+</style>
+</helmet>
+<div data-room="{{ uid }}" onMouseMove="{{ track }}" onMouseLeave="{{ untrack }}" style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: {{ wallBg }}; color: #EDEDED; font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; perspective: 1800px; perspective-origin: 50% 50%">
+
+<!-- B · a field of points on the wall that wakes up where your cursor is -->
+<canvas data-dots="{{ uid }}" width="1440" height="900" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1440px; height: 900px; pointer-events: none; display: {{ amb.dots }}"></canvas>
+
+<!-- the wall of work -->
+<div aria-hidden="{{ cam.wallHidden }}" style="position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 50% 100%; transform: {{ cam.wallTf }}; visibility: {{ cam.wallVis }}; opacity: {{ cam.wallOp }}; -webkit-mask-image: {{ cam.wallMask }}; mask-image: {{ cam.wallMask }}; pointer-events: {{ cam.wallPe }}">
+<dc-import name="WallIndex2" bare="{{ true }}" on-open="{{ openProject }}" dim="{{ cam.dim }}" wall-color="{{ amb.wall }}" shadow="{{ amb.shadow }}" on-focus="{{ onFocus }}" view="wall" motion="swap" view-req="{{ viewReq }}" on-peek="{{ onPeek }}" hint-size="1440px,900px"></dc-import>
+</div>
+
+<!-- the shelf, mounted on the same wall, just below -->
+<div aria-hidden="{{ cam.shelfHidden }}" style="position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 50% 0; transform: {{ cam.shelfTf }}; visibility: {{ cam.shelfVis }}; pointer-events: {{ cam.shelfPe }}">
+<!-- A · the books' shadow on the wall (light from the upper left) -->
+<span aria-hidden="true" style="position: absolute; left: 556px; top: 262px; width: 470px; height: 516px; border-radius: 6px; background: rgba(0,0,0,0.5); filter: blur(26px); opacity: {{ amb.bookShadow }}; transition: opacity .5s ease"></span>
+<dc-import name="AboutVolumes" bare="{{ true }}" open-req="{{ openReq }}" close-req="{{ closeReq }}" on-scroll-out="{{ onScrollOut }}" on-open="{{ onOpen }}" hint-size="1440px,900px"></dc-import>
+</div>
+
+<!-- light through a window, falling across the work and the shelf alike. It's Manila's light, right now -->
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: {{ light.op }}; display: {{ amb.window }}">
+<div style="position: absolute; left: 0; top: 0; width: 1440px; height: 1640px; transform: translateY({{ cam.world }})">
+<div style="position: absolute; left: {{ light.x }}; top: 90px; width: 600px; height: 1340px; transform-origin: 50% 0; transform: {{ light.tf }}; filter: blur({{ light.blur }}); display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 22px">
+<span style="background: {{ light.c }}"></span><span style="background: {{ light.c }}"></span><span style="background: {{ light.c }}"></span><span style="background: {{ light.c }}"></span><span style="background: {{ light.c }}"></span><span style="background: {{ light.c }}"></span>
+</div>
+</div>
+</div>
+
+<!-- a project: it comes forward as the wall steps back; Back returns you to the same spot on the wall -->
+<div aria-hidden="{{ pj.hidden }}" style="position: absolute; inset: 0; opacity: {{ pj.op }}; translate: 0 {{ pj.y }}; visibility: {{ pj.vis }}; pointer-events: {{ pj.pe }}">
+<dc-import name="ProjectSpread" bare="{{ true }}" open-req="{{ projReq }}" on-back="{{ closeProject }}" hint-size="1440px,900px"></dc-import>
+</div>
+
+<!-- one nav for the whole room; its line travels with you -->
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 84px; background: {{ amb.nav }}; backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px)">
+<button class="rn" onClick="{{ go.wall }}" style="--c: #EDEDED; position: absolute; left: 44px; top: 20px; width: auto; font-size: 16px; font-weight: 600; letter-spacing: -0.02em">Aedwon</button>
+<button class="rn" onClick="{{ go.wall }}" aria-current="{{ nav.wallCur }}" style="--c: {{ nav.wall }}; position: absolute; left: 1016px; top: 20px">Wall</button>
+<button class="rn" onClick="{{ go.index }}" aria-current="{{ nav.indexCur }}" style="--c: {{ nav.index }}; position: absolute; left: 1088px; top: 20px">Index</button>
+<span aria-hidden="true" style="position: absolute; left: 1172px; top: 34px; width: 1px; height: 16px; background: #2a2a30"></span>
+<button class="rn" onClick="{{ go.about }}" aria-current="{{ nav.aboutCur }}" style="--c: {{ nav.about }}; position: absolute; left: 1184px; top: 20px">About</button>
+<button class="rn" onClick="{{ go.contact }}" aria-current="{{ nav.contactCur }}" style="--c: {{ nav.contact }}; position: absolute; left: 1256px; top: 20px">Contact</button>
+<span aria-hidden="true" style="position: absolute; left: 0; top: 58px; width: 28px; height: 1.5px; background: #EDEDED; translate: {{ nav.lineX }} 0"></span>
+<a class="rn" href="{{ themeHref }}" aria-label="{{ themeLabel }}" style="--c: #8A8A93; position: absolute; left: 1384px; top: 20px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ themeIcon }}"></path></svg></a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"ambience":{"editor":"enum","options":["none","gallery","dots","tint","window"],"default":"dots"},"hour":{"editor":"number","default":-1},"start":{"editor":"enum","options":["wall","about"],"default":"wall"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const s = props.start === 'about' ? 1 : 0;
+    this.c = s; this.cv = 0; this.cT = s;      // camera: 0 looking at the wall of work, 1 at the shelf
+    this.pW = 0; this.pS = 0; this.pSAt = 0;   // how far you've pushed past the end of either
+    this.view = 'wall'; this.shelfSel = 'about';
+    this.uid = 'rm' + Math.floor(Math.random() * 1e9);
+    this.pOpen = false; this.po = 0; this.pn = 0;
+    this.amb = ['gallery', 'dots', 'tint', 'window'].indexOf(props.ambience) >= 0 ? props.ambience : (props.ambience === 'none' ? 'none' : 'dots');
+    this.mx = -999; this.my = -999; this.mxs = -999; this.mys = -999; this.focus = -1; this.tint = [10, 10, 12];
+    // C · each project's colour (stand-ins until the real screenshots are in)
+    this.ACC = ['#3DA6F5', '#5865F2', '#E0567A', '#D97757', '#3DDC84', '#E70488', '#3178C6', '#F2C14E', '#2F6BD9', '#5865F2', '#5865F2', '#2FA866', '#F0B45A', '#7B5BE6', '#FF7A45', '#2496ED', '#3E73D6'];
+    this.n = 0;
+    this.state = { tick: 0, viewReq: '', openReq: '', closeReq: '' };
+  }
+  componentDidMount() {
+    this.onKey = (e) => { if (e.key === 'Escape' && this.pOpen) this.pOpen = false; };
+    window.addEventListener('keydown', this.onKey);
+    this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.last = performance.now();
+    const loop = (now) => {
+      const dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
+      if (this.pS && now - this.pSAt > 420) { this.pS *= Math.pow(0.05, dt); if (this.pS < 0.002) this.pS = 0; }
+      const tgt = this.cT === 0 ? 0.35 * this.pW : 1 - 0.3 * this.pS;
+      if (this.reduced) this.c = this.cT; else { this.cv += ((tgt - this.c) * 48 - this.cv * 14) * dt; this.c += this.cv * dt; }
+      if (this.amb === 'dots') this.drawDots(dt);
+      if (this.amb === 'tint') {
+        const a = this.focus >= 0 && this.c < 0.5 ? this.ACC[this.focus] : null;
+        const tgt = a ? [0, 2, 4].map((o, i) => [10, 10, 12][i] + (parseInt(a.substr(1 + o, 2), 16) - [10, 10, 12][i]) * 0.07) : [10, 10, 12];
+        this.tint = this.tint.map((v, i) => v + (tgt[i] - v) * Math.min(1, dt * 2.2));
+      }
+      this.po = this.reduced ? (this.pOpen ? 1 : 0) : Math.max(0, Math.min(1, this.po + (this.pOpen ? 1 : -1) * dt / (this.pOpen ? 0.55 : 0.42)));
+      this.setState({ tick: this.state.tick + 1 });
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); window.removeEventListener('keydown', this.onKey); }
+  drawDots(dt) {
+    const cv = this.cvs || (this.cvs = document.querySelector('[data-dots="' + this.uid + '"]'));
+    if (!cv) return; const g = cv.getContext('2d'); g.clearRect(0, 0, 1440, 900);
+    this.mxs += (this.mx - this.mxs) * Math.min(1, dt * 10); this.mys += (this.my - this.mys) * Math.min(1, dt * 10);
+    const S = 30, off = ((-740 * this.c * 0.55) % S + S) % S;     // the points drift with the wall, a little slower (they're on the wall, behind the work)
+    const band = this.view === 'index' && this.c < 0.5 ? 1 : 0; this.bk = (this.bk || 0) + (band - (this.bk || 0)) * Math.min(1, dt * 6);
+    for (let y = off - S; y < 900 + S; y += S) for (let x = 15; x < 1440; x += S) {
+      const dx = x - this.mxs, dy = y - this.mys, d = Math.sqrt(dx * dx + dy * dy), w = Math.max(0, 1 - d / 200), e = w * w * (3 - 2 * w);
+      let a = (0.075 + 0.33 * e) * (1 - 0.75 * (this.po || 0));   // while you read a project, the wall's points rest
+      if (x < 1040 && y < 262) a *= 1 - this.bk;                      // under the Index's frozen header there's no wall to see
+      const push = 5 * e / Math.max(d, 1);
+      g.fillStyle = 'rgba(237,237,237,' + a.toFixed(3) + ')';
+      g.beginPath(); g.arc(x + dx * push, y + dy * push, 1 + 0.6 * e, 0, 6.283); g.fill();
+    }
+  }
+  req(key, v) { this.n += 1; this.setState({ [key]: v + '#' + this.n }); }
+  toWall(view) { this.pOpen = false; if (this.bookOpen) this.req('closeReq', 'close'); const away = this.c > 0.5; this.cT = 0; this.pS = 0; this.view = view; this.req('viewReq', away ? view + '!' : view); }
+  toShelf(contact) { this.pOpen = false; this.cT = 1; this.pW = 0; if (contact) { this.shelfSel = 'contact'; this.req('openReq', 'contact'); } else if (this.bookOpen) this.req('closeReq', 'close'); }
+  renderVals() {
+    const cl = (x) => Math.max(0, Math.min(1, x));
+    const c = this.c, cc = cl(c);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const D = 740; // the shelf hangs 740px below the top of the wall of work
+    // walking down the wall: the work tips away overhead, the shelf comes up to meet you
+    const po = this.po * this.po * (3 - 2 * this.po);
+    const wallTf = `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * po).toFixed(4)})`;
+    const shelfTf = `translateY(${(D * (1 - c)).toFixed(2)}px)`;
+    const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 };
+    const top = X[this.view], bottom = X[this.shelfSel];
+    const near = c < 0.5;
+    const col = (on) => (on ? '#EDEDED' : '#8A8A93');
+    // where the sun (or moon) is in Manila: hour -1 means now
+    const ph = +this.props.hour;
+    const hm = ph >= 0 ? ph : (() => { const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })); return d.getHours() + d.getMinutes() / 60; })();
+    const t = (hm - 6) / 12, day = t > 0 && t < 1, hi = day ? Math.sin(Math.PI * t) : 0;
+    const dawn = Math.min(1, Math.max(0, (hm - 5.3) / 1.2)) * Math.min(1, Math.max(0, (18.7 - hm) / 1.2));
+    const warm = day ? Math.max(0, 1 - hi * 1.6) : 0;                              // low sun is warmer
+    const lc = day ? `rgba(${Math.round(255)}, ${Math.round(236 - 52 * warm)}, ${Math.round(206 - 86 * warm)}, ${(0.06 + 0.05 * hi + 0.035 * warm).toFixed(3)})` : 'rgba(150, 172, 235, 0.055)';
+    const light = {
+      op: (day ? 0.35 + 0.65 * dawn : 1).toFixed(3),
+      c: lc, blur: day ? (18 + 14 * (1 - hi)).toFixed(0) + 'px' : '38px',
+      x: (day ? 980 - 760 * t : 640) + 'px',                                         // the patch travels east to west through the day
+      tf: day ? `skewX(${(-14 - 30 * (1 - hi)).toFixed(2)}deg) scaleY(${(0.95 + 0.25 * (1 - hi)).toFixed(3)})` : 'skewX(-26deg) scaleY(1.05)'
+    };
+    const A = this.amb, hex = (v) => '#' + v.map((n) => Math.round(n).toString(16).padStart(2, '0')).join('');
+    const wallC = A === 'gallery' ? '#17171b' : A === 'tint' ? hex(this.tint) : '#0a0a0c';
+    return {
+      uid: this.uid, light,
+      // light / dark: a sun when you're in the dark, a moon when you're in the light
+      themeHref: this.props.theme === 'light' ? 'Main.dc.html' : 'MainLight.dc.html',
+      themeLabel: this.props.theme === 'light' ? 'Switch to dark' : 'Switch to light',
+      themeIcon: this.props.theme === 'light' ? 'M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z' : 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4',
+      amb: {
+        wall: wallC, shadow: A === 'gallery', dots: A === 'dots' ? 'block' : 'none', window: A === 'window' ? 'block' : 'none',
+        bookShadow: A === 'gallery' && !this.bookOpen ? 1 : 0,
+        nav: wallC + 'b8'
+      },
+      track: (e) => { const r = e.currentTarget.getBoundingClientRect(); this.mx = (e.clientX - r.left) * 1440 / r.width; this.my = (e.clientY - r.top) * 900 / r.height; if (this.mxs < -900) { this.mxs = this.mx; this.mys = this.my; } },
+      untrack: () => { this.mx = -999; this.my = -999; },
+      onFocus: (i) => { this.focus = i; },
+      // the wall: one surface, a fine grain over near-black, behind everything
+      wallBg: wallC,
+      cam: {
+        world: (-D * c).toFixed(2) + 'px', dim: cc.toFixed(3), wallTf,
+        // as soon as the camera moves, the lower edge of the work dissolves, so there's never a hard edge between it and the shelf
+        wallMask: c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`, shelfTf, wallOp: ((1 - cl((c - 0.3) / 0.45)) * (1 - po)).toFixed(3),
+        wallVis: c > 0.999 ? 'hidden' : 'visible', shelfVis: c < 0.001 ? 'hidden' : 'visible',
+        wallPe: near && !this.pOpen ? 'auto' : 'none', shelfPe: near ? 'none' : 'auto',
+        wallHidden: near ? 'false' : 'true', shelfHidden: near ? 'true' : 'false'
+      },
+      pj: { op: po.toFixed(3), y: ((1 - po) * 26).toFixed(1) + 'px', vis: this.po > 0.001 ? 'visible' : 'hidden', pe: this.pOpen ? 'auto' : 'none', hidden: this.pOpen ? 'false' : 'true' },
+      projReq: this.state.projReq || '',
+      openProject: (i) => { this.pn += 1; this.setState({ projReq: i + '#' + this.pn }); this.pOpen = true; },
+      closeProject: () => { this.pOpen = false; },
+      viewReq: this.state.viewReq, openReq: this.state.openReq, closeReq: this.state.closeReq,
+      nav: {
+        lineX: (lerp(top, bottom, cc) - 14).toFixed(2) + 'px',
+        wall: col(near && this.view === 'wall'), index: col(near && this.view === 'index'),
+        about: col(!near && this.shelfSel === 'about'), contact: col(!near && this.shelfSel === 'contact'),
+        wallCur: near && this.view === 'wall' ? 'page' : 'false', indexCur: near && this.view === 'index' ? 'page' : 'false',
+        aboutCur: !near && this.shelfSel === 'about' ? 'page' : 'false', contactCur: !near && this.shelfSel === 'contact' ? 'page' : 'false'
+      },
+      go: {
+        wall: () => this.toWall('wall'), index: () => this.toWall('index'),
+        about: () => this.toShelf(false), contact: () => this.toShelf(true)
+      },
+      // keep scrolling past the last project and you're at the shelf
+      onPeek: (p) => { if (this.cT !== 0) return; this.pW = p; if (p >= 1) this.toShelf(false); },
+      // and scrolling up from the shelf takes you back to the work
+      onScrollOut: (dy) => { if (this.cT !== 1) return; this.pS = Math.max(0, this.pS - dy / 700); this.pSAt = performance.now(); if (this.pS >= 1) this.toWall(this.view); },
+      onOpen: (o) => { this.bookOpen = !!o; this.shelfSel = o === 'contact' ? 'contact' : 'about'; }
+    };
+  }
+}
+</script>
+</body>
+</html>

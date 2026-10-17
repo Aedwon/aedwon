@@ -116,6 +116,11 @@ jobs:
           assert_status "/contact" "200"
           assert_status "/privacy" "200"
           assert_status "/opengraph-image" "200"
+          assert_status "/blogs/a-perfect-factory-can-still-make-something-nobody-wants" "308"
+          assert_status "/blogs/the-next-model-wont-fix-your-specification" "308"
+          assert_status "/b/factory" "308"
+          assert_status "/b/spec" "308"
+          assert_status "/writing/spec" "200"
 
           LLMS_BODY=$(curl -fsS http://127.0.0.1:3000/llms.txt)
           assert_contains "llms.txt guidance" "$LLMS_BODY" "When to use this site"
@@ -165,8 +170,8 @@ jobs:
           assert_contains "homepage Person JSON-LD" "$HOME_HTML" '"@type":"Person"'
           assert_contains "homepage WebSite JSON-LD" "$HOME_HTML" '"@type":"WebSite"'
 
-          BLOG_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/blogs/a-perfect-factory-can-still-make-something-nobody-wants)
-          assert_contains "blog canonical" "$BLOG_HTML" 'href="https://www.aedwon.com/blogs/a-perfect-factory-can-still-make-something-nobody-wants"'
+          BLOG_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/writing/factory)
+          assert_contains "blog canonical" "$BLOG_HTML" 'href="https://www.aedwon.com/writing/factory"'
           assert_contains "blog Twitter title" "$BLOG_HTML" 'name="twitter:title"'
           assert_contains "blog BlogPosting JSON-LD" "$BLOG_HTML" '"@type":"BlogPosting"'
           assert_contains "blog breadcrumb JSON-LD" "$BLOG_HTML" '"@type":"BreadcrumbList"'

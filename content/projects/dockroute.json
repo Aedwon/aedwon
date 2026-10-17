@@ -1,0 +1,38 @@
+{
+  "id": "dockroute",
+  "name": "DockRoute",
+  "type": "Open source",
+  "media": "repo",
+  "depth": "note",
+  "repo": "Dockroute/Dockroute",
+  "desc": "External-DNS for plain Docker hosts, keeping DNS records aligned with container routes.",
+  "stack": [
+    "GitHub"
+  ],
+  "stackText": "Dockroute/Dockroute",
+  "links": [
+    {
+      "label": "github.com/Dockroute/Dockroute",
+      "href": "https://github.com/Dockroute/Dockroute"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Contribution",
+      "v": "[your PR or contribution]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    }
+  ],
+  "sections": [
+    {
+      "h": "What I contributed",
+      "p": [
+        "[Your PR or contribution, in a sentence or two, with a link.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

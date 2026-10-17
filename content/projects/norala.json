@@ -1,0 +1,62 @@
+{
+  "id": "norala",
+  "name": "Norala SB Portal",
+  "type": "Civic tech",
+  "media": "web",
+  "depth": "writeup",
+  "desc": "Unofficial bilingual legislative-transparency prototype with repository-backed records, derived council links, and explicit safeguards that keep the demo separate from an official LGU service.",
+  "stack": [
+    "Next.js",
+    "TypeScript",
+    "Tailwind"
+  ],
+  "links": [
+    {
+      "label": "[portal url]",
+      "href": "#"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Status",
+      "v": "Prototype, unofficial"
+    }
+  ],
+  "sections": [
+    {
+      "h": "The brief",
+      "p": [
+        "[Who it was for and what they needed, in two or three sentences.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I built",
+      "p": [
+        "Unofficial bilingual legislative-transparency prototype with repository-backed records, derived council links, and explicit safeguards that keep the demo separate from an official LGU service.",
+        "[One or two sentences on the hardest part, and how you solved it.]"
+      ],
+      "fig": "[Norala SB Portal, in use]",
+      "kind": "text"
+    },
+    {
+      "h": "How it went",
+      "p": [
+        "[The result: numbers if you have them, or what people said.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

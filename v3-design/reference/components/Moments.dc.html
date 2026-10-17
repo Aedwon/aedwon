@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aedwon — first load and 404</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.mb{transition:background-color .2s ease,border-color .2s ease,color .2s ease}
+.mb:hover{border-color:#3a3a42;background-color:#121215}
+.mb.pri:hover{background-color:#ffffff}
+a:focus-visible{outline:2px solid #EDEDED;outline-offset:3px}
+</style>
+</helmet>
+<div data-mo="{{ uid }}" onMouseMove="{{ track }}" onMouseLeave="{{ untrack }}" style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #0a0a0c; color: #EDEDED; font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased">
+<canvas data-mdots="{{ uid }}" width="1440" height="900" aria-hidden="true" style="position: absolute; inset: 0; width: 1440px; height: 900px; pointer-events: none"></canvas>
+
+<!-- FIRST LOAD: the name, a hairline that fills as things load, then the points come on from the middle out -->
+<sc-if value="{{ isLoad }}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; flex-direction: column; align-items: center; gap: 22px; opacity: {{ ld.op }}; scale: {{ ld.s }}">
+<span style="font-size: 30px; font-weight: 600; letter-spacing: -0.035em">Aedwon</span>
+<span aria-hidden="true" style="position: relative; width: 120px; height: 1px; background: #1f1f24; overflow: hidden"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: 120px; background: #EDEDED; transform-origin: 0 50%; scale: {{ ld.bar }} 1"></span></span>
+</div>
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 84px; padding: 0 56px; display: flex; justify-content: space-between; align-items: center; opacity: {{ ld.nav }}">
+<span style="font-size: 16px; font-weight: 600; letter-spacing: -0.02em">Aedwon</span>
+<div style="display: flex; align-items: center; gap: 36px; font-size: 14px; color: #8A8A93"><span style="color: #EDEDED">Wall</span><span>Index</span><span style="width: 1px; height: 16px; background: #2a2a30"></span><span>About</span><span>Contact</span></div>
+</div>
+<span class="m" style="position: absolute; left: 56px; bottom: 40px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #61616A">{{ ld.note }}</span>
+</sc-if>
+
+<!-- 404: an empty spot on the wall. A nail, and the clean patch where a frame used to hang -->
+<sc-if value="{{ is404 }}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 84px; padding: 0 56px; display: flex; justify-content: space-between; align-items: center">
+<a href="Main.dc.html" style="font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: #EDEDED; text-decoration: none">Aedwon</a>
+<div style="display: flex; align-items: center; gap: 36px; font-size: 14px; color: #8A8A93"><span>Wall</span><span>Index</span><span style="width: 1px; height: 16px; background: #2a2a30"></span><span>About</span><span>Contact</span></div>
+</div>
+<!-- the picture: an empty frame hanging crooked from its nail, swaying a little; behind it, the clean outline of where it hung straight -->
+<div aria-hidden="true" style="position: absolute; left: 540px; top: 196px; width: 360px; height: 230px; box-sizing: border-box; border-radius: 4px; border: 1.5px dashed #4a4a52; background: #0f0f12"></div>
+<div aria-hidden="true" style="position: absolute; left: 540px; top: 146px; width: 360px; height: 280px; transform-origin: 180px 4px; rotate: {{ e.tilt }}deg">
+<svg width="360" height="56" viewBox="0 0 360 56" style="position: absolute; left: 0; top: 0; overflow: visible"><path d="M180 4 L22 52 M180 4 L338 52" stroke="#8A8A93" stroke-width="1.2" fill="none" stroke-linecap="round"></path></svg>
+<div style="position: absolute; left: 0; top: 50px; width: 360px; height: 230px; box-sizing: border-box; padding: 14px; border-radius: 3px; background: #232329; border: 1px solid #5a5a63; box-shadow: 0 30px 60px rgba(0,0,0,.45)">
+<div style="width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #4a4a52; background: #141418; display: flex; align-items: center; justify-content: center">
+<span style="font-family: 'Geist Mono', monospace; font-size: 46px; font-weight: 500; letter-spacing: -0.02em; color: #71717A">404</span>
+</div>
+</div>
+</div>
+<span aria-hidden="true" style="position: absolute; left: 716px; top: 146px; width: 8px; height: 8px; border-radius: 99px; background: #C4C4CC; box-shadow: 0 2px 4px rgba(0,0,0,.6)"></span>
+<div style="position: absolute; left: 0; right: 0; top: 520px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+<span style="font-size: 40px; font-weight: 600; letter-spacing: -0.04em; line-height: 1.05">Page not found.</span>
+<div style="display: flex; gap: 12px; margin-top: 14px">
+<a class="mb pri" href="Main.dc.html" style="height: 46px; padding: 0 20px; display: flex; align-items: center; border-radius: 12px; background: #EDEDED; color: #0a0a0c; font-size: 14.5px; font-weight: 600; text-decoration: none">Back to the wall</a>
+<a class="mb" href="Main.dc.html" style="height: 46px; padding: 0 20px; display: flex; align-items: center; border-radius: 12px; border: 1px solid #26262c; color: #EDEDED; font-size: 14.5px; text-decoration: none">Open the Index</a>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"which":{"editor":"enum","options":["loading","404"],"default":"loading"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.uid = 'mo' + Math.floor(Math.random() * 1e9);
+    this.state = { tick: 0 };
+    this.t0 = performance.now(); this.mx = -999; this.my = -999; this.mxs = -999; this.mys = -999;
+  }
+  componentDidMount() {
+    this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let last = performance.now();
+    const loop = (now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now; this.draw(dt); this.setState({ tick: this.state.tick + 1 }); this.raf = requestAnimationFrame(loop); };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+  // the loading sequence replays every 5.5s here so you can watch it; on the site it plays once
+  T() { const t = (performance.now() - this.t0) / 1000; return this.props.which === '404' || this.reduced ? 99 : t % 5.5; }
+  draw(dt) {
+    const cv = this.cv || (this.cv = document.querySelector('[data-mdots="' + this.uid + '"]'));
+    if (!cv) return; const g = cv.getContext('2d'); g.clearRect(0, 0, 1440, 900);
+    this.mxs += (this.mx - this.mxs) * Math.min(1, dt * 10); this.mys += (this.my - this.mys) * Math.min(1, dt * 10);
+    const T = this.T(), loading = this.props.which !== '404';
+    // the points come on from the middle outward once loading is done (at 1.6s)
+    const R = loading ? Math.max(0, (T - 1.6)) * 900 : 9999;
+    for (let y = 15; y < 900; y += 30) for (let x = 15; x < 1440; x += 30) {
+      const r = Math.hypot(x - 720, y - 450), on = Math.max(0, Math.min(1, (R - r) / 160));
+      if (on <= 0) continue;
+      const dx = x - this.mxs, dy = y - this.mys, d = Math.sqrt(dx * dx + dy * dy), w = Math.max(0, 1 - d / 200), e = w * w * (3 - 2 * w);
+      const wave = loading ? Math.max(0, 1 - Math.abs(R - r - 40) / 90) * 0.35 : 0;
+      const a = (0.075 + 0.33 * e + wave) * on;
+      const push = 5 * e / Math.max(d, 1);
+      g.fillStyle = 'rgba(237,237,237,' + a.toFixed(3) + ')';
+      g.beginPath(); g.arc(x + dx * push, y + dy * push, 1 + 0.6 * e, 0, 6.283); g.fill();
+    }
+  }
+  renderVals() {
+    const cl = (x) => Math.max(0, Math.min(1, x)), out = (x) => 1 - Math.pow(1 - cl(x), 3);
+    const T = this.T();
+    const bar = out(T / 1.4);                                 // stands in for real loading progress
+    const gone = out((T - 1.5) / 0.5);
+    const now = performance.now() / 1000;
+    return {
+      uid: this.uid, isLoad: this.props.which !== '404', is404: this.props.which === '404',
+      ld: { op: (out(T / 0.4) * (1 - gone)).toFixed(3), s: (1 - 0.04 * gone).toFixed(4), bar: bar.toFixed(3), nav: out((T - 2.0) / 0.6).toFixed(3), note: T < 1.5 ? '' : '' },
+      e: { tilt: (-7 + (this.reduced ? 0 : Math.sin(now * 1.15) * 1.3)).toFixed(3), string: (() => { const k = this.reduced ? 0 : Math.sin(now * 1.4); const x = 260 + 9 * k; return `M260 6 Q ${(258 + 5 * k).toFixed(1)} 34 ${x.toFixed(1)} 60`; })() },
+      track: (ev) => { const r = ev.currentTarget.getBoundingClientRect(); this.mx = (ev.clientX - r.left) * 1440 / r.width; this.my = (ev.clientY - r.top) * 900 / r.height; if (this.mxs < -900) { this.mxs = this.mx; this.mys = this.my; } },
+      untrack: () => { this.mx = -999; this.my = -999; }
+    };
+  }
+}
+</script>
+</body>
+</html>

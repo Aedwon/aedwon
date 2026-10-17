@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Book page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.bp-link{transition:background-color .2s ease}
+.bp-link:hover{background-color:rgba(17,17,19,.06)}
+.bp-link:hover .bp-ar{translate:3px 0}
+.bp-ar{transition:translate .3s cubic-bezier(.34,1.56,.64,1)}
+.bp-btn{transition:scale .3s cubic-bezier(.34,1.56,.64,1)}
+.bp-btn:active{scale:.96}
+.bp-link:focus-visible,.bp-btn:focus-visible{outline:2px solid #111113;outline-offset:2px}
+.bp-fld{display:block;width:100%;box-sizing:border-box;border:none;border-bottom:1.5px solid #c9c7bf;background:transparent;color:#111113;font-family:'Geist',system-ui,sans-serif;font-size:18px;line-height:1.5;padding:3px 0 6px;outline:none;transition:border-color .2s ease}
+.bp-fld:focus{border-bottom-color:#111113}
+.bp-fld::placeholder{color:#8b8a84}
+textarea.bp-fld:focus{background-color:rgba(17,17,19,.035)}
+.bp-ttl{display:block;width:100%;box-sizing:border-box;border:none;border-bottom:1.5px dashed #a9a79f;background:transparent;color:#111113;font-family:'Geist',system-ui,sans-serif;font-size:40px;font-weight:800;letter-spacing:-0.045em;line-height:1.1;padding:0 0 6px;outline:none}
+.bp-ttl:focus{border-bottom-color:#111113;border-bottom-style:solid}
+.bp-ttl::placeholder{color:#a3a29b}
+.bp-shelve{transition:background-color .15s ease,opacity .25s ease}
+.bp-shelve:active{background:#2a2a30}
+.bp-shelve:focus-visible{outline:2px solid #111113;outline-offset:3px}
+</style>
+</helmet>
+<div style="position: relative; width: 420px; height: 600px; box-sizing: border-box; padding: 44px 40px 52px; background: #ECEBE6; color: #111113; font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+<!-- contents: the inside of the cover -->
+<sc-if value="{{ k.contents }}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 40px; font-weight: 800; letter-spacing: -0.045em; line-height: 1">{{ p.title }}</span>
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{ toc }}" as="t" hint-placeholder-count="5">
+<button class="bp-link" onClick="{{ t.go }}" style="display: flex; align-items: baseline; gap: 10px; padding: 11px 6px; margin: 0 -6px; border: none; border-top: 1px solid #d3d1c9; background: none; color: #111113; font-family: inherit; font-size: 15.5px; text-align: left; cursor: pointer">
+<span style="flex: 1">{{ t.title }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #61616A">{{ t.n }}</span><span class="bp-ar" aria-hidden="true" style="color: #61616A">→</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- a big statement -->
+<sc-if value="{{ k.big }}" hint-placeholder-val="{{ false }}">
+<span style="margin-top: auto; font-size: {{ p.bigSize }}; font-weight: 800; letter-spacing: -0.065em; line-height: .88">{{ p.big }}</span>
+<span style="font-size: 18px; line-height: 1.5; color: #3f3f46">{{ p.body }}</span>
+</sc-if>
+
+<!-- a heading and a paragraph -->
+<sc-if value="{{ k.text }}" hint-placeholder-val="{{ true }}">
+<span style="font-size: {{ p.titleSize }}; font-weight: 800; letter-spacing: -0.045em; line-height: 1.02">{{ p.title }}</span>
+<span style="font-size: 17px; line-height: 1.6; color: #3f3f46">{{ p.body }}</span>
+<sc-if value="{{ p.meta }}" hint-placeholder-val="{{ false }}"><span style="margin-top: auto; font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #61616A">{{ p.meta }}</span></sc-if>
+</sc-if>
+
+<!-- a photo -->
+<sc-if value="{{ k.photo }}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; border: 1.5px dashed #b6b4ac; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #61616A; rotate: -1deg">{{ p.slot }}</div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #61616A">{{ p.caption }}</span>
+</sc-if>
+
+<!-- a list -->
+<sc-if value="{{ k.list }}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05">{{ p.title }}</span>
+<div style="display: flex; flex-direction: column; margin-top: 6px">
+<sc-for list="{{ p.items }}" as="i" hint-placeholder-count="5"><span style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid #d3d1c9; font-size: 16px"><span>{{ i.a }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; color: #61616A; text-align: right">{{ i.b }}</span></span></sc-for>
+</div>
+</sc-if>
+
+<!-- one company -->
+<sc-if value="{{ k.org }}" hint-placeholder-val="{{ false }}">
+<div style="height: 64px; border: 1.5px dashed #b6b4ac; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 11px; color: #61616A">{{ logo }}</div>
+<span style="font-size: 32px; font-weight: 800; letter-spacing: -0.045em; line-height: 1.02">{{ p.org }}</span>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<sc-for list="{{ p.roles }}" as="r" hint-placeholder-count="2">
+<span style="display: flex; flex-direction: column; gap: 3px; padding-top: 12px; border-top: 1px solid #d3d1c9"><span style="display: flex; justify-content: space-between; gap: 10px"><span style="font-size: 15.5px; font-weight: 700">{{ r.title }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #61616A; white-space: nowrap">{{ r.dates }}</span></span><span style="font-size: 14px; line-height: 1.5; color: #3f3f46">{{ r.desc }}</span></span>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- a guild category -->
+<sc-if value="{{ k.guild }}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 34px; font-weight: 800; letter-spacing: -0.045em; line-height: 1.02">{{ p.title }}</span>
+<div style="flex: 1; display: grid; grid-template-columns: repeat({{ p.cols }}, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 10px; margin-top: 6px">
+<sc-for list="{{ p.orgs }}" as="o" hint-placeholder-count="4"><span style="border: 1.5px dashed #b6b4ac; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: #61616A">[logo]</span><span style="font-size: 14px; font-weight: 600">{{ o }}</span><span style="font-family: 'Geist Mono', monospace; font-size: 10.5px; color: #61616A">[what you built for them]</span></span></sc-for>
+</div>
+</sc-if>
+
+<!-- something I'm reading or watching -->
+<sc-if value="{{ k.read }}" hint-placeholder-val="{{ false }}">
+<div style="align-self: center; width: 200px; aspect-ratio: 2 / 3; border: 1.5px dashed #b6b4ac; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 11px; color: #61616A; rotate: 1.5deg">[cover]</div>
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 24px; font-weight: 800; letter-spacing: -0.03em">[title]</span><span style="font-size: 15px; color: #3f3f46">{{ p.t }}</span></span>
+<span style="font-size: 15px; line-height: 1.55; color: #3f3f46">[Why you like it, in a sentence.]</span>
+</sc-if>
+
+<!-- inside the cover of the next volume: you title it -->
+<sc-if value="{{ k.titleit }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ stop }}" style="margin-top: auto; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 150px; font-weight: 800; letter-spacing: -0.075em; line-height: .86">{{ p.vol }}</span>
+<input class="bp-ttl" value="{{ fm.title }}" onInput="{{ setTitle }}" placeholder="Title this volume" aria-label="Title this volume" maxlength="28">
+<span style="font-size: 15px; color: #61616A">{{ fm.by }}</span>
+</div>
+</sc-if>
+
+<!-- chapter 1: what you'd like to build -->
+<sc-if value="{{ k.write }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ stop }}" style="flex: 1; display: flex; flex-direction: column; gap: 18px; min-height: 0">
+<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05">Chapter 1</span>
+<label style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #61616A">Your name</span><input class="bp-fld" value="{{ fm.name }}" onInput="{{ setName }}" placeholder="Maria Santos" autocomplete="name"></label>
+<label style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #61616A">Where I can reach you</span><input class="bp-fld" type="email" value="{{ fm.mail }}" onInput="{{ setMail }}" placeholder="you@example.com" autocomplete="email"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0"><span style="font-size: 13px; color: #61616A">What we'd build</span><textarea class="bp-fld" value="{{ fm.msg }}" onInput="{{ setMsg }}" placeholder="A booking app for our clinic, in time for…" style="flex: 1; resize: none; border-bottom: none; line-height: 30px; padding-top: 0; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, #d3d1c9 29px, #d3d1c9 30px)"></textarea></label>
+<button class="bp-shelve" type="button" onClick="{{ shelve }}" aria-disabled="{{ fm.notReady }}" style="height: 52px; flex: none; border: none; border-radius: 10px; background: #111113; color: #ECEBE6; font-family: inherit; font-size: 15px; font-weight: 600; cursor: {{ fm.cursor }}; opacity: {{ fm.op }}">Close and shelve</button>
+</div>
+</sc-if>
+
+<!-- contact -->
+<sc-if value="{{ k.contact }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ hasQuick }}" hint-placeholder-val="{{ false }}"><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05">{{ p.quickTitle }}</span></sc-if>
+<span style="font-size: 17px; line-height: 1.55; color: #3f3f46">For software projects or community infrastructure. I'm in Manila; it's {{ clock }} here.</span>
+<button class="bp-btn" onClick="{{ copy }}" style="margin-top: auto; position: relative; overflow: hidden; height: 56px; border: none; background: #111113; color: #ECEBE6; font-family: 'Geist Mono', monospace; font-size: 14px; cursor: pointer"><span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; translate: 0 {{ copyA }}; transition: translate .45s cubic-bezier(.34,1.56,.64,1)">aerol.balayon@gmail.com</span><span aria-live="polite" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; translate: 0 {{ copyB }}; transition: translate .45s cubic-bezier(.34,1.56,.64,1)">Copied ✓</span></button>
+<a class="bp-btn" href="https://github.com/" onClick="{{ stop }}" style="height: 52px; display: flex; align-items: center; justify-content: center; border: 1.5px solid #111113; color: #111113; font-size: 15px; text-decoration: none">GitHub</a>
+<a class="bp-btn" href="https://linkedin.com/" onClick="{{ stop }}" style="height: 52px; display: flex; align-items: center; justify-content: center; border: 1.5px solid #111113; color: #111113; font-size: 15px; text-decoration: none">LinkedIn</a>
+</sc-if>
+
+<!-- end of a volume -->
+<sc-if value="{{ k.end }}" hint-placeholder-val="{{ false }}">
+<span style="margin: auto 0; text-align: center; font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.2em; color: #61616A">— END OF VOLUME {{ p.vol }} —</span>
+<sc-if value="{{ p.nextTitle }}" hint-placeholder-val="{{ false }}">
+<button class="bp-link" onClick="{{ nextVol }}" style="align-self: center; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1.5px solid #111113; background: none; color: #111113; font-family: inherit; font-size: 15px; cursor: pointer">Vol. {{ p.nextVol }} · {{ p.nextTitle }} <span class="bp-ar" aria-hidden="true">→</span></button>
+</sc-if>
+</sc-if>
+
+<!-- running head and folio -->
+<span style="position: absolute; left: 40px; right: 40px; bottom: 20px; display: flex; justify-content: {{ foot.j }}; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 10.5px; color: #8b8a84">{{ foot.text }}</span>
+<!-- the gutter: paper curves into the spine -->
+<span aria-hidden="true" style="position: absolute; top: 0; bottom: 0; left: {{ gutter.l }}; right: {{ gutter.r }}; width: 46px; background: linear-gradient({{ gutter.dir }}, rgba(0,0,0,.16), rgba(0,0,0,0)); pointer-events: none"></span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"page":{"editor":null},"side":{"editor":"enum","options":["left","right"],"default":"right"},"onGo":{"editor":null},"onNextVol":{"editor":null},"clock":{"editor":"text","default":"9:41 PM"},"form":{"editor":null},"onField":{"editor":null},"onShelve":{"editor":null},"$preview":{"width":420,"height":600}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { copied: false }; }
+  componentWillUnmount() { clearTimeout(this.ct); }
+  renderVals() {
+    const p = this.props.page || { kind: 'text', eyebrow: 'CHAPTER', title: 'Page', body: '', titleSize: '44px' };
+    const side = this.props.side === 'left' ? 'left' : 'right';
+    const kinds = ['contents', 'big', 'text', 'photo', 'list', 'org', 'guild', 'read', 'contact', 'end', 'titleit', 'write'];
+    const k = {}; kinds.forEach((x) => { k[x] = p.kind === x; });
+    const go = this.props.onGo, nv = this.props.onNextVol;
+    return {
+      p, k, hasQuick: !!p.quickTitle, logo: '[' + (p.org || '') + ' logo]',
+      toc: (p.toc || []).map((t) => ({ ...t, go: (e) => { if (e) e.stopPropagation(); if (go) go(t.page); } })),
+      foot: { j: side === 'left' ? 'flex-start' : 'flex-end', text: p.folio ? (side === 'left' ? p.folio + '   ' + (p.running || '') : (p.running || '') + '   ' + p.folio) : '' },
+      gutter: { l: side === 'left' ? 'auto' : '0px', r: side === 'left' ? '0px' : 'auto', dir: side === 'left' ? 'to left' : 'to right' },
+      clock: this.props.clock || '',
+      // the next volume's form lives in the shelf, so the title follows the book back onto it
+      fm: (() => { const f = this.props.form || {}; const ok = !!f.ready; return { name: f.name || '', mail: f.mail || '', msg: f.msg || '', title: f.title || '', by: 'by ' + ((f.name || '').trim() || 'you') + ' and Aerol', notReady: !ok, op: ok ? 1 : 0.35, cursor: ok ? 'pointer' : 'default' }; })(),
+      setName: (e) => { if (this.props.onField) this.props.onField('name', e.target.value); },
+      setMail: (e) => { if (this.props.onField) this.props.onField('mail', e.target.value); },
+      setMsg: (e) => { if (this.props.onField) this.props.onField('msg', e.target.value); },
+      setTitle: (e) => { if (this.props.onField) this.props.onField('title', e.target.value); },
+      shelve: (e) => { if (e) e.stopPropagation(); if (this.props.onShelve) this.props.onShelve(); },
+      stop: (e) => { if (e) e.stopPropagation(); },
+      nextVol: (e) => { if (e) e.stopPropagation(); if (nv) nv(); },
+      copyA: this.state.copied ? '-100%' : '0%', copyB: this.state.copied ? '0%' : '100%',
+      copy: (e) => { if (e) e.stopPropagation(); try { navigator.clipboard && navigator.clipboard.writeText('aerol.balayon@gmail.com'); } catch (err) {} this.setState({ copied: true }); clearTimeout(this.ct); this.ct = setTimeout(() => this.setState({ copied: false }), 1800); }
+    };
+  }
+}
+</script>
+</body>
+</html>

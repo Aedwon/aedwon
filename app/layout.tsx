@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./tech-brand-icons.css";
-import { ThemeProvider } from "@/components/ThemeContext";
-import DiscordLayout from "@/components/DiscordLayout";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import PageTransition from "@/components/PageTransition";
 import {
   PERSON_JSON_LD,
   PERSON_NAME,
@@ -16,6 +12,11 @@ import {
   WEBSITE_JSON_LD,
 } from "@/lib/site-content";
 import { serializeJsonLd } from "@/lib/seo";
+import { themeInitScript } from "@/lib/design-v3/theme";
+
+// Geist + Geist Mono, the v3 typography (spec/tokens.md §1)
+const geist = Geist({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-geist" });
+const geistMono = Geist_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -59,7 +60,12 @@ const websiteJsonLd = serializeJsonLd(WEBSITE_JSON_LD);
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="default" data-mode="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`${geist.variable} ${geistMono.variable}`}
+    >
       <head>
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/favicon.ico" />
@@ -71,55 +77,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: websiteJsonLd }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var storedTheme = localStorage.getItem('aedwon-theme');
-                  var storedMode = localStorage.getItem('aedwon-mode');
-                  var theme = storedTheme === 'neobrutalist' || storedTheme === 'discord' || storedTheme === 'default'
-                    ? storedTheme
-                    : 'default';
-                  var mode = storedMode === 'system' || storedMode === 'light' || storedMode === 'dark'
-                    ? storedMode
-                    : 'dark';
-                  var effectiveMode = mode === 'system'
-                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-                    : mode;
-                  if (theme === 'discord') effectiveMode = 'dark';
-                  if (theme === 'neobrutalist') effectiveMode = 'light';
-                  document.documentElement.setAttribute('data-theme', theme);
-                  document.documentElement.setAttribute('data-mode', effectiveMode);
-                } catch (error) {}
-              })();
-            `,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <ThemeProvider>
-          <a
-            href="#main-content"
-            className="fixed left-4 -top-20 z-[100] rounded-md bg-[var(--bg-card)] px-4 py-2 text-[14px] font-semibold text-[var(--text-primary)] shadow-lg outline outline-2 outline-offset-2 outline-[var(--accent)] transition-[top] focus:top-4 motion-reduce:transition-none"
-          >
-            Skip to main content
-          </a>
-          <DiscordLayout>
-            <div
-              id="portfolio-main-surface"
-              className="max-w-[860px] mx-auto px-6 sm:px-8 pt-8 min-h-screen flex flex-col justify-between transition-transform"
-            >
-              <div>
-                <Navbar />
-                <main id="main-content" tabIndex={-1}>
-                  <PageTransition>{children}</PageTransition>
-                </main>
-              </div>
-              <Footer />
-            </div>
-          </DiscordLayout>
-        </ThemeProvider>
+        {children}
         <SpeedInsights />
       </body>
     </html>

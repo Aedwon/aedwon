@@ -1,0 +1,56 @@
+{
+  "id": "cup",
+  "name": "MSL Collegiate Cup Bot",
+  "type": "Discord bot",
+  "media": "discord",
+  "depth": "writeup",
+  "desc": "Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.",
+  "stack": [
+    "Python",
+    "Sheets"
+  ],
+  "links": [],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Platform",
+      "v": "Discord"
+    },
+    {
+      "k": "Status",
+      "v": "[Status]"
+    }
+  ],
+  "sections": [
+    {
+      "h": "The brief",
+      "p": [
+        "[Who it was for and what they needed, in two or three sentences.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I built",
+      "p": [
+        "Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.",
+        "[One or two sentences on the hardest part, and how you solved it.]"
+      ],
+      "fig": "[MSL Collegiate Cup Bot, in use]",
+      "kind": "text"
+    },
+    {
+      "h": "How it went",
+      "p": [
+        "[The result: numbers if you have them, or what people said.]"
+      ],
+      "kind": "text"
+    }
+  ]
+}

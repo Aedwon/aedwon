@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>(light) Home — index, icons and logos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.tile{-webkit-user-drag:none;user-select:none}
+.tile:focus-visible,.vbtn:focus-visible,.nlink:focus-visible,.tick:focus-visible,.row:focus-visible{outline:2px solid #111114;outline-offset:4px}
+.vbtn{transition:color .25s ease}
+.vbtn:hover{color:#111114}
+.nlink{color:#56565E;text-decoration:none;transition:color .2s ease}
+.nlink:hover{color:#111114}
+.row{transition:background-color .2s ease}
+.row:hover{background-color:#FAFAF8}
+/* the arrow only shows up on the row you're on */
+.arr{opacity:0;translate:-10px 0;transition:opacity .2s ease,translate .35s cubic-bezier(.34,1.56,.64,1)}
+.row:hover .arr,.row:focus-visible .arr{opacity:1;translate:0 0}
+.kd,.sh,.gh{border:none;background:none;padding:0;font-family:inherit;cursor:pointer;color:var(--c);transition:color .25s ease}
+.kd[aria-pressed="false"]:hover,.sh[aria-pressed="false"]:hover,.gh:hover{color:#3A3A40}
+.kd:focus-visible,.sh:focus-visible,.gh:focus-visible{outline:2px solid #111114;outline-offset:4px;border-radius:2px}
+.kd{transition:color .3s ease}
+/* nothing changes size when you switch: a line slides under the icon, the name swaps in one fixed spot */
+.kind-line{transition:translate .5s cubic-bezier(.34,1.3,.64,1)}
+.kind-name{transition:opacity .28s ease,translate .45s cubic-bezier(.22,1,.36,1)}
+.kdt{position:absolute;left:50%;top:62px;translate:-50% -4px;opacity:0;pointer-events:none;white-space:nowrap;font-family:'Geist Mono',monospace;font-size:11px;color:#56565E;transition:opacity .2s ease,translate .3s cubic-bezier(.22,1,.36,1)}
+.kd[aria-pressed="false"]:hover .kdt,.kd[aria-pressed="false"]:focus-visible .kdt{opacity:1;translate:-50% 0}
+/* type: an icon; its name only on the row you're on */
+.tyl{opacity:0;translate:-4px 0;transition:opacity .2s ease,translate .3s cubic-bezier(.22,1,.36,1)}
+.row:hover .tyl,.row:focus-visible .tyl{opacity:1;translate:0 0}
+.ty svg{transition:color .2s ease}
+.row:hover .ty svg,.row:focus-visible .ty svg{color:#111114}
+/* stack: logos in grey, in their own colours on the row you're on */
+.lg path{fill:#76767E;transition:fill .3s ease}
+.row:hover .lg path,.row:focus-visible .lg path{fill:var(--b)}
+.caret{display:inline-block;width:2px;height:30px;margin-left:4px;vertical-align:-3px;background:#111114;animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.ix{scrollbar-width:none}
+.ix::-webkit-scrollbar{width:0}
+.tick .tl{transition:width .45s cubic-bezier(.34,1.56,.64,1),background-color .25s ease}
+.tick .tn{transition:opacity .25s ease,translate .35s cubic-bezier(.22,1,.36,1)}
+.tick:hover .tn,.tick:focus-visible .tn{opacity:1;translate:0 0}
+.tick:hover .tl{background-color:#111114}
+</style>
+</helmet>
+<div data-sp="{{ uid }}" onPointerDown="{{ down }}" onPointerMove="{{ move }}" onPointerUp="{{ up }}" onPointerLeave="{{ up }}" onPointerCancel="{{ up }}" onMouseMove="{{ lean }}" onMouseLeave="{{ unlean }}" style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: {{ rootBg }}; color: #111114; font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; perspective: 2200px; perspective-origin: 50% 45%; touch-action: {{ touch }}; user-select: {{ sel }}; -webkit-user-select: {{ sel }}; cursor: {{ cursor }}">
+
+<!-- INDEX -->
+<div class="ix" onScroll="{{ onScroll }}" style="position: absolute; inset: 0; -webkit-mask-image: {{ ixMask }}; mask-image: {{ ixMask }}; scroll-padding-top: 180px; overflow-y: auto; overflow-x: hidden; pointer-events: {{ ixPe }}">
+<div style="position: relative; height: {{ ixH }}">
+
+<!-- type headings, when sorted by type -->
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="5">
+<div style="position: absolute; left: 120px; width: 880px; top: 0; height: 58px; box-sizing: border-box; transform: translateY({{ g.y }}); opacity: {{ g.op }}; pointer-events: {{ g.pe }}; display: flex; align-items: flex-end; padding: 0 0 12px 112px">
+<button class="gh" onClick="{{ g.pick }}" aria-label="{{ g.aria }}" style="--c: #111114; display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 600; letter-spacing: -0.03em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ g.icon }}"></path></svg>{{ g.label }}<span style="font-family: 'Geist Mono', monospace; font-size: 11.5px; font-weight: 400; letter-spacing: 0; color: #6A6A72">{{ g.n }}</span></button>
+<span aria-hidden="true" style="position: absolute; left: 112px; right: 0; bottom: 0; height: 1px; background: #D6D4CD; transform-origin: 0 50%; scale: {{ g.op }} 1"></span>
+</div>
+</sc-for>
+
+<!-- the rows: one per project, they move, they never re-render -->
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="17">
+<a class="row" href="{{ r.href }}" onClick="{{ r.open }}" data-i="{{ r.i }}" onMouseEnter="{{ r.enter }}" onMouseLeave="{{ r.leave }}" onFocus="{{ r.enter }}" onBlur="{{ r.leave }}" tabIndex="{{ r.tab }}" style="position: absolute; left: 100px; width: 920px; top: 0; height: 60px; padding: 0 20px; box-sizing: border-box; display: grid; grid-template-columns: 80px minmax(0, 1fr) 170px 230px 24px; column-gap: 32px; align-items: center; color: inherit; text-decoration: none; border-radius: 8px; transform-origin: 50% 0; transform: translate({{ r.x }}, {{ r.y }}) perspective(700px) rotateX({{ r.rx }}); opacity: {{ r.op }}; pointer-events: {{ r.pe }}">
+<span></span>
+<span style="font-size: 17px; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ r.name }}</span>
+<span class="ty" style="display: flex; align-items: center; gap: 10px; color: #56565E; min-width: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="{{ r.icon }}"></path></svg><span class="tyl" style="font-family: 'Geist Mono', monospace; font-size: 12px; white-space: nowrap">{{ r.type }}</span></span>
+<span style="display: flex; align-items: center; gap: 14px; min-width: 0">
+<sc-for list="{{ r.logos }}" as="g" hint-placeholder-count="3"><span title="{{ g.t }}" style="display: flex; flex: none"><svg class="lg" width="{{ g.w }}" height="{{ g.h }}" viewBox="{{ g.vb }}" role="img" aria-label="{{ g.t }}" style="--b: {{ g.c }}"><path d="{{ g.d }}"></path></svg></span></sc-for>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #56565E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ r.stackText }}</span>
+</span>
+<span class="arr" aria-hidden="true" style="text-align: right; color: #111114">→</span>
+<span aria-hidden="true" style="position: absolute; left: 20px; right: 20px; bottom: 0; height: 1px; background: #E6E4DE; transform-origin: 0 50%; scale: {{ r.line }} 1"></span>
+</a>
+</sc-for>
+
+<span style="position: absolute; left: 232px; top: 262px; font-size: 17px; color: #56565E; opacity: {{ empty.op }}">{{ empty.text }}</span>
+</div>
+</div>
+
+<!-- the preview: it fades in beside the list and glides to whichever row you're on -->
+<div aria-hidden="true" style="position: absolute; left: 1060px; width: 300px; top: 0; transform: translateY({{ pvp.y }}) scale({{ pvp.s }}); transform-origin: 0 50%; opacity: {{ pvp.op }}; pointer-events: none">
+<div style="position: relative; width: 300px; height: {{ pvp.h }}; transition: height .35s cubic-bezier(.22,1,.36,1)">
+<sc-for list="{{ pvs }}" as="v" hint-placeholder-count="17">
+<div style="position: absolute; left: 0; top: 0; width: 520px; transform-origin: 0 0; scale: 0.5769; opacity: {{ v.pop }}; visibility: {{ v.vis }}">
+<!-- phone app: three screens, the middle one raised -->
+<sc-if value="{{ v.isPhone }}" hint-placeholder-val="{{ false }}">
+<div style="width: 520px; height: 370px; display: flex; align-items: center; justify-content: center; gap: 18px"><div style="width: 156px; height: 330px; padding: 5px; box-sizing: border-box; border-radius: 28px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F; translate: 0 12px"><div style="position: relative; height: 100%; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[screen 1]<span style="position: absolute; left: 50%; top: 7px; width: 44px; height: 13px; margin-left: -22px; border-radius: 99px; background: #000"></span></div></div><div style="width: 156px; height: 330px; padding: 5px; box-sizing: border-box; border-radius: 28px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F; translate: 0 -12px"><div style="position: relative; height: 100%; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[screen 2]<span style="position: absolute; left: 50%; top: 7px; width: 44px; height: 13px; margin-left: -22px; border-radius: 99px; background: #000"></span></div></div><div style="width: 156px; height: 330px; padding: 5px; box-sizing: border-box; border-radius: 28px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F; translate: 0 12px"><div style="position: relative; height: 100%; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[screen 3]<span style="position: absolute; left: 50%; top: 7px; width: 44px; height: 13px; margin-left: -22px; border-radius: 99px; background: #000"></span></div></div></div>
+</sc-if>
+<!-- Android TV touchscreen: 16:9, thicker bezel, small stand -->
+<sc-if value="{{ v.isTv }}" hint-placeholder-val="{{ false }}">
+<div style="width: 520px; height: 330px; display: flex; flex-direction: column; align-items: center"><div style="width: 520px; height: 301px; padding: 10px; box-sizing: border-box; border-radius: 10px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F"><div style="height: 100%; border-radius: 2px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[{{ v.name }} screen]</div></div><div style="width: 26px; height: 12px; background: #2A2A2F"></div><div style="width: 150px; height: 8px; border-radius: 4px 4px 2px 2px; background: #3A3A40"></div></div>
+</sc-if>
+<!-- website or web tool: the page, a hairline bar, nothing else -->
+<sc-if value="{{ v.isWeb }}" hint-placeholder-val="{{ true }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 325px; box-sizing: border-box; border-radius: 12px; overflow: hidden; border: 1px solid #E3E1DB; background: #FFFFFF; display: flex; flex-direction: column"><div style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid #EEECE7"><span style="width: 6px; height: 6px; border-radius: 99px; background: #E2E0DA"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #E2E0DA"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #E2E0DA"></span></div><div style="flex: 1; background: #FAFAF8; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center; padding: 0 16px">[{{ v.name }} screenshot]</div></div>
+</sc-if>
+<!-- Discord bot: where it lives -->
+<sc-if value="{{ v.isDiscord }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 325px; box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #E3E1DB; display: flex"><div style="width: 48px; background: #E3E5E8; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px"><span style="width: 30px; height: 30px; border-radius: 10px; background: #C4C8CE"></span><span style="width: 30px; height: 30px; border-radius: 99px; background: #D3D6DB"></span><span style="width: 30px; height: 30px; border-radius: 99px; background: #D3D6DB"></span></div><div style="width: 124px; background: #F2F3F5; display: flex; flex-direction: column; gap: 10px; padding: 16px 12px; box-sizing: border-box"><span style="height: 7px; width: 70%; border-radius: 4px; background: #C4C8CE"></span><span style="height: 6px; width: 80%; border-radius: 3px; background: #DEE1E5"></span><span style="height: 6px; width: 60%; border-radius: 3px; background: #C4C8CE"></span><span style="height: 6px; width: 75%; border-radius: 3px; background: #DEE1E5"></span><span style="height: 6px; width: 55%; border-radius: 3px; background: #DEE1E5"></span></div><div style="flex: 1; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #80848E; text-align: center; padding: 0 16px">[{{ v.name }} in Discord]</div></div>
+</sc-if>
+<!-- developer tool: a terminal -->
+<sc-if value="{{ v.isTerm }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 300px; box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #1E1E22; background: #08080a; display: flex; flex-direction: column"><div style="height: 24px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid #18181c"><span style="width: 6px; height: 6px; border-radius: 99px; background: #2c2c32"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #2c2c32"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #2c2c32"></span></div><div style="padding: 18px 20px; font-family: 'Geist Mono', monospace; font-size: 13px; line-height: 1.8; color: #8A8A93"><div><span style="color: #4ade80">$</span> [command]</div><div>[real output from the repo]</div><div><span style="color: #4ade80">$</span> <span style="display: inline-block; width: 8px; height: 15px; vertical-align: -2px; background: #8A8A93"></span></div></div></div>
+</sc-if>
+<!-- open source: the repository, and what you did there -->
+<sc-if value="{{ v.isRepo }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 260px; box-sizing: border-box; border-radius: 10px; border: 1px solid #E3E1DB; background: #FFFFFF; padding: 26px 28px; display: flex; flex-direction: column; gap: 14px">
+<span style="display: flex; align-items: center; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 14px; color: #111114"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6A6A72" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2z"></path><path d="M8 7h6"></path></svg>{{ v.repo }}</span>
+<span style="font-size: 15px; line-height: 1.6; color: #56565E">{{ v.desc }}</span>
+<span style="margin-top: auto; padding-top: 14px; border-top: 1px solid #ECEAE5; font-family: 'Geist Mono', monospace; font-size: 12px; color: #6A6A72">[your PR or contribution]</span>
+</div>
+</sc-if>
+<!-- writing: a sheet of paper (Index only) -->
+<sc-if value="{{ v.isPaper }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); position: relative; width: 520px; height: 300px; box-sizing: border-box; padding: 34px 36px 30px; border-radius: 3px; background: #FFFFFF; border: 1px solid #E6E4DE; color: #111113; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #61616A">{{ v.date }}</span>
+<span style="font-size: 25px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.12">{{ v.name }}</span>
+<span style="font-size: 14.5px; line-height: 1.55; color: #3f3f46">{{ v.desc }}</span>
+<span style="margin-top: auto; font-size: 13px; color: #61616A">Read · {{ v.mins }}</span>
+</div>
+</sc-if>
+<!-- data system: no screen of its own, so its output -->
+<sc-if value="{{ v.isData }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 300px; box-sizing: border-box; border-radius: 10px; border: 1px solid #E3E1DB; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[{{ v.name }} results]</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="margin-top: 18px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 20px; font-weight: 600; letter-spacing: -0.02em">{{ pvp.name }}</span>
+<span style="font-size: 14px; line-height: 1.5; color: #56565E">{{ pvp.line }}</span>
+</div>
+</div>
+
+<!-- TILES: each places itself; together they read as one surface -->
+<div style="position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; -webkit-mask-image: {{ tileMask }}; mask-image: {{ tileMask }}">
+<sc-for list="{{ tiles }}" as="t" hint-placeholder-count="13">
+<a class="tile" href="{{ t.href }}" draggable="false" tabIndex="{{ t.tab }}" aria-label="{{ t.aria }}" onClick="{{ t.click }}" onMouseEnter="{{ t.enter }}" onMouseLeave="{{ leave }}" style="position: absolute; left: 0; top: 0; width: 520px; display: block; color: inherit; text-decoration: none; transform-origin: 50% 50%; transform: {{ t.tf }}; opacity: {{ t.op }}; filter: {{ t.sh }}; pointer-events: {{ t.pe }}; cursor: pointer">
+<!-- phone app: three screens, the middle one raised -->
+<sc-if value="{{ t.isPhone }}" hint-placeholder-val="{{ false }}">
+<div style="width: 520px; height: 370px; display: flex; align-items: center; justify-content: center; gap: 18px"><div style="width: 156px; height: 330px; padding: 5px; box-sizing: border-box; border-radius: 28px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F; translate: 0 12px"><div style="position: relative; height: 100%; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[screen 1]<span style="position: absolute; left: 50%; top: 7px; width: 44px; height: 13px; margin-left: -22px; border-radius: 99px; background: #000"></span></div></div><div style="width: 156px; height: 330px; padding: 5px; box-sizing: border-box; border-radius: 28px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F; translate: 0 -12px"><div style="position: relative; height: 100%; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[screen 2]<span style="position: absolute; left: 50%; top: 7px; width: 44px; height: 13px; margin-left: -22px; border-radius: 99px; background: #000"></span></div></div><div style="width: 156px; height: 330px; padding: 5px; box-sizing: border-box; border-radius: 28px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F; translate: 0 12px"><div style="position: relative; height: 100%; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[screen 3]<span style="position: absolute; left: 50%; top: 7px; width: 44px; height: 13px; margin-left: -22px; border-radius: 99px; background: #000"></span></div></div></div>
+</sc-if>
+<!-- Android TV touchscreen: 16:9, thicker bezel, small stand -->
+<sc-if value="{{ t.isTv }}" hint-placeholder-val="{{ false }}">
+<div style="width: 520px; height: 330px; display: flex; flex-direction: column; align-items: center"><div style="width: 520px; height: 301px; padding: 10px; box-sizing: border-box; border-radius: 10px; background: #1B1B1F; box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); border: 1px solid #1B1B1F"><div style="height: 100%; border-radius: 2px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[{{ t.name }} screen]</div></div><div style="width: 26px; height: 12px; background: #2A2A2F"></div><div style="width: 150px; height: 8px; border-radius: 4px 4px 2px 2px; background: #3A3A40"></div></div>
+</sc-if>
+<!-- website or web tool: the page, a hairline bar, nothing else -->
+<sc-if value="{{ t.isWeb }}" hint-placeholder-val="{{ true }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 325px; box-sizing: border-box; border-radius: 12px; overflow: hidden; border: 1px solid #E3E1DB; background: #FFFFFF; display: flex; flex-direction: column"><div style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid #EEECE7"><span style="width: 6px; height: 6px; border-radius: 99px; background: #E2E0DA"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #E2E0DA"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #E2E0DA"></span></div><div style="flex: 1; background: #FAFAF8; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center; padding: 0 16px">[{{ t.name }} screenshot]</div></div>
+</sc-if>
+<!-- Discord bot: where it lives -->
+<sc-if value="{{ t.isDiscord }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 325px; box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #E3E1DB; display: flex"><div style="width: 48px; background: #E3E5E8; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px"><span style="width: 30px; height: 30px; border-radius: 10px; background: #C4C8CE"></span><span style="width: 30px; height: 30px; border-radius: 99px; background: #D3D6DB"></span><span style="width: 30px; height: 30px; border-radius: 99px; background: #D3D6DB"></span></div><div style="width: 124px; background: #F2F3F5; display: flex; flex-direction: column; gap: 10px; padding: 16px 12px; box-sizing: border-box"><span style="height: 7px; width: 70%; border-radius: 4px; background: #C4C8CE"></span><span style="height: 6px; width: 80%; border-radius: 3px; background: #DEE1E5"></span><span style="height: 6px; width: 60%; border-radius: 3px; background: #C4C8CE"></span><span style="height: 6px; width: 75%; border-radius: 3px; background: #DEE1E5"></span><span style="height: 6px; width: 55%; border-radius: 3px; background: #DEE1E5"></span></div><div style="flex: 1; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #80848E; text-align: center; padding: 0 16px">[{{ t.name }} in Discord]</div></div>
+</sc-if>
+<!-- developer tool: a terminal -->
+<sc-if value="{{ t.isTerm }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 300px; box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #1E1E22; background: #08080a; display: flex; flex-direction: column"><div style="height: 24px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid #18181c"><span style="width: 6px; height: 6px; border-radius: 99px; background: #2c2c32"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #2c2c32"></span><span style="width: 6px; height: 6px; border-radius: 99px; background: #2c2c32"></span></div><div style="padding: 18px 20px; font-family: 'Geist Mono', monospace; font-size: 13px; line-height: 1.8; color: #8A8A93"><div><span style="color: #4ade80">$</span> [command]</div><div>[real output from the repo]</div><div><span style="color: #4ade80">$</span> <span style="display: inline-block; width: 8px; height: 15px; vertical-align: -2px; background: #8A8A93"></span></div></div></div>
+</sc-if>
+<!-- open source: the repository, and what you did there -->
+<sc-if value="{{ t.isRepo }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 260px; box-sizing: border-box; border-radius: 10px; border: 1px solid #E3E1DB; background: #FFFFFF; padding: 26px 28px; display: flex; flex-direction: column; gap: 14px">
+<span style="display: flex; align-items: center; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 14px; color: #111114"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6A6A72" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2z"></path><path d="M8 7h6"></path></svg>{{ t.repo }}</span>
+<span style="font-size: 15px; line-height: 1.6; color: #56565E">{{ t.desc }}</span>
+<span style="margin-top: auto; padding-top: 14px; border-top: 1px solid #ECEAE5; font-family: 'Geist Mono', monospace; font-size: 12px; color: #6A6A72">[your PR or contribution]</span>
+</div>
+</sc-if>
+<!-- writing: a sheet of paper (Index only) -->
+<sc-if value="{{ t.isPaper }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); position: relative; width: 520px; height: 300px; box-sizing: border-box; padding: 34px 36px 30px; border-radius: 3px; background: #FFFFFF; border: 1px solid #E6E4DE; color: #111113; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #61616A">{{ t.date }}</span>
+<span style="font-size: 25px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.12">{{ t.name }}</span>
+<span style="font-size: 14.5px; line-height: 1.55; color: #3f3f46">{{ t.desc }}</span>
+<span style="margin-top: auto; font-size: 13px; color: #61616A">Read · {{ t.mins }}</span>
+</div>
+</sc-if>
+<!-- data system: no screen of its own, so its output -->
+<sc-if value="{{ t.isData }}" hint-placeholder-val="{{ false }}">
+<div style="box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 16px 36px -18px rgba(17,17,20,.28); width: 520px; height: 300px; box-sizing: border-box; border-radius: 10px; border: 1px solid #E3E1DB; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; text-align: center">[{{ t.name }} results]</div>
+</sc-if>
+</a>
+</sc-for>
+</div>
+
+<!-- frozen while the list scrolls: the type filter and the column heads -->
+<div style="position: absolute; left: 0; top: 0; width: 1040px; height: 240px; background: {{ bandBg }}; opacity: {{ hdr }}; pointer-events: {{ ixPe }}">
+<div style="position: absolute; inset: 0; translate: 0 {{ hdrY }}">
+<!-- types: pick one and the rest fold away. Or just start typing -->
+<div style="position: absolute; left: 120px; right: 40px; top: 112px; height: 56px; opacity: {{ hdr }}">
+<div role="group" aria-label="Show a type" style="position: absolute; inset: 0; opacity: {{ fl.op }}; translate: 0 {{ fl.y }}; pointer-events: {{ fl.pe }}">
+<div style="position: absolute; left: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 14px">
+<sc-for list="{{ kinds }}" as="c" hint-placeholder-count="6">
+<button class="kd" onClick="{{ c.pick }}" aria-pressed="{{ c.on }}" aria-label="{{ c.aria }}" style="--c: {{ c.col }}; position: relative; width: 64px; height: 56px; display: flex; align-items: center; justify-content: flex-start">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="{{ c.icon }}"></path></svg>
+<sup aria-hidden="true" style="margin-left: 5px; font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400; vertical-align: 12px">{{ c.n }}</sup>
+<span class="kdt" aria-hidden="true" style="left: 13px">{{ c.label }}</span>
+</button>
+</sc-for>
+</div>
+<span class="kind-line" aria-hidden="true" style="position: absolute; left: 0; top: 50px; width: 26px; height: 1.5px; background: #111114; border-radius: 1px; translate: {{ kindX }} 0"></span>
+<div aria-hidden="true" style="position: absolute; left: 548px; top: 0; height: 56px; width: 260px; overflow: hidden; pointer-events: none">
+<sc-for list="{{ kinds }}" as="c" hint-placeholder-count="6">
+<span class="kind-name" style="position: absolute; left: 0; top: 0; line-height: 56px; white-space: nowrap; font-size: 22px; font-weight: 600; letter-spacing: -0.03em; color: #111114; opacity: {{ c.lo }}; translate: 0 {{ c.ly }}">{{ c.label }}</span>
+</sc-for>
+</div>
+</div>
+<div aria-live="polite" style="position: absolute; inset: 0; display: flex; align-items: baseline; gap: 20px; opacity: {{ qd.op }}; translate: 0 {{ qd.y }}; pointer-events: none">
+<span style="font-size: 34px; font-weight: 600; letter-spacing: -0.04em; line-height: 56px; white-space: pre">{{ qd.text }}<span class="caret"></span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #6A6A72">{{ qd.meta }}</span>
+</div>
+<span style="position: absolute; right: 0; top: 22px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #8E8E95; opacity: {{ qd.hint }}">type to find</span>
+</div>
+
+<!-- column heads: click one to sort by it, again to go back -->
+<div style="position: absolute; left: 120px; width: 880px; top: 196px; height: 30px; display: grid; grid-template-columns: 80px minmax(0, 1fr) 170px 230px 24px; column-gap: 32px; align-items: center; font-family: 'Geist Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; color: #6A6A72; opacity: {{ hdr }}">
+<span></span>
+<button class="sh" onClick="{{ sortName }}" aria-pressed="{{ sh.nameOn }}" style="--c: {{ sh.nameC }}; justify-self: start; position: relative; height: 30px; font-family: 'Geist Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em">{{ sh.name }}<span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: #111114; transform-origin: 0 50%; scale: {{ sh.nameU }} 1; transition: scale .45s cubic-bezier(.34,1.56,.64,1)"></span></button>
+<button class="sh" onClick="{{ sortType }}" aria-pressed="{{ sh.typeOn }}" style="--c: {{ sh.typeC }}; justify-self: start; position: relative; height: 30px; font-family: 'Geist Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em">{{ sh.type }}<span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: #111114; transform-origin: 0 50%; scale: {{ sh.typeU }} 1; transition: scale .45s cubic-bezier(.34,1.56,.64,1)"></span></button>
+<span>{{ colHead }}</span>
+<span style="text-align: right; white-space: nowrap">{{ countText }}</span>
+</div>
+
+<span aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 240px; height: 20px; background: {{ bandFade }}; pointer-events: none"></span>
+</div>
+</div>
+
+<!-- what's in focus (or under the pointer), always in the same spot -->
+<div aria-live="polite" style="position: absolute; left: 56px; bottom: 52px; display: flex; flex-direction: column; gap: 6px; opacity: {{ cap.op }}; translate: 0 {{ cap.y }}; pointer-events: none">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12.5px; color: #6A6A72">{{ cap.n }}</span>
+<span style="font-size: 30px; font-weight: 600; letter-spacing: -0.03em">{{ cap.name }}</span>
+<span style="font-size: 15px; color: #56565E">{{ cap.type }}</span>
+</div>
+
+<!-- where you are: one tick per project -->
+<div role="group" aria-label="Projects" style="position: absolute; right: 40px; top: 50%; translate: 0 -50%; display: flex; flex-direction: column; align-items: flex-end; opacity: {{ rail.op }}; pointer-events: {{ rail.pe }}">
+<sc-for list="{{ rail.ticks }}" as="k" hint-placeholder-count="13">
+<button class="tick" onClick="{{ k.go }}" aria-label="{{ k.name }}" aria-current="{{ k.cur }}" style="position: relative; height: 44px; width: 56px; padding: 0; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: flex-end">
+<span class="tn" aria-hidden="true" style="position: absolute; right: 64px; white-space: nowrap; font-size: 13px; color: #111114; opacity: 0; translate: 6px 0">{{ k.name }}</span>
+<span class="tl" style="display: block; height: 1.5px; width: {{ k.w }}; background: {{ k.c }}; border-radius: 1px"></span>
+</button>
+</sc-for>
+</div>
+
+<!-- overview only: step back to see everything -->
+<sc-if value="{{ zoomBtn.show }}" hint-placeholder-val="{{ false }}">
+<button class="vbtn" onClick="{{ toggleZoom }}" style="position: absolute; right: 40px; bottom: 40px; height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D6D4CD; background: rgba(242,241,237,0.72); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); color: #111114; font-family: inherit; font-size: 14px; cursor: pointer; opacity: {{ zoomBtn.op }}">{{ zoomBtn.label }}</button>
+</sc-if>
+
+<!-- nav -->
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 84px; padding: 0 56px; box-sizing: border-box; visibility: {{ navVis }}; display: flex; justify-content: space-between; align-items: center; background: rgba(242,241,237,0.72); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); opacity: {{ ui }}">
+<span style="font-size: 16px; font-weight: 600; letter-spacing: -0.02em">Aedwon</span>
+<div style="display: flex; align-items: center; gap: 36px; font-size: 14px">
+<div role="group" aria-label="View" style="position: relative; display: flex">
+<button class="vbtn" onClick="{{ toWall }}" aria-pressed="{{ pressed.wall }}" style="width: 64px; height: 44px; padding: 0; border: none; background: none; font-family: inherit; font-size: 14px; color: {{ vc.wall }}; cursor: pointer">Wall</button>
+<button class="vbtn" onClick="{{ toIndex }}" aria-pressed="{{ pressed.index }}" style="width: 64px; height: 44px; padding: 0; border: none; background: none; font-family: inherit; font-size: 14px; color: {{ vc.index }}; cursor: pointer">Index</button>
+<span aria-hidden="true" style="position: absolute; left: 0; bottom: 6px; width: 28px; height: 1.5px; background: #111114; translate: {{ ind }} 0; transition: translate .55s cubic-bezier(.34,1.56,.64,1)"></span>
+</div>
+<span aria-hidden="true" style="width: 1px; height: 16px; background: #D6D4CD"></span>
+<a class="nlink" href="AboutVolumes.dc.html">About</a>
+<a class="nlink" href="AboutVolumesContact.dc.html">Contact</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onOpen":{"editor":null},"wallColor":{"editor":"text","default":"#F2F1ED"},"shadow":{"editor":"boolean","default":false},"onFocus":{"editor":null},"dim":{"editor":"number","default":0},"bare":{"editor":"boolean","default":false},"viewReq":{"editor":"text","default":""},"onPeek":{"editor":null},"motion":{"editor":"enum","options":["slide","cascade","swap"],"default":"swap"},"view":{"editor":"enum","options":["wall","index"],"default":"index"},"mode":{"editor":"enum","options":["soft","follow","overview"],"default":"follow"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.uid = 'sp' + Math.floor(Math.random() * 1e9);
+    this.mode = ['soft', 'follow', 'overview'].indexOf(props.mode) >= 0 ? props.mode : 'follow';
+    const startIx = props.view !== 'wall';
+    this.state = { tick: 0, view: startIx ? 1 : 0, hover: null, zoomOut: false };
+    this.k = startIx ? 1 : 0; this.kt = this.k;
+    // index: sort, show one type, or type to find
+    this.sort = 'featured'; this.filt = null; this.q = ''; this.ih = null; this.pvLast = null;
+    this.rs = {}; this.tg = {}; this.pend = {}; this.vs = {}; this.pv = {}; this.gs = {}; this.gop = {}; this.sig = null; this.visNow = [];
+    this.H = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
+    this.P = [
+      ['pantas', 'Pantas', 'Mobile app', 'Flutter · Firebase · SQLite', 'phone', 'Pantas.dc.html'],
+      ['msl', 'MSL Network Bot', 'Discord bot', 'Python · MySQL', 'discord', '#'],
+      ['lakambini', 'Lakambini', 'Website redesign', '[stack]', 'web', '#'],
+      ['agent', 'AI Agent Config', 'Developer tooling', 'Python · Markdown · YAML', 'term', '#'],
+      ['kiosk', 'Kiosk Survey', 'Android TV', 'Flutter · Firebase', 'tv', '#'],
+      ['pso', 'PSO Scorer', 'Data system', 'Python · pandas · NumPy', 'data', '#'],
+      ['qr', 'QR Studio', 'Web tool', 'TypeScript · Vite · Tailwind', 'web', '#'],
+      ['webp', 'WebP Unli', 'Web tool', 'Next.js · TypeScript · wasm-vips', 'web', '#'],
+      ['norala', 'Norala SB Portal', 'Civic tech', 'Next.js · TypeScript · Tailwind', 'web', '#'],
+      ['cup', 'MSL Collegiate Cup Bot', 'Discord bot', 'Python · Sheets', 'discord', '#'],
+      ['ilocos', 'Ilocos Sur Esports Bot', 'Discord bot', 'Python · MySQL', 'discord', '#'],
+      ['oppo', 'OPPO Cup Bot', 'Discord bot', 'Python · MySQL', 'discord', '#'],
+      ['kqm', 'KQM Team DPS Calculator', 'Web tool', 'JavaScript · Vite', 'web', '#'],
+      ['aspire', 'Microsoft Aspire', 'Open source', 'microsoft/aspire', 'repo', 'https://github.com/microsoft/aspire', 'Code-first tooling for building, observing, and deploying distributed applications.'],
+      ['opensre', 'OpenSRE', 'Open source', 'Tracer-Cloud/opensre', 'repo', 'https://github.com/Tracer-Cloud/opensre', 'Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.'],
+      ['dockroute', 'DockRoute', 'Open source', 'Dockroute/Dockroute', 'repo', 'https://github.com/Dockroute/Dockroute', 'External-DNS for plain Docker hosts, keeping DNS records aligned with container routes.'],
+      ['bettergov', 'BetterGov PH', 'Open source', 'bettergovph/bettergov', 'repo', 'https://github.com/bettergovph/bettergov', 'Open-source effort building a better national website for the Philippines.'],
+      ["w1", "[On building Pantas offline-first]", 'Writing', "Pantas · offline-first", 'paper', '#'],
+      ["w2", "[What 8 hours without internet taught me]", 'Writing', "Kiosk Survey · events", 'paper', '#'],
+      ["w3", "[Scoring 4,000 Olympiad competitors]", 'Writing', "PSO Scorer · data", 'paper', '#']
+    ];
+    this.N = this.P.length;
+    this.NW = this.P.filter((p) => p[4] !== 'paper').length;   // writing lives in the Index only
+    this.POST = {"w1": {"date": "[Month DD, YYYY]", "mins": "[6] min"}, "w2": {"date": "[Month DD, YYYY]", "mins": "[4] min"}, "w3": {"date": "[Month DD, YYYY]", "mins": "[5] min"}};
+    this.DESC = ["Android-first exam reviewer for Philippine civil service and university entrance preparation, with encrypted local study state and on-device FSRS-6 scheduling.", "Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.", "Redesign of the website for Lakambini, an events and creative agency I worked with. [One line on what changed or the result.]", "Portable configuration system for coding agents that composes shared policy with project-owned rules and renders the selected result into provider-specific instruction files.", "Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.", "Evaluation and scoring model processing 4,000+ national Science Olympiad competitors across elimination tiers.", "In-browser QR code builder with gradient styling and SVG export that runs entirely client-side without backend requests.", "Next.js static export that converts supported images to WebP in a wasm-vips worker. Each queued file stores its own options, and completed results can be downloaded individually or as a ZIP.", "Unofficial bilingual legislative-transparency prototype with repository-backed records, derived council links, and explicit safeguards that keep the demo separate from an official LGU service.", "Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.", "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.", "Corporate tournament bot for OPPO Philippines managing team verification, roster validation, and automated support workflows on Hostinger VPS.", "Theorycrafting calculator for character damage formulas, artifact substat rolls, and weapon scaling.", "Code-first tooling for building, observing, and deploying distributed applications.", "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.", "External-DNS for plain Docker hosts, keeping DNS records aligned with container routes.", "Open-source effort building a better national website for the Philippines.", "[One line on what the post is about.]", "[One line on what the post is about.]", "[One line on what the post is about.]"];
+    // five kinds, the way a visitor thinks about them
+    this.KIND = [
+      { label: 'Apps', types: ['Mobile app', 'Android TV'] },
+      { label: 'Bots', types: ['Discord bot'] },
+      { label: 'Web', types: ['Website redesign', 'Web tool', 'Civic tech'] },
+      { label: 'Tools', types: ['Developer tooling', 'Data system'] },
+      { label: 'Open source', types: ['Open source'] },
+      { label: 'Writing', types: ['Writing'] }
+    ];
+    // what each row shows: an icon for the type, logos for the stack (a repo shows the GitHub mark and its path)
+    this.ICON = {"pen": "M4 20.5h4.5L19.5 9.5a2.1 2.1 0 0 0-3-3L5.5 17.5 4 20.5zM14.5 8.5l1 1", "phone": "M8 2.5h8a1.5 1.5 0 0 1 1.5 1.5v16a1.5 1.5 0 0 1-1.5 1.5H8A1.5 1.5 0 0 1 6.5 20V4A1.5 1.5 0 0 1 8 2.5zM11 18.5h2", "tv": "M3.5 5h17a1 1 0 0 1 1 1v10.5a1 1 0 0 1-1 1h-17a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM8.5 21h7M12 17.5V21", "bot": "M12 2.5v3.5M7 6h10a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3zM9.5 11.5v2M14.5 11.5v2M1.5 11.5v3M22.5 11.5v3", "web": "M3.5 4.5h17a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-17a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1zM2.5 9h19M5.5 6.75h.01M8 6.75h.01", "redesign": "M3.5 4.5h17a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-17a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1zM2.5 9h19M8.5 9v10.5M11.5 12.5h6.5M11.5 15.5h4", "civic": "M2.5 21h19M4.5 18h15M6 18v-6.5M10 18v-6.5M14 18v-6.5M18 18v-6.5M3.5 11.5h17L12 4z", "term": "M3.5 4.5h17a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-17a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1zM7 9.5l3 2.5-3 2.5M12.5 15h4.5", "data": "M3.5 20.5h17M6.5 17v-5M11 17V6.5M15.5 17v-8M20 17v-3.5", "repo": "M6 3v12M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM21 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM18 9a9 9 0 0 1-9 9", "all": "M4 4h6.5v6.5H4zM13.5 4H20v6.5h-6.5zM4 13.5h6.5V20H4zM13.5 13.5H20V20h-6.5z"};
+    this.TYPEICON = {"Mobile app": "phone", "Android TV": "tv", "Discord bot": "bot", "Website redesign": "redesign", "Web tool": "web", "Civic tech": "civic", "Developer tooling": "term", "Data system": "data", "Open source": "repo", "Writing": "pen"};
+    this.KINDICON = ["phone", "bot", "web", "term", "repo", "pen"];
+    // logos: Simple Icons (CC0)
+    this.LOGO = {"Flutter":{"t":"Flutter","d":"M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z","c":"#02569B","vb":"0 0 24 24","w":"18","h":"18"},"Firebase":{"t":"Firebase","d":"M19.455 8.369c-.538-.748-1.778-2.285-3.681-4.569-.826-.991-1.535-1.832-1.884-2.245a146 146 0 0 0-.488-.576l-.207-.245-.113-.133-.022-.032-.01-.005L12.57 0l-.609.488c-1.555 1.246-2.828 2.851-3.681 4.64-.523 1.064-.864 2.105-1.043 3.176-.047.241-.088.489-.121.738-.209-.017-.421-.028-.632-.033-.018-.001-.035-.002-.059-.003a7.46 7.46 0 0 0-2.28.274l-.317.089-.163.286c-.765 1.342-1.198 2.869-1.252 4.416-.07 2.01.477 3.954 1.583 5.625 1.082 1.633 2.61 2.882 4.42 3.611l.236.095.071.025.003-.001a9.59 9.59 0 0 0 2.941.568q.171.006.342.006c1.273 0 2.513-.249 3.69-.742l.008.004.313-.145a9.63 9.63 0 0 0 3.927-3.335c1.01-1.49 1.577-3.234 1.641-5.042.075-2.161-.643-4.304-2.133-6.371m-7.083 6.695c.328 1.244.264 2.44-.191 3.558-1.135-1.12-1.967-2.352-2.475-3.665-.543-1.404-.87-2.74-.974-3.975.48.157.922.366 1.315.622 1.132.737 1.914 1.902 2.325 3.461zm.207 6.022c.482.368.99.712 1.513 1.028-.771.21-1.565.302-2.369.273a8 8 0 0 1-.373-.022c.458-.394.869-.823 1.228-1.279zm1.347-6.431c-.516-1.957-1.527-3.437-3.002-4.398-.647-.421-1.385-.741-2.194-.95.011-.134.026-.268.043-.4.014-.113.03-.216.046-.313.133-.689.332-1.37.589-2.025.099-.25.206-.499.321-.74l.004-.008c.177-.358.376-.719.61-1.105l.092-.152-.003-.001c.544-.851 1.197-1.627 1.942-2.311l.288.341c.672.796 1.304 1.548 1.878 2.237 1.291 1.549 2.966 3.583 3.612 4.48 1.277 1.771 1.893 3.579 1.83 5.375-.049 1.395-.461 2.755-1.195 3.933-.694 1.116-1.661 2.05-2.8 2.708-.636-.318-1.559-.839-2.539-1.599.79-1.575.952-3.28.479-5.072zm-2.575 5.397c-.725.939-1.587 1.55-2.09 1.856-.081-.029-.163-.06-.243-.093l-.065-.026c-1.49-.616-2.747-1.656-3.635-3.01-.907-1.384-1.356-2.993-1.298-4.653.041-1.19.338-2.327.882-3.379.316-.07.638-.114.96-.131l.084-.002c.162-.003.324-.003.478 0 .227.011.454.035.677.07.073 1.513.445 3.145 1.105 4.852.637 1.644 1.694 3.162 3.144 4.515z","c":"#DD2C00","vb":"0 0 24 24","w":"18","h":"18"},"SQLite":{"t":"SQLite","d":"M21.678.521c-1.032-.92-2.28-.55-3.513.544a8.71 8.71 0 0 0-.547.535c-2.109 2.237-4.066 6.38-4.674 9.544.237.48.422 1.093.544 1.561a13.044 13.044 0 0 1 .164.703s-.019-.071-.096-.296l-.05-.146a1.689 1.689 0 0 0-.033-.08c-.138-.32-.518-.995-.686-1.289-.143.423-.27.818-.376 1.176.484.884.778 2.4.778 2.4s-.025-.099-.147-.442c-.107-.303-.644-1.244-.772-1.464-.217.804-.304 1.346-.226 1.478.152.256.296.698.422 1.186.286 1.1.485 2.44.485 2.44l.017.224a22.41 22.41 0 0 0 .056 2.748c.095 1.146.273 2.13.5 2.657l.155-.084c-.334-1.038-.47-2.399-.41-3.967.09-2.398.642-5.29 1.661-8.304 1.723-4.55 4.113-8.201 6.3-9.945-1.993 1.8-4.692 7.63-5.5 9.788-.904 2.416-1.545 4.684-1.931 6.857.666-2.037 2.821-2.912 2.821-2.912s1.057-1.304 2.292-3.166c-.74.169-1.955.458-2.362.629-.6.251-.762.337-.762.337s1.945-1.184 3.613-1.72C21.695 7.9 24.195 2.767 21.678.521m-18.573.543A1.842 1.842 0 0 0 1.27 2.9v16.608a1.84 1.84 0 0 0 1.835 1.834h9.418a22.953 22.953 0 0 1-.052-2.707c-.006-.062-.011-.141-.016-.2a27.01 27.01 0 0 0-.473-2.378c-.121-.47-.275-.898-.369-1.057-.116-.197-.098-.31-.097-.432 0-.12.015-.245.037-.386a9.98 9.98 0 0 1 .234-1.045l.217-.028c-.017-.035-.014-.065-.031-.097l-.041-.381a32.8 32.8 0 0 1 .382-1.194l.2-.019c-.008-.016-.01-.038-.018-.053l-.043-.316c.63-3.28 2.587-7.443 4.8-9.791.066-.069.133-.128.198-.194Z","c":"#003B57","vb":"0 0 24 24","w":"18","h":"18"},"Python":{"t":"Python","d":"M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z","c":"#3776AB","vb":"0 0 24 24","w":"18","h":"18"},"MySQL":{"t":"MySQL","d":"M16.405 5.501c-.115 0-.193.014-.274.033v.013h.014c.054.104.146.18.214.273.054.107.1.214.154.32l.014-.015c.094-.066.14-.172.14-.333-.04-.047-.046-.094-.08-.14-.04-.067-.126-.1-.18-.153zM5.77 18.695h-.927a50.854 50.854 0 00-.27-4.41h-.008l-1.41 4.41H2.45l-1.4-4.41h-.01a72.892 72.892 0 00-.195 4.41H0c.055-1.966.192-3.81.41-5.53h1.15l1.335 4.064h.008l1.347-4.064h1.095c.242 2.015.384 3.86.428 5.53zm4.017-4.08c-.378 2.045-.876 3.533-1.492 4.46-.482.716-1.01 1.073-1.583 1.073-.153 0-.34-.046-.566-.138v-.494c.11.017.24.026.386.026.268 0 .483-.075.647-.222.197-.18.295-.382.295-.605 0-.155-.077-.47-.23-.944L6.23 14.615h.91l.727 2.36c.164.536.233.91.205 1.123.4-1.064.678-2.227.835-3.483zm12.325 4.08h-2.63v-5.53h.885v4.85h1.745zm-3.32.135l-1.016-.5c.09-.076.177-.158.255-.25.433-.506.648-1.258.648-2.253 0-1.83-.718-2.746-2.155-2.746-.704 0-1.254.232-1.65.697-.43.508-.646 1.256-.646 2.245 0 .972.19 1.686.574 2.14.35.41.877.615 1.583.615.264 0 .506-.033.725-.098l1.325.772.36-.622zM15.5 17.588c-.225-.36-.337-.94-.337-1.736 0-1.393.424-2.09 1.27-2.09.443 0 .77.167.977.5.224.362.336.936.336 1.723 0 1.404-.424 2.108-1.27 2.108-.445 0-.77-.167-.978-.5zm-1.658-.425c0 .47-.172.856-.516 1.156-.344.3-.803.45-1.384.45-.543 0-1.064-.172-1.573-.515l.237-.476c.438.22.833.328 1.19.328.332 0 .593-.073.783-.22a.754.754 0 00.3-.615c0-.33-.23-.61-.648-.845-.388-.213-1.163-.657-1.163-.657-.422-.307-.632-.636-.632-1.177 0-.45.157-.81.47-1.085.315-.278.72-.415 1.22-.415.512 0 .98.136 1.4.41l-.213.476a2.726 2.726 0 00-1.064-.23c-.283 0-.502.068-.654.206a.685.685 0 00-.248.524c0 .328.234.61.666.85.393.215 1.187.67 1.187.67.433.305.648.63.648 1.168zm9.382-5.852c-.535-.014-.95.04-1.297.188-.1.04-.26.04-.274.167.055.053.063.14.11.214.08.134.218.313.346.407.14.11.28.216.427.31.26.16.555.255.81.416.145.094.293.213.44.313.073.05.12.14.214.172v-.02c-.046-.06-.06-.147-.105-.214-.067-.067-.134-.127-.2-.193a3.223 3.223 0 00-.695-.675c-.214-.146-.682-.35-.77-.595l-.013-.014c.146-.013.32-.066.46-.106.227-.06.435-.047.67-.106.106-.027.213-.06.32-.094v-.06c-.12-.12-.21-.283-.334-.395a8.867 8.867 0 00-1.104-.823c-.21-.134-.476-.22-.697-.334-.08-.04-.214-.06-.26-.127-.12-.146-.19-.34-.275-.514a17.69 17.69 0 01-.547-1.163c-.12-.262-.193-.523-.34-.763-.69-1.137-1.437-1.826-2.586-2.5-.247-.14-.543-.2-.856-.274-.167-.008-.334-.02-.5-.027-.11-.047-.216-.174-.31-.235-.38-.24-1.364-.76-1.644-.072-.18.434.267.862.422 1.082.115.153.26.328.34.5.047.116.06.235.107.356.106.294.207.622.347.897.073.14.153.287.247.413.054.073.146.107.167.227-.094.136-.1.334-.154.5-.24.757-.146 1.693.194 2.25.107.166.362.534.703.393.3-.12.234-.5.32-.835.02-.08.007-.133.048-.187v.015c.094.188.188.367.274.555.206.328.566.668.867.895.16.12.287.328.487.402v-.02h-.015c-.043-.058-.1-.086-.154-.133a3.445 3.445 0 01-.35-.4 8.76 8.76 0 01-.747-1.218c-.11-.21-.202-.436-.29-.643-.04-.08-.04-.2-.107-.24-.1.146-.247.273-.32.453-.127.288-.14.642-.188 1.01-.027.007-.014 0-.027.014-.214-.052-.287-.274-.367-.46-.2-.475-.233-1.238-.06-1.785.047-.14.247-.582.167-.716-.042-.127-.174-.2-.247-.303a2.478 2.478 0 01-.24-.427c-.16-.374-.24-.788-.414-1.162-.08-.173-.22-.354-.334-.513-.127-.18-.267-.307-.368-.52-.033-.073-.08-.194-.027-.274.014-.054.042-.075.094-.09.088-.072.335.022.422.062.247.1.455.194.662.334.094.066.195.193.315.226h.14c.214.047.455.014.655.073.355.114.675.28.962.46a5.953 5.953 0 012.085 2.286c.08.154.115.295.188.455.14.33.313.663.455.982.14.315.275.636.476.897.1.14.502.213.682.286.133.06.34.115.46.188.23.14.454.3.67.454.11.076.443.243.463.378z","c":"#4479A1","vb":"-0.2 12.6 22.4 6.2","w":"46","h":"13"},"Markdown":{"t":"Markdown","d":"M22.27 19.385H1.73A1.73 1.73 0 010 17.655V6.345a1.73 1.73 0 011.73-1.73h20.54A1.73 1.73 0 0124 6.345v11.308a1.73 1.73 0 01-1.73 1.731zM5.769 15.923v-4.5l2.308 2.885 2.307-2.885v4.5h2.308V8.078h-2.308l-2.307 2.885-2.308-2.885H3.46v7.847zM21.232 12h-2.309V8.077h-2.307V12h-2.308l3.461 4.039z","c":"#000000","vb":"0 0 24 24","w":"18","h":"18"},"YAML":{"t":"YAML","d":"m0 .97 4.111 6.453v4.09h2.638v-4.09L11.053.969H8.214L5.58 5.125 2.965.969Zm12.093.024-4.47 10.544h2.114l.97-2.345h4.775l.804 2.345h2.26L14.255.994Zm1.133 2.225 1.463 3.87h-3.096zm3.06 9.475v10.29H24v-2.199h-5.454v-8.091zm-12.175.002v10.335h2.217v-7.129l2.32 4.792h1.746l2.4-4.96v7.295h2.127V12.696h-2.904L9.44 17.37l-2.455-4.674Z","c":"#CB171E","vb":"0 0 24 24","w":"18","h":"18"},"pandas":{"t":"pandas","d":"M16.922 0h2.623v18.104h-2.623zm-4.126 12.94h2.623v2.57h-2.623zm0-7.037h2.623v5.446h-2.623zm0 11.197h2.623v5.446h-2.623zM4.456 5.896h2.622V24H4.455zm4.213 2.559h2.623v2.57H8.67zm0 4.151h2.623v5.447H8.67zm0-11.187h2.623v5.446H8.67Z","c":"#150458","vb":"0 0 24 24","w":"18","h":"18"},"NumPy":{"t":"NumPy","d":"M10.315 4.876L6.3048 2.8517l-4.401 2.1965 4.1186 2.0683zm1.8381.9277l4.2045 2.1223-4.3622 2.1906-4.125-2.0718zm5.6153-2.9213l4.3193 2.1658-3.863 1.9402-4.2131-2.1252zm-1.859-.9329L12.021 0 8.1742 1.9193l4.0068 2.0208zm-3.0401 16.7443V24l4.7107-2.3507-.0053-5.3085zm4.7037-4.2057l-.0052-5.2528-4.6985 2.3356v5.2546zm5.6553-.9845v5.327l-4.0178 2.0052-.0029-5.3028zm0-1.8626V6.4214l-4.0253 2.001.0034 5.2633zM11.2062 11.571L8.0333 9.9756v6.895s-3.8804-8.2564-4.2399-8.998c-.0463-.0957-.2371-.2007-.2858-.2262C2.8118 7.2812.773 6.2485.773 6.2485V18.43l2.8204 1.5076v-6.3674s3.8392 7.3775 3.878 7.458c.0389.0807.4245.8582.8362 1.1314.5485.363 2.8992 1.7766 2.8992 1.7766z","c":"#013243","vb":"0 0 24 24","w":"18","h":"18"},"TypeScript":{"t":"TypeScript","d":"M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z","c":"#3178C6","vb":"0 0 24 24","w":"18","h":"18"},"Vite":{"t":"Vite","d":"m8.286 10.578.512-8.657a.306.306 0 0 1 .247-.282L17.377.006a.306.306 0 0 1 .353.385l-1.558 5.403a.306.306 0 0 0 .352.385l2.388-.46a.306.306 0 0 1 .332.438l-6.79 13.55-.123.19a.294.294 0 0 1-.252.14c-.177 0-.35-.152-.305-.369l1.095-5.301a.306.306 0 0 0-.388-.355l-1.433.435a.306.306 0 0 1-.389-.354l.69-3.375a.306.306 0 0 0-.37-.36l-2.32.536a.306.306 0 0 1-.374-.316zm14.976-7.926L17.284 3.74l-.544 1.887 2.077-.4a.8.8 0 0 1 .84.369.8.8 0 0 1 .034.783L12.9 19.93l-.013.025-.015.023-.122.19a.801.801 0 0 1-.672.37.826.826 0 0 1-.634-.302.8.8 0 0 1-.16-.67l1.029-4.981-1.12.34a.81.81 0 0 1-.86-.262.802.802 0 0 1-.165-.67l.63-3.08-2.027.468a.808.808 0 0 1-.768-.233.81.81 0 0 1-.217-.6l.389-6.57-7.44-1.33a.612.612 0 0 0-.64.906L11.58 23.691a.612.612 0 0 0 1.066-.004l11.26-20.135a.612.612 0 0 0-.644-.9z","c":"#646CFF","vb":"0 0 24 24","w":"18","h":"18"},"Tailwind":{"t":"Tailwind CSS","d":"M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C13.666,10.618,15.027,12,18.001,12c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 c1.177,1.194,2.538,2.576,5.512,2.576c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C10.337,13.382,8.976,12,6.001,12z","c":"#06B6D4","vb":"0 0 24 24","w":"18","h":"18"},"Next.js":{"t":"Next.js","d":"M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727Zm-3.332-8.533 1.6 2.061V7.2h-1.6v6.245Z","c":"#000000","vb":"0 0 24 24","w":"18","h":"18"},"wasm-vips":{"t":"WebAssembly","d":"M14.745,0c0,0.042,0,0.085,0,0.129c0,1.52-1.232,2.752-2.752,2.752c-1.52,0-2.752-1.232-2.752-2.752 c0-0.045,0-0.087,0-0.129H0v24h24V0H14.745z M11.454,21.431l-1.169-5.783h-0.02l-1.264,5.783H7.39l-1.824-8.497h1.59l1.088,5.783 h0.02l1.311-5.783h1.487l1.177,5.854h0.02l1.242-5.854h1.561l-2.027,8.497H11.454z M20.209,21.431l-0.542-1.891h-2.861l-0.417,1.891 h-1.59l2.056-8.497h2.509l2.5,8.497H20.209z M17.812,15.028l-0.694,3.118h2.159l-0.796-3.118H17.812z","c":"#654FF0","vb":"0 0 24 24","w":"18","h":"18"},"JavaScript":{"t":"JavaScript","d":"M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z","c":"#F7DF1E","vb":"0 0 24 24","w":"18","h":"18"},"Sheets":{"t":"Google Sheets","d":"M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z","c":"#34A853","vb":"0 0 24 24","w":"18","h":"18"},"GitHub":{"t":"GitHub","d":"M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12","c":"#181717","vb":"0 0 24 24","w":"18","h":"18"}};
+    this.stackOf = this.P.map((p) => {
+      if (p[4] === 'repo') return { logos: [this.LOGO.GitHub], text: p[3] };
+      if (p[3].indexOf('[') === 0) return { logos: [], text: p[3] };
+      const parts = p[3].split(' \u00b7 ');
+      return { logos: parts.map((n) => this.LOGO[n]).filter(Boolean), text: parts.filter((n) => !this.LOGO[n]).join(' \u00b7 ') };
+    });
+    this.pvo = {}; this.pvY = null; this.pvA = 0;
+    // how rows change when you sort or filter: slide (rows glide), cascade (all fade out, then back in one by one), swap (only rows that change fade out and back in)
+    this.motion = ['slide', 'cascade', 'swap'].indexOf(props.motion) >= 0 ? props.motion : 'swap';
+    this.chg = null; this.cy0 = {}; this.gy0 = {}; this.mm = {}; this.gm = {};
+    this.kindOf = this.P.map((p) => this.KIND.findIndex((g) => g.types.indexOf(p[2]) >= 0));
+    // same wall, fixed arrangement: four columns in reading order, a real top and bottom
+    // three columns, balanced by height, no two of a kind stacked
+    const cols = [[0, 13, 1, 7, 15, 5], [2, 14, 3, 9, 16, 6], [4, 8, 10, 12, 11]], gap = 48;
+    this.bp = [];
+    cols.forEach((list, c) => {
+      const total = list.reduce((a, i) => a + this.H[this.P[i][4]], 0) + gap * (list.length - 1);
+      let y = 450 - total / 2 + [70, 20, 0][c];
+      list.forEach((i) => { const h = this.H[this.P[i][4]]; this.bp[i] = { x: 720 + (c - 1) * 568, y: y + h / 2 }; y += h + gap; });
+    });
+    for (let i = 0; i < this.N; i++) if (!this.bp[i]) this.bp[i] = { x: 720, y: 99999 };
+    const ys = this.bp.filter((b) => b.y < 90000).map((b) => b.y);
+    this.minY = Math.min(...ys) + 60; this.maxY = Math.max(...ys) - 60; this.midY = (this.minY + this.maxY) / 2;
+    this.O = [720, 470]; this.ax0 = 34; this.az0 = -18;
+    this.cy = this.minY + 140; this.tCy = this.cy; this.vel = 0;
+    this.zl = 1; this.zv = 0;
+    this.su = {}; this.hs = {}; this.ops = {};
+    this.m = { x: 0, y: 0 }; this.ms = { x: 0, y: 0 }; this.scrollY = 0; this.lastInput = 0;
+    this.capId = null; this.capAt = 0;
+    this.t0 = performance.now();
+    this.out = this.frame(0);
+  }
+  componentDidMount() {
+    this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.t0 = performance.now(); this.last = this.t0; this.lastInput = this.t0;
+    this.root = document.querySelector('[data-sp="' + this.uid + '"]');
+    this.onWheel = (e) => this.wheel(e);
+    if (this.root) this.root.addEventListener('wheel', this.onWheel, { passive: false });
+    this.onKey = (e) => this.key(e);
+    window.addEventListener('keydown', this.onKey);
+    const loop = (now) => {
+      const dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
+      this.ms.x += (this.m.x - this.ms.x) * 0.05; this.ms.y += (this.m.y - this.ms.y) * 0.05;
+      const dir = Math.sign(this.kt - this.k);
+      if (this.reduced) this.k = this.kt;
+      else if (dir) { this.k += dir * dt / 1.5; if ((dir > 0 && this.k > this.kt) || (dir < 0 && this.k < this.kt)) this.k = this.kt; }
+      if (!this.drag) {
+        this.tCy += this.vel * dt; this.vel *= Math.pow(0.03, dt);
+        // past the top or bottom: ease back, like the end of a page
+        const c = Math.max(this.minY, Math.min(this.maxY, this.tCy));
+        if (c !== this.tCy) { this.tCy += (c - this.tCy) * Math.min(1, dt * 10); this.vel *= 0.8; }
+        // soft magnet: once you stop, the nearest project drifts to the middle (never while you're moving)
+        if (this.mode !== 'follow' && now - this.lastInput > 450 && Math.abs(this.vel) < 40 && this.state.hover == null && this.magY != null) this.tCy += (this.magY - this.tCy) * Math.min(1, dt * 3);
+      }
+      const f = this.reduced ? 1 : 1 - Math.pow(this.drag ? 1e-6 : 3e-4, dt);
+      this.cy += (this.tCy - this.cy) * f;
+      const zt = this.state.zoomOut ? 0 : 1;
+      if (this.reduced) this.zl = zt; else { this.zv += ((zt - this.zl) * 120 - this.zv * 20) * dt; this.zl += this.zv * dt; }
+      if (this.props.onPeek) {
+        if (this.over && now - (this.overAt || 0) > 420) { this.over *= Math.pow(0.05, dt); if (this.over < 1) this.over = 0; }
+        const pk = Math.min(1, (this.over || 0) / 700);
+        if (Math.abs(pk - (this.pk || 0)) > 0.002 || (pk === 0 && this.pk)) { this.pk = pk; this.props.onPeek(pk); }
+        if (pk >= 1) { this.over = 0; }
+      }
+      this.out = this.frame(dt);
+      this.setState({ tick: this.state.tick + 1 });
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.onKey); cancelAnimationFrame(this.raf); if (this.root) this.root.removeEventListener('wheel', this.onWheel); }
+  scale() { const r = this.root ? this.root.getBoundingClientRect() : null; return r && r.width ? 1440 / r.width : 1; }
+  // pushing past the end of the work: the room shows what's below (the shelf)
+  peekAdd(d) { if (!this.props.onPeek || d <= 0) return; this.over = (this.over || 0) + d; this.overAt = performance.now(); }
+  wheel(e) {
+    let d0 = e.deltaY; if (e.deltaMode === 1) d0 *= 16;
+    if (this.kt === 1) { const ix = this.root && this.root.querySelector('.ix'); if (ix && ix.scrollTop + ix.clientHeight >= ix.scrollHeight - 2) this.peekAdd(d0); return; } // index: normal page scroll
+    if (this.tCy >= this.maxY - 2 && d0 > 0 && !this.state.zoomOut) this.peekAdd(d0);
+    e.preventDefault();
+    this.lastInput = performance.now();
+    if (e.ctrlKey && this.mode === 'overview') { if (e.deltaY > 2 && !this.state.zoomOut) this.setState({ zoomOut: true, hover: null }); else if (e.deltaY < -2 && this.state.zoomOut) this.setState({ zoomOut: false }); return; }
+    if (this.state.zoomOut) return;
+    let d = e.deltaY + e.deltaX; if (e.deltaMode === 1) d *= 16;
+    this.tCy += d * 1.15; this.vel = 0;
+  }
+  key(e) {
+    if (this.kt !== 1 || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+    if (e.key === 'Escape') { if (this.q) this.q = ''; else this.filt = null; return; }
+    if (e.key === 'Backspace') { if (this.q) { this.q = this.q.slice(0, -1); e.preventDefault(); } return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const vis = this.visNow; if (!vis.length) return; e.preventDefault();
+      let r = vis.indexOf(this.ih); r = r < 0 ? 0 : Math.max(0, Math.min(vis.length - 1, r + (e.key === 'ArrowDown' ? 1 : -1)));
+      const el = this.root && this.root.querySelector('a.row[data-i="' + vis[r] + '"]'); if (el) el.focus(); this.ih = vis[r]; return;
+    }
+    if (e.key.length === 1 && /[0-9A-Za-z .\-]/.test(e.key)) { if (e.key === ' ' && !this.q) return; this.q = (this.q + e.key).slice(0, 22); e.preventDefault(); }
+  }
+  glideTo(i) { this.tCy = Math.max(this.minY, Math.min(this.maxY, this.bp[i].y)); this.vel = 0; this.lastInput = performance.now(); if (this.state.zoomOut) this.setState({ zoomOut: false }); }
+  frame(dt) {
+    const cl = (x) => Math.max(0, Math.min(1, x));
+    const ease = (x) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+    const out = (x) => 1 - Math.pow(1 - cl(x), 3);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const PI = Math.PI, rad = PI / 180, O = this.O;
+    const now = performance.now();
+    const T = this.reduced ? 99 : (now - this.t0) / 1000;
+    const k = this.k, mo = this.mode, h = this.state.hover, onWall = k < 0.001;
+    const zl = this.zl;
+    // ---- index layout: order, what's shown, where each row is headed
+    const KIND = this.KIND, kindOf = this.kindOf, P = this.P, dts = this.reduced ? 0 : (dt || 0);
+    const q = this.q.trim().toLowerCase();
+    const hay = (i) => (P[i][1] + ' ' + P[i][2] + ' ' + P[i][3] + ' ' + KIND[kindOf[i]].label).toLowerCase();
+    const match = (i) => (this.filt == null || kindOf[i] === this.filt) && (!q || hay(i).indexOf(q) >= 0);
+    const order = P.map((_, i) => i);
+    if (this.sort === 'name') order.sort((a, b) => P[a][1].localeCompare(P[b][1]));
+    if (this.sort === 'type') order.sort((a, b) => kindOf[a] - kindOf[b] || a - b);
+    const vis = order.filter(match); this.visNow = vis;
+    const ty = {}, gy = {}, gOn = {};
+    let yy = 0, lastK = -1;
+    vis.forEach((i) => { if (this.sort === 'type' && kindOf[i] !== lastK) { lastK = kindOf[i]; if (yy > 0) yy += 22; gy[lastK] = yy; gOn[lastK] = vis.filter((j) => kindOf[j] === lastK).length; yy += 58; } ty[i] = yy; yy += 60; });
+    this.ixTotal = yy;
+    const sig = this.sort + '|' + this.filt + '|' + q;
+    if (sig !== this.sig) {
+      // rows set off one after another, top first, so the reorder reads as a ripple instead of a jump
+      const first = this.sig == null; this.sig = sig;
+      vis.forEach((i, r) => { this.pend[i] = { y: ty[i], at: first ? 0 : now + Math.min(r * 12, 120) }; });
+      KIND.forEach((_, g) => { if (gy[g] != null) this.pend['g' + g] = { y: gy[g], at: first ? 0 : now + Math.min(vis.indexOf(vis.find((j) => kindOf[j] === g)) * 12, 120) }; });
+    }
+    const spring = (key, t, kS, kD) => { let s = this.rs[key]; if (!s || !dts) { s = this.rs[key] = { y: t, v: 0 }; return s; } s.v += ((t - s.y) * kS - s.v * kD) * dts; s.y += s.v * dts; return s; };
+    const step = (key) => { const pd = this.pend[key]; if (pd && now >= pd.at) { this.tg[key] = pd.y; this.pend[key] = null; } return this.tg[key]; };
+    P.forEach((_, i) => {
+      if (this.tg[i] == null) this.tg[i] = ty[i] != null ? ty[i] : i * 60;
+      const s = spring(i, step(i), 260, 32); // critically damped: arrives, no bounce
+      if (!this.rs[i].init) { this.rs[i] = { y: this.tg[i], v: 0, init: 1 }; }
+      const vt = vis.indexOf(i) >= 0 ? 1 : 0; const w = this.vs[i] == null ? vt : this.vs[i]; this.vs[i] = dts ? w + (vt - w) * Math.min(1, dts * 14) : vt;
+      const pt = this.ih === i && k > 0.98 ? 1 : 0; let pv = this.pv[i]; if (!pv || !dts) pv = this.pv[i] = { p: pt, v: 0 }; else { pv.v += ((pt - pv.p) * 210 - pv.v * 25) * dts; pv.p += pv.v * dts; }
+    });
+    KIND.forEach((_, g) => {
+      const key = 'g' + g; if (this.tg[key] == null) this.tg[key] = gy[g] != null ? gy[g] : 0;
+      spring(key, step(key), 260, 32);
+      if ((this.gop[g] || 0) < 0.02 && gy[g] != null) { this.tg[key] = gy[g]; this.pend[key] = null; this.rs[key] = { y: gy[g], v: 0 }; } // a heading appears where it belongs
+      const gt = gOn[g] ? 1 : 0; const w = this.gop[g] == null ? gt : this.gop[g]; this.gop[g] = dts ? w + (gt - w) * Math.min(1, dts * 9) : gt;
+    });
+    if (this.motion !== 'slide') {
+      const MO = this.motion;
+      if (this.chg == null || this.chg.sig !== sig) {
+        const first = this.chg == null;
+        const prevM = {}, prevGM = {}, moved = {}, rank = {}, grank = {};
+        P.forEach((_, i) => { prevM[i] = this.mm[i] == null ? 0 : this.mm[i]; if (first || this.cy0[i] == null) this.cy0[i] = ty[i] != null ? ty[i] : i * 60; });
+        KIND.forEach((_, g) => { prevGM[g] = this.gm[g] || 0; if (first && gy[g] != null) this.gy0[g] = gy[g]; });
+        P.forEach((_, i) => { moved[i] = MO === 'cascade' || ty[i] == null || prevM[i] < 0.99 || Math.abs(ty[i] - this.cy0[i]) > 0.5; });
+        // the stagger counts only rows that actually change, so it stays quick
+        let r = 0; vis.forEach((i) => { if (moved[i]) rank[i] = r++; else rank[i] = 0; });
+        KIND.forEach((_, g) => { const f = vis.find((j) => kindOf[j] === g); grank[g] = f != null ? Math.max(0, rank[f] - 0.5) : 0; });
+        this.chg = { sig, t0: first ? now - 1e4 : now, prevM, prevGM, moved, rank, grank, ty: { ...ty }, gy: { ...gy } };
+      }
+      const c = this.chg, OUT = 0.1, IN = 0.22, ST = MO === 'cascade' ? 0.026 : 0.018, ss = (now - c.t0) / 1000;
+      P.forEach((_, i) => {
+        const on = c.ty[i] != null; let m, dy = 0;
+        if (!c.moved[i]) m = on ? 1 : 0;
+        else if (ss < OUT) m = c.prevM[i] * (1 - ss / OUT);
+        else { if (on) this.cy0[i] = c.ty[i]; const f = on ? out((ss - OUT - c.rank[i] * ST) / IN) : 0; m = f; dy = (1 - f) * 6; }
+        this.mm[i] = m; this.vs[i] = m; this.rs[i] = { y: this.cy0[i] + dy, v: 0, init: 1 };
+      });
+      KIND.forEach((_, g) => {
+        const on = c.gy[g] != null, same = on && MO === 'swap' && c.prevGM[g] > 0.99 && this.gy0[g] === c.gy[g];
+        let m;
+        if (same) m = 1;
+        else if (ss < OUT) m = c.prevGM[g] * (1 - ss / OUT);
+        else if (!on) m = 0;
+        else { this.gy0[g] = c.gy[g]; m = out((ss - OUT - c.grank[g] * ST) / IN); }
+        this.gm[g] = m; this.gop[g] = m; this.rs['g' + g] = { y: this.gy0[g] != null ? this.gy0[g] : 0, v: 0 };
+      });
+    }
+    if (this.ih != null) this.pvLast = this.ih;
+    // the frozen header waits until the rows have landed, and leaves first on the way back
+    {
+      const want = this.kt === 1 && k >= 0.9 && !this.leaving ? 1 : 0;
+      if (this.hr == null || !dts) this.hr = want; else this.hr = want ? Math.min(1, this.hr + dts / 0.45) : Math.max(0, this.hr - dts / 0.38);
+      const x = this.hr; this.hk = x * x * (3 - 2 * x);
+      // once the header has gone, the rows set off back to the wall
+      if (this.leaving && this.hr <= 0.2) { this.leaving = false; this.kt = 0; }
+    }
+    const R0 = 240;
+    const pp = ease(k / 0.8);
+    // in the room, heading down to the shelf: the wall of work tips back and away, like looking down past it
+    const dm = Math.max(0, Math.min(1, +this.props.dim || 0)), dme = dm * dm * (3 - 2 * dm);
+    const ax = lerp(this.ax0 - this.ms.y * 3 + (1 - zl) * -10, 0, pp) + 46 * dme, ay = lerp(this.ms.x * 3, 0, pp), az = lerp(this.az0 + (1 - zl) * 8, 0, pp), S = lerp(lerp(0.52, 0.9, zl), 1, pp);
+    const cx = Math.cos(ax * rad), sx = Math.sin(ax * rad), cy_ = Math.cos(ay * rad), sy = Math.sin(ay * rad), cz = Math.cos(az * rad), sz = Math.sin(az * rad);
+    const rot = (x, y, z) => { const x1 = cz * x - sz * y, y1 = sz * x + cz * y; const x2 = cy_ * x1 + sy * z, z2 = -sy * x1 + cy_ * z; return [x2, cx * y1 - sx * z2, sx * y1 + cx * z2]; };
+    const camY = lerp(this.midY, this.cy, zl);
+    // first pass: where each tile lands on screen, to find the one nearest the middle
+    const scr = this.bp.map((b) => { const p = rot(b.x - O[0], b.y - camY, 0); return { X: O[0] + S * p[0], Y: O[1] + S * p[1] }; });
+    let near = 0, nd = 1e12;
+    scr.forEach((p, i) => { const d = (p.X - 720) ** 2 + ((p.Y - 480) * 1.4) ** 2; if (d < nd) { nd = d; near = i; } });
+    this.magY = this.bp[near].y;
+    const zoomedOut = zl < 0.5;
+    const focus = h != null ? h : (mo === 'follow' || zoomedOut ? null : near);
+    if (this.props.onFocus) { const f = k > 0.5 ? this.ih : (focus != null ? focus : near); if (f !== this.lastF) { this.lastF = f; this.props.onFocus(f == null ? -1 : f); } }
+    const tiles = this.P.map((p, i) => {
+      const type = p[4], hh = this.H[type];
+      const intro = out((T - 0.15 - (i % 4) * 0.12 - Math.floor(i / 4) * 0.15) / 1.3);
+      // gentle emphasis only: no blur, the others stay readable
+      const isF = focus === i;
+      const dimTo = mo === 'follow' ? 0.5 : 0.62;
+      const opT = onWall && focus != null && !(this.drag && this.drag.moved) ? (isF ? 1 : dimTo) : 1;
+      this.ops[i] = this.ops[i] == null ? opT : this.ops[i] + (opT - this.ops[i]) * Math.min(1, (dt || 1) * 8);
+      const hv = onWall && isF && !(this.drag && this.drag.moved) ? 1.035 : 1;
+      this.hs[i] = (this.hs[i] || 1) + (hv - (this.hs[i] || 1)) * Math.min(1, (dt || 1) * 10);
+      const isPost = p[4] === 'paper';
+      const w = { x: isPost ? 160 : this.bp[i].x, y: isPost ? 2400 : this.bp[i].y - camY + O[1] + (1 - intro) * 140, z: isF && onWall ? 24 : 0, op: isPost ? 0 : this.ops[i] * intro };
+      const ut = ease((k - 0.024 * i) / 0.58); // every tile, even the 17th, lands exactly on its row
+      let su = this.su[i];
+      if (!su || dt === 0 || this.reduced) su = this.su[i] = { u: ut, v: 0 };
+      else { su.v += ((ut - su.u) * 230 - su.v * 23) * dt; su.u += su.v * dt; }
+      const u = su.u, uc = cl(u);
+      const sl = Math.min(80 / 520, 50 / hh);
+      const rowY = R0 + this.rs[i].y + 30 - this.scrollY;
+      const pvp = 0, vsv = this.vs[i];
+      const PVy = Math.max(300, Math.min(560, (this.ih != null ? R0 + this.rs[this.ih].y + 30 - this.scrollY : rowY)));
+      const L = { x: lerp(160, 1206, pvp), y: lerp(rowY, PVy, pvp) };
+      // moving rows lift a little toward you, so a reorder has depth
+      const lift = 0;
+      const x = lerp(w.x, L.x, u), y = lerp(w.y, L.y, u), z = lerp(w.z, 0, u) + Math.sin(PI * uc) * 180 + lift * uc;
+      const s = lerp(this.hs[i], lerp(sl, 300 / 520, pvp) * (0.92 + 0.08 * vsv), u), op = lerp(w.op, vsv, uc);
+      const r = Math.sin(PI * uc) * (i % 2 ? 7 : -7);
+      const P3 = rot(x - O[0], y - O[1], z);
+      const X = O[0] + S * P3[0], Y = O[1] + S * P3[1], Z = S * P3[2];
+      return {
+        name: p[1], type: p[2], href: p[5], aria: p[1] + ', ' + p[2],
+        isPhone: type === 'phone', isTv: type === 'tv', isWeb: type === 'web', isDiscord: type === 'discord', isTerm: type === 'term', isData: type === 'data', isRepo: type === 'repo', isPaper: type === 'paper', date: type === 'paper' ? this.POST[p[0]].date : '', mins: type === 'paper' ? this.POST[p[0]].mins : '', repo: p[3], desc: p[6] || '',
+        tf: `translate3d(${(X - 260).toFixed(2)}px, ${(Y - hh / 2).toFixed(2)}px, ${Z.toFixed(1)}px) rotateX(${ax.toFixed(3)}deg) rotateY(${(ay - 14 * pvp * uc).toFixed(3)}deg) rotateZ(${(az + r).toFixed(3)}deg) scale(${(S * s).toFixed(4)})`,
+        sh: this.props.shadow && false ? `drop-shadow(${(18 * (1 - uc)).toFixed(1)}px ${(30 * (1 - uc) + 4).toFixed(1)}px ${(34 * (1 - uc) + 6).toFixed(1)}px rgba(0,0,0,${(0.55 * (1 - uc) + 0.2).toFixed(3)}))` : 'none',
+        op: op.toFixed(3), blur: 'none', pe: op > 0.3 && k < 0.5 ? 'auto' : 'none', tab: 0, lab: 0,
+        enter: () => { if (!(this.drag && this.drag.moved)) this.setState({ hover: i }); },
+        click: (e) => {
+          if (this.suppress) { e.preventDefault(); return; }
+          if (this.state.zoomOut && this.k === 0) { e.preventDefault(); this.glideTo(i); return; }
+          if (this.props.onOpen) { e.preventDefault(); this.props.onOpen(i); }
+        }
+      };
+    });
+    const rowAt = (j) => { const q = out((k - 0.36 - 0.016 * j) / 0.3) * out((T - 0.2 - 0.018 * j) / 0.45); return { q, op: q }; };
+    const rows = this.P.map((r, i) => {
+      const rk = vis.indexOf(i), a2 = rowAt(rk < 0 ? i : rk), w = this.vs[i];
+      return {
+        i, name: r[1], type: r[2], stack: r[3], href: r[5], icon: this.ICON[this.TYPEICON[r[2]]], logos: this.stackOf[i].logos, stackText: this.stackOf[i].text,
+        // rows glide straight to their new place and fade in or out; nothing tilts, swerves or bounces
+        y: (R0 + this.rs[i].y + (1 - a2.q) * 8).toFixed(2) + 'px', x: '0px', rx: '0deg',
+        op: (a2.q * w).toFixed(3), pe: w > 0.5 && k > 0.5 ? 'auto' : 'none', tab: w > 0.5 ? 0 : -1, line: a2.q.toFixed(3), ghost: cl(this.pv[i].p).toFixed(3),
+        open: (e) => { if (this.props.onOpen) { e.preventDefault(); this.props.onOpen(i); } },
+        enter: () => { this.ih = i; }, leave: () => { if (this.ih === i) this.ih = null; }
+      };
+    });
+    const groups = KIND.map((g, gi) => ({
+      label: g.label, icon: this.ICON[this.KINDICON[gi]], n: String(gOn[gi] || g.types.length), aria: 'Show only ' + g.label,
+      y: (R0 + this.rs['g' + gi].y).toFixed(2) + 'px', op: (this.gop[gi] * rowAt(0).q).toFixed(3), pe: this.gop[gi] > 0.5 && k > 0.5 ? 'auto' : 'none',
+      pick: () => { this.filt = this.filt === gi ? null : gi; }
+    }));
+    const counts = KIND.map((_, gi) => P.filter((__, i) => kindOf[i] === gi).length);
+    const kinds = [{ label: 'All', n: String(this.N), on: this.filt == null, g: null }].concat(KIND.map((g, gi) => ({ label: g.label, n: String(counts[gi]), on: this.filt === gi, g: gi })))
+      .map((c) => ({ label: c.label, aria: c.label + ', ' + c.n, n: c.n, on: c.on ? 'true' : 'false', col: c.on ? '#111114' : '#A3A29C', icon: this.ICON[c.g == null ? 'all' : this.KINDICON[c.g]], lo: c.on ? 1 : 0, ly: c.on ? '0px' : ((c.g == null ? -1 : c.g) < (this.filt == null ? -1 : this.filt) ? '-18px' : '18px'), pick: () => { this.filt = c.g; } }));
+    // preview: fade in beside the list, then glide row to row; the picture crossfades, nothing flies
+    const pl = this.pvLast != null ? this.pvLast : 0, ph = Math.round(this.H[P[pl][4]] * 0.5769);
+    const want = this.ih != null && k > 0.98 ? 1 : 0;
+    const yT = Math.max(110, Math.min(900 - ph - 110, R0 + this.rs[pl].y + 30 - this.scrollY - ph / 2));
+    if (this.pvY == null || this.pvA < 0.02) this.pvY = { y: yT, v: 0 };
+    else if (dts) { this.pvY.v += ((yT - this.pvY.y) * 120 - this.pvY.v * 20) * dts; this.pvY.y += this.pvY.v * dts; }
+    this.pvA = dts ? this.pvA + (want - this.pvA) * Math.min(1, dts * (want ? 10 : 7)) : want;
+    P.forEach((_, i) => { const t = i === pl ? 1 : 0; const o = this.pvo[i] == null ? t : this.pvo[i]; this.pvo[i] = dts ? o + (t - o) * Math.min(1, dts * 12) : t; });
+    const qOn = this.q.length > 0;
+    const ui = out((T - 1.1) / 0.8), kc = cl(k * 2.5), chromeK = 1 - cl((+this.props.dim || 0) * 6);
+    // caption follows whatever is in focus; it re-enters softly when that changes
+    if (focus !== this.capId) { this.capId = focus; this.capAt = now; if (focus != null) this.capLast = focus; }
+    const ce = out((now - this.capAt) / 300);
+    const shown = focus != null ? focus : this.capLast;
+    const capOp = focus != null ? ce : 1 - ce;
+    const inView = scr.map((p) => p.X > 0 && p.X < 1440 && p.Y > 84 && p.Y < 900);
+    return {
+      tiles, rows, groups, kinds, kindX: ((this.filt == null ? 0 : this.filt + 1) * 78) + 'px', hdr: (this.hk * out((T - 0.2) / 0.45)).toFixed(3), hdrY: ((1 - this.hk) * -8).toFixed(2) + 'px', ui: ui.toFixed(3),
+      ixH: (R0 + this.ixTotal + 140) + 'px',
+      fl: { op: qOn ? 0 : 1, y: qOn ? '-10px' : '0px', pe: qOn ? 'none' : 'auto' },
+      qd: { op: qOn ? 1 : 0, y: qOn ? '0px' : '10px', text: this.q, meta: vis.length === 1 ? '1 project · esc to clear' : vis.length + ' projects · esc to clear', hint: qOn ? 0 : 1 },
+      sh: { name: this.sort === 'name' ? 'PROJECT · A–Z' : 'PROJECT', nameOn: this.sort === 'name' ? 'true' : 'false', nameC: this.sort === 'name' ? '#111114' : '#6A6A72', nameU: this.sort === 'name' ? 1 : 0,
+            type: this.sort === 'type' ? 'TYPE · GROUPED' : 'TYPE', typeOn: this.sort === 'type' ? 'true' : 'false', typeC: this.sort === 'type' ? '#111114' : '#6A6A72', typeU: this.sort === 'type' ? 1 : 0 },
+      colHead: this.filt === this.KIND.length - 1 ? 'TOPIC' : (vis.some((i) => P[i][4] === 'paper') && vis.every((i) => P[i][4] === 'paper') ? 'TOPIC' : 'BUILT WITH'),
+      countText: vis.length === this.N ? String(this.N) : vis.length + ' / ' + this.N,
+      empty: { op: vis.length ? 0 : 1, text: qOn ? 'Nothing matches \u201c' + this.q.trim() + '\u201d. Try a type, like bots.' : 'Nothing here yet.' },
+      pvp: { op: (this.pvA * cl(k * 2 - 1)).toFixed(3), s: (0.985 + 0.015 * this.pvA).toFixed(4), y: this.pvY.y.toFixed(1) + 'px', h: ph + 'px', name: P[pl][1], line: this.DESC[pl] || P[pl][6] || '[What ' + P[pl][1] + ' does, in one line.]' },
+      pvs: tiles.map((t, i) => ({ ...t, pop: this.pvo[i].toFixed(3), vis: this.pvo[i] > 0.01 ? 'visible' : 'hidden' })),
+      cap: { op: shown != null ? (ui * (1 - kc) * capOp * chromeK).toFixed(3) : 0, y: (focus != null ? (1 - ce) * 8 : 0).toFixed(1) + 'px', n: shown != null ? String(shown + 1).padStart(2, '0') + ' / ' + this.NW : '', name: shown != null ? this.P[shown][1] : '', type: shown != null ? this.P[shown][2] : '' },
+      rail: {
+        op: (ui * (1 - kc) * chromeK).toFixed(3), pe: kc < 0.5 && chromeK > 0.5 ? 'auto' : 'none',
+        ticks: this.P.slice(0, this.NW).map((p, i) => ({ name: p[1], cur: i === focus ? 'true' : 'false', w: i === focus ? '32px' : inView[i] && !zoomedOut ? '18px' : '12px', c: i === focus ? '#111114' : inView[i] && !zoomedOut ? '#6A6A72' : '#C4C2BC', go: () => this.glideTo(i) }))
+      },
+      zoomBtn: { show: mo === 'overview', op: (ui * (1 - kc)).toFixed(3), label: this.state.zoomOut ? 'Close up' : 'See all' }
+    };
+  }
+  renderVals() {
+    const vr = this.props.viewReq || '';
+    if (vr && vr !== this.lastReq) { this.lastReq = vr; const v0 = vr.split('#')[0], want = v0.replace('!', '') === 'index' ? 1 : 0; if (want !== this.kt || (want === 1 && this.leaving)) { const instant = v0.indexOf('!') >= 0; this.leaving = false; if (want === 0 && this.kt === 1 && this.k > 0.5 && !instant) this.leaving = true; else this.kt = want; this.ih = null; this.vel = 0; if (instant) { this.kt = want; this.k = want; this.su = {}; this.hr = want; } this.setState({ view: want, hover: null }); } } // '!' = switch while out of sight, no fold
+    const idx = this.state.view === 1, bare = !!this.props.bare, wc = /^#[0-9a-fA-F]{6}$/.test(this.props.wallColor || '') ? this.props.wallColor : '#F2F1ED';
+    return {
+      ...this.out,
+      uid: this.uid,
+      // in the room, the frozen band is cut from the same wall: same grain, same origin, so it never shows as a panel
+      rootBg: bare ? 'transparent' : '#F2F1ED', bandBg: wc,
+      bandFade: `linear-gradient(${wc}, ${wc}00)`, navVis: bare ? 'hidden' : 'visible',
+      ixMask: 'none', tileMask: 'none',
+      touch: idx ? 'pan-y' : 'none', sel: idx ? 'auto' : 'none',
+      cursor: idx ? 'auto' : (this.drag && this.drag.moved ? 'grabbing' : 'default'),
+      ixPe: this.k > 0.5 ? 'auto' : 'none',
+      pressed: { wall: idx ? 'false' : 'true', index: idx ? 'true' : 'false' },
+      vc: { wall: idx ? '#6A6A72' : '#111114', index: idx ? '#111114' : '#6A6A72' },
+      ind: idx ? '82px' : '18px',
+      toWall: () => { if (this.kt === 1 && this.k > 0.5) this.leaving = true; else this.kt = 0; this.ih = null; this.setState({ view: 0, hover: null }); },
+      sortName: () => { this.sort = this.sort === 'name' ? 'featured' : 'name'; },
+      sortType: () => { this.sort = this.sort === 'type' ? 'featured' : 'type'; },
+      toIndex: () => { this.kt = 1; this.vel = 0; this.setState({ view: 1, hover: null }); },
+      toggleZoom: () => { this.lastInput = performance.now(); this.setState({ zoomOut: !this.state.zoomOut, hover: null }); },
+      leave: () => this.setState({ hover: null }),
+      onScroll: (e) => { this.scrollY = e.currentTarget.scrollTop; },
+      lean: (e) => { const r = e.currentTarget.getBoundingClientRect(); this.m = { x: (e.clientX - r.left) / r.width * 2 - 1, y: (e.clientY - r.top) / r.height * 2 - 1 }; },
+      unlean: () => { this.m = { x: 0, y: 0 }; },
+      down: (e) => {
+        if (this.kt !== 0 || this.k > 0.01 || this.state.zoomOut || (e.button != null && e.button > 0)) return;
+        if (e.target.closest && e.target.closest('button, .nlink')) return;
+        const sc = this.scale();
+        this.drag = { sx: e.clientX * sc, sy: e.clientY * sc, c0: this.tCy, moved: false, lt: performance.now(), lp: this.tCy, v: 0 };
+        this.vel = 0; this.lastInput = performance.now();
+      },
+      move: (e) => {
+        const d = this.drag; if (!d) return;
+        const sc = this.scale(), dx = e.clientX * sc - d.sx, dy = e.clientY * sc - d.sy;
+        if (!d.moved && Math.hypot(dx, dy) > 6) { d.moved = true; this.setState({ hover: null }); }
+        if (!d.moved) return;
+        // along the tilted columns: undo the wall's turn and tilt
+        const a = 18 * Math.PI / 180;
+        const along = (Math.sin(a) * dx + Math.cos(a) * dy) / (0.9 * Math.cos(34 * Math.PI / 180));
+        let c = d.c0 - along;
+        if (c < this.minY) c = this.minY - (this.minY - c) * 0.35;
+        if (c > this.maxY) c = this.maxY + (c - this.maxY) * 0.35;
+        const now = performance.now(); d.v = d.v * 0.6 + ((c - d.lp) / Math.max(0.001, (now - d.lt) / 1000)) * 0.4; d.lp = c; d.lt = now;
+        this.tCy = c; this.lastInput = now;
+      },
+      up: () => {
+        const d = this.drag; if (!d) return;
+        this.drag = null; this.lastInput = performance.now();
+        if (!d.moved) return;
+        this.suppress = true; setTimeout(() => { this.suppress = false; }, 0);
+        this.vel = Math.max(-3000, Math.min(3000, d.v));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

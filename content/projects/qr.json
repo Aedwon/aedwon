@@ -1,0 +1,41 @@
+{
+  "id": "qr",
+  "name": "QR Studio",
+  "type": "Web tool",
+  "media": "web",
+  "depth": "note",
+  "desc": "In-browser QR code builder with gradient styling and SVG export that runs entirely client-side without backend requests.",
+  "stack": [
+    "TypeScript",
+    "Vite",
+    "Tailwind"
+  ],
+  "links": [
+    {
+      "label": "[qr studio url]",
+      "href": "#"
+    },
+    {
+      "label": "[Source]",
+      "href": "#"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Runs",
+      "v": "Entirely in the browser"
+    }
+  ]
+}

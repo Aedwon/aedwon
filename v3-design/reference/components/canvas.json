@@ -1,0 +1,396 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Main.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "The site · start here (wall → index → a project → about → contact)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "RoomShelf.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "The site, arriving at the shelf (About)",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Spec.dc.html": {
+      "h": 2900,
+      "is_interactive": true,
+      "title": "Production spec · colour, type, motion, routes, components",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "Spread_pantas.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Project page · case study (Pantas)",
+      "w": 1440,
+      "x": 0,
+      "y": 1320
+    },
+    "Spread_msl.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Project page · writeup (MSL Network Bot)",
+      "w": 1440,
+      "x": 1520,
+      "y": 1320
+    },
+    "Spread_qr.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Project page · note (QR Studio)",
+      "w": 1440,
+      "x": 0,
+      "y": 2640
+    },
+    "WallIndex2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · Wall / Index on its own",
+      "w": 1440,
+      "x": 1520,
+      "y": 2640
+    },
+    "AboutVolumes.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · the shelf on its own",
+      "w": 1440,
+      "x": 0,
+      "y": 3960
+    },
+    "BookPage.dc.html": {
+      "h": 600,
+      "is_interactive": true,
+      "title": "Component · a book page",
+      "w": 420,
+      "x": 1520,
+      "y": 3960
+    },
+    "ProjectSpread.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · project page on its own",
+      "w": 1440,
+      "x": 0,
+      "y": 5280
+    },
+    "SystemViz.dc.html": {
+      "h": 370,
+      "is_interactive": true,
+      "title": "Component · Pantas system visual",
+      "w": 600,
+      "x": 1520,
+      "y": 5280
+    },
+    "Room.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · the room",
+      "w": 1440,
+      "x": 3040,
+      "y": 3960
+    },
+    "MobileWall.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · Wall (vertical picker: scroll it)",
+      "w": 390,
+      "x": 0,
+      "y": 6900
+    },
+    "MobileIndex.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · Index",
+      "w": 390,
+      "x": 470,
+      "y": 6900
+    },
+    "MobileProject.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · project, case study (Pantas)",
+      "w": 390,
+      "x": 940,
+      "y": 6900
+    },
+    "MobileProjectQR.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · project, note (QR Studio)",
+      "w": 390,
+      "x": 1410,
+      "y": 6900
+    },
+    "MobileShelf.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · About (tap a volume)",
+      "w": 390,
+      "x": 1880,
+      "y": 6900
+    },
+    "MobileBook.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · Vol. 01 opening, then reading (→ or swipe)",
+      "w": 390,
+      "x": 2350,
+      "y": 6900
+    },
+    "MobileContact.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Phone · Contact (Vol. 06; tap a field for the keyboard)",
+      "w": 390,
+      "x": 2820,
+      "y": 6900
+    },
+    "MainLight.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Light · the whole site (the sun / moon in the nav switches)",
+      "w": 1440,
+      "x": 0,
+      "y": 8164
+    },
+    "WallWriting.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Writing · option B, on the wall (superseded: writing is Index-only; kept for reference)",
+      "w": 1440,
+      "x": 0,
+      "y": 9484
+    },
+    "Writing_list.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Writing · option C, its own page (superseded; kept for reference)",
+      "w": 1440,
+      "x": 1520,
+      "y": 9484
+    },
+    "Writing_post.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Writing · a post (same open book as a project)",
+      "w": 1440,
+      "x": 3040,
+      "y": 9484
+    },
+    "Moments_loading.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "First load (replays every 5.5s here)",
+      "w": 1440,
+      "x": 0,
+      "y": 10804
+    },
+    "Moments_404.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "404",
+      "w": 1440,
+      "x": 1520,
+      "y": 10804
+    },
+    "Mobile.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Component · the phone site",
+      "w": 390,
+      "x": 0,
+      "y": 12124
+    },
+    "RoomLight.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · the room, light",
+      "w": 1440,
+      "x": 470,
+      "y": 12124
+    },
+    "WallIndex2Light.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · Wall / Index, light",
+      "w": 1440,
+      "x": 1990,
+      "y": 12124
+    },
+    "ProjectSpreadLight.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · project page, light",
+      "w": 1440,
+      "x": 3510,
+      "y": 12124
+    },
+    "AboutVolumesLight.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · the shelf, light",
+      "w": 1440,
+      "x": 470,
+      "y": 13444
+    },
+    "Writing.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · writing",
+      "w": 1440,
+      "x": 1990,
+      "y": 13444
+    },
+    "Moments.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Component · first load and 404",
+      "w": 1440,
+      "x": 3510,
+      "y": 13444
+    }
+  },
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-12T09:00:00Z"
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "final-title": {
+      "kind": "title1",
+      "maxW": 4500,
+      "text": "Aedwon — approved, for production",
+      "w": 400,
+      "x": 0,
+      "y": -300
+    },
+    "final-note": {
+      "fill": "yellow",
+      "maxH": 1100,
+      "w": 440,
+      "x": 4560,
+      "y": 0,
+      "text": "WHAT'S IN HERE\n\nOnly what you approved, wired together as one site:\n• Wall and Index (F2 three columns, Fold toggle, type filter as icons, sort by column, type to find, swap re-sorting, calm preview, frozen header that fades in last and out first).\n• About: the shelf of six volumes (E2), Vol. 06 is Contact (title it, write Chapter 1, close and shelve).\n• The room: one nav with a travelling underline, the points background, scroll past the last project to reach the shelf.\n• Project pages: spread B, left page title → description → stack → icon details; right page the work and the story; contents as ticks at the right edge; Pantas with its full case study.\n\nNew in this pass: clicking a project on the Wall or in the Index opens its page over the wall, and Back (or Esc) returns you to exactly where you were. The Index preview now uses your real one-line descriptions.\n\nThe Spec board is the handoff sheet: colours, type, every motion value, routes and the component list.\n\nThe exploration file (Aedwon — Home) is untouched."
+    },
+    "phone-title": {
+      "kind": "title1",
+      "maxW": 3300,
+      "text": "1 · On a phone",
+      "w": 400,
+      "x": 0,
+      "y": 6600
+    },
+    "phone-note": {
+      "fill": "yellow",
+      "maxH": 1200,
+      "w": 440,
+      "x": 3330,
+      "y": 6900,
+      "text": "ON A PHONE (390 × 844)\n\nSame room, same order, built for a thumb. Every phone board is the whole phone site: tap around.\n\n• Bottom bar: Wall, Index, About, Contact, with the same travelling line as the desktop nav. It slides away inside a project or a book.\n• Wall: a vertical picker. Scrolling turns a drum and snaps; whichever project lands in the middle is chosen, named above the bar, and marked on the rail at the right. Only it and its neighbours either side show. Tap the chosen one to open it; tap a neighbour to bring it to the middle. Posts stay off the wall, as on desktop.\n• Index: the type icons across the top (with counts), a Find field (no keyboard-anywhere on a phone), rows with thumbnail, name, stack and type icon.\n• Project: the left page on top (title, description, logos, icon details, link), then the work and the story. Pantas carries its whole case study, with the five system visuals scaled to fit. Contents: a small square in the corner shows your place; tap it for the parts.\n• About: the six volumes lie in a stack, spines out, so each is a full-width target with its title the right way up. Tap one: it slides out, turns its cover to you and grows to reading size, then the cover opens (about 1.7s in all).\n• Reading: the book is open as a spread; the camera sits on one page and the other shows at the edge. → on a left page glides to the right page; → on a right page turns it, and the camera travels with the page so you land on its back, the new left page. Nothing disappears. Swipe works too. Contents links turn straight to their page. The page block thins on the right and thickens on the left as you read.\n• Keyboard (Vol. 06): when a field takes focus the arrows and page count step aside and the book lifts just enough to keep the field above the keyboard (it reads the real keyboard's height on a phone; the grey keyboard on the canvas is a stand-in).\n\nPoints are a still dot pattern on the phone (no cursor to react to)."
+    },
+    "light-title": {
+      "kind": "title1",
+      "maxW": 3000,
+      "text": "3 · Light",
+      "w": 400,
+      "x": 0,
+      "y": 7864
+    },
+    "light-note": {
+      "fill": "yellow",
+      "maxH": 700,
+      "w": 440,
+      "x": 1520,
+      "y": 8164,
+      "text": "LIGHT MODE (redone)\n\nNot an inversion: every colour was chosen by what it is.\n\n• Room #F2F1ED, ink #111114, secondary #56565E, labels #6A6A72, hairlines #E6E4DE / #DCDAD3.\n• The work: web pages, repos and data are white cards with a soft shadow (box-shadow, so 3D stays intact). Phones and the TV keep dark bezels around white screens. Discord turns into its own light theme. The terminal stays dark, because terminals are.\n• About: the volumes keep their own colours (the white ones shade less in a light room); the shelf is pale; pages stay paper.\n• The points are there too, in ink, a touch stronger than in dark (11% at rest) so they read on paper, and they still lean away from your cursor.\n• Status: live #16A34A, pre-launch #B7791F (darker so they read on white).\n\nThe sun / moon at the right of the nav switches. On the site: follow the system setting first, then remember the visitor's choice."
+    },
+    "writing-title": {
+      "kind": "title1",
+      "maxW": 4500,
+      "text": "2 · Writing (the old Blogs) · Index only",
+      "w": 400,
+      "x": 0,
+      "y": 9184
+    },
+    "writing-note": {
+      "fill": "yellow",
+      "maxH": 800,
+      "w": 440,
+      "x": 4560,
+      "y": 9484,
+      "text": "WRITING: IN THE INDEX ONLY (decided)\n\nPosts don't hang on the wall. They live in the Index, behind a seventh filter, Writing (pen icon). With Writing chosen, the third column reads TOPIC instead of BUILT WITH; in a mixed list each post shows its topic there. The preview shows the post as a sheet of paper.\n\nA post opens exactly like a project, in the same open book: left page title, summary, published date, reading time and topic; right page the piece, with the same edge contents. Back says \"Back to the index\".\n\nThe boards in this row are the earlier options (B on the wall, C its own page), kept for reference; the Index in the main room is the one to build."
+    },
+    "moments-title": {
+      "kind": "title1",
+      "maxW": 3000,
+      "text": "7 · First load and 404",
+      "w": 400,
+      "x": 0,
+      "y": 10504
+    },
+    "moments-note": {
+      "fill": "yellow",
+      "maxH": 700,
+      "w": 440,
+      "x": 3040,
+      "y": 10804,
+      "text": "FIRST LOAD\nYour name, and under it a hairline that fills as the site loads. Then the name steps back, the room's points come on from the middle outward in a soft ring, and the nav and the wall arrive. Once, under two seconds on a normal connection; reduced motion shows the room straight away.\n\n404\nAn empty frame hanging crooked from its nail, swaying a little, with \"404\" inside; behind it, the dashed outline of where it hung straight. \"Page not found.\" Back to the wall, or open the Index. The points still react to your cursor, so it's the same room."
+    },
+    "later-note": {
+      "fill": "orange",
+      "maxH": 1000,
+      "w": 440,
+      "x": 4560,
+      "y": 12124,
+      "text": "FOR LATER (to do with another tool)\n\n4 · Contact delivery: wire \"Close and shelve\" (Vol. 06) to a form service (Formspree, Resend or similar); send the title, name, email and message; optional confirmation email; spam protection (honeypot or Turnstile).\n\n5 · Real content: screenshots or short loops for all 17 projects; role / year / status for each; Lakambini's stack; the [bracketed] lines in the six volumes and in the Pantas case study; real GitHub and LinkedIn links; post titles if you go with Writing.\n\n6 · Résumé: decide where a CV download lives (a page in Vol. 01, or a link on the left page of About).\n\n8 · Sharing and search: page titles and descriptions per route; Open Graph images (one per project, a default for the rest); favicon / mark; sitemap; analytics if wanted.\n\n9 · Performance and accessibility: pause animation loops when idle, off-screen or in a hidden tab; one shared rAF; lazy-load the shelf and project media; a plain-text version of each volume for screen readers; check focus order through the room; reduced motion is already designed in.\n\n10 · Index extras: filter by tool (only Python, only Flutter…) and shareable filter links (/index?type=bots, /index?q=flutter)."
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "RoomShelf.dc.html",
+    "Spec.dc.html",
+    "Spread_pantas.dc.html",
+    "Spread_msl.dc.html",
+    "Spread_qr.dc.html",
+    "WallIndex2.dc.html",
+    "AboutVolumes.dc.html",
+    "BookPage.dc.html",
+    "ProjectSpread.dc.html",
+    "SystemViz.dc.html",
+    "Room.dc.html",
+    "MobileWall.dc.html",
+    "MobileIndex.dc.html",
+    "MobileProject.dc.html",
+    "MobileProjectQR.dc.html",
+    "MobileShelf.dc.html",
+    "MobileBook.dc.html",
+    "MobileContact.dc.html",
+    "MainLight.dc.html",
+    "WallWriting.dc.html",
+    "Writing_list.dc.html",
+    "Writing_post.dc.html",
+    "Moments_loading.dc.html",
+    "Moments_404.dc.html",
+    "Mobile.dc.html",
+    "RoomLight.dc.html",
+    "WallIndex2Light.dc.html",
+    "ProjectSpreadLight.dc.html",
+    "AboutVolumesLight.dc.html",
+    "Writing.dc.html",
+    "Moments.dc.html"
+  ],
+  "pages": [],
+  "title": "Aedwon — Final"
+}

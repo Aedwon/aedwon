@@ -1,0 +1,36 @@
+{
+  "id": "kqm",
+  "name": "KQM Team DPS Calculator",
+  "type": "Web tool",
+  "media": "web",
+  "depth": "note",
+  "desc": "Theorycrafting calculator for character damage formulas, artifact substat rolls, and weapon scaling.",
+  "stack": [
+    "JavaScript",
+    "Vite"
+  ],
+  "links": [
+    {
+      "label": "[calculator url]",
+      "href": "#"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "[Year]"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "For",
+      "v": "KQM-standard theorycrafting"
+    }
+  ]
+}

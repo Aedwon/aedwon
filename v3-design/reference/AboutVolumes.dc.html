@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>About — volumes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.mono{font-family:'Geist Mono',monospace}
+.nlink{color:#A1A1AA;text-decoration:none;transition:color .2s ease}
+.nlink:hover{color:#EDEDED}
+.ctl{transition:scale .3s cubic-bezier(.34,1.56,.64,1),background-color .2s ease,opacity .2s ease}
+.ctl:hover{background-color:#1a1a1f}
+.ctl:active{scale:.94}
+a:focus-visible,button:focus-visible{outline:2px solid #EDEDED;outline-offset:3px}
+.face{position:absolute;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-sizing:border-box}
+.shade{position:absolute;inset:0;background:#000;pointer-events:none}
+.edge{background-color:#E4E2DB;background-image:repeating-linear-gradient(to bottom,#E4E2DB 0px,#E4E2DB 2px,#cfcdc5 2px,#cfcdc5 3px)}
+.edgeV{background-color:#E4E2DB;background-image:repeating-linear-gradient(to right,#E4E2DB 0px,#E4E2DB 2px,#cfcdc5 2px,#cfcdc5 3px)}
+.hit{position:absolute;padding:0;border:none;background:transparent;cursor:pointer}
+.hit:focus-visible{outline:2px solid #EDEDED;outline-offset:4px}
+.pagehit{cursor:pointer}
+</style>
+</helmet>
+<div data-bk="{{ uid }}" onMouseMove="{{ lean }}" onMouseLeave="{{ unlean }}" style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: {{ rootBg }}; color: #EDEDED; font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; perspective: 2600px; perspective-origin: 50% 46%">
+
+<!-- the room: a shelf, a small stack, a bookend -->
+<div aria-hidden="true" style="position: absolute; inset: 0; opacity: {{ room.op }}; translate: 0 {{ room.y }}">
+<div style="position: absolute; left: 300px; width: 840px; top: 780px; height: 2px; background: #34343b"></div>
+<div style="position: absolute; left: 300px; width: 840px; top: 782px; height: 16px; background: #141418"></div>
+<div style="position: absolute; left: 310px; width: 820px; top: 798px; height: 26px; background: #0e0e11"></div>
+<div style="position: absolute; left: 340px; top: 744px; width: 150px; height: 36px; border-radius: 3px; background: #1c1c21; border-top: 1px solid #2c2c33"></div>
+<div style="position: absolute; left: 350px; top: 712px; width: 134px; height: 32px; border-radius: 3px; background: #25252b; border-top: 1px solid #34343b"></div>
+<div style="position: absolute; left: 346px; top: 686px; width: 142px; height: 26px; border-radius: 3px; background: #18181d; border-top: 1px solid #2a2a30"></div>
+<div style="position: absolute; left: 1004px; top: 600px; width: 14px; height: 180px; background: #1f1f25; border-left: 1px solid #34343b"></div>
+<div style="position: absolute; left: 1004px; top: 766px; width: 64px; height: 14px; background: #1f1f25"></div>
+<span class="mono" style="position: absolute; right: 300px; top: 846px; font-size: 12px; color: #8A8A93">Manila · {{ clock }}</span>
+</div>
+
+<!-- the books, all in one 3D space -->
+<div style="position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none">
+<sc-for list="{{ books }}" as="b" hint-placeholder-count="6">
+<div style="position: absolute; left: 0; top: 0; width: 420px; height: 600px; transform-style: preserve-3d; transform: {{ b.tf }}; opacity: {{ b.op }}">
+
+<div class="face" style="left: 0; top: 0; width: 420px; height: 600px; transform: rotateY(180deg) translateZ({{ b.hd }}); visibility: {{ b.solid }}; background: {{ b.tone }}; border-radius: 3px 6px 6px 3px"><span class="shade" style="opacity: {{ b.sh.back }}"></span></div>
+
+<div class="face" style="left: {{ b.spL }}; top: 0; width: {{ b.dpx }}; height: 600px; transform: rotateY(-90deg) translateZ(210px); visibility: {{ b.solid }}; background: {{ b.tone }}; color: {{ b.ink }}; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 22px 0 20px; overflow: hidden">
+<span style="display: flex; flex-direction: column; align-items: center; gap: 2px"><span class="mono" style="font-size: 11px; letter-spacing: 0.14em; opacity: .7">VOL.</span><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.04em">{{ b.n }}</span></span>
+<span style="width: 64%; height: 1px; background: currentColor; opacity: .28"></span>
+<span style="writing-mode: vertical-rl; font-size: {{ b.fs }}; font-weight: 800; letter-spacing: 0.03em; white-space: nowrap; max-height: 360px; overflow: hidden; text-overflow: ellipsis">{{ b.title }}</span>
+<span style="width: 64%; height: 1px; background: currentColor; opacity: .28"></span>
+<span class="mono" style="writing-mode: vertical-rl; font-size: 10.5px; letter-spacing: 0.22em; opacity: .7">AEDWON</span>
+<span class="shade" style="opacity: {{ b.sh.spine }}"></span>
+</div>
+
+<div class="face edge" style="left: {{ b.spL }}; top: 5px; width: {{ b.dpx }}; height: 590px; transform: rotateY(90deg) translateZ(206px)"><span class="shade" style="opacity: {{ b.sh.fore }}"></span></div>
+<div class="face edgeV" style="left: 4px; top: {{ b.tbT }}; width: 412px; height: {{ b.dpx }}; transform: rotateX(90deg) translateZ(297px)"><span class="shade" style="opacity: {{ b.sh.top }}"></span></div>
+<div class="face edgeV" style="left: 4px; top: {{ b.tbT }}; width: 412px; height: {{ b.dpx }}; transform: rotateX(-90deg) translateZ(297px)"><span class="shade" style="opacity: {{ b.sh.bottom }}"></span></div>
+
+<!-- the front: pages, cover on its hinge, and a turning leaf -->
+<div style="position: absolute; inset: 0; transform: translateZ({{ b.hd }}); transform-style: preserve-3d">
+<sc-if value="{{ b.active }}" hint-placeholder-val="{{ false }}">
+<div class="pagehit" onClick="{{ fwd }}" style="position: absolute; left: 0; top: 0; width: 420px; height: 600px; transform-origin: 0 50%; transform: translateZ(-3px) scale(0.982); pointer-events: {{ rd.pe }}">
+<dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.R }}" side="right" on-go="{{ goPage }}" on-next-vol="{{ nextVol }}" clock="{{ clock }}" hint-size="420px,600px"></dc-import>
+<span class="shade" style="opacity: {{ rd.Rsh }}"></span>
+<span aria-hidden="true" style="position: absolute; top: 0; bottom: 0; left: 0; width: {{ rd.castW }}; background: linear-gradient(to right, rgba(0,0,0,.32), rgba(0,0,0,0)); opacity: {{ rd.castOp }}; visibility: {{ rd.castVis }}; pointer-events: none"></span>
+</div>
+</sc-if>
+<div style="position: absolute; inset: 0; transform-origin: 0 50%; transform: rotateY({{ b.cover }}); transform-style: preserve-3d">
+<div class="face" style="inset: 0; background: {{ b.tone }}; color: {{ b.ink }}; border-radius: 3px 6px 6px 3px; padding: 44px 40px; display: flex; flex-direction: column; overflow: hidden">
+<span aria-hidden="true" style="position: absolute; left: 14px; top: 0; bottom: 0; width: 1px; background: currentColor; opacity: .14"></span>
+<span class="mono" style="font-size: 12px; letter-spacing: 0.22em; opacity: .7">AEDWON</span>
+<span style="margin-top: auto; font-size: 150px; font-weight: 800; letter-spacing: -0.075em; line-height: .86">{{ b.n }}</span>
+<span style="font-size: {{ b.cfs }}; font-weight: 800; letter-spacing: -0.045em; line-height: 1.02; overflow-wrap: anywhere">{{ b.title }}</span>
+<span class="shade" style="opacity: {{ b.sh.front }}"></span>
+</div>
+<div class="face pagehit" onClick="{{ backPage }}" style="inset: 0; transform: rotateY(180deg); pointer-events: {{ rd.pe }}; background: #ECEBE6; border-radius: 6px 3px 3px 6px; overflow: hidden">
+<sc-if value="{{ b.active }}" hint-placeholder-val="{{ false }}"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.L }}" side="left" on-go="{{ goPage }}" on-next-vol="{{ nextVol }}" clock="{{ clock }}" hint-size="420px,600px"></dc-import></sc-if>
+<span class="shade" style="opacity: {{ b.sh.inside }}"></span>
+</div>
+</div>
+<sc-if value="{{ b.leafOn }}" hint-placeholder-val="{{ false }}">
+<!-- the turning leaf, in six hinged strips so the paper bends as it turns; kept mounted so a turn starts instantly -->
+<div style="position: absolute; left: 0; top: 0; width: 420px; height: 600px; transform-origin: 0 50%; transform: {{ rd.ls }}; transform-style: preserve-3d; pointer-events: none; visibility: {{ rd.vis }}">
+<div style="position: absolute; left: 0px; top: 0; width: 70px; height: 600px; transform-origin: 0 50%; transform: {{ rd.t1 }}; transform-style: preserve-3d">
+<div class="face" style="inset: 0; overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: 0px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.A }}" side="right" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s1a }}"></span></div>
+<div class="face" style="inset: 0; transform: rotateY(180deg); overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -350px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.B }}" side="left" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s1b }}"></span></div>
+<div style="position: absolute; left: 70px; top: 0; width: 70px; height: 600px; transform-origin: 0 50%; transform: {{ rd.t2 }}; transform-style: preserve-3d">
+<div class="face" style="inset: 0; overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -70px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.A }}" side="right" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s2a }}"></span></div>
+<div class="face" style="inset: 0; transform: rotateY(180deg); overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -280px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.B }}" side="left" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s2b }}"></span></div>
+<div style="position: absolute; left: 70px; top: 0; width: 70px; height: 600px; transform-origin: 0 50%; transform: {{ rd.t3 }}; transform-style: preserve-3d">
+<div class="face" style="inset: 0; overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -140px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.A }}" side="right" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s3a }}"></span></div>
+<div class="face" style="inset: 0; transform: rotateY(180deg); overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -210px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.B }}" side="left" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s3b }}"></span></div>
+<div style="position: absolute; left: 70px; top: 0; width: 70px; height: 600px; transform-origin: 0 50%; transform: {{ rd.t4 }}; transform-style: preserve-3d">
+<div class="face" style="inset: 0; overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -210px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.A }}" side="right" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s4a }}"></span></div>
+<div class="face" style="inset: 0; transform: rotateY(180deg); overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -140px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.B }}" side="left" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s4b }}"></span></div>
+<div style="position: absolute; left: 70px; top: 0; width: 70px; height: 600px; transform-origin: 0 50%; transform: {{ rd.t5 }}; transform-style: preserve-3d">
+<div class="face" style="inset: 0; overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -280px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.A }}" side="right" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s5a }}"></span></div>
+<div class="face" style="inset: 0; transform: rotateY(180deg); overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -70px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.B }}" side="left" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s5b }}"></span></div>
+<div style="position: absolute; left: 70px; top: 0; width: 70px; height: 600px; transform-origin: 0 50%; transform: {{ rd.t6 }}; transform-style: preserve-3d">
+<div class="face" style="inset: 0; overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: -350px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.A }}" side="right" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s6a }}"></span></div>
+<div class="face" style="inset: 0; transform: rotateY(180deg); overflow: hidden; opacity: {{ rd.fo }}"><div style="position: absolute; left: 0px; top: 0; width: 420px; height: 600px"><dc-import name="BookPage" form="{{ form }}" on-field="{{ setField }}" on-shelve="{{ shelve }}" page="{{ rd.B }}" side="left" clock="{{ clock }}" hint-size="420px,600px"></dc-import></div><span class="shade" style="opacity: {{ rd.s6b }}"></span></div>
+</div></div></div></div></div></div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+
+<!-- once your volume is back on the shelf -->
+<div aria-live="polite" style="position: absolute; left: 96px; width: 330px; top: 250px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; opacity: {{ done.op }}; translate: 0 {{ done.y }}; pointer-events: {{ done.pe }}">
+<span style="font-size: 44px; font-weight: 800; letter-spacing: -0.05em; line-height: 1">Shelved.</span>
+<span style="font-size: 16.5px; line-height: 1.6; color: #A1A1AA">{{ doneLine }}</span>
+<button class="ctl" type="button" onClick="{{ again }}" style="margin-top: 6px; height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid #26262c; background: transparent; color: #EDEDED; font-family: inherit; font-size: 14px; cursor: pointer">Write another</button>
+</div>
+
+<!-- shelf hit areas: pick a volume -->
+<sc-for list="{{ hits }}" as="h" hint-placeholder-count="6">
+<button class="hit" onClick="{{ h.open }}" onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" onFocus="{{ h.enter }}" onBlur="{{ h.leave }}" aria-label="{{ h.aria }}" style="left: {{ h.x }}; top: {{ h.y }}; width: {{ h.w }}; height: {{ h.h }}; pointer-events: {{ h.pe }}"></button>
+</sc-for>
+
+<!-- reading controls -->
+<div style="position: absolute; left: 50%; bottom: 26px; translate: -50% {{ bar.y }}; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(17,17,20,0.84); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border: 1px solid #222228; opacity: {{ bar.op }}; pointer-events: {{ bar.pe }}">
+<button class="ctl" onClick="{{ back }}" aria-label="{{ bar.prevLabel }}" style="width: 44px; height: 44px; border-radius: 10px; border: none; background: transparent; color: #EDEDED; font-size: 17px; cursor: pointer; opacity: {{ bar.prevOp }}">←</button>
+<span class="mono" aria-live="polite" style="min-width: 260px; text-align: center; font-size: 12.5px; color: #A1A1AA">{{ bar.text }}</span>
+<button class="ctl" onClick="{{ fwd }}" aria-label="{{ bar.nextLabel }}" style="height: 44px; min-width: 44px; padding: 0 12px; border-radius: 10px; border: none; background: transparent; color: #EDEDED; font-family: inherit; font-size: 13.5px; cursor: pointer">{{ bar.nextText }}</button>
+<span style="width: 1px; height: 22px; background: #2a2a30; margin: 0 4px"></span>
+<button class="ctl" onClick="{{ close }}" style="height: 44px; padding: 0 14px; border-radius: 10px; border: none; background: transparent; color: #EDEDED; font-family: inherit; font-size: 13.5px; cursor: pointer">Back to shelf</button>
+</div>
+
+<!-- nav -->
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 84px; padding: 0 56px; visibility: {{ navVis }}; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,12,0.72); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px)">
+<a href="WallOSS.dc.html" style="font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: #EDEDED; text-decoration: none">Aedwon</a>
+<div style="display: flex; align-items: center; gap: 36px; font-size: 14px">
+<a class="nlink" href="WallOSS.dc.html">Wall</a><a class="nlink" href="WallOSS.dc.html">Index</a>
+<span aria-hidden="true" style="width: 1px; height: 16px; background: #2a2a30"></span>
+<button class="nlink" onClick="{{ toShelf }}" aria-current="{{ nav.aboutCur }}" style="border: none; background: none; font-family: inherit; font-size: 14px; cursor: pointer; padding: 0; color: {{ nav.about }}">About</button>
+<button class="nlink" onClick="{{ toContact }}" aria-current="{{ nav.contactCur }}" style="border: none; background: none; font-family: inherit; font-size: 14px; cursor: pointer; padding: 0; color: {{ nav.contact }}">Contact</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"bare":{"editor":"boolean","default":false},"openReq":{"editor":"text","default":""},"closeReq":{"editor":"text","default":""},"onScrollOut":{"editor":null},"onOpen":{"editor":null},"start":{"editor":"enum","options":["shelf","contact"],"default":"shelf"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.uid = 'bk' + Math.floor(Math.random() * 1e9);
+    this.state = { tick: 0 };
+    const L = '#EDEDED', D = '#0a0a0c';
+    const ph = (o) => ({ kind: 'org', eyebrow: 'TRAINING ARC', org: o, roles: [{ title: '[Role]', dates: '[Start] – [End]', desc: '[What you did and what came of it, in a sentence or two.]' }] });
+    // six volumes; each page is one side of a leaf
+    this.V = [
+      { n: '01', title: 'Aerol', tone: L, ink: D, D: 84, pages: [
+        { t: 'Hello', kind: 'text', eyebrow: 'CHAPTER 1', title: 'Hi. I’m Aerol.', titleSize: '50px', body: 'I design and build apps, bots and websites, mostly for communities, events and people studying for something hard.', meta: 'Manila · [open to freelance and full-time work]' },
+        { t: 'A photo', kind: 'photo', slot: '[a photo of you]', caption: '[where this was taken]' },
+        { kind: 'text', eyebrow: 'CHAPTER 2', title: 'High school', titleSize: '44px', body: '[Where you went, and what you were into back then. The first thing you ever built, if you remember it.]', meta: '[School] · [years]' },
+        { kind: 'text', eyebrow: 'CHAPTER 3', title: 'College', titleSize: '44px', body: '[What you studied, and what you ended up doing outside class: the orgs, the events, the first real projects.]', meta: '[University] · [course] · [years]' },
+        { t: 'Why “Aedwon”', kind: 'big', eyebrow: 'CHAPTER 4 · ONLINE, I GO BY', big: 'Aedwon', bigSize: '86px', body: 'Online, that’s me. [Where the name comes from, in two sentences.]' }
+      ] },
+      { n: '02', title: 'How I work', tone: '#26262c', ink: L, D: 68, pages: [
+        { t: 'Research first', kind: 'big', eyebrow: 'CHAPTER 1 · RESEARCH FIRST', big: '80%', bigSize: '176px', body: 'of every project is research and planning, before any code.' },
+        { t: 'The optimal choice', kind: 'text', eyebrow: 'CHAPTER 2 · OPTIMIZE', title: 'Is this the most optimal choice?', titleSize: '40px', body: 'I obsess over it. Every architecture and every workflow gets the same question before it stays.' },
+        { t: 'Daily kit', kind: 'list', eyebrow: 'CHAPTER 3 · DAILY KIT', title: 'What I build with', items: [{ a: 'Claude Code', b: 'agentic coding' }, { a: 'Codex', b: 'agentic coding' }, { a: 'using-superpowers', b: 'skill framework' }, { a: 'Matt Pocock’s skills', b: 'engineering' }, { a: 'Gemini Deep Research', b: 'research' }] }
+      ] },
+      { n: '03', title: 'Guilds', tone: '#15151a', ink: L, D: 76, pages: [
+        { kind: 'guild', eyebrow: 'GAMES & ESPORTS', title: 'Games and esports', cols: 2, orgs: ['MOONTON', 'HoYoverse', 'Dark League Studios', 'UP Oblation Esports'] },
+        { kind: 'guild', eyebrow: 'BRANDS', title: 'Brands', cols: 1, orgs: ['OPPO Philippines'] },
+        { kind: 'guild', eyebrow: 'GOVERNMENT', title: 'Government', cols: 1, orgs: ['Ilocos Sur Provincial Government'] },
+        { kind: 'guild', eyebrow: 'EDUCATION & SCIENCE', title: 'Education and science', cols: 1, orgs: ['PSYSC', '3STUDYANTE'] },
+        { kind: 'guild', eyebrow: 'UNIVERSITY', title: 'University', cols: 1, orgs: ['UP Diliman', 'UP Fighting Maroons', 'UP Fair 2024'] }
+      ] },
+      { n: '04', title: 'Training arc', tone: '#202026', ink: L, D: 96, pages: [
+        { kind: 'org', eyebrow: 'TRAINING ARC', org: 'PSYSC', roles: [
+          { title: 'Marketing Associate', dates: 'Feb 2024 – Present', desc: 'Secured corporate sponsorships generating over ₱800,000 in funding for a national science competition.' },
+          { title: 'Regional Head, Region I/II/NCR', dates: 'May – Sep 2024', desc: 'Directed regional elimination rounds and MathSciAKa workshops, coordinating 30+ volunteers.' },
+          { title: 'Science Olympiad Core', dates: 'May – Sep 2024', desc: 'Co-authored 500+ questions and built the scoring model for 4,000+ competitors.' }] },
+        ph('MOONTON Games'), ph('UP Fighting Maroons'), ph('UP Oblation Esports'), ph('Dark League Studios'), ph('UP Fair 2024'), ph('miHoYo (HoYoverse)')
+      ] },
+      { n: '05', title: 'Off the clock', tone: '#18181d', ink: L, D: 64, pages: [
+        { t: 'Manhwa', kind: 'read', eyebrow: 'READING · MANHWA' }, { t: 'Manga', kind: 'read', eyebrow: 'READING · MANGA' }, { t: 'Isekai and fantasy anime', kind: 'read', eyebrow: 'WATCHING · ISEKAI & FANTASY' }
+      ] },
+      { n: '06', title: 'Next volume', tone: L, ink: D, D: 56, contact: true, pages: [
+        { kind: 'titleit' }, { kind: 'write' }, { kind: 'contact', quickTitle: 'Or the quick way' }
+      ] }
+    ];
+    // page 0 of every volume (inside the cover) is its contents; the last spread closes the volume
+    this.V.forEach((v, vi) => {
+      const body = v.pages.map((p, i) => ({ ...p, vol: v.n, running: v.title }));
+      let all;
+      if (v.contact) all = body;
+      else {
+        const toc = body.map((p, i) => ({ title: p.t || p.title || p.org || p.big, page: i + 1, n: String(i + 1).padStart(2, '0') }));
+        all = [{ kind: 'contents', vol: v.n, title: v.title, toc }, ...body];
+      }
+      if (all.length % 2) { const nx = this.V[vi + 1]; all.push({ kind: 'end', vol: v.n, nextVol: nx ? nx.n : '', nextTitle: nx ? nx.title : '' }); }
+      all.forEach((p, i) => { if (i > 0 && p.kind !== 'end') p.folio = String(i).padStart(2, '0'); });
+      v.all = all; v.spreads = all.length / 2;
+    });
+    // shelf positions
+    this.W = 420; this.Hh = 600; this.s0 = 0.92;
+    const gap = 12, widths = this.V.map((v) => v.D * this.s0);
+    let x = 720 - (widths.reduce((a, w) => a + w, 0) + gap * (widths.length - 1)) / 2 + 30;
+    this.V.forEach((v, i) => { v.sx = x + widths[i] / 2; x += widths[i] + gap; });
+    this.active = null; this.pending = null; this.p = 0; this.pt = 0;
+    this.spread = 0; this.turn = null; this.queue = [];
+    this.hov = this.V.map(() => 0); this.hovT = this.V.map(() => 0);
+    this.m = { x: 0, y: 0 }; this.ms = { x: 0, y: 0 };
+    this.t0 = performance.now();
+    // the next volume: whoever writes in it titles it, and it goes back on the shelf with that title
+    this.form = { name: '', mail: '', msg: '', title: '' }; this.shelving = false; this.shelvedAt = null;
+  }
+  componentDidMount() {
+    this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.root = document.querySelector('[data-bk="' + this.uid + '"]');
+    this.onWheel = (e) => {
+      if (this.active == null) { if (this.props.onScrollOut) { e.preventDefault(); this.props.onScrollOut(e.deltaY); } return; }
+      e.preventDefault();
+      clearTimeout(this.wt); this.wt = setTimeout(() => { this.wl = false; this.wa = 0; }, 220);
+      if (this.wl) return;
+      this.wa = (this.wa || 0) + e.deltaY + e.deltaX;
+      if (Math.abs(this.wa) > 40) { this.wa > 0 ? this.forward() : this.backward(); this.wl = true; this.wa = 0; }
+    };
+    if (this.root) this.root.addEventListener('wheel', this.onWheel, { passive: false });
+    if (this.props.start === 'contact') this.ct0 = setTimeout(() => this.openVol(this.V.length - 1), this.reduced ? 0 : 1100);
+    this.last = performance.now();
+    const loop = (now) => {
+      const dt = Math.min(0.1, (now - this.last) / 1000); this.last = now;
+      this.ms.x += (this.m.x - this.ms.x) * Math.min(1, dt * 3); this.ms.y += (this.m.y - this.ms.y) * Math.min(1, dt * 3);
+      // open / close progress
+      const d = Math.sign(this.pt - this.p);
+      if (this.reduced) this.p = this.pt;
+      else if (d) { this.p += d * dt / 1.9; if ((d > 0 && this.p > this.pt) || (d < 0 && this.p < this.pt)) this.p = this.pt; }
+      if (this.p === 0 && this.pt === 0 && this.active != null) {
+        if (this.pending != null) { this.active = this.pending; this.pending = null; this.spread = this.pendingSpread || 0; this.pendingSpread = 0; this.pt = 1; }
+        else { this.active = null; if (this.shelving) { this.shelving = false; this.shelvedAt = now; } }
+      }
+      // hover springs
+      this.V.forEach((_, i) => { const t = this.hovT[i]; this.hov[i] += (t - this.hov[i]) * Math.min(1, dt * 9); });
+      // after landing, the leaf rests on the stack and dissolves into the page beneath, so there is no hand-off frame
+      if (this.settle) { this.settle.t += dt / 0.16; if (this.settle.t >= 1) this.settle = null; }
+      // page turn
+      if (this.turn) {
+        this.turn.t += this.reduced ? 1 : dt / (this.turn.fast ? 0.55 : 0.95);
+        if (this.turn.t >= 1) { this.spread = this.turn.to; this.settle = this.reduced ? null : { ...this.turn, t: 0 }; this.turn = null; if (this.queue.length) this.startTurn(this.queue.shift()); }
+      }
+      this.setState({ tick: this.state.tick + 1 });
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  componentWillUnmount() { clearTimeout(this.ct0); cancelAnimationFrame(this.raf); if (this.root) this.root.removeEventListener('wheel', this.onWheel); }
+  openVol(i, spread) {
+    this.shelvedAt = null;
+    if (this.active == null) { this.active = i; this.spread = spread || 0; this.turn = null; this.queue = []; this.pt = 1; this.hovT[i] = 0; }
+    else if (i !== this.active) { this.pending = i; this.pendingSpread = spread || 0; this.turn = null; this.queue = []; this.pt = 0; }
+  }
+  close() { this.pending = null; this.turn = null; this.queue = []; this.pt = 0; }
+  okForm() { const f = this.form; return !!(f.name.trim() && f.msg.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.mail.trim())); }
+  // NOTE for the build: post to a form endpoint here (Formspree, Resend, etc.) before shelving
+  shelveIt() { if (!this.okForm() || this.shelving || this.active !== this.V.length - 1) return; this.spread = 0; this.turn = null; this.queue = []; this.shelving = true; this.shelvedAt = null; this.close(); }
+  ready() { return this.active != null && this.p >= 0.999; }
+  startTurn(to) {
+    const v = this.V[this.active]; if (!v) return;
+    const from = this.turn ? this.turn.to : this.spread;
+    if (to < 0 || to >= v.spreads || to === from) return;
+    this.settle = null;
+    this.turn = { from, to, t: 0, dir: to > from ? 1 : -1, fast: Math.abs(to - from) > 1 };
+  }
+  forward() {
+    if (!this.ready()) return;
+    const v = this.V[this.active], at = this.turn ? this.turn.to : this.spread;
+    if (at >= v.spreads - 1) { if (this.active < this.V.length - 1) this.openVol(this.active + 1); return; }
+    if (this.turn) { if (this.queue.length < 2) this.queue.push(at + 1); } else this.startTurn(at + 1);
+  }
+  backward() {
+    if (!this.ready()) return;
+    const at = this.turn ? this.turn.to : this.spread;
+    if (at <= 0) return;
+    if (this.turn) { if (this.queue.length < 2) this.queue.push(at - 1); } else this.startTurn(at - 1);
+  }
+  goPage(pageIndex) { if (!this.ready()) return; const to = Math.floor(pageIndex / 2); if (this.turn) this.queue = [to]; else this.startTurn(to); }
+  renderVals() {
+    const cl = (x) => Math.max(0, Math.min(1, x));
+    const ease = (x) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+    const ease2 = (x) => { x = cl(x); return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; };
+    const back = (x) => { x = cl(x); const c = 1.25; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const rad = Math.PI / 180;
+    const orq = this.props.openReq || '', crq = this.props.closeReq || '';
+    if (orq && orq !== this.lastOpen) { this.lastOpen = orq; const n = parseInt(orq.split('#')[0], 10); this.openVol(isNaN(n) ? this.V.length - 1 : n); }
+    if (crq && crq !== this.lastClose) { this.lastClose = crq; this.close(); }
+    if (this.props.onOpen) { const o = this.active === this.V.length - 1 || this.pending === this.V.length - 1 ? 'contact' : (this.active != null ? 'book' : ''); if (o !== this.lastO) { this.lastO = o; this.props.onOpen(o); } }
+    const T = (performance.now() - this.t0) / 1000;
+    const p = this.p, A = this.active;
+    // one light, up and to the left, slightly in front
+    const Lx = -0.38, Ly = -0.58, Lz = 0.72, Ln = Math.hypot(Lx, Ly, Lz);
+    // opacity would flatten a 3D box, so books dim by darkening their faces instead
+    const shadeOf = (n, R, k, dim) => { const v = R(n[0], n[1], n[2]); const lit = Math.max(0, (v[0] * Lx + v[1] * Ly + v[2] * Lz) / Ln); const sh = (1 - lit) * k; return (1 - (1 - sh) * (1 - (dim || 0))).toFixed(3); };
+    const mkR = (rx, ry, rz) => {
+      const cx = Math.cos(rx * rad), sx = Math.sin(rx * rad), cy = Math.cos(ry * rad), sy = Math.sin(ry * rad), cz = Math.cos(rz * rad), sz = Math.sin(rz * rad);
+      return (x, y, z) => { const x1 = cz * x - sz * y, y1 = sz * x + cz * y; const x2 = cy * x1 + sy * z, z2 = -sy * x1 + cy * z; return [x2, cx * y1 - sx * z2, sx * y1 + cx * z2]; };
+    };
+    const openK = cl(p * 1.4);
+    const myTitle = this.form.title.trim();
+    const titleOf = (v, i) => (i === this.V.length - 1 && myTitle ? myTitle : v.title);
+    const sinceShelf = this.shelvedAt == null ? 9 : (performance.now() - this.shelvedAt) / 1000;
+    const wob = sinceShelf < 0.6 ? Math.sin(Math.PI * sinceShelf / 0.6) * (1 - sinceShelf / 0.6) : 0;
+    const books = this.V.map((v, i) => {
+      const intro = this.reduced ? 1 : back((T - 0.15 - i * 0.08) / 0.9);
+      const h = this.hov[i];
+      // on the shelf: spine out; hovered books slide out and tip toward you
+      let P = { x: v.sx, y: 780 - this.Hh * this.s0 / 2 + (1 - intro) * 420, z: -210 * this.s0 + 70 * h, rx: -7 * h, ry: 100, rz: 0, s: this.s0, cover: 0 };
+      P.y -= 22 * h;
+      if (i === this.V.length - 1) { P.rz += 3 * wob; P.y -= 6 * wob; } else if (i === this.V.length - 2) P.rz -= 1.4 * wob; // it lands, and its neighbour shifts
+      let dim = 1 - cl(intro * 1.4);
+      if (i === A) {
+        const a = ease(p / 0.52), b = ease2((p - 0.44) / 0.56);
+        const C = { x: 720, y: 468, z: 150, rx: 7, ry: -26, rz: 0, s: 1, cover: 0 };
+        const O = { x: 930 + this.ms.x * 4, y: 500, z: 20, rx: 13 - this.ms.y * 2, ry: this.ms.x * 2.5, rz: 0, s: 1, cover: -176 };
+        const k1 = {}; Object.keys(P).forEach((key) => { k1[key] = lerp(P[key], C[key], a); });
+        k1.y -= Math.sin(Math.PI * a) * 80; k1.z += Math.sin(Math.PI * a) * 90; k1.rz = Math.sin(Math.PI * a) * -6;
+        const k2 = {}; Object.keys(k1).forEach((key) => { k2[key] = lerp(k1[key], O[key], b); });
+        k2.cover = -176 * ease((p - 0.5) / 0.5) + (p > 0.5 ? Math.sin(Math.PI * cl((p - 0.5) / 0.5)) * -4 : 0);
+        P = k2; dim = 0;
+      } else if (A != null) {
+        dim = Math.max(dim, 0.9 * openK); P.y += 60 * openK; P.z -= 520 * openK; // step back so the open book never cuts through them
+      }
+      const R = mkR(P.rx, P.ry, P.rz);
+      const cv = P.cover * rad;
+      const front = [Math.sin(cv), 0, Math.cos(cv)];
+      return {
+        n: v.n, title: titleOf(v, i), tone: v.tone, ink: v.ink,
+        fs: titleOf(v, i).length > 12 ? '18px' : (titleOf(v, i).length > 9 ? '22px' : '27px'),
+        cfs: titleOf(v, i).length > 16 ? '34px' : '46px',
+        hd: (v.D / 2) + 'px', dpx: v.D + 'px', spL: (210 - v.D / 2) + 'px', tbT: (300 - v.D / 2) + 'px',
+        tf: `translate3d(${(P.x - 210).toFixed(2)}px, ${(P.y - 300).toFixed(2)}px, ${P.z.toFixed(2)}px) rotateX(${P.rx.toFixed(3)}deg) rotateY(${P.ry.toFixed(3)}deg) rotateZ(${P.rz.toFixed(3)}deg) scale(${P.s.toFixed(4)})`,
+        op: 1, cover: P.cover.toFixed(3) + 'deg',
+        // once a book lies open, its spine and back sit exactly on the hinge line; drawing them there makes the gutter shimmer
+        solid: i === A && p > 0.9 ? 'hidden' : 'visible',
+        active: i === A, leaf: i === A && !!this.turn, leafOn: i === A && (this.p >= 0.999 || !!this.turn),
+        sh: {
+          front: shadeOf(front, R, v.ink === '#0a0a0c' ? 0.5 : 0.6, dim), inside: shadeOf([-front[0], 0, -front[2]], R, 0.26, dim),
+          back: shadeOf([0, 0, -1], R, 0.6, dim), spine: shadeOf([-1, 0, 0], R, v.ink === '#0a0a0c' ? 0.5 : 0.62, dim),
+          fore: shadeOf([1, 0, 0], R, 0.55, dim), top: shadeOf([0, -1, 0], R, 0.5, dim), bottom: shadeOf([0, 1, 0], R, 0.6, dim)
+        }
+      };
+    });
+    // reading state for the open volume
+    const v = A != null ? this.V[A] : this.V[0];
+    const pg = (i) => v.all[i] || { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
+    const settling = !this.turn && !!this.settle;
+    const tr = this.turn || (this.settle ? { ...this.settle, t: 1 } : null);
+    let rd;
+    const RBox = A != null ? mkR(books[A] ? parseFloat(books[A].tf.match(/rotateX\(([-\d.]+)/)[1]) : 0, books[A] ? parseFloat(books[A].tf.match(/rotateY\(([-\d.]+)/)[1]) : 0, 0) : mkR(0, 0, 0);
+    if (tr) {
+      const e = ease(tr.t);
+      const ang = tr.dir > 0 ? -176 * e : -176 * (1 - e);
+      const Ap = tr.dir > 0 ? pg(2 * tr.from + 1) : pg(2 * tr.to + 1);
+      const Bp = tr.dir > 0 ? pg(2 * tr.to) : pg(2 * tr.from);
+      // the leaf fades in over an identical page before the page under it changes, and fades out over one after it lands
+      const fadeIn = settling ? 1 : cl(tr.t / 0.06);
+      let L = tr.dir > 0 ? pg(2 * tr.from) : pg(2 * tr.to);
+      let Rr = tr.dir > 0 ? pg(2 * tr.to + 1) : pg(2 * tr.from + 1);
+      if (settling) { L = pg(2 * tr.to); Rr = pg(2 * tr.to + 1); }
+      else if (fadeIn < 1) { if (tr.dir > 0) Rr = Ap; else L = Bp; }
+      const fo = settling ? 1 - cl(this.settle.t) : fadeIn;
+      const lift = Math.sin(Math.PI * e);
+      // the free edge lags behind the spine, so the page curls as it goes over
+      const bend = lift * 6.5 * (tr.dir > 0 ? 1 : -1);
+      // the leaf's front is shaded relative to a page lying flat, so it matches the page it lifts off and lands on
+      const flatA = parseFloat(shadeOf([0, 0, 1], RBox, 0.45));
+      const shA = (g) => { const r = g * rad; return Math.max(0, parseFloat(shadeOf([Math.sin(r), 0, Math.cos(r)], RBox, 0.45)) - flatA).toFixed(3); };
+      const shB = (g) => { const r = g * rad; return shadeOf([-Math.sin(r), 0, -Math.cos(r)], RBox, 0.26); };
+      // where the leaf is between the two stacks: 0 = lying on the right page, 1 = lying on the left.
+      // It takes on each stack's exact size and depth at the ends, so the hand-off is invisible.
+      const f = -ang / 176;
+      rd = { L, R: Rr, A: Ap, B: Bp, ls: `scale(${(0.982 + 0.018 * f).toFixed(5)})`, fo: fo.toFixed(3) };
+      for (let k = 1; k <= 6; k++) {
+        const g = ang + (k - 1) * bend;
+        rd['t' + k] = k === 1 ? `translateZ(${(-2.8 + 3.1 * f + lift * 10).toFixed(3)}px) rotateY(${ang.toFixed(3)}deg)` : `rotateY(${bend.toFixed(3)}deg)`;
+        rd['s' + k + 'a'] = shA(g); rd['s' + k + 'b'] = shB(g);
+      }
+      Object.assign(rd, {
+        Rsh: 0, castVis: lift > 0.01 ? 'visible' : 'hidden', castOp: (lift * 0.9).toFixed(3), castW: (40 + 300 * (1 - Math.abs(ang + 88) / 88)).toFixed(0) + 'px', pe: settling && this.ready() ? 'auto' : 'none', vis: 'visible'
+      });
+    } else {
+      rd = { L: pg(2 * this.spread), R: pg(2 * this.spread + 1), A: pg(2 * this.spread + 1), B: pg(Math.min(v.all.length - 1, 2 * this.spread + 2)), vis: 'hidden', fo: 0, ls: 'scale(0.982)', t1: 'none', t2: 'none', t3: 'none', t4: 'none', t5: 'none', t6: 'none',  Rsh: 0, castVis: 'hidden', castOp: 0, castW: '0px', pe: this.ready() ? 'auto' : 'none' };
+    }
+    const at = tr ? tr.to : this.spread;
+    const first = 2 * at, last = Math.min(v.all.length - 1, 2 * at + 1);
+    const isLast = at >= v.spreads - 1;
+    const nextV = this.V[(A == null ? 0 : A) + 1];
+    const ready = this.ready();
+    const bk = A != null ? cl((p - 0.85) / 0.15) : 0;
+    return {
+      uid: this.uid, books, rd,
+      rootBg: this.props.bare ? 'transparent' : '#0a0a0c', navVis: this.props.bare ? 'hidden' : 'visible',
+      form: { ...this.form, ready: this.okForm() },
+      setField: (k, val) => { this.form = { ...this.form, [k]: val }; if (k === 'title') { const vv = this.V[this.V.length - 1]; vv.all = vv.all.map((pp) => ({ ...pp, running: val.trim() || vv.title })); } },
+      shelve: () => this.shelveIt(),
+      done: (() => { const d = this.shelvedAt == null || A != null ? 0 : 1 - Math.pow(1 - cl((sinceShelf - 0.1) / 0.5), 3); return { op: d.toFixed(3), y: ((1 - d) * 14).toFixed(1) + 'px', pe: d > 0.5 ? 'auto' : 'none' }; })(),
+      doneLine: 'Vol. 06, ' + (myTitle || 'Next volume') + ', is on the shelf. I\u2019ll write back to ' + (this.form.mail.trim() || 'you') + ', usually within [a day].',
+      again: () => { this.form = { ...this.form, msg: '', title: '' }; { const vv = this.V[this.V.length - 1]; vv.all = vv.all.map((pp) => ({ ...pp, running: vv.title })); } this.openVol(this.V.length - 1); },
+      room: { op: (1 - 0.7 * openK).toFixed(3), y: (openK * 18).toFixed(1) + 'px' },
+      hits: this.V.map((vv, i) => {
+        const w = vv.D * this.s0, hgt = this.Hh * this.s0;
+        return {
+          x: (vv.sx - w / 2 - 4) + 'px', y: (780 - hgt - 30) + 'px', w: (w + 8) + 'px', h: (hgt + 30) + 'px',
+          pe: A == null ? 'auto' : 'none', aria: 'Volume ' + vv.n + ': ' + titleOf(vv, i),
+          open: () => this.openVol(i), enter: () => { if (A == null) this.hovT[i] = 1; }, leave: () => { this.hovT[i] = 0; }
+        };
+      }),
+      bar: {
+        op: bk.toFixed(3), y: ((1 - bk) * 16).toFixed(1) + 'px', pe: ready ? 'auto' : 'none',
+        text: 'Vol. ' + v.n + ' · ' + titleOf(v, A == null ? 0 : A) + (v.contact ? '' : ' · ' + (first === 0 ? 'Contents' : 'pp. ' + first + (last > first ? '–' + last : '')) + ' / ' + (v.all.length - 1)),
+        prevOp: at > 0 ? 1 : 0.35, prevLabel: 'Previous page',
+        nextText: isLast ? (nextV ? 'Vol. ' + nextV.n + ' →' : '→') : '→', nextLabel: isLast ? 'Next volume' : 'Next page'
+      },
+      clock: new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit' }),
+      goPage: (i) => this.goPage(i),
+      nextVol: () => { if (this.active != null && this.active < this.V.length - 1) this.openVol(this.active + 1); },
+      fwd: () => this.forward(), back: () => this.backward(), backPage: () => this.backward(),
+      close: () => this.close(),
+      toContact: () => this.openVol(this.V.length - 1),
+      toShelf: () => { if (this.active === this.V.length - 1) this.close(); },
+      // Contact is a shortcut into the last volume, so the nav says where you are
+      nav: (() => { const c = A === this.V.length - 1 || this.pending === this.V.length - 1; return { about: c ? '#A1A1AA' : '#EDEDED', contact: c ? '#EDEDED' : '#A1A1AA', aboutCur: c ? 'false' : 'page', contactCur: c ? 'page' : 'false' }; })(),
+      lean: (e) => { const r = e.currentTarget.getBoundingClientRect(); this.m = { x: (e.clientX - r.left) / r.width * 2 - 1, y: (e.clientY - r.top) / r.height * 2 - 1 }; },
+      unlean: () => { this.m = { x: 0, y: 0 }; }
+    };
+  }
+}
+</script>
+</body>
+</html>

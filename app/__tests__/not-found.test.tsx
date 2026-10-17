@@ -7,8 +7,9 @@ describe("portfolio 404", () => {
   it("points humans and agents at canonical recovery indexes", () => {
     render(<NotFound />);
 
-    expect(screen.getByRole("heading", { name: "Page not found" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Projects/ })).toHaveAttribute("href", "/projects");
+    expect(screen.getByRole("heading", { name: /Page not found/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Back to the wall/ })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: /Open the Index/ })).toHaveAttribute("href", "/index");
     expect(screen.getByRole("link", { name: /llms\.txt/ })).toHaveAttribute("href", "/llms.txt");
     expect(screen.getByRole("link", { name: /sitemap\.xml/ })).toHaveAttribute("href", "/sitemap.xml");
   });
