@@ -492,6 +492,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const atFirstR = sp <= 0 && side === 'L', atLastR = sp >= spreads - 1 && side === 'R';
   const idle = !turn;
   const closedIdle = idle && sp < 0;
+  const coverTurn = !!turn && (turn.from < 0 || turn.to < 0); // nothing lies under the cover's inside until it lands
   const pg = (i: number) => v.all[i] || { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
   // structural pages for the static L/R boards and the leaf faces
   const lt = turn ?? hold; // the leaf keeps its pages while it fades out after landing
@@ -879,7 +880,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
               {/* the page block: thickness under each side, more on the side you've read */}
               <span aria-hidden className="v3edgeV" ref={lEdgeRef} style={{ position: 'absolute', left: -2, top: 3, width: 2, height: 480, visibility: closedIdle ? 'hidden' : 'visible', borderRadius: '2px 0 0 2px' }} />
               <span aria-hidden className="v3edgeV" ref={rEdgeRef} style={{ position: 'absolute', left: 680, top: 3, width: 6, height: 480, borderRadius: '0 2px 2px 0' }} />
-              <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle ? 'hidden' : 'visible', boxShadow: 'var(--shadow-book-phone)' }}>
+              <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle || coverTurn ? 'hidden' : 'visible', boxShadow: 'var(--shadow-book-phone)' }}>
                 <div style={{ width: 420, height: 600, transformOrigin: '0 0', scale: '0.8095' }}>
                   <BookPage page={staticL} side="left" clock={clock} form={form} onField={(k, val) => setForm((f) => ({ ...f, [k]: val }))} onShelve={() => { setForm((f) => ({ ...f, msg: '' })); closeBook(); }} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
                 </div>
