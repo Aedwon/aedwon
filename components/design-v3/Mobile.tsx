@@ -657,7 +657,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
           <div aria-live="polite" ref={capRef} style={{ position: 'absolute', left: 22, right: 22, bottom: 96, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
             <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>{String(focus + 1).padStart(2, '0')} / {WALL_ORDER.length}</span>
             <span ref={capNameRef} style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.03em' }}>{P[WALL_ORDER[focus]].name}</span>
-            <span ref={capTypeRef} style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{P[WALL_ORDER[focus]].type}</span>
+            <span ref={capTypeRef} style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{P[WALL_ORDER[focus]].desc || P[WALL_ORDER[focus]].type}</span>
           </div>
         </div>
       )}

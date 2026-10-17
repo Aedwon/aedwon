@@ -550,7 +550,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     }
     if (capNRef.current) capNRef.current.textContent = shown != null ? String(shown + 1).padStart(2, '0') + ' / ' + NW : '';
     if (capNameRef.current) capNameRef.current.textContent = shown != null ? P[shown].name : '';
-    if (capTypeRef.current) capTypeRef.current.textContent = shown != null ? P[shown].type : '';
+    if (capTypeRef.current) capTypeRef.current.textContent = shown != null ? (P[shown].desc || P[shown].type) : ''; // the short description, not the type
     // rail
     {
       const inView = scr.map((p) => p.X > 0 && p.X < 1440 && p.Y > 84 && p.Y < 900);
@@ -776,7 +776,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       <div ref={capRef} aria-live="polite" style={{ position: 'absolute', left: 56, bottom: 52, display: 'flex', flexDirection: 'column', gap: 6, opacity: 0, pointerEvents: 'none' }}>
         <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12.5, color: 'var(--text-label)' }} />
         <span ref={capNameRef} style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.03em' }} />
-        <span ref={capTypeRef} style={{ fontSize: 15, color: 'var(--text-secondary)' }} />
+        <span ref={capTypeRef} style={{ maxWidth: 560, fontSize: 15, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} />
       </div>
 
       {/* where you are: one tick per project */}
