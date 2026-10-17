@@ -234,11 +234,16 @@ export default function Moments({ which, theme: themeProp }: MomentsProps) {
           <span aria-hidden style={{ position: 'absolute', left: 716, top: 146, width: 8, height: 8, borderRadius: 99, background: 'var(--text-hover-soft)', boxShadow: 'var(--shadow-nail)' }} />
 
           <div style={{ position: 'absolute', left: 0, right: 0, top: 520, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, textAlign: 'center' }}>
-            <span style={{ fontSize: 40, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>Page not found.</span>
+            <h1 style={{ margin: 0, fontSize: 40, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>Page not found.</h1>
             <div style={{ display: 'flex', gap: 12, marginTop: 14 }}>
               <Link className="mb pri" href="/" style={{ height: 46, padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: 12, background: 'var(--fill-inverse)', color: 'var(--text-on-inverse)', fontSize: 14.5, fontWeight: 600, textDecoration: 'none' }}>Back to the wall</Link>
               <Link className="mb" href="/index" style={{ height: 46, padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: 12, border: '1px solid var(--line-hairline-2)', color: 'var(--text-primary)', fontSize: 14.5, textDecoration: 'none' }}>Open the Index</Link>
             </div>
+            {/* the same recovery points agents get in the markdown 404 */}
+            <nav aria-label="For agents" style={{ display: 'flex', gap: 16, marginTop: 6, fontFamily: "'Geist Mono', monospace", fontSize: 12 }}>
+              <a href="/llms.txt" style={{ color: 'var(--text-label)', textDecoration: 'none' }}>llms.txt</a>
+              <a href="/sitemap.xml" style={{ color: 'var(--text-label)', textDecoration: 'none' }}>sitemap.xml</a>
+            </nav>
           </div>
         </>
       )}

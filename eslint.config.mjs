@@ -26,6 +26,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Design reference material (minified prototype scripts), not shipped code.
+    "v3-design/**",
   ]),
 ]);
 
