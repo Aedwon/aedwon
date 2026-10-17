@@ -31,6 +31,7 @@ const CSS = `
 .studio-btn:disabled{opacity:.35;cursor:default}
 .studio-btn-quiet{background:rgba(20,20,24,.7)}
 .studio-alt{flex:1;min-width:0;height:30px;padding:0 10px;border-radius:8px;border:1px solid rgba(255,255,255,.28);background:rgba(20,20,24,.92);color:#f2f2f2;font:13px system-ui}
+.studio-link{position:relative;display:inline-flex;align-items:center;gap:6px}
 .studio-tools{position:absolute;right:0;top:20px;display:flex;gap:6px;z-index:4}
 .studio-bar{position:fixed;left:50%;bottom:18px;translate:-50% 0;z-index:2147483000;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(18,18,22,.94);backdrop-filter:blur(14px);color:#eee;font:13px system-ui;box-shadow:0 10px 40px rgba(0,0,0,.45)}
 .studio-bar button{height:30px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:transparent;color:#eee;cursor:pointer;font:13px system-ui}

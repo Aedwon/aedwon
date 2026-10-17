@@ -128,6 +128,39 @@ export function SectionTools({ id, index, count, hasFigure }: { id: string; inde
   );
 }
 
+// The links under the description. Plain anchors normally (only the first `limit` show on the page);
+// while editing, every link is editable, with its address behind the arrow, a remove button, and "+ link".
+export function Links({ id, links, limit }: { id: string; links: { label: string; href: string }[]; limit: number }) {
+  const api = useApi();
+  const [open, setOpen] = useState<number | null>(null);
+  if (!api) {
+    return <>{links.slice(0, limit).map((l) => <a key={l.href + l.label} className="v3ps-ul" href={l.href} style={{ fontSize: 15, color: 'var(--text-primary)' }}>{l.label} ↗</a>)}</>;
+  }
+  return (
+    <>
+      {links.map((l, i) => (
+        <span key={i} className="studio-link" style={{ opacity: i >= limit ? 0.5 : 1 }} title={i >= limit ? `Only the first ${limit} links show on the page` : undefined}>
+          <Ed id={id} path={`links.${i}.label`} value={l.label} style={{ fontSize: 15, color: 'var(--text-primary)' }} />
+          <button type="button" className="studio-btn studio-btn-quiet" style={{ height: 24, padding: '0 8px' }} title="Edit the address" onClick={() => setOpen(open === i ? null : i)}>↗</button>
+          <button type="button" className="studio-btn studio-btn-quiet" style={{ height: 24, padding: '0 8px' }} title="Remove this link" onClick={() => quiet(api.saveOp(id, { op: 'remove', path: 'links', index: i }))}>×</button>
+          {open === i && (
+            <input
+              autoFocus
+              className="studio-alt"
+              style={{ position: 'absolute', left: 0, top: '100%', marginTop: 6, width: 280, zIndex: 5 }}
+              defaultValue={l.href}
+              placeholder="https://"
+              onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); else if (e.key === 'Escape') { e.stopPropagation(); setOpen(null); } }}
+              onBlur={(e) => { const v = e.target.value.trim(); setOpen(null); if (v !== l.href) quiet(api.saveOp(id, { op: 'set', path: `links.${i}.href`, value: v })); }}
+            />
+          )}
+        </span>
+      ))}
+      <button type="button" className="studio-add" onClick={() => quiet(api.saveOp(id, { op: 'insert', path: 'links', index: links.length, value: { label: '[Link]', href: 'https://' } }))}>+ link</button>
+    </>
+  );
+}
+
 export function AddSection({ id, count }: { id: string; count: number }) {
   const api = useApi();
   if (!api) return null;

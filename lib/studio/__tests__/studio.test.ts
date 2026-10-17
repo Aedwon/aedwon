@@ -70,6 +70,12 @@ describe('validateProject', () => {
     expect(validateProject(base, 'x')).toEqual([]);
     expect(validateProject({ ...base, hero: { src: '/projects/x/hero-1.webp', alt: '' }, shots: [null, { src: '/projects/x/s.webp' }] }, 'x')).toEqual([]);
   });
+  it('accepts web, mail, site and # link addresses and refuses script addresses', () => {
+    const ok = (href: string) => validateProject({ ...base, links: [{ label: 'L', href }] }, 'x');
+    for (const good of ['https://a.dev', 'http://a.dev', 'mailto:a@b.dev', '/about', '#']) expect(ok(good), good).toEqual([]);
+    for (const bad of ['javascript:alert(1)', 'JaVaScRiPt:alert(1)', 'data:text/html,x', 'ftp://x', 'a.dev', '']) expect(ok(bad).join(), bad).toMatch(/links\.0\.href/);
+    expect(validateProject({ ...base, sections: [{ kind: 'status', link: { label: 'x', href: 'javascript:1' } }] }, 'x').join()).toMatch(/link\.href/);
+  });
   it('rejects wrong types, a changed id and images outside the project folder', () => {
     expect(validateProject({ ...base, name: 4 }, 'x').join()).toMatch(/name must be text/);
     expect(validateProject({ ...base, id: 'y' }, 'x').join()).toMatch(/id must stay/);

@@ -8,8 +8,9 @@ Project content lives in `content/projects/<id>.json`, one file per project, in 
 2. Press **Edit** in the bar at the bottom. Dashed outlines mark every editable line.
 3. Click text, type, press Enter (or click away). Escape puts the old text back. Each change saves to the JSON file at once and the page updates in place.
 4. Drop an image onto a picture slot (hero, a section figure, or the two tiles on a note), or click the slot to choose one. Add alt text in the slot's bar. Once a picture is in, a caption line appears under it: click it to add or edit, and clear it to remove.
-5. **Details** opens a drawer: type, date, repo, stack names, facts and links. Its **JSON** tab holds the whole file for anything else.
-6. Sections can be moved, removed, added, or given a figure from the controls on each section. Paragraphs have a **×** on hover and a **+ paragraph** button.
+5. The links under the description are editable too: click a label to rename it, **↗** to change its address, **×** to remove it, **+ link** to add one. Only the first two show on the page; extras appear dimmed while editing. Addresses must start with `https://`, `http://`, `mailto:`, `/` or `#`.
+6. **Details** opens a drawer: type, date, repo, stack names, facts and links. Its **JSON** tab holds the whole file for anything else.
+7. Sections can be moved, removed, added, or given a figure from the controls on each section. Paragraphs have a **×** on hover and a **+ paragraph** button.
 
 To publish, review with `git diff`, commit the changed files and push. Vercel rebuilds.
 

@@ -22,7 +22,7 @@ import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
 import MediaBlock, { type MediaKind } from './MediaBlock';
-import { AddSection, Ed, ImageSlot, Paras, SectionTools } from './studio/Editable';
+import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
 import { useStudio } from './studio/store';
 import SystemViz from './SystemViz';
 import { useTheme } from '@/lib/design-v3/theme';
@@ -230,7 +230,6 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
     .map((g) => ({ ...g, w2: (Number(g.w) * 22 / 18).toFixed(1), h2: (Number(g.h) * 22 / 18).toFixed(1) }));
   const stackText = p.stackText || (p.stack || []).filter((s) => !LOGO[s]).join(' \u00b7 ');
   const stackAria = 'Built with ' + ((p.stack || []).join(', ') || p.stackText || '');
-  const links = (p.links || []).slice(0, 2);
   const isCase = p.depth === 'case';
   const isNote = p.depth === 'note';
   const hasToc = secs.length > 1;
@@ -315,10 +314,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
           ))}
         </div>
         {/* where to go: the main link, and the source as a mark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 26, minHeight: 22 }}>
-          {links.map((l) => (
-            <a key={l.href + l.label} className="v3ps-ul" href={l.href} style={{ fontSize: 15, color: 'var(--text-primary)' }}>{l.label} ↗</a>
-          ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px 18px', marginTop: 26, minHeight: 22 }}>
+          <Links id={p.id} links={p.links || []} limit={2} />
         </div>
         <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', gap: 24, fontSize: 14 }}>
           {/* the neighbours: a small label over a one-line name, so a long title shortens instead of wrapping the arrow */}

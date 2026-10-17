@@ -133,6 +133,8 @@ export function arrayAt(root: Bag, segs: string[], create = false): unknown[] {
 // ---------------------------------------------------------------- validation
 
 const isStr = (v: unknown): v is string => typeof v === 'string';
+// Link addresses: web, mail, a path on this site, or a # placeholder. Nothing that runs script.
+export const HREF_RE = /^(https?:\/\/|mailto:|\/|#)/i;
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const strList = (v: unknown) => Array.isArray(v) && v.every(isStr);
 
@@ -154,6 +156,7 @@ export function validateProject(p: unknown, id: string): string[] {
   if (p.post !== undefined && typeof p.post !== 'boolean') e.push('post must be true or false');
   if (!strList(p.stack)) e.push('stack must be a list of names');
   if (!Array.isArray(p.links) || !p.links.every((l) => isObj(l) && isStr(l.label) && isStr(l.href))) e.push('links must be a list of {label, href}');
+  else p.links.forEach((l, i) => { if (!HREF_RE.test((l as { href: string }).href)) e.push('links.' + i + '.href must start with https://, http://, mailto:, / or #'); });
   if (!Array.isArray(p.facts) || !p.facts.every((f) => isObj(f) && isStr(f.k) && isStr(f.v))) e.push('facts must be a list of {k, v}');
   if (p.points !== undefined && (!Array.isArray(p.points) || !p.points.every((x) => isObj(x) && isStr(x.h) && isStr(x.p)))) e.push('points must be a list of {h, p}');
   e.push(...imgErrors(p.hero, id, 'hero'));
@@ -168,6 +171,7 @@ export function validateProject(p: unknown, id: string): string[] {
       if (s.h !== undefined && !isStr(s.h)) e.push('sections.' + i + '.h must be text');
       if (s.p !== undefined && !strList(s.p)) e.push('sections.' + i + '.p must be a list of paragraphs');
       e.push(...imgErrors(s.img, id, 'sections.' + i + '.img'));
+      if (isObj(s.link) && (!isStr(s.link.href) || !HREF_RE.test(s.link.href))) e.push('sections.' + i + '.link.href must start with https://, http://, mailto:, / or #');
     });
   }
   return e;
