@@ -12,7 +12,7 @@ import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
-import { FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
+import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
 
@@ -543,7 +543,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const tabIdx = ({ wall: 0, index: 1, project: from === 'index' ? 1 : 0, shelf: vol === V.length - 1 && (opening || closing) ? 3 : 2, book: vol === V.length - 1 ? 3 : 2 } as Record<Screen, number>)[screen];
   const showBack = screen === 'project' || screen === 'book';
   const clock = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit' });
-  const logoColor = (t: string) => (LOGO[t]?.c ?? undefined);
+  const logoColor = (t: string) => (DARK_MARKS.has(t) ? 'var(--text-primary)' : (LOGO[t]?.c ?? undefined));
   const stackText = p.stackText || (p.stack || []).filter((st) => !LOGO[st]).join(' · ');
   const details = (() => {
     const o: { label: string; v: string; icon?: string; dot?: string; status?: boolean }[] = p.post ? [] : [{ label: 'Platform', v: p.facts.find((f) => f.k === 'Platform')?.v || p.type, icon: ICON[TYPEICON[p.type]] }];

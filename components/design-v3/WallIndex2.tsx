@@ -8,7 +8,7 @@ import {
   forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState,
 } from 'react';
 import MediaBlock, { type MediaKind } from './MediaBlock';
-import { ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
+import { DARK_MARKS, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project } from '@/lib/design-v3/data/projects';
 import type { Req, WallIndex2Handle } from './contracts';
 import type { Theme } from '@/lib/design-v3/theme';
@@ -32,7 +32,6 @@ const KINDICON = ['phone', 'bot', 'web', 'term', 'repo', 'pen'];
 
 // brand marks that are near-invisible on the dark wall get the text colour instead
 // (tokens.md §8; use the ProjectSpread values for both)
-const DARK_MARKS = new Set(['SQLite', 'Markdown', 'pandas', 'NumPy', 'Next.js', 'GitHub']);
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const ease = (x: number) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };

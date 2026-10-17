@@ -20,7 +20,7 @@ import {
 } from 'react';
 import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
-import { LOGO, ICON, TYPEICON, FI, FICON } from '@/lib/design-v3/data/icons';
+import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { useTheme } from '@/lib/design-v3/theme';
@@ -61,7 +61,6 @@ const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 
 // Logos whose brand mark is the dark page colour; they read as the fg colour in
 // dark and flip to near-black in light (same pattern as WallIndex2.tsx:575).
-const DARK_MARKS = new Set(['SQLite', 'Markdown', 'pandas', 'NumPy', 'Next.js', 'GitHub']);
 
 const CSS = `
 .v3ps-ps{scrollbar-width:none}.v3ps-ps::-webkit-scrollbar{width:0}
