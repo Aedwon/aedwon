@@ -38,6 +38,7 @@ const HH: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const out = (x: number) => 1 - Math.pow(1 - cl(x), 3);
 const ease = (x: number) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const HOLD_MS = 170; // a landed leaf fades out over this long, so the page beneath settles in instead of popping
 
 type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
 
@@ -85,6 +86,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const [sp, setSp] = useState(0);
   const [side, setSide] = useState<'L' | 'R'>('L');
   const [turn, setTurn] = useState<Turn | null>(null);
+  const [hold, setHold] = useState<Turn | null>(null); // the finished turn, while its leaf fades out
   const [pan, setPan] = useState<{ from: number; t0: number } | null>(null);
   const [opening, setOpening] = useState<{ i: number; t0: number } | null>(null);
   const [closing, setClosing] = useState<{ t0: number } | null>(null);
@@ -96,7 +98,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
 
   // ---- mutable scene for the loop
   const s = useRef({
-    turn: null as Turn | null, pan: null as { from: number; t0: number } | null,
+    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
     wf: 0, back0: 0, reduced: false, raf: 0, last: 0,
@@ -262,12 +264,14 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
         s.pan = null;
         const thenPan = !!(tr.then && tr.then !== endSide);
         if (thenPan) { s.pan = { from: sx(endSide), t0: now }; s.side = tr.then!; }
+        s.hold = s.reduced ? null : { tr, t0: now };
         // commit the new spread before this frame hides the leaf, or one frame shows the old page
         flushSync(() => {
-          setTurn(null); setSp(tr.to); setSide(endSide); setPan(null);
+          setTurn(null); setHold(s.hold ? tr : null); setSp(tr.to); setSide(endSide); setPan(null);
           if (thenPan) { setPan({ from: sx(endSide), t0: now }); setSide(tr.then!); }
         });
       }
+      if (s.hold && (s.turn || now - s.hold.t0 > HOLD_MS)) { s.hold = null; setHold(null); }
       if (s.pan && now - s.pan.t0 > 450) { s.pan = null; setPan(null); }
       if (s.opening && (s.reduced || now - s.opening.t0 > 640)) {
         const i = s.opening.i; s.opening = null; setOpening(null);
@@ -317,24 +321,32 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
         const c = Math.cos((ang * Math.PI) / 180) * 340;
         if (c > 0) { if (castRRef.current) { castRRef.current.style.opacity = (lift * 0.9).toFixed(3); castRRef.current.style.width = Math.round(c + 50) + 'px'; } if (castLRef.current) castLRef.current.style.opacity = '0'; }
         else { if (castLRef.current) { castLRef.current.style.opacity = cov ? '0' : (lift * 0.9).toFixed(3); castLRef.current.style.width = Math.round(-c + 50) + 'px'; castLRef.current.style.left = Math.round(340 + c - 50) + 'px'; } if (castRRef.current) castRRef.current.style.opacity = '0'; }
-        if (leafRef.current) leafRef.current.style.visibility = 'visible';
+        if (leafRef.current) { leafRef.current.style.visibility = 'visible'; leafRef.current.style.opacity = '1'; }
         if (lEdgeRef.current) lEdgeRef.current.style.visibility = cov ? 'hidden' : 'visible';
         leafPagesRef.current = { cov, A: cov ? blank : pg(2 * a + 1), B: pg(2 * b) };
       } else {
         const closed = s.sp < 0;
         cov = closed;
+        const hd = s.hold, landedFwd = !!hd && hd.tr.to > hd.tr.from;
         for (let k = 1; k <= 6; k++) {
-          const strip = stripRefs.current[k - 1]; if (strip) strip.style.transform = 'none';
+          // a forward leaf rests turned over on the left; a backward one lies flat on the right
+          const strip = stripRefs.current[k - 1]; if (strip) strip.style.transform = landedFwd ? (k === 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)') : 'none';
           const sa = shadeRefs.current[(k - 1) * 2], sb = shadeRefs.current[(k - 1) * 2 + 1];
           if (sa) sa.style.opacity = '0'; if (sb) sb.style.opacity = '0';
         }
         if (castRRef.current) castRRef.current.style.opacity = '0';
         if (castLRef.current) castLRef.current.style.opacity = '0';
-        if (leafRef.current) leafRef.current.style.visibility = closed ? 'visible' : 'hidden';
+        if (leafRef.current) {
+          leafRef.current.style.visibility = closed || hd ? 'visible' : 'hidden';
+          leafRef.current.style.opacity = hd ? (1 - cl((now - hd.t0) / HOLD_MS)).toFixed(3) : '1';
+        }
         if (lEdgeRef.current) lEdgeRef.current.style.visibility = closed ? 'hidden' : 'visible';
       }
       // page block thickness
-      const spreads = v.all.length / 2, readF = Math.max(0, s.sp) / Math.max(1, spreads - 1);
+      const spreads = v.all.length / 2;
+      // follows the turn, so the page block grows as the leaf goes over instead of jumping when it lands
+      const spPos = tr ? Math.max(0, tr.from) + (tr.to - Math.max(0, tr.from)) * ease((now - tr.t0) / tr.dur) : Math.max(0, s.sp);
+      const readF = spPos / Math.max(1, spreads - 1);
       if (lEdgeRef.current) { lEdgeRef.current.style.width = (2 + 4 * readF).toFixed(1) + 'px'; lEdgeRef.current.style.left = (-(2 + 4 * readF)).toFixed(1) + 'px'; }
       if (rEdgeRef.current) rEdgeRef.current.style.width = (6 - 4 * readF).toFixed(1) + 'px';
       // camera
@@ -449,9 +461,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
   const closedIdle = idle && sp < 0;
   const pg = (i: number) => v.all[i] || { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
   // structural pages for the static L/R boards and the leaf faces
-  const covNow = turn ? turn.from < 0 && turn.to > turn.from : closedIdle;
-  const aNow = turn ? (turn.to > turn.from ? turn.from : turn.to) : -1;
-  const bNow = turn ? (turn.to > turn.from ? turn.to : turn.from) : 0;
+  const lt = turn ?? hold; // the leaf keeps its pages while it fades out after landing
+  const covNow = lt ? lt.from < 0 && lt.to > lt.from : closedIdle;
+  const aNow = lt ? (lt.to > lt.from ? lt.from : lt.to) : -1;
+  const bNow = lt ? (lt.to > lt.from ? lt.to : lt.from) : 0;
   const leafA = covNow ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * aNow + 1);
   const leafB = pg(2 * bNow);
   const staticL = closedIdle ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * Math.max(0, sp));
