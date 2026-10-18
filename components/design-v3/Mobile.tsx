@@ -963,7 +963,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 </button>
               );
             })}
-            <div ref={ledgeRef} style={{ position: 'absolute', inset: 0 }}>
+            <div ref={ledgeRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
               <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
               <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
             </div>
