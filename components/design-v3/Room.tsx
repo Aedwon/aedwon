@@ -60,6 +60,16 @@ const DOT = {
 
 // Nav underline anchor x positions (Room:131)
 // where the project page puts its picture
+// cubic-bezier easing: a quick pull away, a long soft landing
+function bezier(x1: number, y1: number, x2: number, y2: number) {
+  const ax = 3 * x1 - 3 * x2 + 1, bx = 3 * x2 - 6 * x1, cx = 3 * x1, ay = 3 * y1 - 3 * y2 + 1, by = 3 * y2 - 6 * y1, cy = 3 * y1;
+  return (x: number) => {
+    let u = x;
+    for (let n = 0; n < 6; n++) { const f = ((ax * u + bx) * u + cx) * u - x, d = (3 * ax * u + 2 * bx) * u + cx; if (Math.abs(d) < 1e-6) break; u -= f / d; }
+    u = Math.max(0, Math.min(1, u));
+    return ((ay * u + by) * u + cy) * u;
+  };
+}
 const HERO = { x: 520, y: 108, w: 864, h: 520 };
 const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 } as const;
 
@@ -90,7 +100,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     shelfSel: (initial.kind === 'contact' ? 'contact' : 'about') as 'about' | 'contact',
     bookOpen: false,
     pOpen: startI >= 0, po: startI >= 0 ? 1 : 0, pn: 0,
-    cam: null as { tx: number; ty: number; sc: number } | null,
+    cam: null as { i: number; cx: number; cy: number; sc: number; live: boolean } | null,
     n: 0,
     mx: -999, my: -999, mxs: -999, mys: -999, bk: 0, focus: -1,
     reduced: false, last: 0, raf: 0,
@@ -138,8 +148,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
         if (r) { cx = (r.left - b.left + r.width / 2) * k; cy = (r.top - b.top + r.height / 2) * k; wd = r.width * k; }
       }
       if (wd > 0) {
-        const sc = Math.min(5, HERO.w / wd), ox = ROOM_W / 2, oy = ROOM_H;
-        s.cam = { sc, tx: HERO.x + HERO.w / 2 - ox - sc * (cx - ox), ty: HERO.y + HERO.h / 2 - oy - sc * (cy - oy) };
+                s.cam = { i, cx, cy, sc: Math.min(5, HERO.w / wd), live: !!rest };
       }
     }
     spread.current?.openReq({ v: String(i), n: s.pn });
@@ -226,15 +235,24 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const cl = (x: number) => Math.max(0, Math.min(1, x));
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const c = s.c, cc = cl(c);
-    const sm = (x: number) => x * x * (3 - 2 * x), sm5 = (x: number) => x * x * x * (x * (6 * x - 15) + 10);
+    const sm = (x: number) => x * x * (3 - 2 * x), camEase = bezier(0.55, 0, 0.1, 1);
     const poE = sm(s.po);
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      const cam = s.cam, kc = cam ? sm5(cl(s.po / 0.68)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.5) / 0.22)) : 1 - poE;
+      const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.68)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.5) / 0.22)) : 1 - poE;
       wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
+      let camT = '';
+      if (cam) {
+        // keep the clicked picture on a straight path from where it is drawn now to where the page puts it,
+        // so it never swings off screen while the wall levels out
+        const live = cam.live ? wall2.current?.centerOf(cam.i) : null, cx = live ? live.x : cam.cx, cy = live ? live.y : cam.cy;
+        const sk = 1 + (cam.sc - 1) * kc, ox = ROOM_W / 2, oy = ROOM_H;
+        const gx = cx + (HERO.x + HERO.w / 2 - cx) * kc, gy = cy + (HERO.y + HERO.h / 2 - cy) * kc;
+        camT = `translate(${(gx - ox - sk * (cx - ox)).toFixed(2)}px, ${(gy - oy - sk * (cy - oy)).toFixed(2)}px) scale(${sk.toFixed(4)})`;
+      }
       wallEl.style.transform = cam
-        ? `translate(${(cam.tx * kc).toFixed(2)}px, ${(cam.ty * kc).toFixed(2)}px) scale(${(1 + (cam.sc - 1) * kc).toFixed(4)})`
+        ? camT
         : `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
       wallEl.style.opacity = String(+(((1 - cl((c - 0.08) / 0.34)) * wf).toFixed(3))); // the wall is gone by c = 0.42
       wallEl.style.maskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;

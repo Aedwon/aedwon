@@ -139,7 +139,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     sig: null as string | null, visNow: [] as number[],
     chg: null as null | { sig: string; t0: number; prevM: Record<number, number>; prevGM: Record<number, number>; moved: Record<number, boolean>; rank: Record<number, number>; grank: Record<number, number>; ty: Record<number, number | null>; gy: Record<number, number | null> },
     cy0: {} as Record<number, number>, gy0: {} as Record<number, number>, mm: {} as Record<number, number>, gm: {} as Record<number, number>,
-    dim: 0, lvl: 0, rest: [] as { x: number; y: number; w: number }[],
+    dim: 0, lvl: 0, blk: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
     O: [720, 470] as [number, number], ax0: 34, az0: -18,
     cy: 0, tCy: 0, vel: 0,
     zl: 1, zv: 0,
@@ -175,6 +175,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   const [emptyMsg, setEmptyMsg] = useState('');
 
   // sync discrete mirrors of ref state for handlers
+  useEffect(() => { s.blk = !!props.escBlocked; }, [props.escBlocked, s]);
   useEffect(() => { s.filt = filt; }, [filt, s]);
   useEffect(() => { s.q = q; }, [q, s]);
   useEffect(() => { s.sort = sort; }, [sort, s]);
@@ -184,6 +185,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     setDim(dim: number) { s.dim = dim; },
     setLevel(v: number) { s.lvl = v; },
     // where tile i sits once the wall has levelled out, in room pixels: its centre and its width
+    centerOf(i: number) { return s.cen[i] || null; }, // where tile i is drawn right now, in room pixels
     restRect(i: number) { return s.k < 0.5 ? s.rest[i] || null : null; },
     rectOf(i: number) {
       const el = s.k < 0.5 ? tileEls.current[i] : pvEls.current[i];
@@ -455,7 +457,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const dragMoved = !!(s.drag && s.drag.moved);
     if (dragMoved) { s.cur = null; s.leaveAt = null; }
     else if (h != null) { s.cur = h; s.leaveAt = null; }
-    else if (s.cur != null) {
+    else if (s.cur != null && !s.blk) { // while a project is open the last tile stays lit, so the wall doesn't shift under the flight
       if (s.leaveAt == null) s.leaveAt = now;
       if (now - s.leaveAt >= 200) { s.cur = null; s.leaveAt = null; }
     }
@@ -495,6 +497,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const r = Math.sin(Math.PI * uc) * (i % 2 ? 7 : -7);
       const P3 = rot(x - O[0], y - O[1], z);
       const X = O[0] + S * P3[0], Y = O[1] + S * P3[1], Z = S * P3[2];
+      s.cen[i] = { x: X, y: Y };
       const el = tileEls.current[i]; if (el) {
         el.style.transform = `translate3d(${(X - 260).toFixed(2)}px, ${(Y - hh / 2).toFixed(2)}px, ${Z.toFixed(1)}px) rotateX(${ax.toFixed(3)}deg) rotateY(${ay.toFixed(3)}deg) rotateZ(${(az + r).toFixed(3)}deg) scale(${(S * sc).toFixed(4)})`;
         el.style.opacity = op.toFixed(3);
