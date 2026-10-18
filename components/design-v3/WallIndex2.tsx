@@ -216,7 +216,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   };
 
   // ---- wheel (WallIndex2:397-407)
-  const peekAdd = (d: number) => { if (!onPeek || d <= 0) return; s.over += d; s.overAt = performance.now(); };
+  // read through refs so opening a project (which re-renders the room) never restarts the wall's setup, its entrance clock included
+  const onPeekRef = useRef(onPeek); onPeekRef.current = onPeek;
+  const peekAdd = (d: number) => { if (!onPeekRef.current || d <= 0) return; s.over += d; s.overAt = performance.now(); };
   const wheel = useCallback((e: WheelEvent) => {
     let d0 = e.deltaY; if (e.deltaMode === 1) d0 *= 16;
     if (s.kt === 1) { const ix = ixRef.current; if (ix && ix.scrollTop + ix.clientHeight >= ix.scrollHeight - 2) peekAdd(d0); return; } // index: normal page scroll
@@ -228,12 +230,12 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     let d = e.deltaY + e.deltaX; if (e.deltaMode === 1) d *= 16;
     s.tCy += d * 1.15; s.vel = 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, onPeek, bounds.maxY]);
+  }, [mode, bounds.maxY]);
 
   // ---- key (WallIndex2:408-419); gated while a project page is open (decision)
   const key = useCallback((e: KeyboardEvent) => {
     if (s.kt !== 1 || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (escBlocked) return;
+    if (s.blk) return;
     const t = e.target; if (t && ((t as HTMLElement).tagName === 'INPUT' || (t as HTMLElement).tagName === 'TEXTAREA')) return;
     if (e.key === 'Escape') { if (s.q) setQ(''); else setFilt(null); return; }
     if (e.key === 'Backspace') { if (s.q) { setQ(s.q.slice(0, -1)); e.preventDefault(); } return; }
@@ -244,7 +246,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     }
     if (e.key.length === 1 && /[0-9A-Za-z .\-]/.test(e.key)) { if (e.key === ' ' && !s.q) return; setQ((s.q + e.key).slice(0, 22)); e.preventDefault(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [escBlocked]);
+  }, []);
 
   useEffect(() => {
     s.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -272,10 +274,10 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       s.cy += (s.tCy - s.cy) * f;
       const zt = s.zoomedOut ? 0 : 1;
       if (s.reduced) s.zl = zt; else { s.zv += ((zt - s.zl) * 120 - s.zv * 20) * dt; s.zl += s.zv * dt; }
-      if (onPeek) {
+      if (onPeekRef.current) {
         if (s.over && now - s.overAt > 420) { s.over *= Math.pow(0.05, dt); if (s.over < 1) s.over = 0; }
         const pk = Math.min(1, s.over / 700);
-        if (Math.abs(pk - s.pk) > 0.002 || (pk === 0 && s.pk)) { s.pk = pk; onPeek(pk); }
+        if (Math.abs(pk - s.pk) > 0.002 || (pk === 0 && s.pk)) { s.pk = pk; onPeekRef.current?.(pk); }
         if (pk >= 1) s.over = 0;
       }
       frame(dt, now);
