@@ -154,6 +154,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     suppress: false,
     lastReq: '' as string,
     hover: null as number | null,
+    cur: null as number | null, leaveAt: null as number | null, // the committed hover: it holds through the gaps between tiles for a moment
+    amt: [] as number[], gAmt: 0, // per tile focus amount (0..1), and the wall dim amount
     lastF: null as number | null,
     pvY: null as null | { y: number; v: number }, pvA: 0,
     pvo: {} as Record<number, number>,
@@ -416,9 +418,12 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     }
     const pp = ease(k / 0.8);
     // in the room, heading down to the shelf: the wall of work tips back and away, like looking down past it
-    const dm = Math.max(0, Math.min(1, s.dim)), dme = dm * dm * (3 - 2 * dm);
-    const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) + 46 * dme;
-    const ay = lerp(s.ms.x * 3, 0, pp), az = lerp(s.az0 + (1 - zl) * 8, 0, pp), S = lerp(lerp(0.52, 0.9, zl), 1, pp);
+    const dm = Math.max(0, Math.min(1, s.dim));
+    // heading to About the camera comes level: the wall's tilt and roll ease out as it slides away, so the straight-on shelf
+    // arrives in the same view instead of the wall tipping over on its own
+    const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = 1 - dl * dl * (3 - 2 * dl); // level by the time the camera is 40% of the way
+    const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) * lv;
+    const ay = lerp(s.ms.x * 3, 0, pp) * lv, az = lerp(s.az0 + (1 - zl) * 8, 0, pp) * lv, S = lerp(lerp(0.52, 0.9, zl), 1, pp);
     const rot = (x: number, y: number, z: number): [number, number, number] => {
       const cx = Math.cos(ax * rad), sx = Math.sin(ax * rad), cy_ = Math.cos(ay * rad), sy = Math.sin(ay * rad), cz = Math.cos(az * rad), sz = Math.sin(az * rad);
       const x1 = cz * x - sz * y, y1 = sz * x + cz * y;
@@ -433,7 +438,16 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     scr.forEach((p, i) => { const d = (p.X - 720) ** 2 + ((p.Y - 480) * 1.4) ** 2; if (d < nd) { nd = d; near = i; } });
     s.magY = bp[near].y;
     const zoomedOut = zl < 0.5; s.zoomedOut = zoomedOut;
-    const focus = h != null ? h : (mo === 'follow' || zoomedOut ? null : near);
+    // Hover intent: moving to another tile switches at once; leaving every tile keeps the last one for a beat, so crossing
+    // a gap or a brief slip off the edge neither dims nor brightens the wall.
+    const dragMoved = !!(s.drag && s.drag.moved);
+    if (dragMoved) { s.cur = null; s.leaveAt = null; }
+    else if (h != null) { s.cur = h; s.leaveAt = null; }
+    else if (s.cur != null) {
+      if (s.leaveAt == null) s.leaveAt = now;
+      if (now - s.leaveAt >= 200) { s.cur = null; s.leaveAt = null; }
+    }
+    const focus = s.cur != null ? s.cur : (mo === 'follow' || zoomedOut ? null : near);
     if (onFocus) { const f = k > 0.5 ? s.ih : (focus != null ? focus : near); if (f !== s.lastF) { s.lastF = f; onFocus(f == null ? -1 : f); } }
     // tiles
     P.forEach((p, i) => {
@@ -442,12 +456,16 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       // gentle emphasis only: no blur, the others stay readable
       const isF = focus === i;
       const dimTo = mo === 'follow' ? 0.5 : 0.62;
-      const opT = onWall && focus != null && !(s.drag && s.drag.moved) ? (isF ? 1 : dimTo) : 1;
-      s.ops[i] = s.ops[i] == null ? opT : s.ops[i] + (opT - s.ops[i]) * Math.min(1, (dt || 1) * 8);
-      const hv = onWall && isF && !(s.drag && s.drag.moved) ? 1.035 : 1;
-      s.hs[i] = (s.hs[i] || 1) + (hv - (s.hs[i] || 1)) * Math.min(1, (dt || 1) * 10);
+      // one focus amount per tile drives its opacity, size and lift together, quick to rise and slower to settle
+      const stepA = (v: number, on: boolean, up: number, dn: number) => (s.reduced ? (on ? 1 : 0) : Math.max(0, Math.min(1, v + (on ? dts / up : -dts / dn))));
+      const smooth = (x: number) => x * x * (3 - 2 * x);
+      const onF = onWall && isF && !dragMoved;
+      const A = smooth((s.amt[i] = stepA(s.amt[i] || 0, onF, 0.11, 0.24)));
+      const Gd = smooth((s.gAmt = i === 0 ? stepA(s.gAmt, onWall && focus != null && !dragMoved, 0.15, 0.32) : s.gAmt));
+      s.ops[i] = onWall ? 1 - (1 - dimTo) * Gd * (1 - A) : 1;
+      s.hs[i] = 1 + 0.035 * A;
       const isPost = p.media === 'paper';
-      const w = { x: isPost ? 160 : bp[i].x, y: isPost ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: isF && onWall ? 24 : 0, op: isPost ? 0 : s.ops[i] * intro };
+      const w = { x: isPost ? 160 : bp[i].x, y: isPost ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: isPost ? 0 : s.ops[i] * intro };
       const ut = ease((k - 0.024 * i) / 0.58); // every tile, even the 17th, lands exactly on its row
       let su = s.su[i];
       if (!su || dt === 0 || s.reduced) su = s.su[i] = { u: ut, v: 0 };
@@ -792,7 +810,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
             style={{ position: 'relative', height: 44, width: 56, padding: 0, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
           >
             <span className="v3tn" aria-hidden style={{ position: 'absolute', right: 64, whiteSpace: 'nowrap', fontSize: 13, color: 'var(--text-primary)', opacity: 0, translate: '6px 0' }}>{p.name}</span>
-            <span className="tl" style={{ display: 'block', height: 1.5, width: 12, background: 'var(--line-hover)', borderRadius: 1 }} />
+            <span className="tl" style={{ display: 'block', height: 1.5, width: 12, background: 'var(--line-hover)', borderRadius: 1, transition: 'width .2s ease, background-color .2s ease' }} />
           </button>
         ))}
       </div>

@@ -7,6 +7,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, u
 import Room from './Room';
 import Mobile from './Mobile';
 import dynamic from 'next/dynamic';
+import { flushSync } from 'react-dom';
 import Moments from './Moments';
 import { currentTheme, setTheme, THEME_KEY, ThemeContext, type Theme } from '@/lib/design-v3/theme';
 
@@ -91,8 +92,25 @@ const Studio = process.env.NODE_ENV === 'development' ? dynamic(() => import('./
 
 export default function Site({ initialPath }: { initialPath: string }) {
   const theme = useThemeAttr();
-  const toggle = useCallback(() => {
-    setTheme(currentTheme() === 'light' ? 'dark' : 'light');
+  // The new theme is revealed through a circle that grows from the toggle (View Transitions), on desktop and phone alike.
+  // Everything that depends on the theme, React state included, is updated inside the transition's callback, so the page the
+  // circle reveals is already final: nothing re-renders mid-reveal (that was the pause) or after it (that was the flicker).
+  const toggle = useCallback((origin?: { x: number; y: number }) => {
+    const next = currentTheme() === 'light' ? 'dark' : 'light';
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
+    if (!doc.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setTheme(next); return; }
+    const x = origin?.x ?? window.innerWidth / 2, y = origin?.y ?? 0;
+    const reach = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    const t = doc.startViewTransition(() => {
+      setTheme(next);
+      flushSync(() => themeListeners.forEach((l) => l()));
+    });
+    t.ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${reach}px at ${x}px ${y}px)`] },
+        { duration: 750, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', pseudoElement: '::view-transition-new(root)' },
+      );
+    }).catch(() => {});
   }, []);
 
   // With no saved choice, follow the device's light/dark setting live (a tap on the toggle saves a choice and stops this).

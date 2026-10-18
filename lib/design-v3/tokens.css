@@ -314,3 +314,12 @@
   --shelf-bookend: #2A2A30;
   --shelf-bookend-left: #3A3A42;
 }
+
+/* theme switch: the new theme is drawn over the old one and revealed by a growing circle (see Site.tsx) */
+::view-transition-group(root), ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+
+/* no grey flash on a tap (iOS), and no focus ring left behind after a tap or click */
+button, a, .v3tbtn, .v3rn { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+.v3tbtn:focus:not(:focus-visible), .v3rn:focus:not(:focus-visible) { outline: none; }

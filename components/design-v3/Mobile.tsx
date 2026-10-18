@@ -8,7 +8,7 @@
 // keyboard height comes from window.visualViewport.
 
 import { useTheme } from '@/lib/design-v3/theme';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
@@ -41,11 +41,12 @@ const out = (x: number) => 1 - Math.pow(1 - cl(x), 3);
 const ease = (x: number) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 const OPEN_PRE = 1150; // ms: the volume lifts out of the stack, stands up and turns its cover to you; then the cover turn runs
 const CLOSE_PRE = 1000; // ms: the closed volume turns back to its spine, lies down and slides into the stack
+const BOOK_DROP = 22; // the open book sits a little lower, clear of the top bar
 const BOOK_W = 340, BOOK_H = 486; // the book at reading size, as the board shows it
 const seg = (u: number, a: number, b: number) => ease((u - a) / (b - a));
 // Pose of the proxy book at progress u (0 = lying in the stack, 1 = cover to you at the board). The book's centre is the
 // origin; we keep the centre of its nearest face on z = 0, so both ends match the flat pieces they hand over to.
-function bookPose(u: number, r: { x: number; y: number; w: number; h: number }) {
+function bookPose(u: number, r: { x: number; y: number; w: number; h: number }, tx = 195, ty = 335) {
   const ss = r.w / BOOK_H; // stack scale: the spine's length is the book's height
   const dk = r.h / ss; // thickness at reading size
   const stand = seg(u, 0.14, 0.62);
@@ -56,12 +57,36 @@ function bookPose(u: number, r: { x: number; y: number; w: number; h: number }) 
   const sx = r.x + r.w / 2, sy = r.y + r.h / 2;
   const lift = 64 * seg(u, 0, 0.24) * (1 - seg(u, 0.46, 0.82));
   return {
-    px: sx + (195 - sx) * stand, py: sy + (335 - sy) * stand,
+    px: sx + (tx - sx) * stand, py: sy + (ty - sy) * stand,
     pz: -sc * ((BOOK_W / 2) * Math.sin(rad) + (dk / 2) * Math.cos(rad)) + lift,
     phi: -90 * (1 - stand), th, sc, ss, dk,
   };
 }
 const FX_SLIDE = 620, FX_FADE = 380; // ms: Wall/Index to About and back, and Wall to Index
+// The wall drum. d is a tile's distance from the focused spot (negative: above). Tiles below fade faster, so they are gone before the caption.
+const DRUM_STEP = 36, DRUM_R = 500, DRUM_REACH = 2.6;
+function drumAt(d: number) {
+  const ad = Math.abs(d), ang = Math.max(-DRUM_REACH, Math.min(DRUM_REACH, d)) * DRUM_STEP;
+  return {
+    y: DRUM_R * Math.sin((ang * Math.PI) / 180), ang, sc: 1 - 0.08 * ad,
+    op: Math.max(0, d > 0 ? 1 - 1.25 * d : 1 - 0.45 * ad),
+  };
+}
+// A light detent: the drum drags a little near each project and moves freely between them, so each one feels like it clicks in.
+const detent = (near: number) => near * (0.55 + 0.45 * Math.min(1, Math.abs(near) / 0.5));
+// The same drum as CSS keyframes against the scroller's own position, so the browser moves the tiles without any script per frame.
+// u is how far the scroll is from this tile's project, in projects; the keyframes are the same for every tile.
+const DRUM_CSS = (() => {
+  let k = '@keyframes v3drum{';
+  for (let i = 0; i <= 52; i++) {
+    const u = -DRUM_REACH + i * 0.1, r = Math.round(u), d = -(r + detent(u - r)), f = drumAt(d);
+    k += `${((i / 52) * 100).toFixed(3)}%{transform:translate3d(0,${f.y.toFixed(1)}px,0) rotateX(${(-f.ang).toFixed(2)}deg) scale(${f.sc.toFixed(4)});opacity:${f.op.toFixed(3)}}`;
+  }
+  return k + '}';
+})();
+// The project page arrives in order: title, description, stack, details, link, then the picture, each rising a little as it fades in.
+const RISE_CSS = '.v3rise{animation:v3rise .85s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*75ms + 80ms)}.v3rise-hero{animation-name:v3rise-hero}@keyframes v3rise{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}@keyframes v3rise-hero{from{opacity:0;transform:translate3d(0,22px,0) scale(.985)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.v3rise{animation:none}}';
+const rise = (i: number) => ({ '--i': i } as React.CSSProperties);
 const HOLD_MS = 170; // a landed leaf fades out over this long, so the page beneath settles in instead of popping
 
 type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
@@ -91,7 +116,11 @@ interface Turn { from: number; to: number; then: 'L' | 'R' | null; dur: number; 
 
 const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; width?: number }>(function Mobile({ initialPath, height = MOB_H, width = MOB_W }, ref) {
   // The wall, top bar and tab bar use the full width. The other screens are drawn 390 wide and sit centred.
-  const W = width, ox = (W - MOB_W) / 2, TW = W - 32;
+  const W = width, ox = (W - MOB_W) / 2, TW = W - 32, CW = W - 44;
+  const fit = Math.min(W / MOB_W, 1.12); // the spines grow in length with the screen, up to a point; the open book keeps its size
+  // read by the animation loop, which keeps the first render's closures: it must always see the current width
+  const dimsRef = useRef({ W, fit });
+  dimsRef.current = { W, fit };
   // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
   const { theme, toggle } = useTheme();
   const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
@@ -122,16 +151,23 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const [closing, setClosing] = useState<{ t0: number } | null>(null);
   const [kb, setKb] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
+  // Browsers that can tie animations to a scroller (Safari 26, Chrome) move the wall's tiles from the scroll position alone.
+  const [sdOk, setSdOk] = useState(false);
+  useEffect(() => {
+    const ok = typeof CSS !== 'undefined' && CSS.supports('animation-timeline: scroll()') && CSS.supports('timeline-scope: --wall');
+    s.sd = ok; setSdOk(ok);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [cur, setCur] = useState(0);
   const [focus, setFocus] = useState(0); // wall drum focus
   const [form, setForm] = useState({ name: '', mail: '', msg: '', title: '' });
 
   // ---- mutable scene for the loop
   const s = useRef({
-    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number } | null, pan: null as { from: number; t0: number } | null,
+    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number; anims?: Animation[] } | null, fxOld: null as Animation | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
-    wf: 0, back0: 0, reduced: false, raf: 0, last: 0,
+    wf: 0, lit: -1, sd: false, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
     sp: 0, side: 'L' as 'L' | 'R', vol: 0,
     screen: init.screen === 'project' ? 'project' : init.screen === 'book' ? 'shelf' : (init.screen as Screen),
     lastPos: -1, lastEnds: '',
@@ -154,15 +190,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const shelfLayerRef = useRef<HTMLDivElement>(null);
   const prevScreen = useRef<Screen>(screen);
   const fxLayer = (sc: Screen) => (sc === 'wall' ? wallLayerRef.current : sc === 'index' ? indexLayerRef.current : sc === 'shelf' ? shelfLayerRef.current : null);
-  const applyFx = (now: number) => {
-    const fx = s.fx; if (!fx) return;
-    const p = ease((now - fx.t0) / fx.dur);
+  // The slide and fade between Wall, Index and About run as browser animations (off the script thread), started once both layers are mounted.
+  // Keyframe offsets are in eased progress, so each one is the same straight-line pose as before.
+  const startFx = () => {
+    const fx = s.fx; if (!fx || fx.anims) return;
     const o = fxLayer(fx.from), n = fxLayer(fx.to);
-    const set = (el: HTMLElement | null, y: number, op: number) => { if (!el) return; el.style.transform = `translateY(${y.toFixed(2)}px)`; el.style.opacity = op.toFixed(3); el.style.pointerEvents = 'none'; };
-    if (fx.from === 'shelf' || fx.to === 'shelf') {
-      if (fx.to === 'shelf') { set(o, -0.45 * MOB_H * p, 1 - cl((p - 0.15) / 0.6)); set(n, MOB_H * (1 - p), 1); }
-      else { set(o, MOB_H * p, 1); set(n, -0.45 * MOB_H * (1 - p), cl((p - 0.25) / 0.6)); }
-    } else { set(o, -10 * p, 1 - p); set(n, 10 * (1 - p), p); }
+    if (!o || !n) return;
+    const kf = (y0: number, y1: number, ops: [number, number][]) => ops.map(([off, op]) => ({ offset: off, transform: `translateY(${(y0 + (y1 - y0) * off).toFixed(2)}px)`, opacity: op }));
+    const timing: KeyframeAnimationOptions = { duration: fx.dur, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'both' };
+    let ko: Keyframe[], kn: Keyframe[];
+    if (fx.to === 'shelf') { ko = kf(0, -0.45 * MOB_H, [[0, 1], [0.15, 1], [0.75, 0], [1, 0]]); kn = kf(MOB_H, 0, [[0, 1], [1, 1]]); }
+    else if (fx.from === 'shelf') { ko = kf(0, MOB_H, [[0, 1], [1, 1]]); kn = kf(-0.45 * MOB_H, 0, [[0, 0], [0.25, 0], [0.85, 1], [1, 1]]); }
+    else { ko = kf(0, -10, [[0, 1], [1, 0]]); kn = kf(10, 0, [[0, 0], [1, 1]]); }
+    o.style.pointerEvents = 'none'; n.style.pointerEvents = 'none';
+    fx.anims = [o.animate(ko, timing), n.animate(kn, timing)];
   };
   useLayoutEffect(() => {
     const prev = prevScreen.current; prevScreen.current = screen;
@@ -173,7 +214,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     } else { s.fx = null; setLeaving(null); }
   }, [screen, s]);
   // once the outgoing layer is mounted, place both layers at the start pose before the first paint
-  useLayoutEffect(() => { if (leaving && s.fx) applyFx(s.fx.t0); });
+  useLayoutEffect(() => { if (leaving && s.fx) startFx(); });
+  useLayoutEffect(() => { if (!leaving && s.fxOld) { s.fxOld.cancel(); s.fxOld = null; } }, [leaving, s]);
 
   // ---- URL sync (client shell owns history)
   const push = useCallback((path: string) => {
@@ -233,10 +275,11 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [busy, s, panTo, turnTo]);
 
   const stackRect = useCallback((i: number) => {
-    const Hh = [67, 54, 61, 77, 51, 45], W = [326, 312, 334, 304, 320, 298], O = [-4, 6, -2, 3, -6, 2];
+    const { W, fit } = dimsRef.current;
+    const Hh = [67, 54, 61, 77, 51, 45], Wd = [326, 312, 334, 304, 320, 298].map((w) => w * fit), O = [-4, 6, -2, 3, -6, 2];
     let y = 652 - Hh.reduce((a, h) => a + h, 0);
     for (let k = 0; k < i; k++) y += Hh[k];
-    return { x: 195 - W[i] / 2 + O[i], y, w: W[i], h: Hh[i] };
+    return { x: W / 2 - Wd[i] / 2 + O[i], y, w: Wd[i], h: Hh[i] };
   }, []);
 
   const openVol = useCallback((i: number) => {
@@ -277,6 +320,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const stkRef = useRef<HTMLDivElement>(null);
   const hint1Ref = useRef<HTMLSpanElement>(null);
   const hint2Ref = useRef<HTMLSpanElement>(null);
+  const ledgeRef = useRef<HTMLDivElement>(null);
+  const shLRef = useRef<HTMLSpanElement>(null);
   const bookBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const moRef = useRef<HTMLDivElement>(null);
   const moBookRef = useRef<HTMLDivElement>(null);
@@ -294,7 +339,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     const onFin = (e: FocusEvent) => {
       const root = rootRef.current, t = e.target as HTMLElement | null;
       if (!root || !t || !root.contains(t) || !/^(INPUT|TEXTAREA)$/.test(t.tagName) || s.screen !== 'book') return;
-      const rr = root.getBoundingClientRect(), k = rr.width / W, r = t.getBoundingClientRect(), d = s.kbDy || 0;
+      const rr = root.getBoundingClientRect(), k = rr.width / dimsRef.current.W, r = t.getBoundingClientRect(), d = s.kbDy || 0;
       s.kbField = { top: (r.top - rr.top) / k - d, bottom: (r.bottom - rr.top) / k - d };
       setKb(true);
     };
@@ -313,7 +358,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       // keyboard height, corrected for the letterbox scale (k = screen px per design px)
       if (s.kb) {
         const rr2 = rootRef.current ? rootRef.current.getBoundingClientRect() : null;
-        const kr = rr2 && rr2.width ? rr2.width / W : 1;
+        const kr = rr2 && rr2.width ? rr2.width / dimsRef.current.W : 1;
         s.kbH = vv ? kbH / kr : 0;
       } else s.kbH = 0;
       // finish whatever the book is doing (Mobile:439-442)
@@ -352,33 +397,39 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       }
       if (s.shut && now - s.shut.t0 > CLOSE_PRE) { s.shut = null; s.closing = null; setClosing(null); push('/about'); }
       if (s.fx) {
-        if (now - s.fx.t0 >= s.fx.dur) {
+        if (s.fx.anims ? s.fx.anims.every((an) => an.playState === 'finished') : now - s.fx.t0 >= s.fx.dur + 400) {
           const n = fxLayer(s.fx.to);
+          // the incoming layer ends where its animation ends, so it can be released now. The outgoing one stays at its last
+          // frame (gone) until React has hidden or removed it; releasing it earlier flashes it back for a frame.
+          s.fx.anims?.[1]?.cancel();
+          s.fxOld = s.fx.anims?.[0] ?? null;
           if (n) { n.style.transform = ''; n.style.opacity = ''; n.style.pointerEvents = ''; }
           s.fx = null; setLeaving(null);
-        } else applyFx(now);
+        }
       }
 
       // wall drum: which tile is in focus
       const wf = Math.max(0, Math.min(WALL_ORDER.length - 1, s.wf)), focusI = Math.round(wf);
-      WALL_ORDER.forEach((i, k) => {
+      const near = wf - focusI, wfv = s.reduced ? wf : focusI + detent(near);
+      if (focusI !== s.lockI) { s.lockI = focusI; s.lockT = now; if (s.lockSeen && !s.reduced) { try { navigator.vibrate?.(6); } catch { /* not supported */ } } s.lockSeen = true; }
+      const pulse = s.reduced ? 0 : 1 - out((now - s.lockT) / 320); // a small settle when a project locks in
+      if (!s.sd) WALL_ORDER.forEach((i, k) => {
         const el = tileRefs.current[k]; if (!el) return;
-        const d = k - wf, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 30;
-        const q = P[i], h = Math.round(HH[q.media] * Math.min(TW / 520, 220 / HH[q.media]));
-        el.style.top = (340 + 390 * Math.sin((ang * Math.PI) / 180)).toFixed(1) + 'px';
-        el.style.height = h + 'px';
-        el.style.transform = `rotateX(${(-ang).toFixed(2)}deg) scale(${(1 - 0.08 * ad).toFixed(4)})`;
-        el.style.opacity = Math.max(0, 1 - 0.5 * ad).toFixed(3);
-        el.style.visibility = ad < 2 ? 'visible' : 'hidden';
-        el.style.zIndex = String(20 - Math.round(ad * 4));
+        const d = k - wfv, f = drumAt(d);
+        if (Math.abs(d) >= DRUM_REACH - 0.6) { if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden'; return; }
+        const sc = f.sc * (k === focusI ? 1 + 0.018 * pulse : 1);
+        el.style.transform = `translate3d(0, ${f.y.toFixed(1)}px, 0) rotateX(${(-f.ang).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+        el.style.opacity = f.op.toFixed(3);
+        el.style.visibility = 'visible';
       });
       if (focusI !== focusRef.current) { focusRef.current = focusI; setFocus(focusI); }
-      // caption follows the drum; it fades as you cross between two
-      if (capRef.current) capRef.current.style.opacity = Math.max(0.25, 1 - 1.5 * Math.abs(wf - focusI)).toFixed(3);
+      // caption: full strength while a project is locked, fading only as you cross to the next one
+      // spotlight: the number and description rise to the brightest text colour as a project locks, and ease back while you move on
+      const lit = Math.round(cl(1 - (Math.abs(near) - 0.05) / 0.2) * 100);
+      if (lit !== s.lit) { s.lit = lit; if (capRef.current) capRef.current.style.setProperty('--lit', lit + '%'); }
+      if (capRef.current) capRef.current.style.opacity = Math.max(0.25, 1 - 1.6 * Math.max(0, Math.abs(near) - 0.1)).toFixed(3);
 
       // project fade-in
-      const fo = s.reduced ? 1 : out((now - (swapAtRef.current || -1e9)) / 380);
-      if (projInnerRef.current) projInnerRef.current.style.opacity = fo.toFixed(3);
 
       // ---- the book, per frame
       const v = V[s.vol], blank: BookPageDef = { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
@@ -389,6 +440,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (tr) {
         const e = ease((now - tr.t0) / tr.dur), fwd = tr.to > tr.from, a = fwd ? tr.from : tr.to, b = fwd ? tr.to : tr.from;
         cov = a < 0;
+        // the left shadow follows the cover over: none while it is on the right, full once it has landed on the left
+        if (shLRef.current) { const pp = fwd ? e : 1 - e, q = cl((pp - 0.5) / 0.5); shLRef.current.style.opacity = cov ? (q * q * (3 - 2 * q)).toFixed(3) : '1'; }
         const ang = fwd ? -180 * e : -180 * (1 - e), lift = Math.sin(Math.PI * e), bend = lift * (cov ? 3 : 6.5) * (fwd ? 1 : -1);
         for (let k = 1; k <= 6; k++) {
           const g = ((ang + (k - 1) * bend) * Math.PI) / 180;
@@ -419,6 +472,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
           leafRef.current.style.opacity = hd ? (1 - cl((now - hd.t0) / HOLD_MS)).toFixed(3) : '1';
         }
         if (lEdgeRef.current) lEdgeRef.current.style.visibility = closed ? 'hidden' : 'visible';
+        if (shLRef.current) shLRef.current.style.opacity = closed ? '0' : '1';
       }
       // page block thickness
       const spreads = v.all.length / 2;
@@ -440,14 +494,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (s.kb && s.kbField) {
         const f = s.kbField;
         const rr3 = rootRef.current ? rootRef.current.getBoundingClientRect() : null;
-        const kr3 = rr3 && rr3.width ? rr3.width / W : 1;
+        const kr3 = rr3 && rr3.width ? rr3.width / dimsRef.current.W : 1;
         const vhD = window.innerHeight / kr3;
         dy = Math.min(0, vhD - s.kbH - 18 - f.bottom); if (f.top + dy < 70) dy = Math.min(0, 70 - f.top);
       }
       s.kbDy = dy;
       if (boardRef.current) boardRef.current.style.translate = `0 ${dy.toFixed(1)}px`;
-      if (headRef.current) headRef.current.style.opacity = s.kb || s.closing ? '0' : '1';
-      if (ctlRef.current) { ctlRef.current.style.opacity = s.kb || s.closing ? '0' : '1'; ctlRef.current.style.pointerEvents = s.kb || s.closing ? 'none' : 'auto'; }
+      // the page controls arrive once the cover has landed (rising a little as they fade in) and leave at once, a touch quicker, when it closes
+      const showUI = !(s.kb || s.closing) && !(s.turn && s.turn.from < 0);
+      if (headRef.current) { headRef.current.style.opacity = showUI ? '1' : '0'; headRef.current.style.transitionDuration = showUI ? '.5s' : '.26s'; }
+      if (ctlRef.current) {
+        const c = ctlRef.current.style;
+        c.opacity = showUI ? '1' : '0'; c.translate = showUI ? '0 0' : '0 14px'; c.pointerEvents = showUI ? 'auto' : 'none';
+        c.transitionDuration = showUI ? '.5s, .6s' : '.26s, .3s'; c.transitionDelay = showUI ? '.1s' : '0s';
+      }
       const pgi = tr
         ? 2 * tr.to + (tr.to > tr.from ? (tr.then === 'R' ? 1 : 0) : tr.then === 'L' ? 0 : 1)
         : Math.max(0, s.sp) * 2 + (s.side === 'R' ? 1 : 0);
@@ -464,18 +524,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       const pu = op ? cl((now - op.t0) / OPEN_PRE) : shut ? 1 - cl((now - shut.t0) / CLOSE_PRE) : -1; // -1: no proxy
       const pi = op ? op.i : s.vol;
       const back = s.back0 ? out((now - s.back0) / 380) : 1;
-      const rest = pu >= 0 ? (1 - seg(pu, 0, 0.3)).toFixed(3) : '1'; // the others in the stack step back while the book is out
+      const rest = pu >= 0 ? (1 - seg(pu, 0, 0.5)).toFixed(3) : '1'; // the others in the stack step back while the book is out
       if (stkRef.current) stkRef.current.style.opacity = pu >= 0 ? '1' : back.toFixed(3);
       if (hint1Ref.current) hint1Ref.current.style.opacity = rest;
       if (hint2Ref.current) hint2Ref.current.style.opacity = rest;
+      if (ledgeRef.current) ledgeRef.current.style.opacity = pu >= 0 ? (1 - seg(pu, 0, 0.55)).toFixed(3) : '1'; // the shelf's edge steps back with the stack, instead of vanishing at the handoff
       V.forEach((b, i) => {
         const el = bookBtnRefs.current[i]; if (!el) return;
         el.style.translate = '0px 0';
-        el.style.opacity = pu >= 0 ? (i === pi ? '0' : rest) : '1';
+        // the chosen spine and the standing-up book trade places over the first stretch, so there is no hard swap
+        el.style.opacity = pu >= 0 ? (i === pi ? (1 - cl(pu / 0.12)).toFixed(3) : rest) : '1';
       });
-      if (moRef.current) moRef.current.style.visibility = pu >= 0 ? 'visible' : 'hidden';
+      if (moRef.current) { moRef.current.style.visibility = pu >= 0 ? 'visible' : 'hidden'; moRef.current.style.opacity = pu >= 0 ? cl(pu / 0.12).toFixed(3) : '0'; }
       if (pu >= 0) {
-        const P = bookPose(pu, stackRect(pi));
+        const P = bookPose(pu, stackRect(pi), dimsRef.current.W / 2, 335 + BOOK_DROP);
         if (moBookRef.current) moBookRef.current.style.transform = `translate3d(${P.px.toFixed(2)}px, ${P.py.toFixed(2)}px, ${P.pz.toFixed(2)}px) rotateZ(${P.phi.toFixed(3)}deg) rotateY(${P.th.toFixed(3)}deg) scale3d(${P.sc.toFixed(4)}, ${P.sc.toFixed(4)}, ${P.sc.toFixed(4)})`;
         if (moShadowRef.current) moShadowRef.current.style.opacity = seg(pu, 0.72, 1).toFixed(3);
         // light falls on the cover and the spine as each faces you
@@ -544,8 +606,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const bNow = lt ? (lt.to > lt.from ? lt.to : lt.from) : 0;
   const leafA = covNow ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * aNow + 1);
   const leafB = pg(2 * bNow);
-  const staticL = closedIdle ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * Math.max(0, sp));
-  const staticR = pg(2 * Math.max(0, sp) + 1);
+  // While a leaf turns, the page it leaves behind is already the new one: the right page for a forward turn, the left for a backward one.
+  const fwdTurn = !!turn && turn.to > turn.from;
+  const staticL = closedIdle ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * Math.max(0, turn && !fwdTurn ? turn.to : sp));
+  const staticR = pg(2 * Math.max(0, turn && fwdTurn ? turn.to : sp) + 1);
   const tabIdx = ({ wall: 0, index: 1, project: from === 'index' ? 1 : 0, shelf: vol === V.length - 1 && (opening || closing) ? 3 : 2, book: vol === V.length - 1 ? 3 : 2 } as Record<Screen, number>)[screen];
   const showBack = screen === 'project' || screen === 'book';
   const clock = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit' });
@@ -603,12 +667,27 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
         <span className="v3shade" ref={(el) => { shadeRefs.current[k * 2] = el; }} style={{ opacity: 0 }} />
       </div>
       <div className="v3face" style={{ inset: '0 -1px 0 0', transform: 'rotateY(180deg)', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: -350 + k * 70, top: 0, width: 420, height: 600 }}><BookPage page={leafB} side="left" clock={clock} form={form} /></div>
+        {/* the face is 71 wide (1px overlap) and turned about its middle, so its picture sits 1px further over to land exactly where the static left page is */}
+        <div style={{ position: 'absolute', left: -349 + k * 70, top: 0, width: 420, height: 600 }}><BookPage page={leafB} side="left" clock={clock} form={form} /></div>
         <span className="v3shade" ref={(el) => { shadeRefs.current[k * 2 + 1] = el; }} style={{ opacity: 0 }} />
       </div>
       {k < 5 ? leafStrip(k + 1) : null}
     </div>
   );
+
+  // The wall's tiles. Built once per width so a change of focus does not redraw every mock-up.
+  const wallTiles = useMemo(() => WALL_ORDER.map((i, k) => {
+    const q2 = P[i], meta = postMeta(q2), sc = Math.min(TW / 520, 220 / HH[q2.media]);
+    const sd = sdOk ? ({ animationName: 'v3drum', animationDuration: '1s', animationTimingFunction: 'linear', animationFillMode: 'both', animationTimeline: '--wall', animationRange: `${(k - DRUM_REACH) * 180}px ${(k + DRUM_REACH) * 180}px` } as React.CSSProperties) : { opacity: 0 };
+    return (
+      <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: sc.toFixed(4) }}>
+          <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+        </div>
+      </div>
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [TW, sdOk]);
 
   return (
     <div
@@ -617,29 +696,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
         position: 'relative', width: W, height: height, overflow: 'hidden', color: 'var(--text-primary)',
         fontFamily: "'Geist', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased',
         backgroundColor: 'var(--room-bg)',
-        backgroundImage: 'radial-gradient(circle, rgba(237,237,237,0.075) 1px, transparent 1.6px)',
+        backgroundImage: `radial-gradient(circle, ${theme === 'light' ? 'rgba(17,17,20,0.11)' : 'rgba(237,237,237,0.075)'} 1px, transparent 1.6px)`,
         backgroundSize: '26px 26px', backgroundPosition: `0 0px`,
       }}
     >
       {/* ===== WALL: a vertical drum. Scrolling turns it; whichever project reaches the middle is chosen. ===== */}
-      {(screen === 'wall' || leaving === 'wall') && (
-        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0 }}>
+      {/* The wall stays mounted and is only hidden, so leaving it and coming back never rebuilds it (a rebuild flashes the tiles unplaced). */}
+      {(
+        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0, visibility: screen === 'wall' || leaving === 'wall' ? 'visible' : 'hidden', ...(sdOk ? ({ timelineScope: '--wall' } as React.CSSProperties) : null) }}>
+          {sdOk && <style>{DRUM_CSS}</style>}
           <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px` }}>
-            {WALL_ORDER.map((i, k) => {
-              const q2 = P[i], meta = postMeta(q2);
-              return (
-                <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: 220, translate: '0 -50%', borderRadius: 10, overflow: 'hidden', opacity: 0 }}>
-                  <div style={{ position: 'relative', width: TW, height: '100%', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(TW / 520, 220 / HH[q2.media]).toFixed(4) }}>
-                      <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {wallTiles}
           </div>
           {/* the scroller only carries the snapping and the taps; it draws nothing */}
-          <div ref={wallScrollRef} className="v3ms" onScroll={onWallScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', scrollSnapType: 'y mandatory', scrollPaddingBottom: 164 }}>
+          <div ref={wallScrollRef} className="v3ms" onScroll={onWallScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', scrollSnapType: 'y mandatory', scrollPaddingTop: 250, ...(sdOk ? ({ scrollTimeline: '--wall y' } as React.CSSProperties) : null) }}>
             <div style={{ height: 250 }} />
             {WALL_ORDER.map((i, k) => (
               <button
@@ -649,10 +719,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 aria-label={P[i].name + ', ' + P[i].type}
                 onClick={() => { if (k === Math.round(s.wf)) openProject(i); else if (wallScrollRef.current) wallScrollRef.current.scrollTo({ top: k * 180, behavior: s.reduced ? 'auto' : 'smooth' }); }}
                 onFocus={() => { if (wallScrollRef.current && Math.round(s.wf) !== k) wallScrollRef.current.scrollTo({ top: k * 180, behavior: s.reduced ? 'auto' : 'smooth' }); }}
-                style={{ display: 'block', width: TW, height: 180, margin: '0 auto', scrollSnapAlign: 'center', scrollSnapStop: 'always' }}
+                style={{ display: 'block', width: TW, height: 180, margin: '0 auto', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
               />
             ))}
-            <div style={{ height: 414 }} />
+            <div style={{ height: Math.max(0, height - 430) }} />
           </div>
           {/* where you are among all of them, like the rail on the desktop wall */}
           <div aria-hidden style={{ position: 'absolute', right: 10, top: 272, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, pointerEvents: 'none' }}>
@@ -661,18 +731,18 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
             ))}
           </div>
           <div aria-live="polite" ref={capRef} style={{ position: 'absolute', left: 22, right: 22, bottom: 96, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
-            <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>{String(focus + 1).padStart(2, '0')} / {WALL_ORDER.length}</span>
+            <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'color-mix(in srgb, var(--text-primary) var(--lit, 0%), var(--text-label))' }}>{String(focus + 1).padStart(2, '0')} / {WALL_ORDER.length}</span>
             <span ref={capNameRef} style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.03em' }}>{P[WALL_ORDER[focus]].name}</span>
-            <span ref={capTypeRef} style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{P[WALL_ORDER[focus]].desc || P[WALL_ORDER[focus]].type}</span>
+            <span ref={capTypeRef} style={{ fontSize: 14, lineHeight: 1.45, color: 'color-mix(in srgb, var(--text-primary) var(--lit, 0%), var(--text-secondary))', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{P[WALL_ORDER[focus]].desc || P[WALL_ORDER[focus]].type}</span>
           </div>
         </div>
       )}
 
       {/* ===== INDEX ===== */}
       {(screen === 'index' || leaving === 'index') && (
-        <div ref={indexLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W }}>
+        <div ref={indexLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: W }}>
         <div className="v3ms" style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
-          <div style={{ padding: '76px 22px 110px' }}>
+          <div style={{ padding: '76px 18px 110px' }}>
             <div role="group" aria-label="Show a type" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', height: 48 }}>
               {KINDS.map((k, gi) => {
                 const on = gi === 0 ? filt == null : filt === gi - 1;
@@ -683,7 +753,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                   </button>
                 );
               })}
-              <span aria-hidden style={{ position: 'absolute', left: 0, bottom: 2, width: 22, height: 1.5, background: 'var(--text-primary)', translate: `${((filt == null ? 0 : filt + 1) * ((346 - 46) / 6)) + 15}px 0`, transition: 'translate .5s cubic-bezier(.34,1.3,.64,1)' }} />
+              <span aria-hidden style={{ position: 'absolute', left: 0, bottom: 2, width: 22, height: 1.5, background: 'var(--text-primary)', translate: `${((filt == null ? 0 : filt + 1) * ((W - 36 - 46) / 6)) + 12}px 0`, transition: 'translate .5s cubic-bezier(.34,1.3,.64,1)' }} />
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 18 }}>
               <span style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.035em' }}>{filt == null ? 'All projects' : KINDS[filt + 1][0]}</span>
@@ -706,7 +776,18 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                     </div>
                     <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
                       <span style={{ fontSize: 16, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.name}</span>
-                      <span style={{ fontSize: 12.5, color: 'var(--text-label)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.topic || q2.stackText || (q2.stack || []).join(' · ')}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, height: 18, fontSize: 12.5, color: 'var(--text-label)', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                        {q2.topic
+                          ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.topic}</span>
+                          : (
+                            <>
+                              {(q2.stack || []).map((st) => LOGO[st] && (
+                                <svg key={st} className="v3lg" width={Number(LOGO[st].w ?? 18) * 0.8} height={Number(LOGO[st].h ?? 18) * 0.8} viewBox={LOGO[st].vb ?? '0 0 24 24'} role="img" aria-label={st} style={{ flex: 'none' }}><path d={LOGO[st].d} fill={logoColor(st)} /></svg>
+                              ))}
+                              {(q2.stackText || (q2.stack || []).filter((st) => !LOGO[st]).join(' · ')) && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.stackText || (q2.stack || []).filter((st) => !LOGO[st]).join(' · ')}</span>}
+                            </>
+                          )}
+                      </span>
                     </span>
                     <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--text-label)" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={ICON[TYPEICON[q2.type]]} /></svg>
                   </button>
@@ -722,16 +803,17 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       {screen === 'project' && (
         <>
           <div ref={projScrollRef} className="v3ms" onScroll={onProjScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: 'var(--room-bg)' }}>
-            <div ref={projInnerRef} style={{ width: MOB_W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column', opacity: 0 }}>
-              <h1 style={{ margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
-              <p style={{ margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
+            <div key={p.id} ref={projInnerRef} style={{ width: W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column' }}>
+              <style>{RISE_CSS}</style>
+              <h1 className="v3rise" style={{ ...rise(0), margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
+              <p className="v3rise" style={{ ...rise(1), margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
+              <div className="v3rise" style={{ ...rise(2), display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
                 {(p.stack || []).map((st) => LOGO[st] && (
                   <svg key={st} className="v3lg" width={LOGO[st].w ?? 18} height={LOGO[st].h ?? 18} viewBox={LOGO[st].vb ?? '0 0 24 24'} role="img" aria-label={st}><path d={LOGO[st].d} fill={logoColor(st)} /></svg>
                 ))}
                 <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)' }}>{stackText}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 11, marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--line-hairline)' }}>
+              <div className="v3rise" style={{ ...rise(3), display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 11, marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--line-hairline)' }}>
                 {details.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13.5, color: 'var(--text-strong)', minWidth: 0 }}>
                     <span style={{ display: 'flex', flex: 'none', width: 16, height: 16, color: 'var(--text-label)' }}>
@@ -746,15 +828,15 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 ))}
               </div>
               {(p.links || []).slice(0, 1).map((l) => (
-                <a key={l.href} href={l.href} style={{ marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
+                <a key={l.href} href={l.href} className="v3rise" style={{ ...rise(4), marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
-              <div style={{ marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
-                <div style={{ position: 'relative', width: 346, height: Math.round(HH[p.media] * Math.min(346 / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
+              <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
+                <div style={{ position: 'relative', width: CW, height: Math.round(HH[p.media] * Math.min(CW / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
                   {p.hero?.src
                     // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
                     ? <img src={p.hero.src} alt={p.hero.alt || ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
                     : (
-                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(346 / 520, 240 / HH[p.media]).toFixed(4) }}>
+                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / HH[p.media]).toFixed(4) }}>
                         <MediaBlock kind={p.media as MediaKind} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                       </div>
                     )}
@@ -793,8 +875,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       {(it.p || []).map((qq: string, j2: number) => (
                         <p key={j2} style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: 'var(--text-secondary)' }}>{qq}</p>
                       ))}
-                      <div style={{ position: 'relative', width: 346, height: (parseInt(it.vh, 10) * 0.5767).toFixed(0) + 'px', overflow: 'hidden' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 0, width: 600, transformOrigin: '0 0', scale: '0.5767' }}>
+                      <div style={{ position: 'relative', width: CW, height: (parseInt(it.vh, 10) * CW / 600).toFixed(0) + 'px', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', left: 0, top: 0, width: 600, transformOrigin: '0 0', scale: (CW / 600).toFixed(4) }}>
                           <SystemViz which={it.which} hintSize="600px,370px" />
                         </div>
                       </div>
@@ -822,6 +904,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
           {/* contents: a small square in the corner shows where you are; tap it for the parts */}
           {secs.length > 1 && (
             <>
+              {/* tap anywhere outside the contents sheet to put it away */}
+              <div
+                aria-hidden
+                onClick={() => setTocOpen(false)}
+                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', opacity: tocOpen ? 1 : 0, pointerEvents: tocOpen ? 'auto' : 'none', transition: 'opacity .3s ease' }}
+              />
               <button
                 className="v3tbtn"
                 type="button"
@@ -854,7 +942,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== SHELF: volumes lie in a stack, spines out ===== */}
       {(screen === 'shelf' || leaving === 'shelf') && (
-        <div ref={shelfLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy}px` }}>
+        <div ref={shelfLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: W, translate: `0 ${dy}px` }}>
           <div ref={stkRef} style={{ position: 'absolute', inset: 0 }}>
             <span ref={hint1Ref} style={{ position: 'absolute', left: 0, right: 0, top: 214, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>Six volumes</span>
             {V.map((b, i) => {
@@ -880,13 +968,15 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 </button>
               );
             })}
-            <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
-            <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
-            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 690, textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
+            <div ref={ledgeRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+              <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
+              <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
+            </div>
+            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 672 + Math.max(0, Math.min(18, dy)), textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
-          <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', pointerEvents: 'none', visibility: 'hidden' }}>
-            <div ref={moShadowRef} style={{ position: 'absolute', left: 25, top: 92, width: BOOK_W, height: BOOK_H, borderRadius: '3px 6px 6px 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0 }} />
+          <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700, perspectiveOrigin: `${W / 2}px ${335 + BOOK_DROP}px`, pointerEvents: 'none', visibility: 'hidden' }}>
+            <div ref={moShadowRef} style={{ position: 'absolute', left: W / 2 - BOOK_W / 2, top: 335 + BOOK_DROP - BOOK_H / 2, width: BOOK_W, height: BOOK_H, borderRadius: '3px 6px 6px 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0 }} />
             {(() => {
               const mi = V[vol], mr = stackRect(vol), mss = mr.w / BOOK_H, mdk = mr.h / mss;
               const paper = '#E4E2DB';
@@ -931,14 +1021,16 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
       {screen === 'book' && (
-        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy}px` }}>
-          <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .25s ease' }}>Vol. {v.n} · {v.title}</div>
+        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy + BOOK_DROP}px` }}>
+          <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .5s ease' }}>Vol. {v.n} · {v.title}</div>
           <div ref={boardRef} onPointerDown={swDown} onPointerUp={swUp} style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', transition: 'translate .38s cubic-bezier(.22,1,.36,1)', touchAction: 'pan-y' }}>
             <div ref={boardXRef} style={{ position: 'absolute', left: 25, top: 92, width: 680, height: 486, transformStyle: 'preserve-3d' }}>
               {/* the page block: thickness under each side, more on the side you've read */}
               <span aria-hidden className="v3edgeV" ref={lEdgeRef} style={{ position: 'absolute', left: -2, top: 3, width: 2, height: 480, visibility: closedIdle ? 'hidden' : 'visible', borderRadius: '2px 0 0 2px' }} />
               <span aria-hidden className="v3edgeV" ref={rEdgeRef} style={{ position: 'absolute', left: 680, top: 3, width: 6, height: 480, borderRadius: '0 2px 2px 0' }} />
-              <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle || coverTurn ? 'hidden' : 'visible', boxShadow: 'var(--shadow-book-phone)' }}>
+              {/* the left page's shadow is its own layer, so it can grow in as the cover lands instead of appearing with the page */}
+              <span aria-hidden ref={shLRef} style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, borderRadius: '3px 0 0 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle || coverTurn ? 'hidden' : 'visible' }}>
                 <div style={{ width: 420, height: 600, transformOrigin: '0 0', scale: '0.8095' }}>
                   <BookPage page={staticL} side="left" clock={clock} form={form} onField={(k, val) => setForm((f) => ({ ...f, [k]: val }))} onShelve={() => { setForm((f) => ({ ...f, msg: '' })); closeBook(); }} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
                 </div>
@@ -956,7 +1048,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               </div>
             </div>
           </div>
-          <div ref={ctlRef} style={{ opacity: 0, position: 'absolute', left: 20, right: 20, top: 612, display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'opacity .25s ease' }}>
+          <div ref={ctlRef} style={{ opacity: 0, translate: '0 14px', position: 'absolute', left: 20, right: 20, top: 612, display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'opacity .5s ease, translate .6s cubic-bezier(.22, 1, .36, 1)' }}>
             <button ref={prevBtnRef} className="v3tbtn" type="button" aria-label="Previous page" onClick={prev} style={{ '--c': atFirstR ? 'var(--line-hover)' : 'var(--text-primary)', width: 48, height: 48, fontSize: 20 } as React.CSSProperties}>←</button>
             <span ref={posRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-secondary)' }}>{pgiRender + 1} / {v.all.length}</span>
             <button ref={nextBtnRef} className="v3tbtn" type="button" aria-label="Next page" onClick={next} style={{ '--c': atLastR ? 'var(--line-hover)' : 'var(--text-primary)', width: 48, height: 48, fontSize: 20 } as React.CSSProperties}>→</button>
@@ -965,13 +1057,13 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       )}
 
       {/* ===== top bar ===== */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-room-80)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--room-bg)' }}>
         <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
         <span style={{ display: 'flex', alignItems: 'center' }}>
           {showBack && (
             <button className="v3tbtn" type="button" onClick={() => (screen === 'book' ? closeBook() : go(from))} style={{ '--c': 'var(--text-primary)', height: 44, padding: '0 12px', fontSize: 15 } as React.CSSProperties}>{screen === 'book' ? 'Close' : 'Back'}</button>
           )}
-          <button className="v3tbtn" type="button" onClick={toggle} aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'} style={{ '--c': 'var(--text-label)', width: 44, height: 44 } as React.CSSProperties}>
+          <button className="v3tbtn" type="button" onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); toggle({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); }} aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'} style={{ '--c': 'var(--text-label)', width: 44, height: 44 } as React.CSSProperties}>
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d={theme === 'light' ? 'M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z' : 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4'} />
             </svg>
@@ -980,7 +1072,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       </div>
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
-      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--glass-room-86)', borderTop: '1px solid var(--line-hairline)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
+      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--room-bg)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' || (opening && screen === 'shelf') ? '100%' : '0px'}`, transition: 'translate .55s cubic-bezier(.22,1,.36,1)' }}>
         {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
