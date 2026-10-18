@@ -60,7 +60,7 @@ interface Spring { y: number; v: number; init?: number }
 const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIndex2(props, ref) {
   const {
     bare = false, wallColor = 'var(--room-bg)', view = 'index', motion = 'swap', mode = 'follow',
-    initialViewReq, escBlocked = false, theme = 'dark', hintSize,
+    initialViewReq, theme = 'dark', hintSize,
     onOpen, onFocus, onPeek,
   } = props;
   void initialViewReq; void hintSize;
