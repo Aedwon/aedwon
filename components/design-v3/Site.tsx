@@ -3,7 +3,7 @@
 // Site shell: theme provider, desktop/phone switch (breakpoint 1024px, decided with
 // the owner), the uniform-scale letterbox frame, and the first-load moment.
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import Room from './Room';
 import Mobile from './Mobile';
 import dynamic from 'next/dynamic';
@@ -91,13 +91,30 @@ const Studio = process.env.NODE_ENV === 'development' ? dynamic(() => import('./
 
 export default function Site({ initialPath }: { initialPath: string }) {
   const theme = useThemeAttr();
-  // The new theme spreads out from the toggle as a circle (View Transitions); without support or with reduced motion it just switches.
+  // The theme change spreads out from the toggle as a circle. On desktop the new theme is revealed through it (View Transitions).
+  // On a phone that is too heavy to stay smooth, so a plain circle of the new background grows from the toggle, the theme swaps
+  // while it covers the screen, and the circle fades away. Without support, or with reduced motion, it just switches.
+  const switching = useRef(false);
   const toggle = useCallback((origin?: { x: number; y: number }) => {
     const next = currentTheme() === 'light' ? 'dark' : 'light';
-    const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
-    if (!doc.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setTheme(next); return; }
+    if (switching.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setTheme(next); return; }
     const x = origin?.x ?? window.innerWidth / 2, y = origin?.y ?? 0;
     const reach = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    if (window.innerWidth < BREAKPOINT) {
+      switching.current = true;
+      const ov = document.createElement('div');
+      Object.assign(ov.style, { position: 'fixed', inset: '0', zIndex: '2147483000', pointerEvents: 'none', background: next === 'light' ? '#F2F1ED' : '#0A0A0C', clipPath: `circle(0px at ${x}px ${y}px)` });
+      document.body.appendChild(ov);
+      const done = () => { setTheme(next); ov.remove(); switching.current = false; };
+      ov.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${reach}px at ${x}px ${y}px)`] }, { duration: 460, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' }).finished
+        .then(() => { setTheme(next); return ov.animate({ opacity: [1, 0] }, { duration: 280, easing: 'ease-out', fill: 'forwards' }).finished; })
+        .then(() => { ov.remove(); switching.current = false; })
+        .catch(done);
+      return;
+    }
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
+    if (!doc.startViewTransition) { setTheme(next); return; }
     const t = doc.startViewTransition(() => setTheme(next));
     t.ready.then(() => {
       document.documentElement.animate(
