@@ -156,13 +156,11 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
     );
   }
   if (kind === 'wishes') {
-    // Paimon on a dotted gold glow, a fate beside her. Art only, no numbers, so nothing here can go stale.
+    // Paimon on a dotted gold glow. Art only, no numbers, so nothing here can go stale.
     return (
       <div style={{ position: 'relative', width: 520, height: H, boxSizing: 'border-box', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--data-border)', background: 'radial-gradient(60% 80% at 50% 50%, color-mix(in srgb, var(--status-wip) 24%, transparent) 0%, transparent 70%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 20px 20px, var(--data-body)', boxShadow: 'var(--shadow-object)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element -- small static WebP */}
         <img src="/genshin/paimon.webp" alt="" draggable={false} style={{ height: 268, width: 'auto' }} />
-        {/* eslint-disable-next-line @next/next/no-img-element -- small static WebP */}
-        <img src="/genshin/item-intertwined-fate.webp" alt="" draggable={false} style={{ position: 'absolute', left: 'calc(50% + 64px)', top: 'calc(50% + 58px)', width: 72, height: 72 }} />
       </div>
     );
   }
