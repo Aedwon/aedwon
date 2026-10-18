@@ -222,3 +222,20 @@ describe('phone screens, frame height and zoom', () => {
     for (const z of [0.5, 5, '2']) { const bad = await base(); bad.hero = { src, zoom: z }; expect(validateProject(bad, 'pantas').length, String(z)).toBeGreaterThan(0); }
   });
 });
+
+describe('the logo list', () => {
+  it('names a real file for every logo in public/logos, and lists none that are missing', async () => {
+    const { LOGOS } = await import('@/lib/design-v3/data/logos');
+    const onDisk = await listLogos();
+    expect(Object.keys(LOGOS).sort()).toEqual(onDisk.filter((n) => LOGOS[n]).sort());
+    for (const n of onDisk) expect(LOGOS[n], 'add ' + n + ' to lib/design-v3/data/logos.ts').toBeDefined();
+    for (const [n, v] of Object.entries(LOGOS)) for (const f of [v.light, v.dark].filter(Boolean) as string[]) await expect(fs.access(path.join(process.cwd(), 'public', f)), n + ' ' + f).resolves.toBeUndefined();
+  });
+  it('every logo an About page names is in the list', async () => {
+    const { LOGOS } = await import('@/lib/design-v3/data/logos');
+    for (const id of SITE_IDS.filter((s) => s.startsWith('about-'))) {
+      const d = JSON.parse(await fs.readFile(path.join(SITE_DIR, id + '.json'), 'utf8'));
+      for (const p of d.pages) for (const n of [p.logo, ...(p.logos || [])].filter(Boolean)) expect(LOGOS[n], id + ' ' + n).toBeDefined();
+    }
+  });
+});

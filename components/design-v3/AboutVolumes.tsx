@@ -17,6 +17,7 @@ import BookPage from './BookPage';
 import type { AboutVolumesHandle, Req } from './contracts';
 import { VOLUMES, type BookPageDef, type Volume } from '@/lib/design-v3/data/volumes';
 import { setStudio } from './studio/store';
+import { preloadLogos } from '@/lib/design-v3/data/logos';
 import { useTheme } from '@/lib/design-v3/theme';
 
 const LAST = VOLUMES.length - 1;
@@ -199,6 +200,10 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   }).current;
 
   const [dv, setDv] = useState<Disc>(() => ({ active: null, pending: null, leafOn: false, barAt: 0, ...idleRead(VOLUMES[0], 0) }));
+  // the company logos in the books load once, up front, so turning a page does not redraw them
+  useEffect(() => {
+    preloadLogos(VOLUMES.flatMap((v) => v.pages.flatMap((p) => [p.logo as string | undefined, ...((p.logos as string[] | undefined) || [])])).filter((n): n is string => !!n));
+  }, []);
   // tell the local studio which pages are on screen, so its drawer shows their text
   useEffect(() => {
     const v = dv.active != null ? VOLUMES[dv.active] : null;

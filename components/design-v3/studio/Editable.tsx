@@ -5,6 +5,7 @@
 import { createElement, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Img } from '@/lib/design-v3/data/projects';
 import { useStudio } from './store';
+import { logoUrl } from '@/lib/design-v3/data/logos';
 
 type Tag = 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'div' | 'figcaption';
 
@@ -172,24 +173,19 @@ export function AddSection({ id, count }: { id: string; count: number }) {
 }
 
 // The logos in public/logos. The files named -light are the dark-ink versions for light backgrounds and the files
-// named -dark are the white versions for dark backgrounds; a logo with neither has one file for both.
+// named -dark are the white versions for dark backgrounds; a logo with neither has one file for both
+// (lib/design-v3/data/logos.ts says which file each logo uses).
 let logoNames: Promise<string[]> | null = null;
 const fetchLogos = () => (logoNames ??= fetch('/api/studio/save?logos=1', { headers: { 'x-studio': '1' } }).then((r) => r.json()).then((d) => (d.ok ? (d.logos as string[]) : [])).catch(() => []));
 
-// The file to show for a logo on a light or a dark background. Falls back to the plain file.
-export function logoSrc(name: string, onDark: boolean): string {
-  return `/logos/${name}.svg`.replace(/\.svg$/, `-${onDark ? 'dark' : 'light'}.svg`);
-}
-
-// A company logo. It shows the dark-ink file (book paper is light in both themes), or the plain file when a logo
-// has no -light version (or a webp when there is no svg). While editing, a list lets you choose which logo it is, or none.
+// A company logo. It shows the dark-ink file (book paper is light in both themes). While editing, a list lets you
+// choose which logo it is, or none.
 export function LogoSlot({ id, path, value, box, label }: { id: string; path: string; value?: string; box: CSSProperties; label: string }) {
   const api = useApi();
   const [names, setNames] = useState<string[]>([]);
-  const [step, setStep] = useState(0); // 0: the -light file, 1: the plain svg, 2: a webp
   const body = value ? (
-    // eslint-disable-next-line @next/next/no-img-element -- local SVG files
-    <img src={step === 0 ? logoSrc(value, false) : step === 1 ? `/logos/${value}.svg` : `/logos/${value}.webp`} alt={label} draggable={false} onError={() => setStep((s) => Math.min(2, s + 1))} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+    // eslint-disable-next-line @next/next/no-img-element -- local SVG files; decoded at once so a page turn does not flash
+    <img src={logoUrl(value)} alt={label} decoding="sync" draggable={false} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
   ) : <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11, color: 'var(--paper-meta)' }}>{`[${label} logo]`}</span>;
   if (!api) return <div style={{ ...box, border: value ? 'none' : box.border }}>{body}</div>;
   const load = () => { fetchLogos().then(setNames); };
@@ -202,7 +198,7 @@ export function LogoSlot({ id, path, value, box, label }: { id: string; path: st
         value={value || ''}
         onFocus={load}
         onMouseDown={load}
-        onChange={(e) => { setStep(0); quiet(api.saveOp(id, e.target.value ? { op: 'set', path, value: e.target.value } : { op: 'unset', path })); }}
+        onChange={(e) => { quiet(api.saveOp(id, e.target.value ? { op: 'set', path, value: e.target.value } : { op: 'unset', path })); }}
       >
         <option value="">(no logo)</option>
         {[...new Set([...(value ? [value] : []), ...names])].map((n) => <option key={n} value={n}>{n}</option>)}
