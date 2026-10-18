@@ -156,25 +156,14 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
     );
   }
   if (kind === 'wishes') {
-    // a drawn counter: banner chips, the pity bar, and one bar per 5-star. No numbers, so nothing here can go stale.
-    const bars = [62, 38, 88, 24, 71, 45, 80, 30];
+    // three 5-star portraits over a dotted gold glow. Art only, no numbers, so nothing here can go stale.
     return (
-      <div style={{ width: 520, height: H, boxSizing: 'border-box', padding: '26px 28px', borderRadius: 10, border: '1px solid var(--data-border)', background: 'var(--data-body)', display: 'flex', flexDirection: 'column', gap: 20, boxShadow: 'var(--shadow-object)' }}>
-        <span style={{ display: 'flex', gap: 8 }}>
-          {['Character', 'Weapon', 'Standard'].map((t, i) => (
-            <span key={t} style={{ ...mono, fontSize: 11, padding: '5px 11px', borderRadius: 99, border: '1px solid var(--data-border)', color: i === 0 ? 'var(--text-primary)' : 'var(--dev-label)' }}>{t}</span>
-          ))}
-        </span>
-        <span style={{ position: 'relative', height: 8, borderRadius: 99, background: 'var(--line-track)' }}>
-          <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '46%', borderRadius: 99, background: 'var(--status-live)' }} />
-          <span style={{ position: 'absolute', left: '82%', top: -4, bottom: -4, width: 1.5, background: 'var(--line-frame)' }} />
-        </span>
-        <span style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
-          {bars.map((b, i) => (
-            <span key={i} style={{ flex: 1, height: b + '%', borderRadius: 3, background: b > 82 ? 'var(--status-wip)' : 'var(--status-live)', opacity: 0.85 }} />
-          ))}
-        </span>
-        <span style={{ ...mono, fontSize: 11.5, color: 'var(--dev-label)' }}>{name}</span>
+      <div style={{ position: 'relative', width: 520, height: H, boxSizing: 'border-box', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--data-border)', background: 'radial-gradient(70% 90% at 50% 45%, color-mix(in srgb, var(--status-wip) 22%, transparent) 0%, transparent 70%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 20px 20px, var(--data-body)', boxShadow: 'var(--shadow-object)' }}>
+        {[['diluc', -24, 6, 245], ['odette', 292, 6, 245], ['ineffa', 128, 0, 300]].map(([n, x, y, ht]) => (
+          // eslint-disable-next-line @next/next/no-img-element -- small static WebP
+          <img key={n as string} src={`/genshin/tile-${n}.webp`} alt="" draggable={false} style={{ position: 'absolute', left: x as number, bottom: y as number, height: ht as number, width: 'auto' }} />
+        ))}
+        <span style={{ position: 'absolute', left: 20, top: 18, ...mono, fontSize: 11.5, color: 'var(--dev-label)' }}>{name}</span>
       </div>
     );
   }

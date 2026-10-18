@@ -40,6 +40,13 @@ function Art({ name, kind, size, style }: { name: string; kind: 'icon' | 'splash
   );
 }
 
+function Item({ name, size }: { name: string; size: number }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- small static WebP, no optimizer needed
+    <img src={`/genshin/item-${name}.webp`} alt="" width={size} height={size} draggable={false} style={{ display: 'block', flex: 'none' }} />
+  );
+}
+
 function pityColor(pity: number, soft: number) {
   return pity < soft ? 'var(--status-live)' : 'var(--status-wip)';
 }
@@ -63,6 +70,8 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
     [stats],
   );
 
+  // standard banner wishes use Acquaint Fate, the other two use Intertwined Fate
+  const fate = banner === 'standard' ? 'acquaint-fate' : 'intertwined-fate';
   const pad = compact ? 16 : 24;
   const card: CSSProperties = { border: '1px solid var(--line-hairline-2)', borderRadius: 12, background: 'var(--surface-media)', boxSizing: 'border-box' };
   const label: CSSProperties = { fontSize: 13, color: 'var(--text-label)' };
@@ -94,34 +103,56 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
       ) : (
         <>
           {stats.lastFiveStar && (
-            <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'center', justifyContent: 'space-between', minHeight: compact ? undefined : 220, background: 'radial-gradient(120% 140% at 85% 50%, var(--surface-control-hover) 0%, var(--surface-media) 70%)' }}>
-              <div style={{ padding: pad, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-                <span style={label}>Latest 5-star</span>
-                <span style={{ fontSize: compact ? 26 : 34, fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.1, color: 'var(--text-primary)' }}>{stats.lastFiveStar.name}</span>
-                <span style={{ fontSize: 13, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
-                  {stats.lastFiveStar.pity === null ? 'pity unknown' : `${stats.lastFiveStar.pity} pulls`} · {fmtDate.format(new Date(stats.lastFiveStar.time))}
+            <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'stretch', justifyContent: 'space-between', minHeight: compact ? undefined : 300, background: 'radial-gradient(90% 120% at 82% 40%, color-mix(in srgb, var(--status-wip) 20%, transparent) 0%, transparent 62%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 22px 22px, var(--surface-media)' }}>
+              <div style={{ padding: compact ? '20px 20px 0' : '32px 0 32px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: compact ? 14 : 24, position: 'relative', zIndex: 1, flex: '0 1 52%' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, ...label, color: 'var(--status-wip)' }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 2.5l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.7 5.9 21.1l1.4-6.8L2.2 9.6l6.9-.8z" /></svg>
+                  Latest 5-star
                 </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <span style={{ fontSize: compact ? 34 : 54, fontWeight: 600, letterSpacing: '-0.045em', lineHeight: 1.02, color: 'var(--text-primary)' }}>{stats.lastFiveStar.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px 0 6px', borderRadius: 99, background: 'var(--surface-sunken)', border: '1px solid var(--line-hairline-2)', fontSize: 14, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
+                      <Item name={fate} size={22} />
+                      {stats.lastFiveStar.pity === null ? 'pity unknown' : `${stats.lastFiveStar.pity} wishes`}
+                    </span>
+                    <span style={{ fontSize: 14, color: 'var(--text-label)' }}>{fmtDate.format(new Date(stats.lastFiveStar.time))}</span>
+                  </div>
+                </div>
               </div>
-              {stats.lastFiveStar.itemType === 'Character' ? (
-                <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="splash" style={{ height: compact ? 190 : 250, width: 'auto', alignSelf: compact ? 'center' : 'auto', marginRight: compact ? 0 : 24, marginTop: compact ? -8 : 0, objectFit: 'contain' }} />
-              ) : (
-                <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="icon" size={compact ? 96 : 120} style={{ alignSelf: compact ? 'center' : 'auto', margin: compact ? '0 0 20px' : '0 56px 0 0' }} />
-              )}
+              <div style={{ position: 'relative', flex: compact ? 'none' : '1 1 48%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: compact ? 210 : undefined }}>
+                {stats.lastFiveStar.itemType === 'Character' ? (
+                  <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="splash" style={{ height: compact ? 210 : 340, width: 'auto', maxWidth: '110%', objectFit: 'contain', marginRight: compact ? 0 : -8 }} />
+                ) : (
+                  <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="icon" size={compact ? 140 : 220} />
+                )}
+              </div>
             </div>
           )}
 
           <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                <span style={{ fontSize: compact ? 48 : 64, fontWeight: 600, letterSpacing: '-0.05em', lineHeight: 1, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{stats.currentFiveStarPity}</span>
-                <span style={{ fontSize: 14, color: 'var(--text-label)' }}>/ {spec.hard} pulls since last 5-star</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: compact ? 12 : 16 }}>
+                <Item name={fate} size={compact ? 44 : 60} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <span style={{ fontSize: compact ? 40 : 54, fontWeight: 600, letterSpacing: '-0.05em', lineHeight: 1, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{stats.currentFiveStarPity}</span>
+                    <span style={{ fontSize: 14, color: 'var(--text-label)' }}>/ {spec.hard} wishes since last 5-star</span>
+                  </span>
+                </div>
               </div>
-              <span style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>4-star pity {stats.currentFourStarPity} / 10</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: compact ? 'flex-start' : 'flex-end', gap: 4 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, color: 'var(--text-strong)' }}>
+                  <Item name="primogem" size={20} />
+                  up to {((spec.hard - stats.currentFiveStarPity) * PRIMOGEMS_PER_WISH).toLocaleString('en-US')} to guaranteed
+                </span>
+                <span style={{ fontSize: 12.5, color: 'var(--text-label)' }}>4-star pity {stats.currentFourStarPity} / 10</span>
+              </div>
             </div>
             <div
               role="img"
-              aria-label={`${stats.currentFiveStarPity} of ${spec.hard} pulls to guaranteed 5 star, soft pity from ${spec.soft}`}
-              style={{ position: 'relative', height: 8, borderRadius: 99, background: 'var(--line-track)' }}
+              aria-label={`${stats.currentFiveStarPity} of ${spec.hard} wishes to guaranteed 5 star, soft pity from ${spec.soft}`}
+              style={{ position: 'relative', height: 10, borderRadius: 99, background: 'var(--line-track)' }}
             >
               <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (stats.currentFiveStarPity / spec.hard) * 100)}%`, borderRadius: 99, background: pityColor(stats.currentFiveStarPity, spec.soft), transition: 'width .5s cubic-bezier(.22,1,.36,1), background-color .3s ease' }} />
               <div style={{ position: 'absolute', left: `${(spec.soft / spec.hard) * 100}%`, top: -4, bottom: -4, width: 1.5, background: 'var(--line-frame)' }} />
@@ -133,14 +164,19 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
 
           <div style={{ display: 'grid', gridTemplateColumns: compact ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: compact ? 10 : 12 }}>
             {[
-              { k: 'Wishes', v: stats.totalWishes.toLocaleString('en-US') },
-              { k: '5-star pulls', v: String(stats.fiveStarCount) },
-              { k: 'Average 5-star pity', v: stats.averageFiveStarPity === null ? '-' : stats.averageFiveStarPity.toFixed(1) },
-              { k: 'Primogems spent', v: (stats.totalWishes * PRIMOGEMS_PER_WISH).toLocaleString('en-US') },
+              { k: 'Wishes', v: stats.totalWishes.toLocaleString('en-US'), icon: fate },
+              { k: 'Primogems spent', v: (stats.totalWishes * PRIMOGEMS_PER_WISH).toLocaleString('en-US'), icon: 'primogem' },
+              { k: '5-star pulls', v: String(stats.fiveStarCount), icon: 'starglitter' },
+              { k: 'Avg 5-star pity', v: stats.averageFiveStarPity === null ? '-' : stats.averageFiveStarPity.toFixed(1), icon: null },
             ].map((m) => (
-              <div key={m.k} style={{ ...card, padding: compact ? '12px 14px' : '16px 18px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <span style={label}>{m.k}</span>
-                <span style={{ fontSize: compact ? 22 : 26, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{m.v}</span>
+              <div key={m.k} style={{ ...card, padding: compact ? '12px 14px' : '16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                {m.icon ? <Item name={m.icon} size={compact ? 36 : 44} /> : (
+                  <svg width={compact ? 36 : 44} height={compact ? 36 : 44} viewBox="0 0 44 44" fill="none" aria-hidden><circle cx="22" cy="22" r="17" stroke="var(--line-hover)" strokeWidth="3" /><path d="M22 5a17 17 0 0 1 14.7 8.5" stroke="var(--status-wip)" strokeWidth="3" strokeLinecap="round" /><path d="M22 14.5l2.2 4.7 5.1.6-3.8 3.5 1 5.1-4.5-2.6-4.5 2.6 1-5.1-3.8-3.5 5.1-.6z" fill="var(--status-wip)" /></svg>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+                  <span style={label}>{m.k}</span>
+                  <span style={{ fontSize: compact ? 22 : 26, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{m.v}</span>
+                </div>
               </div>
             ))}
           </div>
