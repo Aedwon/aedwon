@@ -17,8 +17,8 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        has: [{ type: "host", value: "aedwon.com" }],
-        destination: "https://www.aedwon.com/:path*",
+        has: [{ type: "host", value: "aedwon.site" }],
+        destination: "https://www.aedwon.site/:path*",
         permanent: true,
       },
       {

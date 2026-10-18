@@ -17,19 +17,19 @@ import {
 import { isProjectIndexable } from "@/lib/data/project-registry";
 
 describe("SEO metadata contracts", () => {
-  it("uses www.aedwon.com as the single canonical origin", () => {
-    expect(SITE_URL).toBe("https://www.aedwon.com");
+  it("uses www.aedwon.site as the single canonical origin", () => {
+    expect(SITE_URL).toBe("https://www.aedwon.site");
     expect(absoluteUrl("/projects/pantas")).toBe(
-      "https://www.aedwon.com/projects/pantas",
+      "https://www.aedwon.site/projects/pantas",
     );
     expect(PERSON_JSON_LD).toMatchObject({
-      "@id": "https://www.aedwon.com/#person",
+      "@id": "https://www.aedwon.site/#person",
       url: SITE_URL,
     });
     expect(WEBSITE_JSON_LD).toMatchObject({
-      "@id": "https://www.aedwon.com/#website",
+      "@id": "https://www.aedwon.site/#website",
       url: SITE_URL,
-      author: { "@id": "https://www.aedwon.com/#person" },
+      author: { "@id": "https://www.aedwon.site/#person" },
     });
   });
 
@@ -71,9 +71,9 @@ describe("SEO metadata contracts", () => {
     ).toMatchObject({
       "@type": "BreadcrumbList",
       itemListElement: [
-        { position: 1, item: "https://www.aedwon.com/" },
-        { position: 2, item: "https://www.aedwon.com/projects" },
-        { position: 3, item: "https://www.aedwon.com/projects/pantas" },
+        { position: 1, item: "https://www.aedwon.site/" },
+        { position: 2, item: "https://www.aedwon.site/projects" },
+        { position: 3, item: "https://www.aedwon.site/projects/pantas" },
       ],
     });
   });
@@ -92,8 +92,8 @@ describe("SEO metadata contracts", () => {
       expect.arrayContaining([
         expect.objectContaining({
           source: "/:path*",
-          has: [{ type: "host", value: "aedwon.com" }],
-          destination: "https://www.aedwon.com/:path*",
+          has: [{ type: "host", value: "aedwon.site" }],
+          destination: "https://www.aedwon.site/:path*",
           permanent: true,
         }),
       ]),

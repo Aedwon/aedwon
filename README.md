@@ -1,8 +1,8 @@
 # Aerol Balayon
 
-[aedwon.com](https://aedwon.com) · [LinkedIn](https://linkedin.com/in/aedwon) · [Discord](https://discord.com/users/aedwon) · [Email](mailto:aerol.balayon@gmail.com)
+[aedwon.site](https://www.aedwon.site) · [LinkedIn](https://linkedin.com/in/aedwon) · [Discord](https://discord.com/users/aedwon) · [Email](mailto:aerol.balayon@gmail.com)
 
-I build apps, bots and web tools, mostly for events, communities and exam prep. This repository is the source of my portfolio. The full list of work is on [aedwon.com](https://aedwon.com).
+I build apps, bots and web tools, mostly for events, communities and exam prep. This repository is the source of my portfolio. The full list of work is on [aedwon.site](https://www.aedwon.site).
 
 ## Selected work
 
@@ -71,7 +71,7 @@ The site is a room. Projects hang on a **Wall**, the **Index** lists them, each 
 <details>
 <summary><b>Agent-facing surface</b></summary>
 
-The same content has a machine-readable form. [`/llms.txt`](https://aedwon.com/llms.txt) describes the portfolio and its canonical sources, and pages return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://aedwon.com/sitemap.xml) and [`/robots.txt`](https://aedwon.com/robots.txt) cover the public index and crawler guidance.
+The same content has a machine-readable form. [`/llms.txt`](https://www.aedwon.site/llms.txt) describes the portfolio and its canonical sources, and pages return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://www.aedwon.site/sitemap.xml) and [`/robots.txt`](https://www.aedwon.site/robots.txt) cover the public index and crawler guidance.
 
 CI runs the tests, lint and the production build. It then starts the built app and checks status codes, content negotiation, metadata, 404 behavior and the machine-readable endpoints with real HTTP requests.
 
