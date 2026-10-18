@@ -46,11 +46,11 @@ export const FLOWS: Record<string, FlowSpec> = {
   oppo: {
     label: 'Verification, tickets and scheduled embeds all run through one bot, which assigns team roles and collects a rating when a ticket closes',
     nodes: [
-      { id: 'verify', x: 68, y: 60, label: 'Verify', sub: 'team, UID', tone: 'a' },
+      { id: 'verify', x: 68, y: 60, label: 'Verify', sub: 'UID, server', tone: 'a' },
       { id: 'ticket', x: 68, y: 130, label: 'Tickets', sub: '4 categories', tone: 'a' },
       { id: 'embed', x: 68, y: 200, label: 'Embeds', sub: 'scheduled', tone: 'a' },
       { id: 'bot', x: 260, y: 130, label: 'OPPO bot', sub: 'MySQL', tone: 'c', w: 104 },
-      { id: 'roles', x: 452, y: 80, label: 'Team roles', sub: 'on verify', tone: 'b' },
+      { id: 'roles', x: 452, y: 80, label: 'Member role', sub: 'and nickname', tone: 'b' },
       { id: 'rating', x: 452, y: 180, label: '5 star rating', sub: 'by DM on close', tone: 'b' },
     ],
     edges: [
@@ -98,4 +98,40 @@ export const FLOWS: Record<string, FlowSpec> = {
     ],
     caption: 'the bot never serves HTTP, the site never reaches it directly',
   },
+};
+
+FLOWS['msl-raffle'] = {
+  label: 'Active boosters enter the weekly raffle, student leaders are filtered out, normal slots go first, extra slots go to the people who have won least, and the export lists unverified rows last',
+  nodes: [
+    { id: 'boost', x: 70, y: 130, label: 'Boosters', sub: 'active perks', tone: 'a' },
+    { id: 'filter', x: 210, y: 60, label: 'Filter', sub: 'no MSL leaders', tone: 'c' },
+    { id: 'normal', x: 210, y: 200, label: 'Normal slots', sub: '1 win a month', tone: 'c' },
+    { id: 'excess', x: 350, y: 130, label: 'Extra slots', sub: 'fewest wins', tone: 'c' },
+    { id: 'csv', x: 460, y: 60, label: 'CSV export', sub: 'unverified last', tone: 'b' },
+  ],
+  edges: [
+    { from: 'boost', to: 'filter', step: 0 },
+    { from: 'filter', to: 'normal', step: 1 },
+    { from: 'normal', to: 'excess', step: 2 },
+    { from: 'excess', to: 'csv', step: 3 },
+  ],
+  caption: 'weekly, with a catch-up draw if the bot was down',
+};
+
+FLOWS['oppo-match'] = {
+  label: 'A game result is logged and both teams have five minutes to acknowledge it. If both do, or the time runs out, the result is final. A dispute pauses the timer',
+  nodes: [
+    { id: 'result', x: 68, y: 60, label: 'Game result', sub: '/game_result', tone: 'a' },
+    { id: 'window', x: 260, y: 60, label: 'Ack window', sub: '5 minutes', tone: 'c' },
+    { id: 'dispute', x: 260, y: 190, label: 'Dispute', sub: 'timer paused', tone: 'c' },
+    { id: 'final', x: 452, y: 60, label: 'Result final', sub: 'both teams ack', tone: 'b' },
+    { id: 'auto', x: 452, y: 150, label: 'Auto-ack', sub: 'time ran out', tone: 'b' },
+  ],
+  edges: [
+    { from: 'result', to: 'window', step: 0 },
+    { from: 'window', to: 'final', step: 1 },
+    { from: 'window', to: 'dispute', step: 1 },
+    { from: 'window', to: 'auto', step: 2 },
+  ],
+  caption: 'from result to acknowledgement',
 };

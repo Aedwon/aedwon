@@ -4,7 +4,7 @@
   "type": "Discord bot",
   "media": "flow-marwie",
   "depth": "writeup",
-  "desc": "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are changed from a web control panel instead of slash commands.",
+  "desc": "Community bot for the Marwie AI App Builders Discord server, with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. A web control panel changes its settings.",
   "stack": [
     "Python",
     "PostgreSQL"
@@ -35,34 +35,27 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
+        "A rebuild of an older community bot for the Marwie AI App Builders server. It does moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are stored per server, on SQLAlchemy with Alembic migrations. Every slash command shows a private confirmation first, and nothing runs until the person who typed it presses Approve."
       ],
       "kind": "text"
     },
     {
-      "h": "What I built",
+      "h": "Why it exists",
       "p": [
-        "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are changed from a web control panel instead of slash commands.",
-        "[One or two sentences on the hardest part, and how you solved it.]"
+        "[Why this was built, in a sentence.]"
       ],
       "kind": "text"
     },
     {
       "h": "How it works",
       "p": [
-        "A setting changed on the web dashboard is queued in Postgres. A webhook message wakes the bot, which applies the change to the server, and the result shows back on the site. The bot never serves HTTP and the site never reaches it directly."
+        "Staff sign in to the web control panel with Discord. A change they make is queued in the database, and a webhook message wakes the bot, which checks the person's permissions again and then applies the change to the server. The result shows back on the site. The bot never serves HTTP, and the site never reaches it directly. The bot also keeps its token to itself, since the site only writes to the queue.",
+        "That's the hosted setup, on Vercel and Neon Postgres. The repo can also run both halves on one Mac with a shared SQLite file, where the bot checks the queue about once a second instead of waiting for a ping."
       ],
       "kind": "text",
       "diagram": "marwie"
-    },
-    {
-      "h": "How it went",
-      "p": [
-        "[The result: numbers if you have them, or what people said.]"
-      ],
-      "kind": "text"
     }
   ],
   "frame": {

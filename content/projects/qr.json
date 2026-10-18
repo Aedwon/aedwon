@@ -4,20 +4,20 @@
   "type": "Web tool",
   "media": "web",
   "depth": "note",
-  "desc": "In-browser QR code builder with gradient styling and SVG export that runs entirely client-side without backend requests.",
+  "desc": "A QR code builder that runs in the browser. Styles, colors, logos and exports are all handled on your device, with no account and no backend.",
   "stack": [
-    "TypeScript",
+    "JavaScript",
     "Vite",
-    "Tailwind"
+    "qr-code-styling"
   ],
   "links": [
     {
-      "label": "[qr studio url]",
-      "href": "#"
+      "label": "qr-code.aedwon.com",
+      "href": "https://qr-code.aedwon.com"
     },
     {
-      "label": "[Source]",
-      "href": "#"
+      "label": "github.com/Aedwon/QR-Code-Maker",
+      "href": "https://github.com/Aedwon/QR-Code-Maker"
     }
   ],
   "facts": [
@@ -36,6 +36,25 @@
     {
       "k": "Runs",
       "v": "Entirely in the browser"
+    }
+  ],
+  "sections": [
+    {
+      "h": "What it is",
+      "p": [
+        "QR Studio makes QR codes for URLs, plain text, Wi-Fi networks, email, phone numbers and SMS. You pick a shape for the modules and the corner markers, set solid or gradient colors, add a logo, and download the result as PNG, SVG or JPEG.",
+        "The preview redraws as you change a setting. It also tracks how much data fits at the chosen error-correction level and warns before the code gets too dense."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "Privacy and stack",
+      "p": [
+        "QR content and uploaded logos never leave the page. A recent commit removed Google Analytics and the hosted feedback form, and the Inter font is now bundled with the app, so normal use makes no third-party requests.",
+        "It's plain JavaScript on Vite, with the qr-code-styling library doing the drawing. Browser tests run in Playwright. Offline install as a PWA is on the roadmap in the README but isn't built yet."
+      ],
+      "fig": "[QR Studio, in use]",
+      "kind": "text"
     }
   ],
   "hero": {

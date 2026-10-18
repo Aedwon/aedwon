@@ -5,7 +5,7 @@
   "media": "repo",
   "depth": "note",
   "repo": "bettergovph/bettergov",
-  "desc": "Open-source effort building a better national website for the Philippines.",
+  "desc": "BetterGov PH is an open source project to build a better national website for the Philippines, live at bettergov.ph.",
   "stack": [
     "GitHub"
   ],
@@ -14,12 +14,16 @@
     {
       "label": "github.com/bettergovph/bettergov",
       "href": "https://github.com/bettergovph/bettergov"
+    },
+    {
+      "label": "Fork branch",
+      "href": "https://github.com/Aedwon/bettergov/tree/feature/acronym-tooltip"
     }
   ],
   "facts": [
     {
       "k": "Contribution",
-      "v": "[your PR or contribution]"
+      "v": "Acronym tooltip, status not verified"
     },
     {
       "k": "Year",
@@ -28,9 +32,17 @@
   ],
   "sections": [
     {
-      "h": "What I contributed",
+      "h": "What it is",
       "p": [
-        "[Your PR or contribution, in a sentence or two, with a link.]"
+        "The repo's own description is \"Building a better Philippines' national website\". The site is at bettergov.ph, and the bettergovph organization on GitHub hosts a long list of other civic data projects beside it."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I worked on",
+      "p": [
+        "I forked the project on July 30, 2026. On the same day I committed to a branch called feature/acronym-tooltip, with two commits: \"feat: add government acronym tooltip wrapper\" and \"feat: expand acronym dictionary with exhaustive list\". The idea is a small component that wraps Philippine government acronyms in a tooltip that spells them out.",
+        "[Upstream PR number and its current status.] I couldn't read the upstream repo through GitHub when I checked on October 19, 2026, so I can't confirm a pull request or its state from here."
       ],
       "kind": "text"
     }
