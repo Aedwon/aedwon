@@ -320,6 +320,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const stkRef = useRef<HTMLDivElement>(null);
   const hint1Ref = useRef<HTMLSpanElement>(null);
   const hint2Ref = useRef<HTMLSpanElement>(null);
+  const ledgeRef = useRef<HTMLDivElement>(null);
   const bookBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const moRef = useRef<HTMLDivElement>(null);
   const moBookRef = useRef<HTMLDivElement>(null);
@@ -495,8 +496,14 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       }
       s.kbDy = dy;
       if (boardRef.current) boardRef.current.style.translate = `0 ${dy.toFixed(1)}px`;
-      if (headRef.current) headRef.current.style.opacity = s.kb || s.closing ? '0' : '1';
-      if (ctlRef.current) { ctlRef.current.style.opacity = s.kb || s.closing ? '0' : '1'; ctlRef.current.style.pointerEvents = s.kb || s.closing ? 'none' : 'auto'; }
+      // the page controls arrive once the cover has landed (rising a little as they fade in) and leave at once, a touch quicker, when it closes
+      const showUI = !(s.kb || s.closing) && !(s.turn && s.turn.from < 0);
+      if (headRef.current) { headRef.current.style.opacity = showUI ? '1' : '0'; headRef.current.style.transitionDuration = showUI ? '.5s' : '.26s'; }
+      if (ctlRef.current) {
+        const c = ctlRef.current.style;
+        c.opacity = showUI ? '1' : '0'; c.translate = showUI ? '0 0' : '0 14px'; c.pointerEvents = showUI ? 'auto' : 'none';
+        c.transitionDuration = showUI ? '.5s, .6s' : '.26s, .3s'; c.transitionDelay = showUI ? '.1s' : '0s';
+      }
       const pgi = tr
         ? 2 * tr.to + (tr.to > tr.from ? (tr.then === 'R' ? 1 : 0) : tr.then === 'L' ? 0 : 1)
         : Math.max(0, s.sp) * 2 + (s.side === 'R' ? 1 : 0);
@@ -517,6 +524,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (stkRef.current) stkRef.current.style.opacity = pu >= 0 ? '1' : back.toFixed(3);
       if (hint1Ref.current) hint1Ref.current.style.opacity = rest;
       if (hint2Ref.current) hint2Ref.current.style.opacity = rest;
+      if (ledgeRef.current) ledgeRef.current.style.opacity = pu >= 0 ? (1 - seg(pu, 0, 0.55)).toFixed(3) : '1'; // the shelf's edge steps back with the stack, instead of vanishing at the handoff
       V.forEach((b, i) => {
         const el = bookBtnRefs.current[i]; if (!el) return;
         el.style.translate = '0px 0';
@@ -955,8 +963,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 </button>
               );
             })}
-            <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
-            <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
+            <div ref={ledgeRef} style={{ position: 'absolute', inset: 0 }}>
+              <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
+              <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
+            </div>
             <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 690, textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
@@ -1007,7 +1017,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
       {screen === 'book' && (
         <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy + BOOK_DROP}px` }}>
-          <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .25s ease' }}>Vol. {v.n} · {v.title}</div>
+          <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .5s ease' }}>Vol. {v.n} · {v.title}</div>
           <div ref={boardRef} onPointerDown={swDown} onPointerUp={swUp} style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', transition: 'translate .38s cubic-bezier(.22,1,.36,1)', touchAction: 'pan-y' }}>
             <div ref={boardXRef} style={{ position: 'absolute', left: 25, top: 92, width: 680, height: 486, transformStyle: 'preserve-3d' }}>
               {/* the page block: thickness under each side, more on the side you've read */}
@@ -1031,7 +1041,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               </div>
             </div>
           </div>
-          <div ref={ctlRef} style={{ opacity: 0, position: 'absolute', left: 20, right: 20, top: 612, display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'opacity .25s ease' }}>
+          <div ref={ctlRef} style={{ opacity: 0, translate: '0 14px', position: 'absolute', left: 20, right: 20, top: 612, display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'opacity .5s ease, translate .6s cubic-bezier(.22, 1, .36, 1)' }}>
             <button ref={prevBtnRef} className="v3tbtn" type="button" aria-label="Previous page" onClick={prev} style={{ '--c': atFirstR ? 'var(--line-hover)' : 'var(--text-primary)', width: 48, height: 48, fontSize: 20 } as React.CSSProperties}>←</button>
             <span ref={posRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-secondary)' }}>{pgiRender + 1} / {v.all.length}</span>
             <button ref={nextBtnRef} className="v3tbtn" type="button" aria-label="Next page" onClick={next} style={{ '--c': atLastR ? 'var(--line-hover)' : 'var(--text-primary)', width: 48, height: 48, fontSize: 20 } as React.CSSProperties}>→</button>
@@ -1055,7 +1065,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       </div>
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
-      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--room-bg)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
+      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--room-bg)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' || (opening && screen === 'shelf') ? '100%' : '0px'}`, transition: 'translate .55s cubic-bezier(.22,1,.36,1)' }}>
         {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
