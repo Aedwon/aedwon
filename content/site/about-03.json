@@ -22,6 +22,12 @@
         "hoyoverse",
         "dls",
         ""
+      ],
+      "blurbs": [
+        "",
+        "",
+        "",
+        ""
       ]
     },
     {
@@ -34,6 +40,9 @@
       ],
       "logos": [
         "oppo"
+      ],
+      "blurbs": [
+        ""
       ]
     },
     {
@@ -46,6 +55,9 @@
       ],
       "logos": [
         "ilocos-sur"
+      ],
+      "blurbs": [
+        ""
       ]
     },
     {
@@ -60,6 +72,10 @@
       "logos": [
         "psysc",
         "estudyante-esports"
+      ],
+      "blurbs": [
+        "",
+        ""
       ]
     },
     {
@@ -76,6 +92,11 @@
         "up-diliman",
         "up-maroons",
         "up-fair"
+      ],
+      "blurbs": [
+        "",
+        "",
+        ""
       ]
     }
   ]

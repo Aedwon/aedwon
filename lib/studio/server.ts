@@ -93,7 +93,7 @@ export function parsePath(p: unknown): string[] {
 const isIdx = (s: string) => /^\d+$/.test(s);
 type Bag = Record<string, unknown> | unknown[];
 
-function walk(root: Bag, segs: string[], create: boolean): Bag {
+function walk(root: Bag, segs: string[], create: boolean, tail?: string): Bag {
   let cur: Bag = root;
   for (let i = 0; i < segs.length; i++) {
     const s = segs[i];
@@ -101,7 +101,7 @@ function walk(root: Bag, segs: string[], create: boolean): Bag {
     if (next == null || typeof next !== 'object') {
       if (!create) throw new StudioError(400, 'Nothing at ' + segs.slice(0, i + 1).join('.'));
       if (Array.isArray(cur) && Number(s) > cur.length) throw new StudioError(400, 'Index out of range');
-      next = isIdx(segs[i + 1] ?? '') ? [] : {};
+      next = isIdx(segs[i + 1] ?? tail ?? '') ? [] : {}; // the last container is a list when the key being set is a number
       (cur as Record<string, unknown>)[s] = next;
     }
     cur = next as Bag;
@@ -110,7 +110,7 @@ function walk(root: Bag, segs: string[], create: boolean): Bag {
 }
 
 export function setPath(root: Bag, segs: string[], value: unknown) {
-  const parent = walk(root, segs.slice(0, -1), true);
+  const parent = walk(root, segs.slice(0, -1), true, segs[segs.length - 1]);
   const last = segs[segs.length - 1];
   if (Array.isArray(parent)) {
     if (!isIdx(last) || Number(last) > parent.length) throw new StudioError(400, 'Index out of range');

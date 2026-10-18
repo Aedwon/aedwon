@@ -228,7 +228,7 @@ function SiteDrawer({ id }: { id: string }) {
       {doc && tab === 'text' && (
         <>
           {id !== 'ui' && <p style={{ color: '#9a9aa6', margin: '8px 0' }}>Press Edit, then click any text on the pages. The label on the spine is below.</p>}
-          {groups.filter((g) => g !== 'title').map((g) => (
+          {id === 'ui' && groups.map((g) => (
             <div key={g}>
               <h4>{GROUP[g] || g}</h4>
               {rows.filter(([p]) => p.split('.')[0] === g).map(([p, v]) => (

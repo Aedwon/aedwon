@@ -138,6 +138,14 @@ describe('git helpers', () => {
   });
 });
 
+describe('setting an index on a missing list', () => {
+  it('starts a list, not an object', () => {
+    const doc: Record<string, unknown> = { pages: [{ kind: 'guild' }] };
+    setPath(doc, ['pages', '0', 'blurbs', '0'], 'x');
+    expect(Array.isArray((doc.pages as { blurbs: unknown }[])[0].blurbs)).toBe(true);
+  });
+});
+
 describe('site text files', () => {
   it('only the listed files are site ids', () => {
     expect(isSiteId('ui')).toBe(true);
