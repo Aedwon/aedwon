@@ -150,6 +150,10 @@ function imgErrors(v: unknown, id: string, where: string): string[] {
   const e: string[] = [];
   if (!isStr(v.src) || !v.src.startsWith('/projects/' + id + '/') || v.src.includes('..')) e.push(where + '.src must be inside /projects/' + id + '/');
   for (const k of ['alt', 'caption']) if (v[k] !== undefined && !isStr(v[k])) e.push(where + '.' + k + ' must be text');
+  if (v.focus !== undefined) {
+    const f = v.focus as Record<string, unknown>, ok = (n: unknown) => typeof n === 'number' && n >= 0 && n <= 100;
+    if (!isObj(f) || !ok(f.x) || !ok(f.y)) e.push(where + '.focus must be {x, y} between 0 and 100');
+  }
   return e;
 }
 

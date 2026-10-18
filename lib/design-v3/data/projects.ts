@@ -14,6 +14,8 @@ export interface Img {
   caption?: string;
   w?: number;
   h?: number;
+  // which part of the picture stays in view when it is cropped to a frame, in percent (50, 50 is the middle)
+  focus?: { x: number; y: number };
 }
 
 export interface Project {

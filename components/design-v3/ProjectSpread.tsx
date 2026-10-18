@@ -347,10 +347,11 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
         <div ref={rightRef} style={{ padding: '108px 56px 120px 0', opacity: 1 }}>
           {/* hero stage */}
           <div className="v3ps-hero" style={{ position: 'relative', height: 520, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
-            <ImageSlot id={p.id} slot="hero" img={p.hero} frame={{ position: 'absolute', inset: 0 }}>
+            <ImageSlot id={p.id} slot="hero" img={p.hero} asChildren frame={{ position: 'absolute', inset: 0 }}>
               <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
                 <MediaBlock
                   kind={p.media as MediaKind}
+                  img={p.hero}
                   name={p.name}
                   repo={p.repo}
                   desc={p.desc}

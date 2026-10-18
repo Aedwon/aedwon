@@ -732,6 +732,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
               <div key={p.id} ref={(el) => { pvEls.current[i] = el; }} style={{ position: 'absolute', left: 0, top: 0, width: 520, transformOrigin: '0 0', scale: '0.5769', opacity: 0, visibility: 'hidden' }}>
                 <MediaBlock
                   kind={p.media as MediaKind}
+                  img={p.hero}
                   name={p.name}
                   repo={p.media === 'repo' ? stackOf[i].text : undefined}
                   desc={p.media === 'repo' ? p.desc : undefined}
@@ -771,6 +772,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
             >
               <MediaBlock
                 kind={type}
+                img={p.hero}
                 name={p.name}
                 repo={type === 'repo' ? stackOf[i].text : undefined}
                 desc={type === 'repo' ? p.desc : undefined}

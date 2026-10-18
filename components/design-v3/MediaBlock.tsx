@@ -3,6 +3,7 @@
 // colours go through the per-media-kind token maps so light works without a second file.
 
 import { LOGO } from '@/lib/design-v3/data/icons';
+import type { Img } from '@/lib/design-v3/data/projects';
 
 export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper';
 
@@ -13,11 +14,25 @@ export interface MediaBlockProps {
   desc?: string;
   date?: string;
   mins?: string;
+  // a real picture: it replaces the drawing, cropped to the same frame (same size and corners) as the mockup it stands in for
+  img?: Img | null;
 }
+
+// the height of each kind's 520-wide frame
+export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
 
 const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 
-export default function MediaBlock({ kind, name, repo, desc, date, mins }: MediaBlockProps) {
+export default function MediaBlock({ kind, name, repo, desc, date, mins, img }: MediaBlockProps) {
+  if (img?.src) {
+    const f = img.focus || { x: 50, y: 50 };
+    return (
+      <div style={{ width: 520, height: FRAME_H[kind] || 300, borderRadius: 14, overflow: 'hidden', boxSizing: 'border-box', background: 'var(--dev-screen)', border: '1px solid var(--dev-bezel)', boxShadow: 'var(--shadow-object)' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload */}
+        <img src={img.src} alt={img.alt || ''} draggable={false} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: `${f.x}% ${f.y}%` }} />
+      </div>
+    );
+  }
   if (kind === 'phone') {
     return (
       <div style={{ width: 520, height: 370, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>

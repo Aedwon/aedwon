@@ -63,14 +63,14 @@ export function Paras({ id, path, items, pStyle }: { id: string; path: string; i
 
 // A picture slot. Shows the picture when there is one, otherwise the placeholder you pass as children.
 // While editing: drop a file on it or choose one, edit its alt text, replace or remove it.
-export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, children }: {
-  id: string; slot: string; img?: Img | null; fit?: 'contain' | 'cover';
+export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, children, asChildren }: {
+  id: string; slot: string; img?: Img | null; fit?: 'contain' | 'cover'; asChildren?: boolean; // asChildren: the children draw the picture (cropped to a frame); this only adds the controls
   frame?: CSSProperties; imgStyle?: CSSProperties; children?: ReactNode;
 }) {
   const api = useApi();
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
-  const picture: ReactNode = img?.src
+  const picture: ReactNode = img?.src && !asChildren
     // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
     ? <img src={img.src} alt={img.alt || ''} width={img.w} height={img.h} draggable={false} style={{ display: 'block', width: '100%', height: '100%', objectFit: fit, ...imgStyle }} />
     : children;

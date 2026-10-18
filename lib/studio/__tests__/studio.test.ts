@@ -187,3 +187,15 @@ describe('pictures on About pages', () => {
     expect(validateSite(bad, 'about-01').length).toBeGreaterThan(0);
   });
 });
+
+describe('picture focus', () => {
+  const base = async () => JSON.parse(await fs.readFile(path.join(CONTENT_DIR, 'pantas.json'), 'utf8'));
+  it('accepts a focus between 0 and 100 and refuses the rest', async () => {
+    const ok = await base(); ok.hero = { src: '/projects/pantas/h.webp', focus: { x: 20, y: 80 } };
+    expect(validateProject(ok, 'pantas')).toEqual([]);
+    for (const f of [{ x: -1, y: 5 }, { x: 5, y: 101 }, { x: '5', y: 5 }, 7, {}]) {
+      const bad = await base(); bad.hero = { src: '/projects/pantas/h.webp', focus: f };
+      expect(validateProject(bad, 'pantas').length, JSON.stringify(f)).toBeGreaterThan(0);
+    }
+  });
+});

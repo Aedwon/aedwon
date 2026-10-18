@@ -683,7 +683,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     return (
       <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
         <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: sc.toFixed(4) }}>
-          <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+          <MediaBlock kind={q2.media as MediaKind} img={q2.hero} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
         </div>
       </div>
     );
@@ -772,7 +772,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                   <button key={q2.id} className="v3tbtn" type="button" onClick={() => openProject(i)} style={{ '--c': 'var(--text-primary)', display: 'grid', gridTemplateColumns: '64px minmax(0, 1fr) 24px', gap: 14, alignItems: 'center', minHeight: 60, borderBottom: '1px solid var(--line-hairline)', textAlign: 'left' } as React.CSSProperties}>
                     <div style={{ position: 'relative', width: 64, height: 40, overflow: 'hidden', borderRadius: 4, background: 'var(--dev-screen)' }}>
                       <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(64 / 520, 40 / HH[q2.media]).toFixed(4) }}>
-                        <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+                        <MediaBlock kind={q2.media as MediaKind} img={q2.hero} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
                       </div>
                     </div>
                     <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
@@ -833,14 +833,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               ))}
               <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
                 <div style={{ position: 'relative', width: CW, height: Math.round(HH[p.media] * Math.min(CW / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
-                  {p.hero?.src
-                    // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
-                    ? <img src={p.hero.src} alt={p.hero.alt || ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
-                    : (
-                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / HH[p.media]).toFixed(4) }}>
-                        <MediaBlock kind={p.media as MediaKind} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
-                      </div>
-                    )}
+                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / HH[p.media]).toFixed(4) }}>
+                    <MediaBlock kind={p.media as MediaKind} img={p.hero} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
+                  </div>
                 </div>
               </div>
               {p.hero?.src && p.hero.caption && <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--text-label)' }}>{p.hero.caption}</p>}

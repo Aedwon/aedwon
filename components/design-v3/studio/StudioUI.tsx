@@ -333,6 +333,24 @@ function Drawer({ id }: { id: string }) {
             <select value={doc.depth} onChange={(e) => setField('depth', e.target.value, false)}>{DEPTH.map((m) => <option key={m}>{m}</option>)}</select>
           </label>
 
+          {doc.hero?.src && (
+            <>
+              <h4>Picture focus</h4>
+              <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>The picture is cropped to the tile&apos;s shape on the Wall, the Index and this page. Click the part that must stay in view.</p>
+              <div style={{ position: 'relative', lineHeight: 0, cursor: 'crosshair' }}
+                onClick={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  const x = Math.round(Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100))), y = Math.round(Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100)));
+                  commit({ op: 'set', path: 'hero.focus', value: { x, y } });
+                }}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- the studio's own uploaded picture */}
+                <img src={doc.hero.src} alt="" draggable={false} style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block' }} />
+                <span aria-hidden style={{ position: 'absolute', left: `${doc.hero.focus?.x ?? 50}%`, top: `${doc.hero.focus?.y ?? 50}%`, width: 18, height: 18, margin: '-9px 0 0 -9px', borderRadius: 99, border: '2px solid #fff', boxShadow: '0 0 0 1.5px #2563EB, 0 1px 6px rgba(0,0,0,.5)', pointerEvents: 'none' }} />
+              </div>
+              {doc.hero.focus && <button type="button" className="studio-small" style={{ padding: '0 12px', marginTop: 8 }} onClick={() => commit({ op: 'unset', path: 'hero.focus' })}>Reset to the middle</button>}
+            </>
+          )}
+
           <h4>Stack</h4>
           <label key={(doc.stack || []).join()}>Names, separated by commas
             <input defaultValue={(doc.stack || []).join(', ')} onBlur={(e) => commit({ op: 'set', path: 'stack', value: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
