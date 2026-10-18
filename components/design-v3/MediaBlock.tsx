@@ -154,11 +154,11 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
   }
   if (kind === 'paper') {
     return (
-      <div style={{ position: 'relative', width: 520, height: 300, boxSizing: 'border-box', padding: '34px 36px 30px', borderRadius: 3, background: 'var(--sheet-bg)', border: '1px solid var(--sheet-border)', color: '#111113', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: 'var(--shadow-object)' }}>
-        <span style={{ ...mono, fontSize: 12, color: '#61616A' }}>{date}</span>
+      <div style={{ position: 'relative', width: 520, height: 300, boxSizing: 'border-box', padding: '34px 36px 30px', borderRadius: 3, background: 'var(--paper-tile-bg)', border: '1px solid var(--paper-tile-border)', color: 'var(--paper-tile-ink)', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: 'var(--shadow-object)' }}>
+        <span style={{ ...mono, fontSize: 12, color: 'var(--paper-tile-meta)' }}>{date}</span>
         <span style={{ fontSize: 25, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.12 }}>{name}</span>
-        <span style={{ fontSize: 14.5, lineHeight: 1.55, color: '#3f3f46' }}>{desc}</span>
-        <span style={{ marginTop: 'auto', fontSize: 13, color: '#61616A' }}>Read · {mins}</span>
+        <span style={{ fontSize: 14.5, lineHeight: 1.55, color: 'var(--paper-tile-body)' }}>{desc}</span>
+        <span style={{ marginTop: 'auto', fontSize: 13, color: 'var(--paper-tile-meta)' }}>Read · {mins}</span>
       </div>
     );
   }

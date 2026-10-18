@@ -5,7 +5,7 @@
   "media": "repo",
   "depth": "note",
   "repo": "Tracer-Cloud/opensre",
-  "desc": "Open-source toolkit for building AI SRE agents for observability, incident response, and remediation.",
+  "desc": "OpenSRE is an open source framework for building AI agents that investigate production incidents on your own infrastructure. It connects to the monitoring and cloud tools a team already runs, and the project calls itself a public alpha.",
   "stack": [
     "GitHub"
   ],
@@ -14,12 +14,16 @@
     {
       "label": "github.com/Tracer-Cloud/opensre",
       "href": "https://github.com/Tracer-Cloud/opensre"
+    },
+    {
+      "label": "PR 5634 (merged)",
+      "href": "https://github.com/Tracer-Cloud/opensre/pull/5634"
     }
   ],
   "facts": [
     {
       "k": "Contribution",
-      "v": "[your PR or contribution]"
+      "v": "PR 5634, merged"
     },
     {
       "k": "Year",
@@ -28,9 +32,18 @@
   ],
   "sections": [
     {
-      "h": "What I contributed",
+      "h": "What it is",
       "p": [
-        "[Your PR or contribution, in a sentence or two, with a link.]"
+        "OpenSRE, from Tracer, lets you define your own workflows and have an agent answer production questions against your logs, metrics and cloud accounts. When an agent's report says something, it should say where that came from. That's what citeable evidence means in this repo, and it's what my work touches."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I worked on",
+      "p": [
+        "PR 5634, \"feat(victoria_logs): add citeable query evidence\", was merged on August 30, 2026. VictoriaLogs queries already returned structured rows, but no evidence mapper turned them into report evidence. The PR adds one, with tests, and it records the row count and a short query snippet. It touches 4 files and adds 93 lines.",
+        "After automated review feedback I cut repeated-query handling and kept the mapper to a single query result.",
+        "I also opened PR 5959, which did the same for AWS Lambda inspection results. It was closed on September 2 without being merged, so I'm not counting it."
       ],
       "kind": "text"
     }

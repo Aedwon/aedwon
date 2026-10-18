@@ -4,7 +4,7 @@
   "type": "Discord bot",
   "media": "discord",
   "depth": "writeup",
-  "desc": "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.",
+  "desc": "Discord bot for the Ilocos Sur Provincial Government's esports league during the Ilocos Sur Festival. It verifies players against team rosters and ties each bracket to Challonge.",
   "stack": [
     "Python",
     "MySQL"
@@ -35,35 +35,27 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
-      ],
-      "kind": "text"
-    },
-    {
-      "h": "What I built",
-      "p": [
-        "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.",
-        "[One or two sentences on the hardest part, and how you solved it.]"
+        "A Discord bot for the esports side of the Ilocos Sur Festival, built for the Ilocos Sur Provincial Government. The league ran Mobile Legends and Call of Duty Mobile, and the bot handles who plays for which team and keeps the brackets in step with Discord. It also covers support tickets, auto-created voice channels and scheduled announcements."
       ],
       "fig": "[Ilocos Sur Esports Bot, in use]",
       "kind": "text"
     },
     {
+      "h": "Why it exists",
+      "p": [
+        "[Why this was built, in a sentence.]"
+      ],
+      "kind": "text"
+    },
+    {
       "h": "How it works",
       "p": [
-        "Players verify through /verifypanel by picking a game and filling in their in-game name. Staff add teams with /teams and the bot links the bracket to Challonge, then reports match results back to it. Players, teams and rosters live in MySQL."
+        "Staff post a verification panel with /verifypanel. A player picks a game role, chooses their team and types an in-game name, and the bot renames them to match. Staff add and manage teams with /teams. A marshal or admin links a Challonge bracket to a channel, and the bot lists open matches and reports each result back to Challonge. Players, teams and rosters sit in MySQL."
       ],
       "kind": "text",
       "diagram": "ilocos"
-    },
-    {
-      "h": "How it went",
-      "p": [
-        "[The result: numbers if you have them, or what people said.]"
-      ],
-      "kind": "text"
     }
   ],
   "hero": {

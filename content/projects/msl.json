@@ -4,7 +4,7 @@
   "type": "Discord bot",
   "media": "discord",
   "depth": "writeup",
-  "desc": "Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.",
+  "desc": "Discord bot for a Mobile Legends community server. Members verify their game account, then earn XP and Event Points through chat, voice, quizzes and quests, and staff run events, booster raffles, tickets and moderation from the same data.",
   "stack": [
     "Python",
     "MySQL"
@@ -35,33 +35,46 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What the server needed",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
+        "This is the bot for a Mobile Legends: Bang Bang community server tied to Moonton Student Leaders Philippines, where I was National Admin for Partnerships and founded the MSL Network. A server like that has two jobs at once. Members want levels, quizzes and prizes. Staff need to know who is a real player, who is a student leader, and who already got a prize this month.",
+        "Before the bot, those answers lived in separate tools and spreadsheets. I wrote one bot that ties them together, so verifying a game account unlocks the rest, and every reward, raffle and report reads from the same MySQL database. It is built for a single server on purpose. The guild ID is a constant, and roles and channels are stored as settings that staff change with setup commands."
       ],
       "kind": "text"
     },
     {
-      "h": "What I built",
+      "h": "How it grew",
       "p": [
-        "Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.",
-        "[One or two sentences on the hardest part, and how you solved it.]"
+        "The first commit on January 24, 2026 was small. It had XP, moderation and a boost tracker. A week later it had tiered booster perks, every command converted to slash commands, and settings moved from code into the database so staff could change them without me.",
+        "Most of the larger systems landed in a burst around March 23. Event Points with seasonal ranks, Discord scheduled-event tracking, the quiz, tickets with HTML transcripts, the weekly booster raffle and account verification all arrived within days of each other. The next weeks added the Moonton student leader check, referral codes, confessions and counting channels, daily quests, and an analytics dashboard. April filled in the staff side with event workflows that track attendance automatically and a lot of repair tooling for raffles. The last commit in the repo is May 1, 2026, after 244 commits and roughly 10,000 lines of Python in the cogs and services alone."
       ],
-      "fig": "[MSL Network Bot, in use]",
-      "kind": "text"
+      "kind": "text",
+      "fig": "[MSL Network Bot, in use]"
+    },
+    {
+      "h": "The parts worth reading the code for",
+      "p": [
+        "XP is the busiest path, so it never writes to the database per message. Message, reaction and voice XP pile up in memory and flush in one batch every 60 seconds. The flush takes a snapshot and subtracts only what it saved, so XP earned during the write isn't lost, and unloading the cog flushes what's left. Abuse limits live in the same place. One message-XP gain per minute, a daily cap on reaction XP, a cap per message, and a four-hour daily cap on voice XP.",
+        "Every XP and Event Point path checks a verified-user set held in memory, so an unverified account earns nothing and the check costs no query. Verification itself enforces one Discord account per game UID. The student leader lookup reads a public Google Sheet as CSV, rebuilds a lookup every six hours, and matches on UID and server together. UID alone was not enough, and I changed it after the first version.",
+        "The quiz runs twice a day at noon and 8 PM Manila time, ten rounds of 20 seconds. A correct answer scores up to 1,000 points that fall away with time, and each member can score once per round. Top three get 150, 100 and 75 Event Points, everyone else who played gets 50, and a member can be paid once per day. Results are buffered during the session and written to a JSON journal after each round, and on startup the bot replays any unfinished session into the database.",
+        "The weekly booster raffle needed the most care. A member wins a normal slot at most once per calendar month. If there are more prize slots than eligible boosters, the extras go to whoever has the fewest extras so far, which keeps one person from collecting them all. Student leaders are excluded from this raffle. If the bot is down at the Sunday 8 AM draw, it runs the draw on startup unless that week already has one. When a draw goes wrong there are commands to diagnose it, repair it and reroll it, and the CSV export lists unverified winners at the bottom instead of blocking."
+      ],
+      "kind": "text",
+      "diagram": "msl-raffle"
     },
     {
       "h": "How it works",
       "p": [
-        "Members verify with a short form, then earn XP and Event Points from quizzes and three daily quests. Levels, booster perks and a prize raffle all read from that one system, and the raffle exports to CSV for the Moonton prizes."
+        "Members verify with a short form, then earn XP and Event Points from chat, voice, quizzes and three daily quests. Quests pay 50, 150 or 500 XP by rarity, and the third slot is weighted 70, 25 and 5 percent toward common, uncommon and rare. Levels, booster perks and the prize raffle all read from that one system, and the raffle exports to CSV for the Moonton prizes."
       ],
       "kind": "text",
       "diagram": "msl"
     },
     {
-      "h": "How it went",
+      "h": "What ships with it",
       "p": [
-        "[The result: numbers if you have them, or what people said.]"
+        "Outside Discord, the repo has a documentation site for staff and members, an analytics dashboard with daily, weekly and monthly active users, and a quest editor, all on Vercel. The Vercel functions read the same MySQL tables the bot writes, so there is no second reporting store. The bot runs on a Pterodactyl panel, and a push to main triggers a restart through a GitHub Action.",
+        "I don't have usage numbers for the server in the repo, so I'm not putting any here. The code is public on GitHub."
       ],
       "kind": "text"
     }

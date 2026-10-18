@@ -4,7 +4,7 @@
   "type": "Civic tech",
   "media": "web",
   "depth": "writeup",
-  "desc": "Unofficial bilingual legislative-transparency prototype with repository-backed records, derived council links, and explicit safeguards that keep the demo separate from an official LGU service.",
+  "desc": "An unofficial, bilingual prototype of a transparency site for the municipal council of Norala, South Cotabato. It uses made-up data and is meant to be handed to the town.",
   "stack": [
     "Next.js",
     "TypeScript",
@@ -12,8 +12,12 @@
   ],
   "links": [
     {
-      "label": "[portal url]",
-      "href": "#"
+      "label": "norala-sb-demo.vercel.app",
+      "href": "https://norala-sb-demo.vercel.app"
+    },
+    {
+      "label": "github.com/Aedwon/norala-sb-demo",
+      "href": "https://github.com/Aedwon/norala-sb-demo"
     }
   ],
   "facts": [
@@ -36,25 +40,19 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
-      ],
-      "kind": "text"
-    },
-    {
-      "h": "What I built",
-      "p": [
-        "Unofficial bilingual legislative-transparency prototype with repository-backed records, derived council links, and explicit safeguards that keep the demo separate from an official LGU service.",
-        "[One or two sentences on the hardest part, and how you solved it.]"
+        "The portal lets residents search and read council records on a phone. It covers ordinances, officials, committees, session schedules and announcements, plus a short guide to how the council works. The site is in English and Filipino.",
+        "It's a student proof-of-concept, and the README says plainly that it isn't an official site. Every official and record in it is fictional. The code is MIT licensed and is meant to be donated to the local government, with no payment and no maintenance attached."
       ],
       "fig": "[Norala SB Portal, in use]",
       "kind": "text"
     },
     {
-      "h": "How it went",
+      "h": "How it's built",
       "p": [
-        "[The result: numbers if you have them, or what people said.]"
+        "There's no database or admin backend. Records are Markdown and TypeScript files in the repository, and the site is built statically. Links between records, such as an official's ordinances or the ordinances that amend another, are worked out from the files at build time.",
+        "A demo banner and a no-index setting keep the prototype apart from a real government service. The repository includes a handover guide that lists what to delete before the town adopts it, and how secretariat staff add an ordinance through GitHub."
       ],
       "kind": "text"
     }

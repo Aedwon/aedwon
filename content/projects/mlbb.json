@@ -4,7 +4,7 @@
   "type": "Web tool",
   "media": "web",
   "depth": "writeup",
-  "desc": "Browser-only tool that reads Mobile Legends post-game screenshots with OCR and exports the player stats to CSV, so match data stops being typed in by hand.",
+  "desc": "A browser tool that reads Mobile Legends post-game screenshots with OCR and exports the player stats to CSV, so match data doesn't have to be typed in by hand.",
   "stack": [
     "React",
     "Vite",
@@ -40,25 +40,19 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
-      ],
-      "kind": "text"
-    },
-    {
-      "h": "What I built",
-      "p": [
-        "Batch OCR runs in Tesseract.js web workers, so a whole set of screenshots is read without leaving the page. A bounding box drawn over one team's column can be mirrored across the center for the other team, and saved as a preset for the next batch.",
-        "Before anything is exported, a review step groups the numbers by player and lets hero and role be corrected. The export is either a long file with one row per player or a wide file with 226 columns."
+        "After a Mobile Legends match, the stats sit in a screenshot. This tool reads them for you. You drop in a batch of screenshots, draw a box around each stat column once, and it crops the image into small pieces and runs OCR on each one. Nothing is uploaded, because the OCR runs in the browser with Tesseract.js in web workers.",
+        "[Why this was built, in a sentence.]"
       ],
       "kind": "text",
       "fig": "[MLBB Post-Game Extractor, in use]"
     },
     {
-      "h": "How it went",
+      "h": "From screenshot to CSV",
       "p": [
-        "[The result: numbers if you have them, or what people said.]"
+        "A box drawn over one team's column can be mirrored across the center for the other team, and saved as a preset for the next batch. Before anything is exported, a review step groups the numbers by player and lets you correct hero and role. A form for match details sits above the gallery.",
+        "The export is either a long file with one row per player or a wide file with one row per match and 226 columns. Vitest covers the CSV export, the duration parsing and the roster check."
       ],
       "kind": "text"
     }

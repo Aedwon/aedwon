@@ -39,12 +39,13 @@
       "h": "My wishes"
     },
     {
-      "kind": "text",
       "h": "How it works",
       "p": [
-        "HoYoverse only keeps about six months of wish history, so I import it with a small script and save the records in the repo. Old pulls stay even after the game stops returning them.",
-        "The script reads the history URL the game generates, pulls all three banners and merges anything new. It never writes the URL or my UID to disk, since the link carries a temporary key. The page itself only reads the saved records, so there is nothing to log into."
-      ]
+        "HoYoverse only keeps about six months of wish history, so I import it with a small script and save the records in the repo. Old pulls stay even after the game stops returning them. The saved file holds 824 wishes so far, from late September 2025 to October 2026.",
+        "The script reads the history URL the game generates, pulls all three banners and merges anything new by record ID. It never writes the URL or my UID to disk, since the link carries a temporary key. The page only reads the saved records, so there's nothing to log into.",
+        "Pity is counted per banner from the order of pulls. The first 5-star on a banner shows no pity number, because the pulls before it were never saved and the count would be a guess."
+      ],
+      "kind": "text"
     }
   ]
 }

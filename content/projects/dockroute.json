@@ -5,7 +5,7 @@
   "media": "repo",
   "depth": "note",
   "repo": "Dockroute/Dockroute",
-  "desc": "External-DNS for plain Docker hosts, keeping DNS records aligned with container routes.",
+  "desc": "DockRoute is External-DNS for plain Docker hosts. It reads labels on your running containers and keeps DNS records and Cloudflare Tunnel routes matching them.",
   "stack": [
     "GitHub"
   ],
@@ -14,12 +14,16 @@
     {
       "label": "github.com/Dockroute/Dockroute",
       "href": "https://github.com/Dockroute/Dockroute"
+    },
+    {
+      "label": "PR 41 (merged)",
+      "href": "https://github.com/Dockroute/Dockroute/pull/41"
     }
   ],
   "facts": [
     {
       "k": "Contribution",
-      "v": "[your PR or contribution]"
+      "v": "PR 41, merged"
     },
     {
       "k": "Year",
@@ -28,9 +32,17 @@
   ],
   "sections": [
     {
-      "h": "What I contributed",
+      "h": "What it is",
       "p": [
-        "[Your PR or contribution, in a sentence or two, with a link.]"
+        "Your Docker Compose file stays the source of truth, and DockRoute makes the DNS provider match it. It only changes records it can prove it manages, using TXT ownership records in the style of External-DNS. The project is MIT licensed, written in TypeScript, and runs next to your containers."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I worked on",
+      "p": [
+        "PR 41, \"docs: document warning troubleshooting\", was merged on August 24, 2026 and closes issue 36. DockRoute skips misconfigured or conflicting entries and keeps going, so its warnings are how users find out why a hostname wasn't published. Those warnings weren't in the README.",
+        "The PR adds a troubleshooting table that maps each warning to what it means and a concrete fix. I checked every entry against the source on main at the time. It's docs only, one file and 31 added lines. The release bot lists it in version 0.3.2."
       ],
       "kind": "text"
     }

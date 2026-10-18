@@ -4,7 +4,7 @@
   "type": "Developer tooling",
   "media": "compose",
   "depth": "writeup",
-  "desc": "Portable configuration system for coding agents that composes shared policy with project-owned rules and renders the selected result into provider-specific instruction files.",
+  "desc": "A set of rules for coding agents that lives in one place and gets rendered into the instruction file each tool reads.",
   "stack": [
     "Python",
     "Markdown",
@@ -12,8 +12,8 @@
   ],
   "links": [
     {
-      "label": "[Source]",
-      "href": "#"
+      "label": "github.com/Aedwon/ai-agent-config",
+      "href": "https://github.com/Aedwon/ai-agent-config"
     }
   ],
   "facts": [
@@ -36,25 +36,26 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
-      ],
-      "kind": "text"
-    },
-    {
-      "h": "What I built",
-      "p": [
-        "Portable configuration system for coding agents that composes shared policy with project-owned rules and renders the selected result into provider-specific instruction files.",
-        "[One or two sentences on the hardest part, and how you solved it.]"
+        "Every coding agent looks for its own instruction file, and copies of those files drift apart as they move between repositories. AI Agent Config keeps the durable rules in one provider-neutral place and generates the files from them. It runs on Python's standard library, so it needs no paid subscription or specific model.",
+        "Adapters exist for Codex, Claude Code, Gemini CLI, Google Antigravity and a generic entry point."
       ],
       "fig": "[AI Agent Config, in use]",
       "kind": "text"
     },
     {
-      "h": "How it went",
+      "h": "How it works",
       "p": [
-        "[The result: numbers if you have them, or what people said.]"
+        "A universal core holds the contract and names no provider. A project adds its own rules and an overlay for its type, and an adapter renders the selected result into the file that tool reads, such as AGENTS.md for Codex, CLAUDE.md for Claude Code or GEMINI.md for Gemini CLI. Validate checks the source first, then diff shows what would change in the target before anything is installed."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "Setting it up",
+      "p": [
+        "Guided setup asks for the provider and the project, then installs one generated file after you confirm. It doesn't replace an existing provider file silently. A doctor command checks later that the installed file still matches the current rules.",
+        "Setup comes in four modes, from a bare baseline to agent-heavy projects with delegation and deeper review. Personal preferences sit in an optional private profile that ranks below the project's rules."
       ],
       "kind": "text"
     }

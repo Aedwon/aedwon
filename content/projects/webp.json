@@ -4,7 +4,7 @@
   "type": "Web tool",
   "media": "web",
   "depth": "note",
-  "desc": "Next.js static export that converts supported images to WebP in a wasm-vips worker. Each queued file stores its own options, and completed results can be downloaded individually or as a ZIP.",
+  "desc": "A bulk image to WebP converter that runs in the browser. libvips compiled to WebAssembly does the work in a worker, so files never get uploaded.",
   "stack": [
     "Next.js",
     "TypeScript",
@@ -12,12 +12,12 @@
   ],
   "links": [
     {
-      "label": "[webp unli url]",
-      "href": "#"
+      "label": "convert2webp.vercel.app",
+      "href": "https://convert2webp.vercel.app"
     },
     {
-      "label": "[Source]",
-      "href": "#"
+      "label": "github.com/Aedwon/webp-unli",
+      "href": "https://github.com/Aedwon/webp-unli"
     }
   ],
   "facts": [
@@ -36,6 +36,25 @@
     {
       "k": "Runs",
       "v": "Entirely in the browser"
+    }
+  ],
+  "sections": [
+    {
+      "h": "What it does",
+      "p": [
+        "Drop or paste JPG, PNG, GIF, AVIF, TIFF, BMP, SVG or HEIC files and convert them to WebP. Quality, lossless mode, resizing and metadata stripping can be set for the whole queue or overridden for a single file. Each result can be downloaded alone, or as one ZIP once at least two are done.",
+        "A before and after slider shows the difference, and a running total shows how many bytes the conversion saved."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "The site is a static Next.js export. One module worker loads wasm-vips, takes each file as a transferred buffer and sends back the encoded WebP. wasm-vips needs cross-origin isolation, so the Vercel config sets the COOP and COEP headers.",
+        "The first version of the worker was a TypeScript file that Turbopack emitted unbuilt, and the page never got past its loading screen. The fix was to ship the worker as plain JavaScript from the public folder. The first load downloads a wasm binary of about 10 MB, and the browser caches it after that."
+      ],
+      "fig": "[WebP Unli, in use]",
+      "kind": "text"
     }
   ],
   "hero": {
