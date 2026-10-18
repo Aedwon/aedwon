@@ -1,0 +1,99 @@
+{
+  "pulledAt": "2026-10-19",
+  "timezone": "Asia/Manila",
+  "firstDay": "2026-03-23",
+  "lastDay": "2026-10-18",
+  "daysRecorded": 168,
+  "totals": {
+    "messages": 580927,
+    "voiceHours": 9552,
+    "joins": 32922,
+    "reactions": 168565,
+    "verifications": 2056,
+    "tickets": 141
+  },
+  "monthly": [
+    {
+      "month": "2026-03",
+      "messages": 1016,
+      "joins": 109,
+      "voiceHours": 374,
+      "days": 9
+    },
+    {
+      "month": "2026-04",
+      "messages": 167022,
+      "joins": 3330,
+      "voiceHours": 3983,
+      "days": 30
+    },
+    {
+      "month": "2026-05",
+      "messages": 40176,
+      "joins": 56,
+      "voiceHours": 946,
+      "days": 8
+    },
+    {
+      "month": "2026-06",
+      "messages": 11021,
+      "joins": 12,
+      "voiceHours": 107,
+      "days": 11
+    },
+    {
+      "month": "2026-07",
+      "messages": 39704,
+      "joins": 63,
+      "voiceHours": 559,
+      "days": 31
+    },
+    {
+      "month": "2026-08",
+      "messages": 81301,
+      "joins": 2792,
+      "voiceHours": 796,
+      "days": 31
+    },
+    {
+      "month": "2026-09",
+      "messages": 21328,
+      "joins": 126,
+      "voiceHours": 424,
+      "days": 30
+    },
+    {
+      "month": "2026-10",
+      "messages": 219359,
+      "joins": 26434,
+      "voiceHours": 2362,
+      "days": 18
+    }
+  ],
+  "messagesByHour": [
+    9012,
+    7618,
+    5712,
+    3555,
+    1816,
+    1990,
+    2413,
+    2922,
+    4498,
+    7073,
+    7834,
+    8637,
+    17581,
+    10067,
+    9247,
+    9358,
+    18482,
+    19232,
+    18056,
+    19951,
+    29229,
+    20052,
+    17484,
+    13368
+  ]
+}

@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react';
 import { useTheme } from '@/lib/design-v3/theme';
 import { DARK, LIGHT, type Pal } from './SystemViz';
+import MslNumbersViz from './botviz/MslNumbersViz';
 import MslVerifyViz from './botviz/MslVerifyViz';
 import MslXpViz from './botviz/MslXpViz';
 import MslQuizViz from './botviz/MslQuizViz';
@@ -17,6 +18,7 @@ import OppoMatchViz from './botviz/OppoMatchViz';
 import OppoEmbedsViz from './botviz/OppoEmbedsViz';
 
 const VIZ: Record<string, (props: { P: Pal }) => ReactNode> = {
+  'msl-numbers': MslNumbersViz,
   'msl-verify': MslVerifyViz,
   'msl-xp': MslXpViz,
   'msl-quiz': MslQuizViz,
