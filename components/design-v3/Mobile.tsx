@@ -321,6 +321,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const hint1Ref = useRef<HTMLSpanElement>(null);
   const hint2Ref = useRef<HTMLSpanElement>(null);
   const ledgeRef = useRef<HTMLDivElement>(null);
+  const shLRef = useRef<HTMLSpanElement>(null);
   const bookBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const moRef = useRef<HTMLDivElement>(null);
   const moBookRef = useRef<HTMLDivElement>(null);
@@ -439,6 +440,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (tr) {
         const e = ease((now - tr.t0) / tr.dur), fwd = tr.to > tr.from, a = fwd ? tr.from : tr.to, b = fwd ? tr.to : tr.from;
         cov = a < 0;
+        // the left shadow follows the cover over: none while it is on the right, full once it has landed on the left
+        if (shLRef.current) { const pp = fwd ? e : 1 - e, q = cl((pp - 0.5) / 0.5); shLRef.current.style.opacity = cov ? (q * q * (3 - 2 * q)).toFixed(3) : '1'; }
         const ang = fwd ? -180 * e : -180 * (1 - e), lift = Math.sin(Math.PI * e), bend = lift * (cov ? 3 : 6.5) * (fwd ? 1 : -1);
         for (let k = 1; k <= 6; k++) {
           const g = ((ang + (k - 1) * bend) * Math.PI) / 180;
@@ -469,6 +472,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
           leafRef.current.style.opacity = hd ? (1 - cl((now - hd.t0) / HOLD_MS)).toFixed(3) : '1';
         }
         if (lEdgeRef.current) lEdgeRef.current.style.visibility = closed ? 'hidden' : 'visible';
+        if (shLRef.current) shLRef.current.style.opacity = closed ? '0' : '1';
       }
       // page block thickness
       const spreads = v.all.length / 2;
@@ -1024,7 +1028,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               {/* the page block: thickness under each side, more on the side you've read */}
               <span aria-hidden className="v3edgeV" ref={lEdgeRef} style={{ position: 'absolute', left: -2, top: 3, width: 2, height: 480, visibility: closedIdle ? 'hidden' : 'visible', borderRadius: '2px 0 0 2px' }} />
               <span aria-hidden className="v3edgeV" ref={rEdgeRef} style={{ position: 'absolute', left: 680, top: 3, width: 6, height: 480, borderRadius: '0 2px 2px 0' }} />
-              <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle || coverTurn ? 'hidden' : 'visible', boxShadow: 'var(--shadow-book-phone)' }}>
+              {/* the left page's shadow is its own layer, so it can grow in as the cover lands instead of appearing with the page */}
+              <span aria-hidden ref={shLRef} style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, borderRadius: '3px 0 0 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle || coverTurn ? 'hidden' : 'visible' }}>
                 <div style={{ width: 420, height: 600, transformOrigin: '0 0', scale: '0.8095' }}>
                   <BookPage page={staticL} side="left" clock={clock} form={form} onField={(k, val) => setForm((f) => ({ ...f, [k]: val }))} onShelve={() => { setForm((f) => ({ ...f, msg: '' })); closeBook(); }} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
                 </div>
