@@ -39,44 +39,46 @@ function useIsDesktop(): boolean {
   );
 }
 
-const PHONE_MIN_H = 740, PHONE_MAX_H = 960;
+const PHONE_MIN_W = 360, PHONE_MAX_W = 480, PHONE_MIN_H = 740, PHONE_MAX_H = 960;
 
 // Uniform scale + letterbox (decision). The 1440x900 (or 390x844) stage keeps its
 // layout at every window size; the room colour fills the letterbox.
 export function Stage({
   w, h, fit = 'box', children,
-}: { w: number; h: number; fit?: 'box' | 'width'; children: React.ReactNode | ((h: number) => React.ReactNode) }) {
-  const [box, setBox] = useState<{ s: number; x: number; y: number; h: number } | null>(null);
+}: { w: number; h: number; fit?: 'box' | 'width'; children: React.ReactNode | ((w: number, h: number) => React.ReactNode) }) {
+  const [box, setBox] = useState<{ s: number; x: number; y: number; w: number; h: number } | null>(null);
   useEffect(() => {
     const measure = () => {
       const vw = window.innerWidth, vh = window.innerHeight;
       if (fit === 'width') {
-        // Phone: fill the width, and let the stage take whatever height the screen has (never under MIN_H design px).
-        const s = Math.min(vw / w, vh / PHONE_MIN_H);
-        const sh = Math.min(PHONE_MAX_H, vh / s);
-        setBox({ s, x: (vw - w * s) / 2, y: Math.max(0, (vh - sh * s) / 2), h: sh });
+        // Phone: the stage takes the screen's width (PHONE_MIN_W to PHONE_MAX_W design px) and its height (PHONE_MIN_H and up).
+        // Scale is 1 on a normal phone, a little under on a short or narrow one, and up on a tablet.
+        let s = Math.min(Math.max(vw / PHONE_MAX_W, Math.min(1, vh / PHONE_MIN_H)), vh / PHONE_MIN_H);
+        if (vw / s < PHONE_MIN_W) s = vw / PHONE_MIN_W;
+        const sw = Math.min(PHONE_MAX_W, vw / s), sh = Math.min(PHONE_MAX_H, vh / s);
+        setBox({ s, x: (vw - sw * s) / 2, y: (vh - sh * s) / 2, w: sw, h: sh });
         return;
       }
       const s = Math.min(vw / w, vh / h);
-      setBox({ s, x: (vw - w * s) / 2, y: (vh - h * s) / 2, h });
+      setBox({ s, x: (vw - w * s) / 2, y: (vh - h * s) / 2, w, h });
     };
     measure();
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
   }, [w, h, fit]);
-  const sh = box ? box.h : h;
+  const sw = box ? box.w : w, sh = box ? box.h : h;
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: 'var(--room-bg)' }}>
       <div
         style={{
           // first client render must match the server: no window reads in render
           position: 'absolute', left: box ? box.x : 0, top: box ? box.y : 0,
-          width: w, height: sh,
+          width: sw, height: sh,
           transform: box ? `scale(${box.s})` : undefined, transformOrigin: '0 0',
           visibility: box ? 'visible' : 'hidden',
         }}
       >
-        {typeof children === 'function' ? children(sh) : children}
+        {typeof children === 'function' ? children(sw, sh) : children}
       </div>
     </div>
   );
@@ -133,12 +135,12 @@ export default function Site({ initialPath }: { initialPath: string }) {
     <ThemeContext.Provider value={themeCtx}>
       <LoadedCtx.Provider value={firstLoad !== false}>
         <Stage w={desktop ? 1440 : 390} h={desktop ? 900 : 844} fit={desktop ? 'box' : 'width'}>
-          {(sh) => (
+          {(sw, sh) => (
             <>
-              {desktop ? <Room initialPath={initialPath} /> : <Mobile initialPath={initialPath} height={sh} />}
+              {desktop ? <Room initialPath={initialPath} /> : <Mobile initialPath={initialPath} width={sw} height={sh} />}
               {firstLoad ? (
                 <div style={{ position: 'absolute', inset: 0, zIndex: 60 }}>
-                  <Moments which="loading" w={desktop ? 1440 : 390} h={desktop ? 900 : sh} />
+                  <Moments which="loading" w={desktop ? 1440 : sw} h={desktop ? 900 : sh} />
                 </div>
               ) : null}
             </>

@@ -89,7 +89,9 @@ function pathFor(screen: Screen, p: Project | undefined, contact: boolean): stri
 
 interface Turn { from: number; to: number; then: 'L' | 'R' | null; dur: number; t0: number; x0: number }
 
-const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }>(function Mobile({ initialPath, height = MOB_H }, ref) {
+const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; width?: number }>(function Mobile({ initialPath, height = MOB_H, width = MOB_W }, ref) {
+  // The wall, top bar and tab bar use the full width. The other screens are drawn 390 wide and sit centred.
+  const W = width, ox = (W - MOB_W) / 2, TW = W - 32;
   // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
   const { theme, toggle } = useTheme();
   const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
@@ -292,7 +294,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
     const onFin = (e: FocusEvent) => {
       const root = rootRef.current, t = e.target as HTMLElement | null;
       if (!root || !t || !root.contains(t) || !/^(INPUT|TEXTAREA)$/.test(t.tagName) || s.screen !== 'book') return;
-      const rr = root.getBoundingClientRect(), k = rr.width / 390, r = t.getBoundingClientRect(), d = s.kbDy || 0;
+      const rr = root.getBoundingClientRect(), k = rr.width / W, r = t.getBoundingClientRect(), d = s.kbDy || 0;
       s.kbField = { top: (r.top - rr.top) / k - d, bottom: (r.bottom - rr.top) / k - d };
       setKb(true);
     };
@@ -311,7 +313,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
       // keyboard height, corrected for the letterbox scale (k = screen px per design px)
       if (s.kb) {
         const rr2 = rootRef.current ? rootRef.current.getBoundingClientRect() : null;
-        const kr = rr2 && rr2.width ? rr2.width / 390 : 1;
+        const kr = rr2 && rr2.width ? rr2.width / W : 1;
         s.kbH = vv ? kbH / kr : 0;
       } else s.kbH = 0;
       // finish whatever the book is doing (Mobile:439-442)
@@ -362,7 +364,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
       WALL_ORDER.forEach((i, k) => {
         const el = tileRefs.current[k]; if (!el) return;
         const d = k - wf, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 30;
-        const q = P[i], h = Math.round(HH[q.media] * Math.min(300 / 520, 220 / HH[q.media]));
+        const q = P[i], h = Math.round(HH[q.media] * Math.min(TW / 520, 220 / HH[q.media]));
         el.style.top = (340 + 390 * Math.sin((ang * Math.PI) / 180)).toFixed(1) + 'px';
         el.style.height = h + 'px';
         el.style.transform = `rotateX(${(-ang).toFixed(2)}deg) scale(${(1 - 0.08 * ad).toFixed(4)})`;
@@ -438,7 +440,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
       if (s.kb && s.kbField) {
         const f = s.kbField;
         const rr3 = rootRef.current ? rootRef.current.getBoundingClientRect() : null;
-        const kr3 = rr3 && rr3.width ? rr3.width / 390 : 1;
+        const kr3 = rr3 && rr3.width ? rr3.width / W : 1;
         const vhD = window.innerHeight / kr3;
         dy = Math.min(0, vhD - s.kbH - 18 - f.bottom); if (f.top + dy < 70) dy = Math.min(0, 70 - f.top);
       }
@@ -612,7 +614,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
     <div
       ref={rootRef}
       style={{
-        position: 'relative', width: MOB_W, height: height, overflow: 'hidden', color: 'var(--text-primary)',
+        position: 'relative', width: W, height: height, overflow: 'hidden', color: 'var(--text-primary)',
         fontFamily: "'Geist', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased',
         backgroundColor: 'var(--room-bg)',
         backgroundImage: 'radial-gradient(circle, rgba(237,237,237,0.075) 1px, transparent 1.6px)',
@@ -626,9 +628,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
             {WALL_ORDER.map((i, k) => {
               const q2 = P[i], meta = postMeta(q2);
               return (
-                <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 45, top: 340, width: 300, height: 220, translate: '0 -50%', borderRadius: 10, overflow: 'hidden', opacity: 0 }}>
-                  <div style={{ position: 'relative', width: 300, height: '100%', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: '0.5769' }}>
+                <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: 220, translate: '0 -50%', borderRadius: 10, overflow: 'hidden', opacity: 0 }}>
+                  <div style={{ position: 'relative', width: TW, height: '100%', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(TW / 520, 220 / HH[q2.media]).toFixed(4) }}>
                       <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
                     </div>
                   </div>
@@ -647,7 +649,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
                 aria-label={P[i].name + ', ' + P[i].type}
                 onClick={() => { if (k === Math.round(s.wf)) openProject(i); else if (wallScrollRef.current) wallScrollRef.current.scrollTo({ top: k * 180, behavior: s.reduced ? 'auto' : 'smooth' }); }}
                 onFocus={() => { if (wallScrollRef.current && Math.round(s.wf) !== k) wallScrollRef.current.scrollTo({ top: k * 180, behavior: s.reduced ? 'auto' : 'smooth' }); }}
-                style={{ display: 'block', width: 300, height: 180, margin: '0 auto', scrollSnapAlign: 'center', scrollSnapStop: 'always' }}
+                style={{ display: 'block', width: TW, height: 180, margin: '0 auto', scrollSnapAlign: 'center', scrollSnapStop: 'always' }}
               />
             ))}
             <div style={{ height: 414 }} />
@@ -668,7 +670,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
 
       {/* ===== INDEX ===== */}
       {(screen === 'index' || leaving === 'index') && (
-        <div ref={indexLayerRef} style={{ position: 'absolute', inset: 0 }}>
+        <div ref={indexLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W }}>
         <div className="v3ms" style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
           <div style={{ padding: '76px 22px 110px' }}>
             <div role="group" aria-label="Show a type" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', height: 48 }}>
@@ -720,7 +722,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
       {screen === 'project' && (
         <>
           <div ref={projScrollRef} className="v3ms" onScroll={onProjScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: 'var(--room-bg)' }}>
-            <div ref={projInnerRef} style={{ padding: '72px 22px 120px', display: 'flex', flexDirection: 'column', opacity: 0 }}>
+            <div ref={projInnerRef} style={{ width: MOB_W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column', opacity: 0 }}>
               <h1 style={{ margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
               <p style={{ margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
@@ -852,7 +854,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
 
       {/* ===== SHELF: volumes lie in a stack, spines out ===== */}
       {(screen === 'shelf' || leaving === 'shelf') && (
-        <div ref={shelfLayerRef} style={{ position: 'absolute', inset: 0, translate: `0 ${dy}px` }}>
+        <div ref={shelfLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy}px` }}>
           <div ref={stkRef} style={{ position: 'absolute', inset: 0 }}>
             <span ref={hint1Ref} style={{ position: 'absolute', left: 0, right: 0, top: 214, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>Six volumes</span>
             {V.map((b, i) => {
@@ -929,7 +931,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
       {screen === 'book' && (
-        <div ref={bookRootRef} style={{ position: 'absolute', inset: 0, translate: `0 ${dy}px` }}>
+        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy}px` }}>
           <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .25s ease' }}>Vol. {v.n} · {v.title}</div>
           <div ref={boardRef} onPointerDown={swDown} onPointerUp={swUp} style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', transition: 'translate .38s cubic-bezier(.22,1,.36,1)', touchAction: 'pan-y' }}>
             <div ref={boardXRef} style={{ position: 'absolute', left: 25, top: 92, width: 680, height: 486, transformStyle: 'preserve-3d' }}>
@@ -982,7 +984,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }
         {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
-        <span aria-hidden style={{ position: 'absolute', left: 0, top: 46, width: 26, height: 1.5, background: 'var(--text-primary)', translate: `${(12 + (366 / 4) * tabIdx + (366 / 4 - 26) / 2).toFixed(1)}px 0`, transition: 'translate .55s cubic-bezier(.34,1.3,.64,1)' }} />
+        <span aria-hidden style={{ position: 'absolute', left: 0, top: 46, width: 26, height: 1.5, background: 'var(--text-primary)', translate: `${(12 + ((W - 24) / 4) * tabIdx + ((W - 24) / 4 - 26) / 2).toFixed(1)}px 0`, transition: 'translate .55s cubic-bezier(.34,1.3,.64,1)' }} />
       </nav>
     </div>
   );
