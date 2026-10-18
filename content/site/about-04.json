@@ -65,7 +65,8 @@
           "dates": "[Start] – [End]",
           "desc": "[What you did and what came of it, in a sentence or two.]"
         }
-      ]
+      ],
+      "logo": "oblation-esports"
     },
     {
       "kind": "org",
