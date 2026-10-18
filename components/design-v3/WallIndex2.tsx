@@ -184,6 +184,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     viewReq(req: Req) { applyViewReq(req); },
     setDim(dim: number) { s.dim = dim; },
     setLevel(v: number) { s.lvl = v; },
+    // while the camera flies in, the wall's own screen-sized clip would ride along and show as a cut; the room clips instead
+    setFree(on: boolean) { const el = rootRef.current; if (el && (el.style.overflow === 'visible') !== on) el.style.overflow = on ? 'visible' : 'hidden'; },
     // where tile i sits once the wall has levelled out, in room pixels: its centre and its width
     centerOf(i: number) { return s.cen[i] || null; }, // where tile i is drawn right now, in room pixels
     restRect(i: number) { return s.k < 0.5 ? s.rest[i] || null : null; },

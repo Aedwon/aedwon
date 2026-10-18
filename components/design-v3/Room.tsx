@@ -241,6 +241,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
       const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.66)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.76) / 0.16)) : 1 - poE;
+      wall2.current?.setFree(!!cam && s.po > 0.001);
       wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
       let camT = '';
       if (cam) {
