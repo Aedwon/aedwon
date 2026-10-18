@@ -186,7 +186,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // how far the project page is open (0..1): the lit tile holds, the caption goes first, the others fade with the move
     setOpenP(p: number, opening: boolean) {
       const was = s.blk; s.openP = p; s.opening = opening; s.blk = p > 0.001;
-      if (was && !s.blk) { s.cur = null; s.leaveAt = null; } // back on the wall: the dim lets go on its own
+      if (was && !s.blk) { s.cur = null; s.leaveAt = null; s.gAmt = 0; s.amt = []; } // back on the wall: the dim lets go on its own
     },
     // while the camera flies in, the wall's own screen-sized clip would ride along and show as a cut; the room clips instead
     setFree(on: boolean) { const el = rootRef.current; if (el && (el.style.overflow === 'visible') !== on) el.style.overflow = on ? 'visible' : 'hidden'; },
