@@ -220,7 +220,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       wallEl.setAttribute('aria-hidden', c < 0.5 ? 'false' : 'true');
     }
     if (shelfEl) {
-      shelfEl.style.transform = `translateY(${(D * (1 - c)).toFixed(2)}px)`;
+      shelfEl.style.transform = `translateY(${(D * (1 - c)).toFixed(2)}px) rotateX(${(18 * (1 - cc) * (1 - cc)).toFixed(2)}deg)`; // arrives leaning back, as the wall was, and settles upright
       shelfEl.style.visibility = c < 0.001 ? 'hidden' : 'visible';
       shelfEl.style.pointerEvents = c < 0.5 ? 'none' : 'auto';
       shelfEl.setAttribute('aria-hidden', c < 0.5 ? 'true' : 'false');

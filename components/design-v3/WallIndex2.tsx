@@ -419,8 +419,11 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const pp = ease(k / 0.8);
     // in the room, heading down to the shelf: the wall of work tips back and away, like looking down past it
     const dm = Math.max(0, Math.min(1, s.dim)), dme = dm * dm * (3 - 2 * dm);
-    const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) + 46 * dme;
-    const ay = lerp(s.ms.x * 3, 0, pp), az = lerp(s.az0 + (1 - zl) * 8, 0, pp), S = lerp(lerp(0.52, 0.9, zl), 1, pp);
+    // heading to About the camera comes level: the wall's tilt and roll ease out as it slides away, so the straight-on shelf
+    // arrives in the same view instead of the wall tipping over on its own
+    const lv = 1 - dme;
+    const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) * lv;
+    const ay = lerp(s.ms.x * 3, 0, pp) * lv, az = lerp(s.az0 + (1 - zl) * 8, 0, pp) * lv, S = lerp(lerp(0.52, 0.9, zl), 1, pp);
     const rot = (x: number, y: number, z: number): [number, number, number] => {
       const cx = Math.cos(ax * rad), sx = Math.sin(ax * rad), cy_ = Math.cos(ay * rad), sy = Math.sin(ay * rad), cz = Math.cos(az * rad), sz = Math.sin(az * rad);
       const x1 = cz * x - sz * y, y1 = sz * x + cz * y;
