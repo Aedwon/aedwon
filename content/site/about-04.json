@@ -1,7 +1,7 @@
 {
   "id": "about-04",
   "n": "04",
-  "title": "Training arc",
+  "title": "Experience",
   "tone": "#202026",
   "ink": "#EDEDED",
   "D": 96,
@@ -65,7 +65,8 @@
           "dates": "[Start] – [End]",
           "desc": "[What you did and what came of it, in a sentence or two.]"
         }
-      ]
+      ],
+      "logo": "oblation-esports"
     },
     {
       "kind": "org",

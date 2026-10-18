@@ -18,6 +18,7 @@ export const LOGOS: Record<string, { light: string; dark?: string; bitmap?: stri
   'mihoyo': { light: '/logos/mihoyo.svg', bitmap: '/logos/bitmap/mihoyo.webp' },
   'moonton': { light: '/logos/moonton-light.svg', dark: '/logos/moonton-dark.svg', bitmap: '/logos/bitmap/moonton.webp' },
   'msi': { light: '/logos/msi.svg', bitmap: '/logos/bitmap/msi.webp' },
+  'oblation-esports': { light: '/logos/oblation-esports-light.svg', dark: '/logos/oblation-esports-dark.svg', bitmap: '/logos/bitmap/oblation-esports.webp' },
   'oppo': { light: '/logos/oppo.svg', bitmap: '/logos/bitmap/oppo.webp' },
   'pshs': { light: '/logos/pshs.svg', bitmap: '/logos/bitmap/pshs.webp' },
   'psysc': { light: '/logos/psysc.svg', bitmap: '/logos/bitmap/psysc.webp' },

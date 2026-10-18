@@ -614,7 +614,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   const nextV = V[(dv.active == null ? 0 : dv.active) + 1];
   const barText = `Vol. ${vBar.n} · ${titleOf(vBar, dv.active == null ? 0 : dv.active)}${vBar.contact ? '' : ` · ${first === 0 ? 'Contents' : `pp. ${first}${lastP > first ? `–${lastP}` : ''}`} / ${vBar.all.length - 1}`}`;
   const cNav = dv.active === LAST || dv.pending === LAST;
-  const doneLine = `Vol. 06, ${myTitle || 'Next volume'}, is on the shelf. I’ll write back to ${form.mail.trim() || 'you'}, usually within [a day].`;
+  const doneLine = `Vol. 06, ${myTitle || VOLUMES[LAST].title}, is on the shelf. I’ll write back to ${form.mail.trim() || 'you'}, usually within [a day].`;
 
   // a leaf strip: 70px wide, nested in the previous strip so the angles accumulate (AV:89-108)
   const renderStrip = (i: number, k: number): React.ReactNode => (

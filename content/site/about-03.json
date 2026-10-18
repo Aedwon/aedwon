@@ -1,7 +1,7 @@
 {
   "id": "about-03",
   "n": "03",
-  "title": "Guilds",
+  "title": "Affiliations",
   "tone": "#15151a",
   "ink": "#EDEDED",
   "D": 76,
@@ -21,7 +21,7 @@
         "moonton",
         "hoyoverse",
         "dls",
-        ""
+        "oblation-esports"
       ],
       "blurbs": [
         "",
