@@ -4,13 +4,17 @@
   "type": "Website redesign",
   "media": "web",
   "depth": "note",
-  "desc": "Redesign of the website for Lakambini, an events and creative agency I worked with. [One line on what changed or the result.]",
+  "desc": "A redesign of the website for Lakambini, an events and creative agency I worked with. It's rebuilt around the agency's real events and client work.",
   "stack": [],
-  "stackText": "[stack]",
+  "stackText": "Next.js · TypeScript · Tailwind CSS · Framer Motion",
   "links": [
     {
-      "label": "[lakambini url]",
-      "href": "#"
+      "label": "lakambini-redesign.vercel.app",
+      "href": "https://lakambini-redesign.vercel.app"
+    },
+    {
+      "label": "github.com/Aedwon/lakambini-redesign",
+      "href": "https://github.com/Aedwon/lakambini-redesign"
     }
   ],
   "facts": [
@@ -39,5 +43,24 @@
   },
   "frame": {
     "h": 324
-  }
+  },
+  "sections": [
+    {
+      "h": "What changed",
+      "p": [
+        "The first version of the site was a quick Next.js build with placeholder images, testimonials and stats. The redesign replaced all of that with the agency's own material. Event photography and showreel footage come from the client's archive, and company facts come from their profile deck. Client logos are limited to confirmed clients.",
+        "The site now has a homepage, an about page with the founder's story, a portfolio with four full case studies, and a contact page."
+      ],
+      "kind": "text",
+      "fig": "[Lakambini, home page]"
+    },
+    {
+      "h": "How it's built",
+      "p": [
+        "The agency runs nine divisions, from event production to its in-house tech work. Each one has its own page at a static route, but they share one data-driven template, so adding or editing a division means changing a data file instead of a page.",
+        "The visual system is dark, with an ivory text color and a single brass accent, and a serif display face. The hero plays a short showreel and falls back to a still image if the visitor prefers reduced motion. Lint and the production build pass, and I checked every route at desktop and phone widths."
+      ],
+      "kind": "text"
+    }
+  ]
 }

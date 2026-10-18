@@ -4,15 +4,16 @@
   "type": "Web tool",
   "media": "web",
   "depth": "note",
-  "desc": "Theorycrafting calculator for character damage formulas, artifact substat rolls, and weapon scaling.",
+  "desc": "A theorycrafting calculator that totals team damage and DPS for a Genshin Impact rotation, following the KQM Calculation Standard for artifact substats.",
   "stack": [
-    "JavaScript",
+    "TypeScript",
+    "React",
     "Vite"
   ],
   "links": [
     {
-      "label": "[calculator url]",
-      "href": "#"
+      "label": "github.com/Aedwon/genshin-impact-team-dps-calculator",
+      "href": "https://github.com/Aedwon/genshin-impact-team-dps-calculator"
     }
   ],
   "facts": [
@@ -41,5 +42,24 @@
   },
   "frame": {
     "h": 260
-  }
+  },
+  "sections": [
+    {
+      "h": "What it does",
+      "p": [
+        "You build a team of up to four characters, write the rotation as an ordered list of damage hits, and pick which buffs apply to each hit. The calculator then shows the damage of every hit and the team total, with each number traceable back to its inputs.",
+        "Artifact substats follow the KQM standard. Every substat type gets two fixed rolls, and you spread 20 more with a stepper that blocks illegal totals and shows why. Amplifying, additive and transformative reactions each have their own formula."
+      ],
+      "kind": "text",
+      "fig": "[KQM Team DPS Calculator, in use]"
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "Character, weapon and talent data comes from the genshin-db package, so the roster updates when the package does. The scaling constants live in one file, with comments marking the values to check against a current reference. The README says to do that before trusting the numbers.",
+        "There's no backend or account. State autosaves in the browser, and a build can be exported to or imported from a JSON file. Later commits added an energy recharge solver and an export to another public damage calculator's file format."
+      ],
+      "kind": "text"
+    }
+  ]
 }

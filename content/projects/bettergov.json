@@ -5,21 +5,25 @@
   "media": "repo",
   "depth": "note",
   "repo": "bettergovph/bettergov",
-  "desc": "Open-source effort building a better national website for the Philippines.",
+  "desc": "BetterGov PH is an open source project to build a better national website for the Philippines, live at bettergov.ph. I have two pull requests open upstream, a government acronym tooltip and a contributor documentation fix.",
   "stack": [
     "GitHub"
   ],
   "stackText": "bettergovph/bettergov",
   "links": [
     {
-      "label": "github.com/bettergovph/bettergov",
-      "href": "https://github.com/bettergovph/bettergov"
+      "label": "bettergov.ph",
+      "href": "https://bettergov.ph"
+    },
+    {
+      "label": "Fork branch",
+      "href": "https://github.com/Aedwon/bettergov/tree/feature/acronym-tooltip"
     }
   ],
   "facts": [
     {
       "k": "Contribution",
-      "v": "[your PR or contribution]"
+      "v": "Two open pull requests"
     },
     {
       "k": "Year",
@@ -28,9 +32,24 @@
   ],
   "sections": [
     {
-      "h": "What I contributed",
+      "h": "What it is",
       "p": [
-        "[Your PR or contribution, in a sentence or two, with a link.]"
+        "The repo's own description is \"Building a better Philippines' national website\". The site is at bettergov.ph, and the bettergovph organization on GitHub hosts a long list of other civic data projects beside it."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I worked on",
+      "p": [
+        "I forked the project on July 30, 2026. The first piece is a reusable component that wraps Philippine government acronyms in Radix UI tooltips that spell them out, with the acronym data and tests (PR 706). A maintainer put it on standby on July 31 because there wasn't yet a place on the site to use it. It's still open.",
+        "The second piece is a change to the contributor guide so its instructions match the repository's pull request template. My first attempt (PR 707) was closed without merging, and a maintainer asked for a fresh version on current main. PR 744 is that version. The same maintainer approved it on September 1, 2026, and it's still open."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "Where it stands",
+      "p": [
+        "Those states are from my own records, last checked on September 3, 2026. The upstream repository no longer resolves at its old address, so I haven't been able to check them again since."
       ],
       "kind": "text"
     }

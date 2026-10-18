@@ -4,14 +4,19 @@
   "type": "Android TV",
   "media": "tv",
   "depth": "writeup",
-  "desc": "Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.",
+  "desc": "A touchscreen survey app for an Android TV kiosk. It stores every answer on the device and never needs a connection, so it ran for 8 hours at a live event with no internet.",
   "stack": [
     "Flutter",
     "Dart",
-    "Firebase",
+    "Hive",
     "Android"
   ],
-  "links": [],
+  "links": [
+    {
+      "label": "github.com/Aedwon/kiosk-survey",
+      "href": "https://github.com/Aedwon/kiosk-survey"
+    }
+  ],
   "facts": [
     {
       "k": "Role",
@@ -32,25 +37,25 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
+        "A Flutter app for an Android TV set used as a standing kiosk. It was built for Honor of Kings, and it asks visitors three free-text questions about the game's Benefits feature, such as which prizes they'd like to see added.",
+        "The app goes from a welcome screen with a QR code, through the three questions on an on-screen keyboard, to a thank-you screen. After 45 seconds with no touch it returns to the start, so the next visitor never lands in someone else's half-finished answers."
       ],
       "kind": "text"
     },
     {
-      "h": "What I built",
+      "h": "How it works",
       "p": [
-        "Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.",
-        "[One or two sentences on the hardest part, and how you solved it.]"
+        "Nothing needs a network, and nothing syncs. Each finished survey is written to a local Hive box on the TV with a timestamp. Staff open a PIN-protected admin screen to see the entry count, export everything to CSV on a flash drive plugged into the TV, or clear the data. The app pins itself to the screen with Android's lock task mode and hides the system bars, so visitors can't leave it. Exiting goes through the admin screen. Most of the commit history is visual work on the screen layouts, including changes from client feedback."
       ],
       "fig": "[Kiosk Survey, in use]",
       "kind": "text"
     },
     {
-      "h": "How it went",
+      "h": "Why it exists",
       "p": [
-        "[The result: numbers if you have them, or what people said.]"
+        "[Why this was built, in a sentence.]"
       ],
       "kind": "text"
     }

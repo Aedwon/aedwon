@@ -5,7 +5,7 @@
   "media": "repo",
   "depth": "note",
   "repo": "microsoft/aspire",
-  "desc": "Code-first tooling for building, observing, and deploying distributed applications.",
+  "desc": "Aspire is Microsoft's code-first toolchain for building, running and deploying distributed apps. You describe services, databases and caches in code, and the CLI runs the whole thing locally with OpenTelemetry-based observability.",
   "stack": [
     "GitHub"
   ],
@@ -14,12 +14,16 @@
     {
       "label": "github.com/microsoft/aspire",
       "href": "https://github.com/microsoft/aspire"
+    },
+    {
+      "label": "PR 19614 (open)",
+      "href": "https://github.com/microsoft/aspire/pull/19614"
     }
   ],
   "facts": [
     {
       "k": "Contribution",
-      "v": "[your PR or contribution]"
+      "v": "PR 19614, open"
     },
     {
       "k": "Year",
@@ -28,9 +32,17 @@
   ],
   "sections": [
     {
-      "h": "What I contributed",
+      "h": "What it is",
       "p": [
-        "[Your PR or contribution, in a sentence or two, with a link.]"
+        "Aspire describes how an app's services, frontends, containers and databases fit together in one definition, in C# or TypeScript. The same definition runs locally and carries into deployment. Microsoft maintains it as an open source project and the repo is public."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I worked on",
+      "p": [
+        "I opened PR 19614, \"fix(cli): show resource command help for invalid arguments\" on August 23, 2026. When a resource command got a bad argument, the CLI printed the parse error but not the help for that command. The change prints the error first and then the command's own usage and options. It leaves the hidden --load-arguments path alone so its machine-readable output stays clean.",
+        "The PR fixes issue 19610, which another contributor filed. It touches 7 files, adds unit tests for the bad-argument case and the --load-arguments guard, and is still open. As of my last check on October 19, 2026 it's a draft and has automated Copilot review comments and no approving review."
       ],
       "kind": "text"
     }

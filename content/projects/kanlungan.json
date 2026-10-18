@@ -4,7 +4,7 @@
   "type": "Concept",
   "media": "web",
   "depth": "writeup",
-  "desc": "Concept for a premium interior design studio and curated furniture shop. The brief sets two services, seven shop categories and the rule for what the shop is allowed to sell.",
+  "desc": "A concept brief for Kanlungan, a fictional interior design studio with a small furniture shop. The studio isn't real and nothing is built yet. The repo holds the brief only.",
   "stack": [],
   "links": [
     {
@@ -32,25 +32,20 @@
   ],
   "sections": [
     {
-      "h": "The brief",
+      "h": "What it is",
       "p": [
-        "[Who it was for and what they needed, in two or three sentences.]"
-      ],
-      "kind": "text"
-    },
-    {
-      "h": "What I built",
-      "p": [
-        "The studio is fictional, so the work so far is the brief. It locks two services, Full-Service Furnishing and a Design-Only Interior Package, and splits the shop into seven categories from seating to art. Collections run three ways: by room first, then by mood, then by material.",
-        "Every piece has to pass one test. Would Kanlungan confidently specify it in one of its own finished spaces?"
+        "Kanlungan is a made-up business I'm using as a portfolio piece. The idea is a premium interior design studio first and a small furniture and homeware shop second, with a warm modern Filipino look. The Filipino part is meant to show up in materials and craft instead of decorative motifs.",
+        "[Why this was built, in a sentence.]"
       ],
       "kind": "text",
       "fig": "[Kanlungan, home page]"
     },
     {
-      "h": "How it went",
+      "h": "What the brief decides",
       "p": [
-        "[The result: numbers if you have them, or what people said.]"
+        "The studio offers two services. Full-Service Furnishing takes an empty, already-built space to move-in ready. The Design-Only Interior Package gives the client the plans and specifications to buy and install themselves.",
+        "The shop has seven categories, from seating to art, and mixes Kanlungan's own pieces with makers who are mostly Philippine. One test decides what gets in. Would Kanlungan confidently specify the piece in one of its own finished spaces? Generic furniture, major appliances and construction materials are out.",
+        "So far the repo is a README of these decisions. There's no site or design yet."
       ],
       "kind": "text"
     }
