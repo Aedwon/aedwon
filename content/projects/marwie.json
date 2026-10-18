@@ -50,6 +50,14 @@
       "kind": "text"
     },
     {
+      "h": "How it works",
+      "p": [
+        "A setting changed on the web dashboard is queued in Postgres. A webhook message wakes the bot, which applies the change to the server, and the result shows back on the site. The bot never serves HTTP and the site never reaches it directly."
+      ],
+      "kind": "text",
+      "diagram": "marwie"
+    },
+    {
       "h": "How it went",
       "p": [
         "[The result: numbers if you have them, or what people said.]"

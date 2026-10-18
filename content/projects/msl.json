@@ -2,7 +2,7 @@
   "id": "msl",
   "name": "MSL Network Bot",
   "type": "Discord bot",
-  "media": "flow-msl",
+  "media": "discord",
   "depth": "writeup",
   "desc": "Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.",
   "stack": [
@@ -51,6 +51,14 @@
       "kind": "text"
     },
     {
+      "h": "How it works",
+      "p": [
+        "Members verify with a short form, then earn XP and Event Points from quizzes and three daily quests. Levels, booster perks and a prize raffle all read from that one system, and the raffle exports to CSV for the Moonton prizes."
+      ],
+      "kind": "text",
+      "diagram": "msl"
+    },
+    {
       "h": "How it went",
       "p": [
         "[The result: numbers if you have them, or what people said.]"
@@ -59,8 +67,8 @@
     }
   ],
   "hero": {
-    "src": "/projects/msl/hero-c62ec4a6.webp",
-    "alt": "Mobile Legends: Bang Bang logo",
+    "src": "/projects/msl/hero-6fc047eb.webp",
+    "alt": "MSL Network logo",
     "w": 1040,
     "h": 520
   },

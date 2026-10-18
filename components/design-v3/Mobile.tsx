@@ -10,6 +10,8 @@
 import { useTheme } from '@/lib/design-v3/theme';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WishCounter from './WishCounterLazy';
+import FlowDiagram from './FlowDiagram';
+import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
@@ -855,6 +857,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                   {(sec.p || []).map((para: string, j: number) => (
                     <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
                   ))}
+                  {sec.diagram && FLOWS[sec.diagram] && <FlowDiagram spec={FLOWS[sec.diagram]} fluid live />}
                   {sec.img?.src && (
                     <figure style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {/* eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload */}

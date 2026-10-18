@@ -28,14 +28,14 @@ function anchors(a: FlowNode, b: FlowNode) {
   return `M${a.x} ${y1}L${b.x} ${y2}`;
 }
 
-export default function FlowDiagram({ spec, h = 260, live = false }: { spec: FlowSpec; h?: number; live?: boolean }) {
+export default function FlowDiagram({ spec, h = 260, live = false, fluid = false }: { spec: FlowSpec; h?: number; live?: boolean; fluid?: boolean }) {
   const byId = new Map(spec.nodes.map((n) => [n.id, n]));
   const edges = spec.edges.map((e) => ({ ...e, d: anchors(byId.get(e.from)!, byId.get(e.to)!), tone: byId.get(e.from)!.tone === 'a' ? 'a' : byId.get(e.to)!.tone ?? 'a' }));
   const litAt = new Map<string, number>(); // the first hop that reaches a node lights it
   edges.forEach((e) => { const t = e.step * STEP + 0.85; if (!litAt.has(e.to) || t < litAt.get(e.to)!) litAt.set(e.to, t); });
   return (
-    <div className="v3fd" data-live={live || undefined} role="img" aria-label={spec.label} style={{ width: 520, height: h }}>
-      <svg viewBox="0 0 520 260" width="520" height={h} preserveAspectRatio="xMidYMid meet" aria-hidden>
+    <div className="v3fd" data-live={live || undefined} role="img" aria-label={spec.label} style={fluid ? { width: '100%' } : { width: 520, height: h }}>
+      <svg viewBox="0 0 520 260" width={fluid ? '100%' : 520} height={fluid ? undefined : h} preserveAspectRatio="xMidYMid meet" aria-hidden>
         {edges.map((e, i) => <path key={`w${i}`} className="v3fd-wire" d={e.d} />)}
         {edges.map((e, i) => <path key={`f${i}`} className={`v3fd-flow v3fd-t-${e.tone}`} d={e.d} />)}
         {edges.map((e, i) => (

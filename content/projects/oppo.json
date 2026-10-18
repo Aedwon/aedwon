@@ -1,8 +1,8 @@
 {
   "id": "oppo",
-  "name": "OPPO Cup Bot",
+  "name": "OPPO Hyper Legend Cup",
   "type": "Discord bot",
-  "media": "flow-oppo",
+  "media": "discord",
   "depth": "writeup",
   "desc": "Corporate tournament bot for OPPO Philippines managing team verification, roster validation, and automated support workflows on Hostinger VPS.",
   "stack": [
@@ -47,8 +47,16 @@
         "Corporate tournament bot for OPPO Philippines managing team verification, roster validation, and automated support workflows on Hostinger VPS.",
         "[One or two sentences on the hardest part, and how you solved it.]"
       ],
-      "fig": "[OPPO Cup Bot, in use]",
+      "fig": "[OPPO Hyper Legend Cup, in use]",
       "kind": "text"
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "Players verify through a team dropdown and a UID form, and the bot assigns the team role. Tickets come in four categories, and closing one sends the player a five-star rating prompt by DM. Embeds can be built from Discohook links and scheduled."
+      ],
+      "kind": "text",
+      "diagram": "oppo"
     },
     {
       "h": "How it went",
@@ -59,8 +67,8 @@
     }
   ],
   "hero": {
-    "src": "/projects/oppo/hero-45d54685.webp",
-    "alt": "OPPO logo",
+    "src": "/projects/oppo/hero-f4cae597.webp",
+    "alt": "OPPO Hyper Legend Cup 2026 logo",
     "w": 1040,
     "h": 520
   },

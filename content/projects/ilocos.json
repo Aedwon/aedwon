@@ -2,7 +2,7 @@
   "id": "ilocos",
   "name": "Ilocos Sur Esports Bot",
   "type": "Discord bot",
-  "media": "flow-ilocos",
+  "media": "discord",
   "depth": "writeup",
   "desc": "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.",
   "stack": [
@@ -49,6 +49,14 @@
       ],
       "fig": "[Ilocos Sur Esports Bot, in use]",
       "kind": "text"
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "Players verify through /verifypanel by picking a game and filling in their in-game name. Staff add teams with /teams and the bot links the bracket to Challonge, then reports match results back to it. Players, teams and rosters live in MySQL."
+      ],
+      "kind": "text",
+      "diagram": "ilocos"
     },
     {
       "h": "How it went",

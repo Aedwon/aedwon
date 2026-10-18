@@ -55,6 +55,8 @@ export interface Section {
   items?: { h: string; p: string[]; which: string; vh: string }[];
   cols?: { h: string; items: string[] }[];
   fig?: string;
+  // the id of a drawn flow diagram (lib/design-v3/data/flows.ts) shown under the text
+  diagram?: string;
   // a real picture for the figure, in place of the dashed placeholder
   img?: Img;
   [k: string]: unknown;
