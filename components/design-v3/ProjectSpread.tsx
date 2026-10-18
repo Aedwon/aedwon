@@ -21,7 +21,7 @@ import {
 import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
-import MediaBlock, { type MediaKind } from './MediaBlock';
+import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
 import { setStudio, useStudio } from './studio/store';
 import SystemViz from './SystemViz';
@@ -93,9 +93,8 @@ const CSS = `
 // how large the page draws project i's picture (the Wall flies its own copy in to land at exactly this size)
 export function heroScaleOf(i: number): number {
   const p = PROJECTS[i] as unknown as FullProject;
-  return Math.min((864 - 140) / 520, (520 - 80) / (HH[p.media] || 300), 1.6);
+  return Math.min((864 - 140) / 520, (520 - 80) / frameH(p), 1.6);
 }
-const HH: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
 
 const out = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
 
@@ -235,7 +234,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const pv = PROJECTS[(pi - 1 + PROJECTS.length) % PROJECTS.length] as unknown as FullProject;
   const backText = p.post ? '\u2190 Back to the index' : '\u2190 Back to the wall';
   const kindIcon = ICON[TYPEICON[p.type]] || '';
-  const heroScale = Math.min((864 - 140) / 520, (520 - 80) / (HH[p.media] || 300), 1.6).toFixed(4);
+  const heroScale = Math.min((864 - 140) / 520, (520 - 80) / frameH(p), 1.6).toFixed(4);
   const logos = (p.stack || []).map((s) => LOGO[s]).filter(Boolean)
     .map((g) => ({ ...g, w2: (Number(g.w) * 22 / 18).toFixed(1), h2: (Number(g.h) * 22 / 18).toFixed(1) }));
   const stackText = p.stackText || (p.stack || []).filter((s) => !LOGO[s]).join(' \u00b7 ');
@@ -347,18 +346,35 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
         <div ref={rightRef} style={{ padding: '108px 56px 120px 0', opacity: 1 }}>
           {/* hero stage */}
           <div className="v3ps-hero" style={{ position: 'relative', height: 520, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
-            <ImageSlot id={p.id} slot="hero" img={p.hero} frame={{ position: 'absolute', inset: 0 }}>
+            {p.media === 'phone' ? (
+              // phones: one picture per phone, each with its own controls while editing
               <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
                 <MediaBlock
-                  kind={p.media as MediaKind}
+                  kind="phone"
+                  screens={p.screens}
+                  h={frameH(p)}
                   name={p.name}
-                  repo={p.repo}
-                  desc={p.desc}
-                  date={p.date}
-                  mins={p.mins}
+                  renderScreen={editing ? (i, screen) => (
+                    <ImageSlot id={p.id} slot={`screens.${i}`} img={p.screens?.[i]} asChildren frame={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{screen}</ImageSlot>
+                  ) : undefined}
                 />
               </div>
-            </ImageSlot>
+            ) : (
+              <ImageSlot id={p.id} slot="hero" img={p.hero} asChildren frame={{ position: 'absolute', inset: 0 }}>
+                <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
+                  <MediaBlock
+                    kind={p.media as MediaKind}
+                    img={p.hero}
+                    h={frameH(p)}
+                    name={p.name}
+                    repo={p.repo}
+                    desc={p.desc}
+                    date={p.date}
+                    mins={p.mins}
+                  />
+                </div>
+              </ImageSlot>
+            )}
           </div>
           <div className="v3ps-in2">
           {p.hero?.src && (p.hero.caption || editing) && (

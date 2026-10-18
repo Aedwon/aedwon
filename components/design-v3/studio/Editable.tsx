@@ -5,6 +5,7 @@
 import { createElement, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Img } from '@/lib/design-v3/data/projects';
 import { useStudio } from './store';
+import { logoUrl } from '@/lib/design-v3/data/logos';
 
 type Tag = 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'div' | 'figcaption';
 
@@ -63,14 +64,14 @@ export function Paras({ id, path, items, pStyle }: { id: string; path: string; i
 
 // A picture slot. Shows the picture when there is one, otherwise the placeholder you pass as children.
 // While editing: drop a file on it or choose one, edit its alt text, replace or remove it.
-export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, children }: {
-  id: string; slot: string; img?: Img | null; fit?: 'contain' | 'cover';
+export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, children, asChildren }: {
+  id: string; slot: string; img?: Img | null; fit?: 'contain' | 'cover'; asChildren?: boolean; // asChildren: the children draw the picture (cropped to a frame); this only adds the controls
   frame?: CSSProperties; imgStyle?: CSSProperties; children?: ReactNode;
 }) {
   const api = useApi();
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
-  const picture: ReactNode = img?.src
+  const picture: ReactNode = img?.src && !asChildren
     // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
     ? <img src={img.src} alt={img.alt || ''} width={img.w} height={img.h} draggable={false} style={{ display: 'block', width: '100%', height: '100%', objectFit: fit, ...imgStyle }} />
     : children;
@@ -100,7 +101,7 @@ export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, chi
             <button
               type="button"
               className="studio-btn studio-btn-quiet"
-              onClick={() => quiet(api.saveOp(id, slot.startsWith('shots.') ? { op: 'set', path: slot, value: null } : { op: 'unset', path: slot }))}
+              onClick={() => quiet(api.saveOp(id, slot.startsWith('shots.') || slot.startsWith('screens.') ? { op: 'set', path: slot, value: null } : { op: 'unset', path: slot }))}
             >Remove</button>
           </>
         )}
@@ -167,6 +168,41 @@ export function AddSection({ id, count }: { id: string; count: number }) {
   return (
     <div style={{ paddingTop: 40 }}>
       <button type="button" className="studio-add" onClick={() => quiet(api.saveOp(id, { op: 'insert', path: 'sections', index: count, value: { kind: 'text', h: '[Heading]', p: ['[Body copy.]'] } }))}>+ Add a section</button>
+    </div>
+  );
+}
+
+// The logos in public/logos. The files named -light are the dark-ink versions for light backgrounds and the files
+// named -dark are the white versions for dark backgrounds; a logo with neither has one file for both
+// (lib/design-v3/data/logos.ts says which file each logo uses).
+let logoNames: Promise<string[]> | null = null;
+const fetchLogos = () => (logoNames ??= fetch('/api/studio/save?logos=1', { headers: { 'x-studio': '1' } }).then((r) => r.json()).then((d) => (d.ok ? (d.logos as string[]) : [])).catch(() => []));
+
+// A company logo. It shows the dark-ink file (book paper is light in both themes). While editing, a list lets you
+// choose which logo it is, or none.
+export function LogoSlot({ id, path, value, box, label }: { id: string; path: string; value?: string; box: CSSProperties; label: string }) {
+  const api = useApi();
+  const [names, setNames] = useState<string[]>([]);
+  const body = value ? (
+    // eslint-disable-next-line @next/next/no-img-element -- local SVG files; decoded at once so a page turn does not flash
+    <img src={logoUrl(value)} alt={label} decoding="sync" draggable={false} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+  ) : <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11, color: 'var(--paper-meta)' }}>{`[${label} logo]`}</span>;
+  if (!api) return <div style={{ ...box, border: value ? 'none' : box.border }}>{body}</div>;
+  const load = () => { fetchLogos().then(setNames); };
+  return (
+    <div style={{ ...box, position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+      {body}
+      <select
+        className="studio-alt"
+        style={{ position: 'absolute', left: 4, bottom: 4, height: 24, width: 'auto', maxWidth: '90%', fontSize: 11, opacity: 0.9 }}
+        value={value || ''}
+        onFocus={load}
+        onMouseDown={load}
+        onChange={(e) => { quiet(api.saveOp(id, e.target.value ? { op: 'set', path, value: e.target.value } : { op: 'unset', path })); }}
+      >
+        <option value="">(no logo)</option>
+        {[...new Set([...(value ? [value] : []), ...names])].map((n) => <option key={n} value={n}>{n}</option>)}
+      </select>
     </div>
   );
 }

@@ -1,0 +1,103 @@
+{
+  "id": "about-03",
+  "n": "03",
+  "title": "Guilds",
+  "tone": "#15151a",
+  "ink": "#EDEDED",
+  "D": 76,
+  "pages": [
+    {
+      "kind": "guild",
+      "eyebrow": "GAMES & ESPORTS",
+      "title": "Games and esports",
+      "cols": 2,
+      "orgs": [
+        "MOONTON",
+        "HoYoverse",
+        "Dark League Studios",
+        "UP Oblation Esports"
+      ],
+      "logos": [
+        "moonton",
+        "hoyoverse",
+        "dls",
+        ""
+      ],
+      "blurbs": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "kind": "guild",
+      "eyebrow": "BRANDS",
+      "title": "Brands",
+      "cols": 1,
+      "orgs": [
+        "OPPO Philippines"
+      ],
+      "logos": [
+        "oppo"
+      ],
+      "blurbs": [
+        ""
+      ]
+    },
+    {
+      "kind": "guild",
+      "eyebrow": "GOVERNMENT",
+      "title": "Government",
+      "cols": 1,
+      "orgs": [
+        "Ilocos Sur Provincial Government"
+      ],
+      "logos": [
+        "ilocos-sur"
+      ],
+      "blurbs": [
+        ""
+      ]
+    },
+    {
+      "kind": "guild",
+      "eyebrow": "EDUCATION & SCIENCE",
+      "title": "Education and science",
+      "cols": 1,
+      "orgs": [
+        "PSYSC",
+        "3STUDYANTE"
+      ],
+      "logos": [
+        "psysc",
+        "estudyante-esports"
+      ],
+      "blurbs": [
+        "",
+        ""
+      ]
+    },
+    {
+      "kind": "guild",
+      "eyebrow": "UNIVERSITY",
+      "title": "University",
+      "cols": 1,
+      "orgs": [
+        "UP Diliman",
+        "UP Fighting Maroons",
+        "UP Fair 2024"
+      ],
+      "logos": [
+        "up-diliman",
+        "up-maroons",
+        "up-fair"
+      ],
+      "blurbs": [
+        "",
+        "",
+        ""
+      ]
+    }
+  ]
+}

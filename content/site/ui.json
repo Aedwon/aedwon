@@ -1,0 +1,7 @@
+{
+  "id": "ui",
+  "nav": { "brand": "Aedwon", "wall": "Wall", "index": "Index", "about": "About", "contact": "Contact" },
+  "loader": { "name": "Aedwon" },
+  "notFound": { "title": "Page not found.", "home": "Back to the wall", "index": "Open the Index" },
+  "about": { "hint": "Tap a volume to open it" }
+}

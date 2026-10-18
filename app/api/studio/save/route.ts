@@ -1,5 +1,5 @@
 // Local studio: read and edit one project's JSON. Dev server on localhost only (see lib/studio/server.ts).
-import { arrayAt, assertProject, fail, guard, parsePath, readProject, removeKey, respond, setPath, StudioError, withLock, writeProject } from '@/lib/studio/server';
+import { arrayAt, assertProject, fail, listLogos, guard, parsePath, readProject, removeKey, respond, setPath, StudioError, withLock, writeProject } from '@/lib/studio/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -7,7 +7,8 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   try {
     guard(req);
-    const param = new URL(req.url).searchParams.get('id');
+    const sp = new URL(req.url).searchParams, param = sp.get('id');
+    if (sp.get('logos')) return respond({ ok: true, logos: await listLogos() });
     if (param === null) return respond({ ok: true }); // is the studio on? (the bar asks before it shows itself)
     const id = await assertProject(param);
     return respond({ ok: true, project: await readProject(id) });

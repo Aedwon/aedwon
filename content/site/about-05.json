@@ -1,0 +1,25 @@
+{
+  "id": "about-05",
+  "n": "05",
+  "title": "Off the clock",
+  "tone": "#18181d",
+  "ink": "#EDEDED",
+  "D": 64,
+  "pages": [
+    {
+      "t": "Manhwa",
+      "kind": "read",
+      "eyebrow": "READING · MANHWA"
+    },
+    {
+      "t": "Manga",
+      "kind": "read",
+      "eyebrow": "READING · MANGA"
+    },
+    {
+      "t": "Isekai and fantasy anime",
+      "kind": "read",
+      "eyebrow": "WATCHING · ISEKAI & FANTASY"
+    }
+  ]
+}

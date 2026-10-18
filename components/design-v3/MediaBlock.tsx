@@ -3,6 +3,7 @@
 // colours go through the per-media-kind token maps so light works without a second file.
 
 import { LOGO } from '@/lib/design-v3/data/icons';
+import type { Img } from '@/lib/design-v3/data/projects';
 
 export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper';
 
@@ -13,22 +14,61 @@ export interface MediaBlockProps {
   desc?: string;
   date?: string;
   mins?: string;
+  // a real picture: it replaces the drawing, cropped to the same frame (same size and corners) as the mockup it stands in for
+  img?: Img | null;
+  // phones: one picture per phone
+  screens?: (Img | null)[] | null;
+  // the frame height (520 wide always); the default for the kind when left out
+  h?: number;
+  // the local studio wraps each phone screen with its picture controls
+  renderScreen?: (i: number, screen: React.ReactNode) => React.ReactNode;
 }
+
+// a picture cropped into its frame: which part stays in view (focus) and how close (zoom)
+export function Photo({ img }: { img: Img }) {
+  const f = img.focus || { x: 50, y: 50 }, z = img.zoom && img.zoom > 1 ? img.zoom : 1;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
+    <img src={img.src} alt={img.alt || ''} draggable={false} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: `${f.x}% ${f.y}%`, transform: z > 1 ? `scale(${z})` : undefined, transformOrigin: `${f.x}% ${f.y}%` }} />
+  );
+}
+
+// the height of each kind's 520-wide frame
+export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
+// the frame height of a project: the one you set in the studio, or the default for its kind
+export const frameH = (p: { media: string; frame?: { h: number } }): number => p.frame?.h ?? FRAME_H[p.media] ?? 300;
 
 const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 
-export default function MediaBlock({ kind, name, repo, desc, date, mins }: MediaBlockProps) {
-  if (kind === 'phone') {
+export default function MediaBlock({ kind, name, repo, desc, date, mins, img, screens, h, renderScreen }: MediaBlockProps) {
+  const H = h ?? FRAME_H[kind] ?? 300;
+  if (kind !== 'phone' && img?.src) {
     return (
-      <div style={{ width: 520, height: 370, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
-        {[12, -12, 12].map((ty, i) => (
-          <div key={i} style={{ width: 156, height: 330, padding: 5, boxSizing: 'border-box', borderRadius: 28, background: 'var(--dev-body)', border: '1px solid var(--dev-bezel)', boxShadow: 'var(--shadow-object)', translate: `0 ${ty}px` }}>
-            <div style={{ position: 'relative', height: '100%', borderRadius: 23, background: 'var(--dev-screen)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--dev-label)', textAlign: 'center' }}>
-              [screen {i + 1}]
+      <div style={{ width: 520, height: H, borderRadius: 14, overflow: 'hidden', boxSizing: 'border-box', background: 'var(--dev-screen)', border: '1px solid var(--dev-bezel)', boxShadow: 'var(--shadow-object)' }}>
+        <Photo img={img} />
+      </div>
+    );
+  }
+  if (H !== (FRAME_H[kind] ?? 300) && kind !== 'phone') {
+    // a drawn mockup in a frame of another height: it stays its own size, centred
+    return <div style={{ width: 520, height: H, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MediaBlock kind={kind} name={name} repo={repo} desc={desc} date={date} mins={mins} /></div>;
+  }
+  if (kind === 'phone') {
+    const PH = H - 40, PW = Math.round((PH * 156) / 330); // the phones keep their proportions as the frame grows or shrinks
+    return (
+      <div style={{ width: 520, height: H, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
+        {[12, -12, 12].map((ty, i) => {
+          const shot = screens?.[i];
+          const screen = shot?.src ? <Photo img={shot} /> : <>[screen {i + 1}]</>;
+          return (
+          <div key={i} style={{ width: PW, height: PH, padding: 5, boxSizing: 'border-box', borderRadius: 28, background: 'var(--dev-body)', border: '1px solid var(--dev-bezel)', boxShadow: 'var(--shadow-object)', translate: `0 ${ty}px` }}>
+            <div style={{ position: 'relative', height: '100%', borderRadius: 23, overflow: 'hidden', background: 'var(--dev-screen)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--dev-label)', textAlign: 'center' }}>
+              {renderScreen ? renderScreen(i, screen) : screen}
               <span style={{ position: 'absolute', left: '50%', top: 7, width: 44, height: 13, marginLeft: -22, borderRadius: 99, background: '#000' }} />
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     );
   }

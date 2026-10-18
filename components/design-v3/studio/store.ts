@@ -13,6 +13,7 @@ export interface StudioState {
   available: boolean;
   off: string; // why the studio is off on this localhost server, if it is
   project: string | null; // the project the page is showing (set by the project page itself)
+  visible: { id: string; i: number }[]; // the About book pages on screen right now
   api: StudioApi | null;
   editing: boolean;
   status: 'idle' | 'saving' | 'saved' | 'error';
@@ -21,7 +22,7 @@ export interface StudioState {
   publish: boolean;
 }
 
-const SERVER: StudioState = { available: false, off: '', project: null, api: null, editing: false, status: 'idle', message: '', drawer: false, publish: false };
+const SERVER: StudioState = { available: false, off: '', project: null, api: null, visible: [], editing: false, status: 'idle', message: '', drawer: false, publish: false };
 let state: StudioState = SERVER;
 const subs = new Set<() => void>();
 

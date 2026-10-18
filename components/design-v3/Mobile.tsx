@@ -9,13 +9,14 @@
 
 import { useTheme } from '@/lib/design-v3/theme';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import MediaBlock, { type MediaKind } from './MediaBlock';
+import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
 import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
+import UI from '@/content/site/ui.json';
 
 const MOB_W = 390;
 const MOB_H = 844;
@@ -34,7 +35,6 @@ const KINDS: [string, string, string[] | null][] = [
 // the phone wall's order: alternating kinds and depths, no two of a kind adjacent (mobile.py:398)
 const WALL_ORDER = [0, 2, 4, 13, 1, 8, 14, 3, 10, 7, 15, 9, 12, 5, 16, 11, 6];
 
-const HH: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const out = (x: number) => 1 - Math.pow(1 - cl(x), 3);
@@ -677,12 +677,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
   // The wall's tiles. Built once per width so a change of focus does not redraw every mock-up.
   const wallTiles = useMemo(() => WALL_ORDER.map((i, k) => {
-    const q2 = P[i], meta = postMeta(q2), sc = Math.min(TW / 520, 220 / HH[q2.media]);
+    const q2 = P[i], meta = postMeta(q2), sc = Math.min(TW / 520, 220 / frameH(q2));
     const sd = sdOk ? ({ animationName: 'v3drum', animationDuration: '1s', animationTimingFunction: 'linear', animationFillMode: 'both', animationTimeline: '--wall', animationRange: `${(k - DRUM_REACH) * 180}px ${(k + DRUM_REACH) * 180}px` } as React.CSSProperties) : { opacity: 0 };
     return (
-      <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
+      <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(frameH(q2) * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
         <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: sc.toFixed(4) }}>
-          <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+          <MediaBlock kind={q2.media as MediaKind} img={q2.hero} screens={q2.screens} h={frameH(q2)} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
         </div>
       </div>
     );
@@ -770,8 +770,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 return (
                   <button key={q2.id} className="v3tbtn" type="button" onClick={() => openProject(i)} style={{ '--c': 'var(--text-primary)', display: 'grid', gridTemplateColumns: '64px minmax(0, 1fr) 24px', gap: 14, alignItems: 'center', minHeight: 60, borderBottom: '1px solid var(--line-hairline)', textAlign: 'left' } as React.CSSProperties}>
                     <div style={{ position: 'relative', width: 64, height: 40, overflow: 'hidden', borderRadius: 4, background: 'var(--dev-screen)' }}>
-                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(64 / 520, 40 / HH[q2.media]).toFixed(4) }}>
-                        <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(64 / 520, 40 / frameH(q2)).toFixed(4) }}>
+                        <MediaBlock kind={q2.media as MediaKind} img={q2.hero} screens={q2.screens} h={frameH(q2)} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
                       </div>
                     </div>
                     <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
@@ -831,15 +831,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 <a key={l.href} href={l.href} className="v3rise" style={{ ...rise(4), marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
               <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
-                <div style={{ position: 'relative', width: CW, height: Math.round(HH[p.media] * Math.min(CW / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
-                  {p.hero?.src
-                    // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
-                    ? <img src={p.hero.src} alt={p.hero.alt || ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
-                    : (
-                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / HH[p.media]).toFixed(4) }}>
-                        <MediaBlock kind={p.media as MediaKind} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
-                      </div>
-                    )}
+                <div style={{ position: 'relative', width: CW, height: Math.round(frameH(p) * Math.min(CW / 520, 240 / frameH(p)) + 28), overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / frameH(p)).toFixed(4) }}>
+                    <MediaBlock kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
+                  </div>
                 </div>
               </div>
               {p.hero?.src && p.hero.caption && <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--text-label)' }}>{p.hero.caption}</p>}
@@ -972,7 +967,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
               <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
             </div>
-            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 672 + Math.max(0, Math.min(18, dy)), textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
+            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 672 + Math.max(0, Math.min(18, dy)), textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>{UI.about.hint}</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
           <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700, perspectiveOrigin: `${W / 2}px ${335 + BOOK_DROP}px`, pointerEvents: 'none', visibility: 'hidden' }}>
@@ -1058,7 +1053,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== top bar ===== */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--room-bg)' }}>
-        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
+        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>{UI.nav.brand}</span>
         <span style={{ display: 'flex', alignItems: 'center' }}>
           {showBack && (
             <button className="v3tbtn" type="button" onClick={() => (screen === 'book' ? closeBook() : go(from))} style={{ '--c': 'var(--text-primary)', height: 44, padding: '0 12px', fontSize: 15 } as React.CSSProperties}>{screen === 'book' ? 'Close' : 'Back'}</button>
@@ -1073,7 +1068,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
       <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--room-bg)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' || (opening && screen === 'shelf') ? '100%' : '0px'}`, transition: 'translate .55s cubic-bezier(.22,1,.36,1)' }}>
-        {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
+        {[UI.nav.wall, UI.nav.index, UI.nav.about, UI.nav.contact].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
         <span aria-hidden style={{ position: 'absolute', left: 0, top: 46, width: 26, height: 1.5, background: 'var(--text-primary)', translate: `${(12 + ((W - 24) / 4) * tabIdx + ((W - 24) / 4 - 26) / 2).toFixed(1)}px 0`, transition: 'translate .55s cubic-bezier(.34,1.3,.64,1)' }} />

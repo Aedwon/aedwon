@@ -1,0 +1,110 @@
+{
+  "id": "about-04",
+  "n": "04",
+  "title": "Training arc",
+  "tone": "#202026",
+  "ink": "#EDEDED",
+  "D": 96,
+  "pages": [
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "PSYSC",
+      "roles": [
+        {
+          "title": "Marketing Associate",
+          "dates": "Feb 2024 – Present",
+          "desc": "Secured corporate sponsorships generating over ₱800,000 in funding for a national science competition."
+        },
+        {
+          "title": "Regional Head, Region I/II/NCR",
+          "dates": "May – Sep 2024",
+          "desc": "Directed regional elimination rounds and MathSciAKa workshops, coordinating 30+ volunteers."
+        },
+        {
+          "title": "Science Olympiad Core",
+          "dates": "May – Sep 2024",
+          "desc": "Co-authored 500+ questions and built the scoring model for 4,000+ competitors."
+        }
+      ],
+      "logo": "psysc"
+    },
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "MOONTON Games",
+      "roles": [
+        {
+          "title": "[Role]",
+          "dates": "[Start] – [End]",
+          "desc": "[What you did and what came of it, in a sentence or two.]"
+        }
+      ],
+      "logo": "moonton"
+    },
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "UP Fighting Maroons",
+      "roles": [
+        {
+          "title": "[Role]",
+          "dates": "[Start] – [End]",
+          "desc": "[What you did and what came of it, in a sentence or two.]"
+        }
+      ],
+      "logo": "up-maroons"
+    },
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "UP Oblation Esports",
+      "roles": [
+        {
+          "title": "[Role]",
+          "dates": "[Start] – [End]",
+          "desc": "[What you did and what came of it, in a sentence or two.]"
+        }
+      ]
+    },
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "Dark League Studios",
+      "roles": [
+        {
+          "title": "[Role]",
+          "dates": "[Start] – [End]",
+          "desc": "[What you did and what came of it, in a sentence or two.]"
+        }
+      ],
+      "logo": "dls"
+    },
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "UP Fair 2024",
+      "roles": [
+        {
+          "title": "[Role]",
+          "dates": "[Start] – [End]",
+          "desc": "[What you did and what came of it, in a sentence or two.]"
+        }
+      ],
+      "logo": "up-fair"
+    },
+    {
+      "kind": "org",
+      "eyebrow": "TRAINING ARC",
+      "org": "miHoYo (HoYoverse)",
+      "roles": [
+        {
+          "title": "[Role]",
+          "dates": "[Start] – [End]",
+          "desc": "[What you did and what came of it, in a sentence or two.]"
+        }
+      ],
+      "logo": "mihoyo"
+    }
+  ]
+}

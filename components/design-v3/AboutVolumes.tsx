@@ -16,6 +16,8 @@ import Link from 'next/link';
 import BookPage from './BookPage';
 import type { AboutVolumesHandle, Req } from './contracts';
 import { VOLUMES, type BookPageDef, type Volume } from '@/lib/design-v3/data/volumes';
+import { setStudio } from './studio/store';
+import { preloadLogos } from '@/lib/design-v3/data/logos';
 import { useTheme } from '@/lib/design-v3/theme';
 
 const LAST = VOLUMES.length - 1;
@@ -192,11 +194,22 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
     shelving: false, shelvedAt: null as number | null,
     wa: 0, wl: false, wt: null as ReturnType<typeof setTimeout> | null,
     lastO: null as '' | 'book' | 'contact' | null,
+    lastAi: -1 as number | null,
     swapped: false, // has the leaf fade-in hand-off fired for the current turn
     leafMounted: false, // mirror of disc.leafOn, to detect the crossing
   }).current;
 
   const [dv, setDv] = useState<Disc>(() => ({ active: null, pending: null, leafOn: false, barAt: 0, ...idleRead(VOLUMES[0], 0) }));
+  // the company logos in the books load once, up front, so turning a page does not redraw them
+  useEffect(() => {
+    preloadLogos(VOLUMES.flatMap((v) => v.pages.flatMap((p) => [p.logo as string | undefined, ...((p.logos as string[] | undefined) || [])])).filter((n): n is string => !!n));
+  }, []);
+  // tell the local studio which pages are on screen, so its drawer shows their text
+  useEffect(() => {
+    const v = dv.active != null ? VOLUMES[dv.active] : null;
+    const pages = v ? [v.all[2 * dv.barAt], v.all[2 * dv.barAt + 1]].map((p) => p?.src).filter((s): s is { id: string; i: number } => !!s && s.i >= 0) : [];
+    setStudio({ visible: pages });
+  }, [dv.active, dv.barAt]);
   const [clock, setClock] = useState('');
   const [form, setForm] = useState({ name: '', mail: '', msg: '', title: '' });
 
@@ -210,8 +223,16 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   const V = useMemo(() => {
     const myTitle = form.title.trim();
     return VOLUMES.map((v, i) => (i === LAST && myTitle ? { ...v, all: v.all.map((pp) => ({ ...pp, running: myTitle })) } : v));
-  }, [form.title]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- VOLUMES is module data; a studio edit swaps it
+  }, [form.title, VOLUMES]);
   useEffect(() => { vRef.current = V; }, [V]);
+  // an edit from the local studio changes the book's data under an open book: show the new text on the pages now
+  const firstV = useRef(true);
+  useEffect(() => {
+    if (firstV.current) { firstV.current = false; return; }
+    setDv((d) => (d.active == null || st.turn ? d : { ...d, ...idleRead(VOLUMES[d.active], d.barAt) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- VOLUMES is module data; a studio edit swaps it
+  }, [VOLUMES]);
 
   const okForm = useCallback(() => {
     const f = formRef.current;
@@ -537,6 +558,9 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
       // §2.1 onOpen, on change only
       const o = st.active === LAST || st.pending === LAST ? 'contact' : (st.active != null ? 'book' : '');
       if (o !== st.lastO) { st.lastO = o; cbs.current.onOpen?.(o); }
+      // tell the local studio which book is open, so it edits that book's file
+      const ai = st.active != null ? st.active : st.pending != null ? st.pending : null;
+      if (ai !== st.lastAi) { st.lastAi = ai; setStudio({ project: ai != null ? VOLUMES[ai].id : null, ...(ai == null ? { visible: [] } : {}) }); }
 
       renderFrame(now);
       st.raf = requestAnimationFrame(loop);

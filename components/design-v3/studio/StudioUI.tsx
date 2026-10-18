@@ -22,7 +22,7 @@ const CSS = `
 .studio-row:hover .studio-x{opacity:1}
 .studio-add{align-self:flex-start;height:30px;padding:0 12px;border-radius:8px;border:1px dashed rgba(96,165,250,.6);background:transparent;color:#60A5FA;cursor:pointer;font:13px system-ui}
 .studio-add:hover{background:rgba(96,165,250,.1)}
-.studio-slot-ui{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.72));opacity:0;transition:opacity .15s;z-index:3}
+.studio-slot-ui{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.72));opacity:0;transition:opacity .15s;z-index:3}
 .studio-slot:hover .studio-slot-ui,.studio-slot:focus-within .studio-slot-ui,.studio-slot[data-over] .studio-slot-ui{opacity:1}
 .studio-slot-ui[data-empty]{inset:0;justify-content:center;background:rgba(96,165,250,.06);border:1.5px dashed rgba(96,165,250,.65);border-radius:12px;opacity:1}
 .studio-slot[data-over]{outline:2px solid #60A5FA;outline-offset:-2px}
@@ -64,6 +64,16 @@ const CSS = `
 
 type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+const isSite = (id: string) => id === 'ui' || id.startsWith('about-');
+const BOOKS = ['about-01', 'about-02', 'about-03', 'about-04', 'about-05', 'about-06'];
+
+// Every text value in a file, as [path, text].
+function leaves(v: unknown, prefix = ''): [string, string][] {
+  if (typeof v === 'string') return [[prefix, v]];
+  if (v && typeof v === 'object') return Object.entries(v).flatMap(([k, x]) => (prefix === '' && k === 'id' ? [] : leaves(x, prefix ? prefix + '.' + k : k)));
+  return [];
+}
+
 function useProjectId() {
   const [id, setId] = useState<string | null>(null);
   useEffect(() => {
@@ -78,7 +88,8 @@ function useProjectId() {
 export default function StudioUI() {
   const st = useStudio();
   const urlId = useProjectId();
-  const id = st.project ?? urlId; // the page says which project it shows; the address is the fallback (the phone layout)
+  // the page says which project (or About book) it shows; the address is the fallback (the phone layout); anywhere else it is the site's own text
+  const id = st.project ?? urlId ?? 'ui';
   const [git, setGit] = useState<PublishStatus | null>(null);
   const refreshGit = useCallback(() => { gitStatus().then(setGit).catch(() => {}); }, []);
   // what would be published: on load, after each save, and now and then
@@ -103,7 +114,7 @@ export default function StudioUI() {
     <>
       <style>{CSS}</style>
       {id && <Bar id={id} git={git} />}
-      {id && st.drawer && <Drawer id={id} key={id} />}
+      {id && st.drawer && (isSite(id) ? <SiteDrawer id={id} key={id} /> : <Drawer id={id} key={id} />)}
       {id && st.publish && <PublishPanel git={git} refresh={refreshGit} />}
     </>
   );
@@ -118,7 +129,7 @@ function Bar({ id, git }: { id: string; git: PublishStatus | null }) {
       <button type="button" aria-pressed={st.drawer} onClick={() => setStudio({ drawer: !st.drawer })}>Details</button>
       <button type="button" aria-pressed={st.publish} onClick={() => setStudio({ publish: !st.publish })}>Publish{git && (git.changes.length > 0 || git.ahead > 0) ? <span className="studio-badge">{git.changes.length || git.ahead}</span> : null}</button>
       <span style={{ minWidth: 150, color: st.status === 'error' ? '#F87171' : undefined }}>{label}</span>
-      <code>content/projects/{id}.json</code>
+      <code>content/{isSite(id) ? 'site' : 'projects'}/{id}.json</code>
     </div>
   );
 }
@@ -187,6 +198,102 @@ function PublishPanel({ git, refresh }: { git: PublishStatus | null; refresh: ()
   );
 }
 
+// The drawer for the site's own text: the loader, the nav, the 404 page and the About books' labels. Book pages
+// are edited on the page itself (Edit, then click the text); this holds the rest.
+function SiteDrawer({ id }: { id: string }) {
+  const st = useStudio();
+  const vis = st.visible.filter((v) => v.id === id).map((v) => v.i);
+  const visKey = vis.join(',');
+  const [tab, setTab] = useState<'text' | 'json'>('text');
+  const [doc, setDoc] = useState<Doc | null>(null);
+  const [books, setBooks] = useState<Record<string, string>>({});
+  const [json, setJson] = useState('');
+  const [err, setErr] = useState('');
+  const refresh = () => {
+    loadProject(id).then((p) => { setDoc(p); setJson(JSON.stringify(p, null, 2)); setErr(''); }).catch((e) => setErr(e.message));
+    if (id === 'ui') Promise.all(BOOKS.map((b) => loadProject(b).then((p) => [b, String(p.title ?? '')] as const))).then((r) => setBooks(Object.fromEntries(r))).catch(() => {});
+  };
+  useEffect(() => { refresh(); }, [id, visKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const commit = (target: string, op: Parameters<typeof saveOp>[1]) =>
+    saveOp(target, op).then((r) => { if (target === id) { setDoc(r.project); setJson(JSON.stringify(r.project, null, 2)); } setErr(''); }).catch((e) => setErr(e.message));
+  const rows = doc ? leaves(doc) : [];
+  const groups = [...new Set(rows.map(([p]) => p.split('.')[0]))];
+  const GROUP: Record<string, string> = { nav: 'Navigation', loader: 'Loading screen', notFound: 'Page not found', about: 'About', title: 'Book label' };
+  return (
+    <aside className="studio-drawer" aria-label="Site text">
+      <div className="studio-tabs">
+        <button type="button" aria-pressed={tab === 'text'} onClick={() => { setTab('text'); refresh(); }}>{id === 'ui' ? 'Site text' : 'This book'}</button>
+        <button type="button" aria-pressed={tab === 'json'} onClick={() => { setTab('json'); refresh(); }}>JSON</button>
+        <button type="button" style={{ flex: '0 0 34px' }} title="Close" onClick={() => setStudio({ drawer: false })}>×</button>
+      </div>
+      {err && <p style={{ color: '#F87171', margin: '8px 0' }}>{err}</p>}
+      {!doc && !err && <p>Loading…</p>}
+      {doc && tab === 'text' && (
+        <>
+          {id !== 'ui' && vis.length === 0 && <p style={{ color: '#9a9aa6', margin: '8px 0' }}>Open a book, and the text of the pages you are looking at shows here.</p>}
+          {id !== 'ui' && vis.map((i) => {
+            const page = (doc.pages || [])[i] as Doc | undefined;
+            if (!page) return null;
+            const SKIP = /^(kind|titleSize|bigSize|logo|logos|img|src|cols)(\.|$)/;
+            const fields = leaves(page).filter(([k]) => !SKIP.test(k));
+            return (
+              <div key={i}>
+                <h4>Page {String(i + 1).padStart(2, '0')} · {String(page.kind)}</h4>
+                {fields.map(([k, v]) => {
+                  const path = `pages.${i}.${k}`;
+                  const save = (val: string) => { if (val !== v) commit(id, { op: 'set', path, value: val }); };
+                  return (
+                    <label key={path + v}>{k.replace(/\./g, ' · ')}
+                      {v.length > 60
+                        ? <textarea style={{ height: 96, padding: 8, font: '13px/1.4 system-ui', resize: 'vertical' }} defaultValue={v} onBlur={(e) => save(e.target.value)} />
+                        : <input defaultValue={v} onBlur={(e) => save(e.target.value)} />}
+                    </label>
+                  );
+                })}
+                <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>Pictures and logos: press Edit and use the controls on the page.</p>
+              </div>
+            );
+          })}
+          {id === 'ui' && groups.map((g) => (
+            <div key={g}>
+              <h4>{GROUP[g] || g}</h4>
+              {rows.filter(([p]) => p.split('.')[0] === g).map(([p, v]) => (
+                <label key={p + v}>{p.split('.').slice(1).join(' · ') || p}<input defaultValue={v} onBlur={(e) => { if (e.target.value !== v) commit(id, { op: 'set', path: p, value: e.target.value }); }} /></label>
+              ))}
+            </div>
+          ))}
+          {id !== 'ui' && (
+            <>
+              <h4>Spine label</h4>
+              <label key={String(doc.title)}>Title<input defaultValue={String(doc.title ?? '')} onBlur={(e) => { if (e.target.value !== doc.title) commit(id, { op: 'set', path: 'title', value: e.target.value }); }} /></label>
+            </>
+          )}
+          {id === 'ui' && (
+            <>
+              <h4>About books: spine labels</h4>
+              {BOOKS.map((b, i) => (
+                <label key={b + books[b]}>{'Volume 0' + (i + 1)}<input defaultValue={books[b] ?? ''} onBlur={(e) => { if (e.target.value !== books[b]) commit(b, { op: 'set', path: 'title', value: e.target.value }).then(refresh); }} /></label>
+              ))}
+              <p style={{ color: '#9a9aa6' }}>The text inside a book: open it on the About page, press Edit, and click the text.</p>
+            </>
+          )}
+        </>
+      )}
+      {doc && tab === 'json' && (
+        <>
+          <p style={{ color: '#9a9aa6', margin: '8px 0' }}>The whole file.</p>
+          <textarea value={json} spellCheck={false} onChange={(e) => setJson(e.target.value)} />
+          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+            <button type="button" className="studio-small" style={{ padding: '0 14px', background: '#2563EB', borderColor: '#2563EB', color: '#fff' }}
+              onClick={() => { try { commit(id, { op: 'put', project: JSON.parse(json) }); } catch (e) { setErr('Not valid JSON: ' + (e as Error).message); } }}>Save JSON</button>
+            <button type="button" className="studio-small" style={{ padding: '0 14px' }} onClick={refresh}>Reload from disk</button>
+          </div>
+        </>
+      )}
+    </aside>
+  );
+}
+
 function Drawer({ id }: { id: string }) {
   const [tab, setTab] = useState<'details' | 'json'>('details');
   const [doc, setDoc] = useState<Doc | null>(null);
@@ -225,6 +332,8 @@ function Drawer({ id }: { id: string }) {
           <label>Depth
             <select value={doc.depth} onChange={(e) => setField('depth', e.target.value, false)}>{DEPTH.map((m) => <option key={m}>{m}</option>)}</select>
           </label>
+
+          <Pictures doc={doc} commit={commit} />
 
           <h4>Stack</h4>
           <label key={(doc.stack || []).join()}>Names, separated by commas
@@ -273,5 +382,60 @@ function Pairs({ list, a, b, ph, onChange }: { list: Record<string, string>[]; a
       ))}
       <button type="button" className="studio-small" style={{ padding: '0 12px' }} onClick={() => onChange([...list, { [a]: '', [b]: '' }])}>+ Add</button>
     </div>
+  );
+}
+
+const FRAME_DEFAULT: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
+
+// The frame (its height; it is always 520 wide) and, for each picture, which part stays in view and how close.
+// The Wall, the Index preview and the page all follow, because they draw the same frame.
+function Pictures({ doc, commit }: { doc: Doc; commit: (op: Parameters<typeof saveOp>[1]) => void }) {
+  const phone = doc.media === 'phone';
+  const pics: { slot: string; label: string; img: Doc }[] = phone
+    ? [0, 1, 2].filter((n) => doc.screens?.[n]?.src).map((n) => ({ slot: `screens.${n}`, label: `Phone ${n + 1}`, img: doc.screens[n] }))
+    : doc.hero?.src ? [{ slot: 'hero', label: 'Picture', img: doc.hero }] : [];
+  const def = FRAME_DEFAULT[doc.media] ?? 300, h = doc.frame?.h ?? def;
+  const setH = (v: string) => { const n = Math.round(Number(v)); if (Number.isFinite(n) && n >= 160 && n <= 640 && n !== h) commit(n === def ? { op: 'unset', path: 'frame' } : { op: 'set', path: 'frame', value: { h: n } }); };
+  const onEnd = (fn: (v: string) => void) => ({
+    onPointerUp: (e: React.PointerEvent<HTMLInputElement>) => fn(e.currentTarget.value),
+    onKeyUp: (e: React.KeyboardEvent<HTMLInputElement>) => fn(e.currentTarget.value),
+    onBlur: (e: React.FocusEvent<HTMLInputElement>) => fn(e.currentTarget.value),
+  });
+  return (
+    <>
+      <h4>Picture frame</h4>
+      <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>Height of the frame, in pixels. The width stays fixed. Taller or shorter, the Wall, the Index and this page all follow.</p>
+      <label key={'h' + h}>Height ({def} is the default)
+        <input type="range" min={160} max={640} step={5} defaultValue={h} {...onEnd(setH)} />
+      </label>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+        <input key={'n' + h} type="number" min={160} max={640} defaultValue={h} style={{ width: 90 }} onBlur={(e) => setH(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
+        {doc.frame && <button type="button" className="studio-small" style={{ padding: '0 12px' }} onClick={() => commit({ op: 'unset', path: 'frame' })}>Reset height</button>}
+      </div>
+      {pics.map(({ slot, label, img }) => {
+        const f = img.focus || { x: 50, y: 50 }, z = img.zoom || 1;
+        const setZoom = (v: string) => { const n = Math.round(Number(v) * 20) / 20; if (n >= 1 && n <= 4 && n !== z) commit(n === 1 ? { op: 'unset', path: slot + '.zoom' } : { op: 'set', path: slot + '.zoom', value: n }); };
+        return (
+          <div key={slot}>
+            <h4>{label}: position and zoom</h4>
+            <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>Click the part that must stay in view.</p>
+            <div style={{ position: 'relative', lineHeight: 0, cursor: 'crosshair' }}
+              onClick={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                const x = Math.round(Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100))), y = Math.round(Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100)));
+                commit({ op: 'set', path: slot + '.focus', value: { x, y } });
+              }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- the studio's own uploaded picture */}
+              <img src={img.src} alt="" draggable={false} style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block' }} />
+              <span aria-hidden style={{ position: 'absolute', left: `${f.x}%`, top: `${f.y}%`, width: 18, height: 18, margin: '-9px 0 0 -9px', borderRadius: 99, border: '2px solid #fff', boxShadow: '0 0 0 1.5px #2563EB, 0 1px 6px rgba(0,0,0,.5)', pointerEvents: 'none' }} />
+            </div>
+            <label key={slot + z} style={{ marginTop: 8 }}>Zoom ({z.toFixed(2)}×)
+              <input type="range" min={1} max={4} step={0.05} defaultValue={z} {...onEnd(setZoom)} />
+            </label>
+            {(img.focus || img.zoom) && <button type="button" className="studio-small" style={{ padding: '0 12px' }} onClick={() => commit({ op: 'put', project: { ...doc, ...(slot === 'hero' ? { hero: { ...doc.hero, focus: undefined, zoom: undefined } } : { screens: doc.screens.map((s: Doc | null, n: number) => (`screens.${n}` === slot && s ? { ...s, focus: undefined, zoom: undefined } : s)) }) } })}>Reset position and zoom</button>}
+          </div>
+        );
+      })}
+    </>
   );
 }

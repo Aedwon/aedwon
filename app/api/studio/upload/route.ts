@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     guard(req);
     const form = await req.formData();
     const id = await assertProject(form.get('id'));
-    const slot = assertSlot(form.get('slot'));
+    const slot = assertSlot(form.get('slot'), id);
     const f = form.get('file');
     if (!(f instanceof File)) throw new StudioError(400, 'No file');
     const saved = await saveImage(id, slot, Buffer.from(await f.arrayBuffer()));
@@ -21,8 +21,9 @@ export async function POST(req: Request) {
       let cur: unknown = doc;
       for (const s of segs) cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[s] : undefined;
       const prev = (cur && typeof cur === 'object' ? cur : {}) as { alt?: string; caption?: string };
-      if (segs[0] === 'shots') { // two tiles: keep the empty one as null
-        const tiles = Array.isArray(doc.shots) ? (doc.shots as unknown[]) : (doc.shots = []) as unknown[];
+      for (const key of ['shots', 'screens']) { // tiles and phone screens: keep the empty ones as null
+        if (segs[0] !== key) continue;
+        const tiles = Array.isArray(doc[key]) ? (doc[key] as unknown[]) : (doc[key] = []) as unknown[];
         while (tiles.length < Number(segs[1])) tiles.push(null);
       }
       setPath(doc, segs, { src: saved.src, alt: prev.alt ?? '', ...(prev.caption ? { caption: prev.caption } : {}), w: saved.w, h: saved.h });

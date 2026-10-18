@@ -1,0 +1,54 @@
+{
+  "id": "about-02",
+  "n": "02",
+  "title": "How I work",
+  "tone": "#26262c",
+  "ink": "#EDEDED",
+  "D": 68,
+  "pages": [
+    {
+      "t": "Research first",
+      "kind": "big",
+      "eyebrow": "CHAPTER 1 · RESEARCH FIRST",
+      "big": "80%",
+      "bigSize": "176px",
+      "body": "of every project is research and planning, before any code."
+    },
+    {
+      "t": "The optimal choice",
+      "kind": "text",
+      "eyebrow": "CHAPTER 2 · OPTIMIZE",
+      "title": "Is this the most optimal choice?",
+      "titleSize": "40px",
+      "body": "I obsess over it. Every architecture and every workflow gets the same question before it stays."
+    },
+    {
+      "t": "Daily kit",
+      "kind": "list",
+      "eyebrow": "CHAPTER 3 · DAILY KIT",
+      "title": "What I build with",
+      "items": [
+        {
+          "a": "Claude Code",
+          "b": "agentic coding"
+        },
+        {
+          "a": "Codex",
+          "b": "agentic coding"
+        },
+        {
+          "a": "using-superpowers",
+          "b": "skill framework"
+        },
+        {
+          "a": "Matt Pocock’s skills",
+          "b": "engineering"
+        },
+        {
+          "a": "Gemini Deep Research",
+          "b": "research"
+        }
+      ]
+    }
+  ]
+}

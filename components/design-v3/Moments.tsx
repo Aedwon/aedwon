@@ -6,6 +6,7 @@
 // production notes) and plays once.
 
 import { useEffect, useRef } from 'react';
+import UI from '@/content/site/ui.json';
 import Link from 'next/link';
 import { useTheme, type Theme } from '@/lib/design-v3/theme';
 
@@ -182,7 +183,7 @@ export default function Moments({ which, theme: themeProp, w: W = 1440, h: H = 9
         <>
           {/* centre stack: the name and a hairline that fills with real load progress */}
           <div ref={stackRef} style={{ position: 'absolute', left: '50%', top: '50%', translate: '-50% -50%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22, opacity: 0, scale: '1' }}>
-            <span style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.035em' }}>Aedwon</span>
+            <span style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.035em' }}>{UI.loader.name}</span>
             <span aria-hidden style={{ position: 'relative', width: 120, height: 1, background: 'var(--line-track)', overflow: 'hidden' }}>
               <span ref={barRef} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 120, background: 'var(--fill-inverse)', transformOrigin: '0 50%', scale: '0 1' }} />
             </span>
@@ -190,13 +191,13 @@ export default function Moments({ which, theme: themeProp, w: W = 1440, h: H = 9
 
           {/* a stand-in nav that fades in where the Room nav takes over (spec §1.1) */}
           <div ref={navRef} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: phone ? 56 : 84, padding: phone ? '0 22px' : '0 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: 0 }}>
-            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
+            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>{UI.nav.brand}</span>
             {!phone && <div style={{ display: 'flex', alignItems: 'center', gap: 36, fontSize: 14, color: 'var(--text-label)' }}>
-              <span style={{ color: 'var(--text-primary)' }}>Wall</span>
-              <span>Index</span>
+              <span style={{ color: 'var(--text-primary)' }}>{UI.nav.wall}</span>
+              <span>{UI.nav.index}</span>
               <span aria-hidden style={{ width: 1, height: 16, background: 'var(--line-divider)' }} />
-              <span>About</span>
-              <span>Contact</span>
+              <span>{UI.nav.about}</span>
+              <span>{UI.nav.contact}</span>
             </div>}
           </div>
 
@@ -207,13 +208,13 @@ export default function Moments({ which, theme: themeProp, w: W = 1440, h: H = 9
         <>
           {/* nav, static and fully visible; no link is current (spec §2.1) */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 84, padding: '0 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Link href="/" style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)', textDecoration: 'none' }}>Aedwon</Link>
+            <Link href="/" style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)', textDecoration: 'none' }}>{UI.nav.brand}</Link>
             <div style={{ display: 'flex', alignItems: 'center', gap: 36, fontSize: 14, color: 'var(--text-label)' }}>
-              <span>Wall</span>
-              <span>Index</span>
+              <span>{UI.nav.wall}</span>
+              <span>{UI.nav.index}</span>
               <span aria-hidden style={{ width: 1, height: 16, background: 'var(--line-divider)' }} />
-              <span>About</span>
-              <span>Contact</span>
+              <span>{UI.nav.about}</span>
+              <span>{UI.nav.contact}</span>
             </div>
           </div>
 
@@ -233,10 +234,10 @@ export default function Moments({ which, theme: themeProp, w: W = 1440, h: H = 9
           <span aria-hidden style={{ position: 'absolute', left: 716, top: 146, width: 8, height: 8, borderRadius: 99, background: 'var(--text-hover-soft)', boxShadow: 'var(--shadow-nail)' }} />
 
           <div style={{ position: 'absolute', left: 0, right: 0, top: 520, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, textAlign: 'center' }}>
-            <h1 style={{ margin: 0, fontSize: 40, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>Page not found.</h1>
+            <h1 style={{ margin: 0, fontSize: 40, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{UI.notFound.title}</h1>
             <div style={{ display: 'flex', gap: 12, marginTop: 14 }}>
-              <Link className="mb pri" href="/" style={{ height: 46, padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: 12, background: 'var(--fill-inverse)', color: 'var(--text-on-inverse)', fontSize: 14.5, fontWeight: 600, textDecoration: 'none' }}>Back to the wall</Link>
-              <Link className="mb" href="/index" style={{ height: 46, padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: 12, border: '1px solid var(--line-hairline-2)', color: 'var(--text-primary)', fontSize: 14.5, textDecoration: 'none' }}>Open the Index</Link>
+              <Link className="mb pri" href="/" style={{ height: 46, padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: 12, background: 'var(--fill-inverse)', color: 'var(--text-on-inverse)', fontSize: 14.5, fontWeight: 600, textDecoration: 'none' }}>{UI.notFound.home}</Link>
+              <Link className="mb" href="/index" style={{ height: 46, padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: 12, border: '1px solid var(--line-hairline-2)', color: 'var(--text-primary)', fontSize: 14.5, textDecoration: 'none' }}>{UI.notFound.index}</Link>
             </div>
             {/* the same recovery points agents get in the markdown 404 */}
             <nav aria-label="For agents" style={{ display: 'flex', gap: 16, marginTop: 6, fontFamily: "'Geist Mono', monospace", fontSize: 12 }}>

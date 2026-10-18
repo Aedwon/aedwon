@@ -10,6 +10,7 @@ import WallIndex2 from './WallIndex2';
 import AboutVolumes from './AboutVolumes';
 import ProjectSpread, { heroScaleOf } from './ProjectSpread';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
+import UI from '@/content/site/ui.json';
 import type { AboutVolumesHandle, ProjectSpreadHandle, Req, WallIndex2Handle } from './contracts';
 import { useTheme, type Theme } from '@/lib/design-v3/theme';
 const ROOM_W = 1440;
@@ -378,12 +379,12 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
 
       {/* one nav for the whole room; its line travels with you */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 84, background: 'var(--nav-glass)', backdropFilter: 'saturate(180%) blur(20px)', WebkitBackdropFilter: 'saturate(180%) blur(20px)' }}>
-        <button className="v3rn" onClick={() => toWall('wall')} style={{ '--c': 'var(--text-primary)', position: 'absolute', left: 44, top: 20, width: 'auto', fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' } as React.CSSProperties}>Aedwon</button>
-        <button ref={navRefs.wall} className="v3rn" onClick={() => toWall('wall')} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1016, top: 20 } as React.CSSProperties}>Wall</button>
-        <button ref={navRefs.index} className="v3rn" onClick={() => toWall('index')} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1088, top: 20 } as React.CSSProperties}>Index</button>
+        <button className="v3rn" onClick={() => toWall('wall')} style={{ '--c': 'var(--text-primary)', position: 'absolute', left: 44, top: 20, width: 'auto', fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' } as React.CSSProperties}>{UI.nav.brand}</button>
+        <button ref={navRefs.wall} className="v3rn" onClick={() => toWall('wall')} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1016, top: 20 } as React.CSSProperties}>{UI.nav.wall}</button>
+        <button ref={navRefs.index} className="v3rn" onClick={() => toWall('index')} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1088, top: 20 } as React.CSSProperties}>{UI.nav.index}</button>
         <span aria-hidden style={{ position: 'absolute', left: 1172, top: 34, width: 1, height: 16, background: 'var(--line-divider)' }} />
-        <button ref={navRefs.about} className="v3rn" onClick={() => toShelf(false)} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1184, top: 20 } as React.CSSProperties}>About</button>
-        <button ref={navRefs.contact} className="v3rn" onClick={() => toShelf(true)} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1256, top: 20 } as React.CSSProperties}>Contact</button>
+        <button ref={navRefs.about} className="v3rn" onClick={() => toShelf(false)} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1184, top: 20 } as React.CSSProperties}>{UI.nav.about}</button>
+        <button ref={navRefs.contact} className="v3rn" onClick={() => toShelf(true)} style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1256, top: 20 } as React.CSSProperties}>{UI.nav.contact}</button>
         <span ref={underlineRef} aria-hidden style={{ position: 'absolute', left: 0, top: 58, width: 28, height: 1.5, background: 'var(--text-primary)', translate: `${X.wall - 14}px 0` }} />
         <ThemeLink theme={theme} />
       </div>
