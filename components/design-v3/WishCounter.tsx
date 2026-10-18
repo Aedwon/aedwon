@@ -65,7 +65,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
 
   const pad = compact ? 16 : 24;
   const card: CSSProperties = { border: '1px solid var(--line-hairline-2)', borderRadius: 12, background: 'var(--surface-media)', boxSizing: 'border-box' };
-  const label: CSSProperties = { ...mono, fontSize: 11.5, color: 'var(--text-label)' };
+  const label: CSSProperties = { fontSize: 13, color: 'var(--text-label)' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 14 : 18, marginTop: 8 }}>
@@ -96,9 +96,9 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           {stats.lastFiveStar && (
             <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'center', justifyContent: 'space-between', minHeight: compact ? undefined : 220, background: 'radial-gradient(120% 140% at 85% 50%, var(--surface-control-hover) 0%, var(--surface-media) 70%)' }}>
               <div style={{ padding: pad, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-                <span style={label}>Latest 5★</span>
+                <span style={label}>Latest 5-star</span>
                 <span style={{ fontSize: compact ? 26 : 34, fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.1, color: 'var(--text-primary)' }}>{stats.lastFiveStar.name}</span>
-                <span style={{ ...mono, fontSize: 13, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
+                <span style={{ fontSize: 13, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
                   {stats.lastFiveStar.pity === null ? 'pity unknown' : `${stats.lastFiveStar.pity} pulls`} · {fmtDate.format(new Date(stats.lastFiveStar.time))}
                 </span>
               </div>
@@ -114,9 +114,9 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                 <span style={{ fontSize: compact ? 48 : 64, fontWeight: 600, letterSpacing: '-0.05em', lineHeight: 1, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{stats.currentFiveStarPity}</span>
-                <span style={{ ...mono, fontSize: 13, color: 'var(--text-label)' }}>/ {spec.hard} pulls since last 5★</span>
+                <span style={{ fontSize: 14, color: 'var(--text-label)' }}>/ {spec.hard} pulls since last 5-star</span>
               </div>
-              <span style={{ ...mono, fontSize: 12.5, color: 'var(--text-secondary)' }}>4★ pity {stats.currentFourStarPity} / 10</span>
+              <span style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>4-star pity {stats.currentFourStarPity} / 10</span>
             </div>
             <div
               role="img"
@@ -134,8 +134,8 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           <div style={{ display: 'grid', gridTemplateColumns: compact ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: compact ? 10 : 12 }}>
             {[
               { k: 'Wishes', v: stats.totalWishes.toLocaleString('en-US') },
-              { k: '5★ pulled', v: String(stats.fiveStarCount) },
-              { k: 'Average 5★ pity', v: stats.averageFiveStarPity === null ? '-' : stats.averageFiveStarPity.toFixed(1) },
+              { k: '5-star pulls', v: String(stats.fiveStarCount) },
+              { k: 'Average 5-star pity', v: stats.averageFiveStarPity === null ? '-' : stats.averageFiveStarPity.toFixed(1) },
               { k: 'Primogems spent', v: (stats.totalWishes * PRIMOGEMS_PER_WISH).toLocaleString('en-US') },
             ].map((m) => (
               <div key={m.k} style={{ ...card, padding: compact ? '12px 14px' : '16px 18px', display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -147,7 +147,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
 
           {chart.length > 0 && (
             <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <span style={label}>Pulls it took to get each 5★ (oldest to newest)</span>
+              <span style={label}>Pulls it took to get each 5-star (oldest to newest)</span>
               <div role="img" aria-label={`Pity of each 5 star: ${chart.map((c) => `${c.name} ${c.pity}`).join(', ')}`} style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: compact ? 6 : 10, height: compact ? 140 : 180 }}>
                 <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: `${(spec.soft / spec.hard) * 100}%`, borderTop: '1px dashed var(--line-hover)' }} />
                 {chart.map((c) => (
@@ -162,25 +162,25 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ ...label, paddingBottom: 8 }}>5★ history</span>
+            <span style={{ ...label, paddingBottom: 8 }}>5-star history</span>
             {stats.fiveStarHistory.map((h) => (
               <div key={h.id} style={{ display: 'grid', gridTemplateColumns: compact ? 'minmax(0, 1fr) auto' : 'minmax(0, 1fr) 90px 130px', alignItems: 'center', columnGap: 16, rowGap: 2, padding: '12px 0', borderTop: '1px solid var(--line-hairline)' }}>
                 <span style={{ fontSize: 15.5, fontWeight: 500, color: 'var(--text-primary)', minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
                   <Art name={h.name} kind="icon" size={36} style={{ borderRadius: 99, flex: 'none', background: 'var(--surface-sunken)' }} />
                   <span>{h.name}
-                  <span style={{ ...mono, fontSize: 11.5, color: 'var(--text-label)', marginLeft: 10 }}>{h.itemType}</span></span>
+                  <span style={{ fontSize: 13, color: 'var(--text-label)', marginLeft: 10 }}>{h.itemType}</span></span>
                 </span>
-                <span style={{ ...mono, fontSize: 13, textAlign: compact ? 'right' : 'left', color: h.pity === null ? 'var(--text-tertiary)' : pityColor(h.pity, spec.soft) }}>
+                <span style={{ fontSize: 13, textAlign: compact ? 'right' : 'left', color: h.pity === null ? 'var(--text-tertiary)' : pityColor(h.pity, spec.soft) }}>
                   {h.pity === null ? 'pity unknown' : `${h.pity} pulls`}
                 </span>
                 <span style={{ ...mono, fontSize: 12.5, color: 'var(--text-label)', textAlign: 'right', gridColumn: compact ? '1 / -1' : undefined }}>{fmtDate.format(new Date(h.time))}</span>
               </div>
             ))}
-            {stats.fiveStarHistory.length === 0 && <span style={{ fontSize: 15, color: 'var(--text-secondary)', borderTop: '1px solid var(--line-hairline)', paddingTop: 12 }}>No 5★ yet on this banner.</span>}
+            {stats.fiveStarHistory.length === 0 && <span style={{ fontSize: 15, color: 'var(--text-secondary)', borderTop: '1px solid var(--line-hairline)', paddingTop: 12 }}>No 5-star yet on this banner.</span>}
           </div>
 
           <p style={{ margin: 0, ...label, lineHeight: 1.6 }}>
-            Counted from my first saved pull on this banner ({since ? fmtDate.format(new Date(since)) : '-'}), so the first 5★ has no known pity. Updated {updated ? fmtDate.format(new Date(updated)) : '-'}.
+            Counted from my first saved pull on this banner ({since ? fmtDate.format(new Date(since)) : '-'}), so the first 5-star has no known pity. Updated {updated ? fmtDate.format(new Date(updated)) : '-'}.
           </p>
         </>
       )}
