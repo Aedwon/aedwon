@@ -384,7 +384,7 @@ button, a, .v3tbtn, .v3rn { -webkit-tap-highlight-color: transparent; -webkit-to
   .v3fd[data-live] .v3fd-lit, .v3fd:hover .v3fd-lit, a:hover .v3fd .v3fd-lit { animation: v3fd-lit 6s ease infinite; animation-delay: var(--l); }
 }
 
-/* MarwieSky (the Marwie bot tile): the mascot bobs and blinks, the clouds drift */
+/* MarwieSky (the Marwie bot tile): still at rest; on hover the mascot bobs and blinks and the clouds drift */
 .v3ms { box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #d3e4f3; box-shadow: var(--shadow-object); }
 .v3ms svg { display: block; }
 .v3ms-eyes { transform-box: fill-box; transform-origin: center; }
@@ -392,7 +392,7 @@ button, a, .v3tbtn, .v3rn { -webkit-tap-highlight-color: transparent; -webkit-to
 @keyframes v3ms-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes v3ms-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
 @media (prefers-reduced-motion: no-preference) {
-  .v3ms-drift { animation: v3ms-drift linear infinite; }
-  .v3ms-bob { animation: v3ms-bob 2.6s ease-in-out infinite; }
-  .v3ms-eyes { animation: v3ms-blink 5.2s ease-in-out infinite; }
+  .v3ms[data-live] .v3ms-drift, .v3ms:hover .v3ms-drift, a:hover .v3ms .v3ms-drift { animation: v3ms-drift linear infinite; }
+  .v3ms[data-live] .v3ms-bob, .v3ms:hover .v3ms-bob, a:hover .v3ms .v3ms-bob { animation: v3ms-bob 2.6s ease-in-out infinite; }
+  .v3ms[data-live] .v3ms-eyes, .v3ms:hover .v3ms-eyes, a:hover .v3ms .v3ms-eyes { animation: v3ms-blink 5.2s ease-in-out infinite; }
 }

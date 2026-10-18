@@ -1,5 +1,5 @@
 // The Marwie bot tile: the course site's pixel cloud mascot on its sky. The mascot bobs and blinks,
-// the white clouds drift right to left, all in CSS (see .v3ms in tokens.css) and off under reduced motion.
+// the white clouds drift right to left, all in CSS (see .v3ms in tokens.css). It plays on hover, or while `live`, and never under reduced motion.
 
 const cloud = (u: number, fill: string, eyes = false) => {
   const r = (x: number, y: number, w: number, h: number, f: string, k: string) => <rect key={k} x={x * u} y={y * u} width={w * u} height={h * u} fill={f} />;
@@ -19,9 +19,9 @@ const CLOUDS = [
   { u: 6, y: 200, o: 0.7, dur: 32, ph: 0.1 },
 ];
 
-export default function MarwieSky({ h = 260 }: { h?: number }) {
+export default function MarwieSky({ h = 260, live = false }: { h?: number; live?: boolean }) {
   return (
-    <div className="v3ms" role="img" aria-label="The Marwie cloud mascot floating over a drifting sky" style={{ width: 520, height: h }}>
+    <div className="v3ms" data-live={live || undefined} role="img" aria-label="The Marwie cloud mascot floating over a drifting sky" style={{ width: 520, height: h }}>
       <svg viewBox="0 0 520 260" width="520" height={h} preserveAspectRatio="xMidYMid slice" shapeRendering="crispEdges" aria-hidden>
         <defs>
           <linearGradient id="v3ms-sky" x1="0" y1="0" x2="0" y2="1">
