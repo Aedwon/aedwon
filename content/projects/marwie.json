@@ -59,5 +59,11 @@
   ],
   "frame": {
     "h": 260
+  },
+  "hero": {
+    "src": "/projects/marwie/hero-084df0a2.webp",
+    "alt": "The Marwie cloud mascot",
+    "w": 1040,
+    "h": 520
   }
 }
