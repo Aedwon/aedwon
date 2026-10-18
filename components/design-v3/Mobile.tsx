@@ -45,18 +45,18 @@ const BOOK_W = 340, BOOK_H = 486; // the book at reading size, as the board show
 const seg = (u: number, a: number, b: number) => ease((u - a) / (b - a));
 // Pose of the proxy book at progress u (0 = lying in the stack, 1 = cover to you at the board). The book's centre is the
 // origin; we keep the centre of its nearest face on z = 0, so both ends match the flat pieces they hand over to.
-function bookPose(u: number, r: { x: number; y: number; w: number; h: number }) {
+function bookPose(u: number, r: { x: number; y: number; w: number; h: number }, tx = 195, ty = 335, fit = 1) {
   const ss = r.w / BOOK_H; // stack scale: the spine's length is the book's height
   const dk = r.h / ss; // thickness at reading size
   const stand = seg(u, 0.14, 0.62);
   const turn = seg(u, 0.5, 0.93);
-  const sc = ss + (1 - ss) * stand;
+  const sc = ss + (fit - ss) * stand;
   const th = 90 * (1 - turn);
   const rad = (th * Math.PI) / 180;
   const sx = r.x + r.w / 2, sy = r.y + r.h / 2;
   const lift = 64 * seg(u, 0, 0.24) * (1 - seg(u, 0.46, 0.82));
   return {
-    px: sx + (195 - sx) * stand, py: sy + (335 - sy) * stand,
+    px: sx + (tx - sx) * stand, py: sy + (ty - sy) * stand,
     pz: -sc * ((BOOK_W / 2) * Math.sin(rad) + (dk / 2) * Math.cos(rad)) + lift,
     phi: -90 * (1 - stand), th, sc, ss, dk,
   };
@@ -93,7 +93,10 @@ interface Turn { from: number; to: number; then: 'L' | 'R' | null; dur: number; 
 
 const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; width?: number }>(function Mobile({ initialPath, height = MOB_H, width = MOB_W }, ref) {
   // The wall, top bar and tab bar use the full width. The other screens are drawn 390 wide and sit centred.
-  const W = width, ox = (W - MOB_W) / 2, TW = W - 32;
+  const W = width, ox = (W - MOB_W) / 2, TW = W - 32, CW = W - 44;
+  const fit = Math.min(W / MOB_W, 1.12); // the shelf and the open book grow with the screen, up to a point
+  const dimsRef = useRef({ W, H: height, fit });
+  dimsRef.current = { W, H: height, fit };
   // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
   const { theme, toggle } = useTheme();
   const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
@@ -235,11 +238,11 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [busy, s, panTo, turnTo]);
 
   const stackRect = useCallback((i: number) => {
-    const Hh = [67, 54, 61, 77, 51, 45], W = [326, 312, 334, 304, 320, 298], O = [-4, 6, -2, 3, -6, 2];
+    const Hh = [67, 54, 61, 77, 51, 45].map((h) => h * fit), Wd = [326, 312, 334, 304, 320, 298].map((w) => w * fit), O = [-4, 6, -2, 3, -6, 2];
     let y = 652 - Hh.reduce((a, h) => a + h, 0);
     for (let k = 0; k < i; k++) y += Hh[k];
-    return { x: 195 - W[i] / 2 + O[i], y, w: W[i], h: Hh[i] };
-  }, []);
+    return { x: W / 2 - Wd[i] / 2 + O[i], y, w: Wd[i], h: Hh[i] };
+  }, [fit, W]);
 
   const openVol = useCallback((i: number) => {
     if (s.opening || s.shut) return;
@@ -486,7 +489,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       });
       if (moRef.current) moRef.current.style.visibility = pu >= 0 ? 'visible' : 'hidden';
       if (pu >= 0) {
-        const P = bookPose(pu, stackRect(pi));
+        const dm = dimsRef.current, P = bookPose(pu, stackRect(pi), dm.W / 2, dm.H / 2 + (335 - dm.H / 2) * dm.fit, dm.fit);
         if (moBookRef.current) moBookRef.current.style.transform = `translate3d(${P.px.toFixed(2)}px, ${P.py.toFixed(2)}px, ${P.pz.toFixed(2)}px) rotateZ(${P.phi.toFixed(3)}deg) rotateY(${P.th.toFixed(3)}deg) scale3d(${P.sc.toFixed(4)}, ${P.sc.toFixed(4)}, ${P.sc.toFixed(4)})`;
         if (moShadowRef.current) moShadowRef.current.style.opacity = seg(pu, 0.72, 1).toFixed(3);
         // light falls on the cover and the spine as each faces you
@@ -753,7 +756,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       {screen === 'project' && (
         <>
           <div ref={projScrollRef} className="v3ms" onScroll={onProjScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: 'var(--room-bg)' }}>
-            <div ref={projInnerRef} style={{ width: MOB_W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column', opacity: 0 }}>
+            <div ref={projInnerRef} style={{ width: W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column', opacity: 0 }}>
               <h1 style={{ margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
               <p style={{ margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
@@ -780,12 +783,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 <a key={l.href} href={l.href} style={{ marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
               <div style={{ marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
-                <div style={{ position: 'relative', width: 346, height: Math.round(HH[p.media] * Math.min(346 / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
+                <div style={{ position: 'relative', width: CW, height: Math.round(HH[p.media] * Math.min(CW / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
                   {p.hero?.src
                     // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
                     ? <img src={p.hero.src} alt={p.hero.alt || ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
                     : (
-                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(346 / 520, 240 / HH[p.media]).toFixed(4) }}>
+                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / HH[p.media]).toFixed(4) }}>
                         <MediaBlock kind={p.media as MediaKind} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                       </div>
                     )}
@@ -824,8 +827,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       {(it.p || []).map((qq: string, j2: number) => (
                         <p key={j2} style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: 'var(--text-secondary)' }}>{qq}</p>
                       ))}
-                      <div style={{ position: 'relative', width: 346, height: (parseInt(it.vh, 10) * 0.5767).toFixed(0) + 'px', overflow: 'hidden' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 0, width: 600, transformOrigin: '0 0', scale: '0.5767' }}>
+                      <div style={{ position: 'relative', width: CW, height: (parseInt(it.vh, 10) * CW / 600).toFixed(0) + 'px', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', left: 0, top: 0, width: 600, transformOrigin: '0 0', scale: (CW / 600).toFixed(4) }}>
                           <SystemViz which={it.which} hintSize="600px,370px" />
                         </div>
                       </div>
@@ -885,7 +888,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== SHELF: volumes lie in a stack, spines out ===== */}
       {(screen === 'shelf' || leaving === 'shelf') && (
-        <div ref={shelfLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy}px` }}>
+        <div ref={shelfLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: W, translate: `0 ${dy}px` }}>
           <div ref={stkRef} style={{ position: 'absolute', inset: 0 }}>
             <span ref={hint1Ref} style={{ position: 'absolute', left: 0, right: 0, top: 214, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>Six volumes</span>
             {V.map((b, i) => {
@@ -916,7 +919,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
             <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 690, textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
-          <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', pointerEvents: 'none', visibility: 'hidden' }}>
+          <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700 * fit, perspectiveOrigin: `${W / 2}px ${height / 2 + (335 - height / 2) * fit}px`, pointerEvents: 'none', visibility: 'hidden' }}>
             <div ref={moShadowRef} style={{ position: 'absolute', left: 25, top: 92, width: BOOK_W, height: BOOK_H, borderRadius: '3px 6px 6px 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0 }} />
             {(() => {
               const mi = V[vol], mr = stackRect(vol), mss = mr.w / BOOK_H, mdk = mr.h / mss;
@@ -962,7 +965,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
       {screen === 'book' && (
-        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy}px` }}>
+        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, scale: fit, translate: `0 ${dy}px` }}>
           <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .25s ease' }}>Vol. {v.n} · {v.title}</div>
           <div ref={boardRef} onPointerDown={swDown} onPointerUp={swUp} style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', transition: 'translate .38s cubic-bezier(.22,1,.36,1)', touchAction: 'pan-y' }}>
             <div ref={boardXRef} style={{ position: 'absolute', left: 25, top: 92, width: 680, height: 486, transformStyle: 'preserve-3d' }}>
