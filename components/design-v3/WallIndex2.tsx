@@ -15,7 +15,7 @@ import type { Theme } from '@/lib/design-v3/theme';
 
 const R0 = 240;
 // same wall, fixed arrangement: three columns balanced by height, no two of a kind stacked
-const COLS = [[0, 13, 1, 7, 15, 5], [2, 14, 3, 9, 16, 6], [4, 8, 10, 12, 11]];
+const COLS = [[0, 13, 1, 7, 15, 5, 18], [2, 14, 3, 9, 16, 6, 19], [4, 8, 10, 12, 11, 17]];
 const GAP = 48;
 
 // five kinds, the way a visitor thinks about them (WallIndex2:309-316)
@@ -66,7 +66,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
 
   const P: Project[] = PROJECTS;
   const N = P.length;
-  const NW = P.filter((p) => p.media !== 'paper').length; // writing lives in the Index only
+  const NW = COLS.flat().length; // everything on the wall is hung in COLS, and those entries come first
 
   const rootRef = useRef<HTMLDivElement>(null);
   const ixRef = useRef<HTMLDivElement>(null);
@@ -491,8 +491,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const Ao = hold ? 1 : A;
       s.ops[i] = (onWall ? 1 - (1 - dimTo) * GdE * (1 - Ao) : 1) * (hold ? 1 : 1 - fo);
       s.hs[i] = 1 + 0.035 * A;
-      const isPost = p.media === 'paper';
-      const w = { x: isPost ? 160 : bp[i].x, y: isPost ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: isPost ? 0 : s.ops[i] * intro };
+      const offWall = bp[i].y > 90000; // not hung on the wall (Index only)
+      const w = { x: offWall ? 160 : bp[i].x, y: offWall ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: offWall ? 0 : s.ops[i] * intro };
       const ut = ease((k - 0.024 * i) / 0.58); // every tile, even the 17th, lands exactly on its row
       let su = s.su[i];
       if (!su || dt === 0 || s.reduced) su = s.su[i] = { u: ut, v: 0 };

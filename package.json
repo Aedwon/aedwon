@@ -6,6 +6,7 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "wishes:import": "node scripts/import-genshin-wishes.mjs",
     "dev": "STUDIO_LOCAL=1 next dev -H 127.0.0.1",
     "dev:lan": "next dev",
     "build": "next build",

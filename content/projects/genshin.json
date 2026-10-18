@@ -1,0 +1,50 @@
+{
+  "id": "genshin",
+  "name": "Genshin wish counter",
+  "type": "Web tool",
+  "media": "wishes",
+  "depth": "writeup",
+  "desc": "A read-only counter for my own Genshin Impact wish history. It tracks pity, 5-star pulls and how many pulls each one took.",
+  "stack": [
+    "TypeScript",
+    "Next.js"
+  ],
+  "links": [
+    {
+      "label": "Source",
+      "href": "https://github.com/Aedwon/aedwon"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "Solo"
+    },
+    {
+      "k": "Year",
+      "v": "2026"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Data",
+      "v": "My own wish history"
+    }
+  ],
+  "sections": [
+    {
+      "kind": "wishes",
+      "h": "My wishes"
+    },
+    {
+      "kind": "text",
+      "h": "How it works",
+      "p": [
+        "HoYoverse only keeps about six months of wish history, so I import it with a small script and save the records in the repo. Old pulls stay even after the game stops returning them.",
+        "The script reads the history URL the game generates, pulls all three banners and merges anything new. It never writes the URL or my UID to disk, since the link carries a temporary key. The page itself only reads the saved records, so there is nothing to log into."
+      ]
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 import { LOGO } from '@/lib/design-v3/data/icons';
 import type { Img } from '@/lib/design-v3/data/projects';
 
-export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper';
+export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper' | 'wishes';
 
 export interface MediaBlockProps {
   kind: MediaKind;
@@ -34,7 +34,7 @@ export function Photo({ img }: { img: Img }) {
 }
 
 // the height of each kind's 520-wide frame
-export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
+export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300, wishes: 300 };
 // the frame height of a project: the one you set in the studio, or the default for its kind
 export const frameH = (p: { media: string; frame?: { h: number } }): number => p.frame?.h ?? FRAME_H[p.media] ?? 300;
 
@@ -152,6 +152,15 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
         <span style={{ fontSize: 25, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.12 }}>{name}</span>
         <span style={{ fontSize: 14.5, lineHeight: 1.55, color: '#3f3f46' }}>{desc}</span>
         <span style={{ marginTop: 'auto', fontSize: 13, color: '#61616A' }}>Read · {mins}</span>
+      </div>
+    );
+  }
+  if (kind === 'wishes') {
+    // Paimon on a dotted gold glow. Art only, no numbers, so nothing here can go stale.
+    return (
+      <div style={{ position: 'relative', width: 520, height: H, boxSizing: 'border-box', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--data-border)', background: 'radial-gradient(60% 80% at 50% 50%, color-mix(in srgb, var(--status-wip) 24%, transparent) 0%, transparent 70%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 20px 20px, var(--data-body)', boxShadow: 'var(--shadow-object)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- small static WebP */}
+        <img src="/genshin/paimon.webp" alt="" draggable={false} style={{ height: 268, width: 'auto' }} />
       </div>
     );
   }
