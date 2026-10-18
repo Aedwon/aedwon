@@ -5,21 +5,38 @@
   "media": "wishes",
   "depth": "writeup",
   "desc": "A read-only counter for my own Genshin Impact wish history. It tracks pity, 5-star pulls and how many pulls each one took.",
-  "stack": ["TypeScript", "Next.js"],
-  "links": [{ "label": "Source", "href": "https://github.com/Aedwon/aedwon" }],
+  "stack": [
+    "TypeScript",
+    "Next.js"
+  ],
+  "links": [
+    {
+      "label": "Source",
+      "href": "https://github.com/Aedwon/aedwon"
+    }
+  ],
   "facts": [
-    { "k": "Role", "v": "Solo" },
-    { "k": "Year", "v": "2026" },
-    { "k": "Platform", "v": "Web" },
-    { "k": "Data", "v": "My own wish history" }
+    {
+      "k": "Role",
+      "v": "Solo"
+    },
+    {
+      "k": "Year",
+      "v": "2026"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Data",
+      "v": "My own wish history"
+    }
   ],
   "sections": [
     {
       "kind": "wishes",
-      "h": "My wishes",
-      "p": [
-        "These are my real pulls. Switch banners to see the pity count, the 5-star history and a chart of how long each 5-star took."
-      ]
+      "h": "My wishes"
     },
     {
       "kind": "text",

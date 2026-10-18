@@ -156,14 +156,13 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
     );
   }
   if (kind === 'wishes') {
-    // three 5-star portraits over a dotted gold glow. Art only, no numbers, so nothing here can go stale.
+    // Paimon on a dotted gold glow, a fate beside her. Art only, no numbers, so nothing here can go stale.
     return (
-      <div style={{ position: 'relative', width: 520, height: H, boxSizing: 'border-box', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--data-border)', background: 'radial-gradient(70% 90% at 50% 45%, color-mix(in srgb, var(--status-wip) 22%, transparent) 0%, transparent 70%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 20px 20px, var(--data-body)', boxShadow: 'var(--shadow-object)' }}>
-        {[['diluc', -24, 6, 245], ['odette', 292, 6, 245], ['ineffa', 128, 0, 300]].map(([n, x, y, ht]) => (
-          // eslint-disable-next-line @next/next/no-img-element -- small static WebP
-          <img key={n as string} src={`/genshin/tile-${n}.webp`} alt="" draggable={false} style={{ position: 'absolute', left: x as number, bottom: y as number, height: ht as number, width: 'auto' }} />
-        ))}
-        <span style={{ position: 'absolute', left: 20, top: 18, ...mono, fontSize: 11.5, color: 'var(--dev-label)' }}>{name}</span>
+      <div style={{ position: 'relative', width: 520, height: H, boxSizing: 'border-box', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--data-border)', background: 'radial-gradient(60% 80% at 50% 50%, color-mix(in srgb, var(--status-wip) 24%, transparent) 0%, transparent 70%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 20px 20px, var(--data-body)', boxShadow: 'var(--shadow-object)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- small static WebP */}
+        <img src="/genshin/paimon.webp" alt="" draggable={false} style={{ width: 190, height: 190, borderRadius: 99 }} />
+        {/* eslint-disable-next-line @next/next/no-img-element -- small static WebP */}
+        <img src="/genshin/item-intertwined-fate.webp" alt="" draggable={false} style={{ position: 'absolute', left: 'calc(50% + 72px)', top: 'calc(50% + 40px)', width: 72, height: 72 }} />
       </div>
     );
   }

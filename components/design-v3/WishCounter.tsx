@@ -114,7 +114,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px 0 6px', borderRadius: 99, background: 'var(--surface-sunken)', border: '1px solid var(--line-hairline-2)', fontSize: 14, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
                       <Item name={fate} size={22} />
-                      {stats.lastFiveStar.pity === null ? 'pity unknown' : `${stats.lastFiveStar.pity} wishes`}
+                      {stats.lastFiveStar.pity === null ? '-' : stats.lastFiveStar.pity}
                     </span>
                     <span style={{ fontSize: 14, color: 'var(--text-label)' }}>{fmtDate.format(new Date(stats.lastFiveStar.time))}</span>
                   </div>
@@ -137,16 +137,9 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                     <span style={{ fontSize: compact ? 40 : 54, fontWeight: 600, letterSpacing: '-0.05em', lineHeight: 1, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{stats.currentFiveStarPity}</span>
-                    <span style={{ fontSize: 14, color: 'var(--text-label)' }}>/ {spec.hard} wishes since last 5-star</span>
+                    <span style={{ fontSize: 14, color: 'var(--text-label)' }}>/ {spec.hard}</span>
                   </span>
                 </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: compact ? 'flex-start' : 'flex-end', gap: 4 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, color: 'var(--text-strong)' }}>
-                  <Item name="primogem" size={20} />
-                  up to {((spec.hard - stats.currentFiveStarPity) * PRIMOGEMS_PER_WISH).toLocaleString('en-US')} to guaranteed
-                </span>
-                <span style={{ fontSize: 12.5, color: 'var(--text-label)' }}>4-star pity {stats.currentFourStarPity} / 10</span>
               </div>
             </div>
             <div
@@ -183,7 +176,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
 
           {chart.length > 0 && (
             <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <span style={label}>Pulls it took to get each 5-star (oldest to newest)</span>
+              <span style={label}>Wishes per 5-star</span>
               <div role="img" aria-label={`Pity of each 5 star: ${chart.map((c) => `${c.name} ${c.pity}`).join(', ')}`} style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: compact ? 6 : 10, height: compact ? 140 : 180 }}>
                 <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: `${(spec.soft / spec.hard) * 100}%`, borderTop: '1px dashed var(--line-hover)' }} />
                 {chart.map((c) => (
@@ -203,11 +196,10 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
               <div key={h.id} style={{ display: 'grid', gridTemplateColumns: compact ? 'minmax(0, 1fr) auto' : 'minmax(0, 1fr) 90px 130px', alignItems: 'center', columnGap: 16, rowGap: 2, padding: '12px 0', borderTop: '1px solid var(--line-hairline)' }}>
                 <span style={{ fontSize: 15.5, fontWeight: 500, color: 'var(--text-primary)', minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
                   <Art name={h.name} kind="icon" size={36} style={{ borderRadius: 99, flex: 'none', background: 'var(--surface-sunken)' }} />
-                  <span>{h.name}
-                  <span style={{ fontSize: 13, color: 'var(--text-label)', marginLeft: 10 }}>{h.itemType}</span></span>
+                  {h.name}
                 </span>
                 <span style={{ fontSize: 13, textAlign: compact ? 'right' : 'left', color: h.pity === null ? 'var(--text-tertiary)' : pityColor(h.pity, spec.soft) }}>
-                  {h.pity === null ? 'pity unknown' : `${h.pity} pulls`}
+                  {h.pity === null ? '-' : h.pity}
                 </span>
                 <span style={{ ...mono, fontSize: 12.5, color: 'var(--text-label)', textAlign: 'right', gridColumn: compact ? '1 / -1' : undefined }}>{fmtDate.format(new Date(h.time))}</span>
               </div>
@@ -216,7 +208,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           </div>
 
           <p style={{ margin: 0, ...label, lineHeight: 1.6 }}>
-            Counted from my first saved pull on this banner ({since ? fmtDate.format(new Date(since)) : '-'}), so the first 5-star has no known pity. Updated {updated ? fmtDate.format(new Date(updated)) : '-'}.
+            Since {since ? fmtDate.format(new Date(since)) : '-'}. Updated {updated ? fmtDate.format(new Date(updated)) : '-'}.
           </p>
         </>
       )}
