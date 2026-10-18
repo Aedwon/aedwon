@@ -16,6 +16,8 @@ export interface Img {
   h?: number;
   // which part of the picture stays in view when it is cropped to a frame, in percent (50, 50 is the middle)
   focus?: { x: number; y: number };
+  // zoom into the picture around its focus point (1 is the whole crop, 3 is three times closer)
+  zoom?: number;
 }
 
 export interface Project {
@@ -38,6 +40,10 @@ export interface Project {
   sections?: Section[];
   // a real picture for the hero stage, in place of the drawn mockup
   hero?: Img;
+  // phone projects: one picture per phone, left to right (null where a phone has none yet)
+  screens?: (Img | null)[];
+  // the picture frame's height in pixels (it is always 520 wide); the default depends on the kind of project
+  frame?: { h: number };
   // the two detail tiles on a note (null keeps the empty tile)
   shots?: (Img | null)[];
 }

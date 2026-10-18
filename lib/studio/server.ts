@@ -154,6 +154,7 @@ function imgErrors(v: unknown, id: string, where: string): string[] {
     const f = v.focus as Record<string, unknown>, ok = (n: unknown) => typeof n === 'number' && n >= 0 && n <= 100;
     if (!isObj(f) || !ok(f.x) || !ok(f.y)) e.push(where + '.focus must be {x, y} between 0 and 100');
   }
+  if (v.zoom !== undefined && !(typeof v.zoom === 'number' && v.zoom >= 1 && v.zoom <= 4)) e.push(where + '.zoom must be between 1 and 4');
   return e;
 }
 
@@ -170,6 +171,11 @@ export function validateProject(p: unknown, id: string): string[] {
   if (!Array.isArray(p.facts) || !p.facts.every((f) => isObj(f) && isStr(f.k) && isStr(f.v))) e.push('facts must be a list of {k, v}');
   if (p.points !== undefined && (!Array.isArray(p.points) || !p.points.every((x) => isObj(x) && isStr(x.h) && isStr(x.p)))) e.push('points must be a list of {h, p}');
   e.push(...imgErrors(p.hero, id, 'hero'));
+  if (p.screens !== undefined) {
+    if (!Array.isArray(p.screens) || p.screens.length > 3) e.push('screens must be a list of at most 3 pictures');
+    else p.screens.forEach((s, i) => e.push(...imgErrors(s, id, 'screens.' + i)));
+  }
+  if (p.frame !== undefined && !(isObj(p.frame) && typeof p.frame.h === 'number' && p.frame.h >= 160 && p.frame.h <= 640)) e.push('frame.h must be a number from 160 to 640');
   if (p.shots !== undefined) {
     if (!Array.isArray(p.shots)) e.push('shots must be a list');
     else p.shots.forEach((s, i) => e.push(...imgErrors(s, id, 'shots.' + i)));
@@ -226,7 +232,7 @@ export async function listLogos(): Promise<string[]> {
 
 // ---------------------------------------------------------------- images
 
-const SLOT_RE = /^(hero|shots\.[01]|sections\.\d{1,2}\.img)$/;
+const SLOT_RE = /^(hero|shots\.[01]|screens\.[0-2]|sections\.\d{1,2}\.img)$/;
 const SITE_SLOT_RE = /^pages\.\d{1,2}\.img$/; // a picture on an About book page
 const MAX_BYTES = 12 * 1024 * 1024;
 

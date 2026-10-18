@@ -21,8 +21,9 @@ export async function POST(req: Request) {
       let cur: unknown = doc;
       for (const s of segs) cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[s] : undefined;
       const prev = (cur && typeof cur === 'object' ? cur : {}) as { alt?: string; caption?: string };
-      if (segs[0] === 'shots') { // two tiles: keep the empty one as null
-        const tiles = Array.isArray(doc.shots) ? (doc.shots as unknown[]) : (doc.shots = []) as unknown[];
+      for (const key of ['shots', 'screens']) { // tiles and phone screens: keep the empty ones as null
+        if (segs[0] !== key) continue;
+        const tiles = Array.isArray(doc[key]) ? (doc[key] as unknown[]) : (doc[key] = []) as unknown[];
         while (tiles.length < Number(segs[1])) tiles.push(null);
       }
       setPath(doc, segs, { src: saved.src, alt: prev.alt ?? '', ...(prev.caption ? { caption: prev.caption } : {}), w: saved.w, h: saved.h });

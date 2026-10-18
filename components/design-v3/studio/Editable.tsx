@@ -100,7 +100,7 @@ export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, chi
             <button
               type="button"
               className="studio-btn studio-btn-quiet"
-              onClick={() => quiet(api.saveOp(id, slot.startsWith('shots.') ? { op: 'set', path: slot, value: null } : { op: 'unset', path: slot }))}
+              onClick={() => quiet(api.saveOp(id, slot.startsWith('shots.') || slot.startsWith('screens.') ? { op: 'set', path: slot, value: null } : { op: 'unset', path: slot }))}
             >Remove</button>
           </>
         )}

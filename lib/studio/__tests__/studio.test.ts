@@ -199,3 +199,26 @@ describe('picture focus', () => {
     }
   });
 });
+
+describe('phone screens, frame height and zoom', () => {
+  const base = async () => JSON.parse(await fs.readFile(path.join(CONTENT_DIR, 'pantas.json'), 'utf8'));
+  const src = '/projects/pantas/s.webp';
+  it('accepts screens 0 to 2 as upload slots', () => {
+    for (const s of ['screens.0', 'screens.1', 'screens.2']) expect(assertSlot(s)).toBe(s);
+    expect(status(() => assertSlot('screens.3'))).toBe(400);
+  });
+  it('checks the screens list', async () => {
+    const ok = await base(); ok.screens = [{ src }, null, { src, zoom: 2, focus: { x: 10, y: 90 } }];
+    expect(validateProject(ok, 'pantas')).toEqual([]);
+    const many = await base(); many.screens = [null, null, null, null];
+    expect(validateProject(many, 'pantas').length).toBeGreaterThan(0);
+    const out = await base(); out.screens = [{ src: '/elsewhere/x.webp' }];
+    expect(validateProject(out, 'pantas').length).toBeGreaterThan(0);
+  });
+  it('checks the frame height and the zoom', async () => {
+    const ok = await base(); ok.frame = { h: 440 }; ok.hero = { src, zoom: 1.5 };
+    expect(validateProject(ok, 'pantas')).toEqual([]);
+    for (const h of [100, 700, '400', null]) { const bad = await base(); bad.frame = { h }; expect(validateProject(bad, 'pantas').length, String(h)).toBeGreaterThan(0); }
+    for (const z of [0.5, 5, '2']) { const bad = await base(); bad.hero = { src, zoom: z }; expect(validateProject(bad, 'pantas').length, String(z)).toBeGreaterThan(0); }
+  });
+});

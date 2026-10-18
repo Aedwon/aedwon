@@ -9,7 +9,7 @@
 
 import { useTheme } from '@/lib/design-v3/theme';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import MediaBlock, { type MediaKind } from './MediaBlock';
+import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
@@ -35,7 +35,6 @@ const KINDS: [string, string, string[] | null][] = [
 // the phone wall's order: alternating kinds and depths, no two of a kind adjacent (mobile.py:398)
 const WALL_ORDER = [0, 2, 4, 13, 1, 8, 14, 3, 10, 7, 15, 9, 12, 5, 16, 11, 6];
 
-const HH: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
 const out = (x: number) => 1 - Math.pow(1 - cl(x), 3);
@@ -678,12 +677,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
   // The wall's tiles. Built once per width so a change of focus does not redraw every mock-up.
   const wallTiles = useMemo(() => WALL_ORDER.map((i, k) => {
-    const q2 = P[i], meta = postMeta(q2), sc = Math.min(TW / 520, 220 / HH[q2.media]);
+    const q2 = P[i], meta = postMeta(q2), sc = Math.min(TW / 520, 220 / frameH(q2));
     const sd = sdOk ? ({ animationName: 'v3drum', animationDuration: '1s', animationTimingFunction: 'linear', animationFillMode: 'both', animationTimeline: '--wall', animationRange: `${(k - DRUM_REACH) * 180}px ${(k + DRUM_REACH) * 180}px` } as React.CSSProperties) : { opacity: 0 };
     return (
-      <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
+      <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(frameH(q2) * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
         <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: sc.toFixed(4) }}>
-          <MediaBlock kind={q2.media as MediaKind} img={q2.hero} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+          <MediaBlock kind={q2.media as MediaKind} img={q2.hero} screens={q2.screens} h={frameH(q2)} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
         </div>
       </div>
     );
@@ -771,8 +770,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 return (
                   <button key={q2.id} className="v3tbtn" type="button" onClick={() => openProject(i)} style={{ '--c': 'var(--text-primary)', display: 'grid', gridTemplateColumns: '64px minmax(0, 1fr) 24px', gap: 14, alignItems: 'center', minHeight: 60, borderBottom: '1px solid var(--line-hairline)', textAlign: 'left' } as React.CSSProperties}>
                     <div style={{ position: 'relative', width: 64, height: 40, overflow: 'hidden', borderRadius: 4, background: 'var(--dev-screen)' }}>
-                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(64 / 520, 40 / HH[q2.media]).toFixed(4) }}>
-                        <MediaBlock kind={q2.media as MediaKind} img={q2.hero} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+                      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(64 / 520, 40 / frameH(q2)).toFixed(4) }}>
+                        <MediaBlock kind={q2.media as MediaKind} img={q2.hero} screens={q2.screens} h={frameH(q2)} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
                       </div>
                     </div>
                     <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
@@ -832,9 +831,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 <a key={l.href} href={l.href} className="v3rise" style={{ ...rise(4), marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
               <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
-                <div style={{ position: 'relative', width: CW, height: Math.round(HH[p.media] * Math.min(CW / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / HH[p.media]).toFixed(4) }}>
-                    <MediaBlock kind={p.media as MediaKind} img={p.hero} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
+                <div style={{ position: 'relative', width: CW, height: Math.round(frameH(p) * Math.min(CW / 520, 240 / frameH(p)) + 28), overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / frameH(p)).toFixed(4) }}>
+                    <MediaBlock kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                   </div>
                 </div>
               </div>

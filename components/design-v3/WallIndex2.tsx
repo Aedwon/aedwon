@@ -7,7 +7,7 @@
 import {
   forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState,
 } from 'react';
-import MediaBlock, { type MediaKind } from './MediaBlock';
+import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { DARK_MARKS, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project } from '@/lib/design-v3/data/projects';
 import type { Req, WallIndex2Handle } from './contracts';
@@ -17,7 +17,6 @@ const R0 = 240;
 // same wall, fixed arrangement: three columns balanced by height, no two of a kind stacked
 const COLS = [[0, 13, 1, 7, 15, 5], [2, 14, 3, 9, 16, 6], [4, 8, 10, 12, 11]];
 const GAP = 48;
-const H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
 
 // five kinds, the way a visitor thinks about them (WallIndex2:309-316)
 const KIND: { label: string; types: string[] }[] = [
@@ -97,9 +96,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   const bp = useMemo(() => {
     const arr: { x: number; y: number }[] = [];
     COLS.forEach((list, c) => {
-      const total = list.reduce((a, i) => a + H[P[i].media], 0) + GAP * (list.length - 1);
+      const total = list.reduce((a, i) => a + frameH(P[i]), 0) + GAP * (list.length - 1);
       let y = 450 - total / 2 + [70, 20, 0][c];
-      list.forEach((i) => { const h = H[P[i].media]; arr[i] = { x: 720 + (c - 1) * 568, y: y + h / 2 }; y += h + GAP; });
+      list.forEach((i) => { const h = frameH(P[i]); arr[i] = { x: 720 + (c - 1) * 568, y: y + h / 2 }; y += h + GAP; });
     });
     for (let i = 0; i < N; i++) if (!arr[i]) arr[i] = { x: 720, y: 99999 };
     return arr;
@@ -477,7 +476,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const oSm = (x: number) => x * x * (3 - 2 * x), fo = oSm(cl((s.openP - 0.04) / 0.46)), capF = s.blk && !s.opening ? 0 : 1 - oSm(cl(s.openP / 0.14));
     // tiles
     P.forEach((p, i) => {
-      const type = p.media as MediaKind, hh = H[type];
+      const hh = frameH(p);
       const intro = out((T - 0.15 - (i % 4) * 0.12 - Math.floor(i / 4) * 0.15) / 1.3);
       // gentle emphasis only: no blur, the others stay readable
       const isF = focus === i;
@@ -547,7 +546,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // preview
     {
       const pl = s.pvLast != null ? s.pvLast : 0;
-      const ph = Math.round(H[P[pl].media] * 0.5769);
+      const ph = Math.round(frameH(P[pl]) * 0.5769);
       // Moving from one row to the next switches at once; leaving every row keeps the last for 160ms, so the preview does not blink out between rows.
       if (s.blk) { s.ihLeave = null; } // opening: the preview holds exactly where it is
       else if (s.ih != null) { s.ihHold = s.ih; s.ihLeave = null; }
@@ -733,6 +732,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
                 <MediaBlock
                   kind={p.media as MediaKind}
                   img={p.hero}
+                screens={p.screens}
+                h={frameH(p)}
                   name={p.name}
                   repo={p.media === 'repo' ? stackOf[i].text : undefined}
                   desc={p.media === 'repo' ? p.desc : undefined}
@@ -773,6 +774,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
               <MediaBlock
                 kind={type}
                 img={p.hero}
+                screens={p.screens}
+                h={frameH(p)}
                 name={p.name}
                 repo={type === 'repo' ? stackOf[i].text : undefined}
                 desc={type === 'repo' ? p.desc : undefined}

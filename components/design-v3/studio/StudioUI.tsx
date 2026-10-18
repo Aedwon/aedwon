@@ -22,7 +22,7 @@ const CSS = `
 .studio-row:hover .studio-x{opacity:1}
 .studio-add{align-self:flex-start;height:30px;padding:0 12px;border-radius:8px;border:1px dashed rgba(96,165,250,.6);background:transparent;color:#60A5FA;cursor:pointer;font:13px system-ui}
 .studio-add:hover{background:rgba(96,165,250,.1)}
-.studio-slot-ui{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.72));opacity:0;transition:opacity .15s;z-index:3}
+.studio-slot-ui{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px;background:linear-gradient(transparent,rgba(0,0,0,.72));opacity:0;transition:opacity .15s;z-index:3}
 .studio-slot:hover .studio-slot-ui,.studio-slot:focus-within .studio-slot-ui,.studio-slot[data-over] .studio-slot-ui{opacity:1}
 .studio-slot-ui[data-empty]{inset:0;justify-content:center;background:rgba(96,165,250,.06);border:1.5px dashed rgba(96,165,250,.65);border-radius:12px;opacity:1}
 .studio-slot[data-over]{outline:2px solid #60A5FA;outline-offset:-2px}
@@ -333,23 +333,7 @@ function Drawer({ id }: { id: string }) {
             <select value={doc.depth} onChange={(e) => setField('depth', e.target.value, false)}>{DEPTH.map((m) => <option key={m}>{m}</option>)}</select>
           </label>
 
-          {doc.hero?.src && (
-            <>
-              <h4>Picture focus</h4>
-              <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>The picture is cropped to the tile&apos;s shape on the Wall, the Index and this page. Click the part that must stay in view.</p>
-              <div style={{ position: 'relative', lineHeight: 0, cursor: 'crosshair' }}
-                onClick={(e) => {
-                  const r = e.currentTarget.getBoundingClientRect();
-                  const x = Math.round(Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100))), y = Math.round(Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100)));
-                  commit({ op: 'set', path: 'hero.focus', value: { x, y } });
-                }}>
-                {/* eslint-disable-next-line @next/next/no-img-element -- the studio's own uploaded picture */}
-                <img src={doc.hero.src} alt="" draggable={false} style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block' }} />
-                <span aria-hidden style={{ position: 'absolute', left: `${doc.hero.focus?.x ?? 50}%`, top: `${doc.hero.focus?.y ?? 50}%`, width: 18, height: 18, margin: '-9px 0 0 -9px', borderRadius: 99, border: '2px solid #fff', boxShadow: '0 0 0 1.5px #2563EB, 0 1px 6px rgba(0,0,0,.5)', pointerEvents: 'none' }} />
-              </div>
-              {doc.hero.focus && <button type="button" className="studio-small" style={{ padding: '0 12px', marginTop: 8 }} onClick={() => commit({ op: 'unset', path: 'hero.focus' })}>Reset to the middle</button>}
-            </>
-          )}
+          <Pictures doc={doc} commit={commit} />
 
           <h4>Stack</h4>
           <label key={(doc.stack || []).join()}>Names, separated by commas
@@ -398,5 +382,60 @@ function Pairs({ list, a, b, ph, onChange }: { list: Record<string, string>[]; a
       ))}
       <button type="button" className="studio-small" style={{ padding: '0 12px' }} onClick={() => onChange([...list, { [a]: '', [b]: '' }])}>+ Add</button>
     </div>
+  );
+}
+
+const FRAME_DEFAULT: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
+
+// The frame (its height; it is always 520 wide) and, for each picture, which part stays in view and how close.
+// The Wall, the Index preview and the page all follow, because they draw the same frame.
+function Pictures({ doc, commit }: { doc: Doc; commit: (op: Parameters<typeof saveOp>[1]) => void }) {
+  const phone = doc.media === 'phone';
+  const pics: { slot: string; label: string; img: Doc }[] = phone
+    ? [0, 1, 2].filter((n) => doc.screens?.[n]?.src).map((n) => ({ slot: `screens.${n}`, label: `Phone ${n + 1}`, img: doc.screens[n] }))
+    : doc.hero?.src ? [{ slot: 'hero', label: 'Picture', img: doc.hero }] : [];
+  const def = FRAME_DEFAULT[doc.media] ?? 300, h = doc.frame?.h ?? def;
+  const setH = (v: string) => { const n = Math.round(Number(v)); if (Number.isFinite(n) && n >= 160 && n <= 640 && n !== h) commit(n === def ? { op: 'unset', path: 'frame' } : { op: 'set', path: 'frame', value: { h: n } }); };
+  const onEnd = (fn: (v: string) => void) => ({
+    onPointerUp: (e: React.PointerEvent<HTMLInputElement>) => fn(e.currentTarget.value),
+    onKeyUp: (e: React.KeyboardEvent<HTMLInputElement>) => fn(e.currentTarget.value),
+    onBlur: (e: React.FocusEvent<HTMLInputElement>) => fn(e.currentTarget.value),
+  });
+  return (
+    <>
+      <h4>Picture frame</h4>
+      <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>Height of the frame, in pixels. The width stays fixed. Taller or shorter, the Wall, the Index and this page all follow.</p>
+      <label key={'h' + h}>Height ({def} is the default)
+        <input type="range" min={160} max={640} step={5} defaultValue={h} {...onEnd(setH)} />
+      </label>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+        <input key={'n' + h} type="number" min={160} max={640} defaultValue={h} style={{ width: 90 }} onBlur={(e) => setH(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
+        {doc.frame && <button type="button" className="studio-small" style={{ padding: '0 12px' }} onClick={() => commit({ op: 'unset', path: 'frame' })}>Reset height</button>}
+      </div>
+      {pics.map(({ slot, label, img }) => {
+        const f = img.focus || { x: 50, y: 50 }, z = img.zoom || 1;
+        const setZoom = (v: string) => { const n = Math.round(Number(v) * 20) / 20; if (n >= 1 && n <= 4 && n !== z) commit(n === 1 ? { op: 'unset', path: slot + '.zoom' } : { op: 'set', path: slot + '.zoom', value: n }); };
+        return (
+          <div key={slot}>
+            <h4>{label}: position and zoom</h4>
+            <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>Click the part that must stay in view.</p>
+            <div style={{ position: 'relative', lineHeight: 0, cursor: 'crosshair' }}
+              onClick={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                const x = Math.round(Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100))), y = Math.round(Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100)));
+                commit({ op: 'set', path: slot + '.focus', value: { x, y } });
+              }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- the studio's own uploaded picture */}
+              <img src={img.src} alt="" draggable={false} style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block' }} />
+              <span aria-hidden style={{ position: 'absolute', left: `${f.x}%`, top: `${f.y}%`, width: 18, height: 18, margin: '-9px 0 0 -9px', borderRadius: 99, border: '2px solid #fff', boxShadow: '0 0 0 1.5px #2563EB, 0 1px 6px rgba(0,0,0,.5)', pointerEvents: 'none' }} />
+            </div>
+            <label key={slot + z} style={{ marginTop: 8 }}>Zoom ({z.toFixed(2)}×)
+              <input type="range" min={1} max={4} step={0.05} defaultValue={z} {...onEnd(setZoom)} />
+            </label>
+            {(img.focus || img.zoom) && <button type="button" className="studio-small" style={{ padding: '0 12px' }} onClick={() => commit({ op: 'put', project: { ...doc, ...(slot === 'hero' ? { hero: { ...doc.hero, focus: undefined, zoom: undefined } } : { screens: doc.screens.map((s: Doc | null, n: number) => (`screens.${n}` === slot && s ? { ...s, focus: undefined, zoom: undefined } : s)) }) } })}>Reset position and zoom</button>}
+          </div>
+        );
+      })}
+    </>
   );
 }

@@ -28,7 +28,9 @@ git push
 
 - Text and lists go to `content/projects/<id>.json`, formatted the same way every time.
 - Images are re-encoded to WebP, at most 1800px wide, and saved to `public/projects/<id>/`. The file name carries a short hash, so a replaced image never serves from a stale cache.
-- The JSON stores `hero` (the hero picture), `shots` (the two note tiles) and `sections[n].img` (a section figure) as `{ src, alt, caption?, w, h }`. Without one, the page keeps its drawn placeholder.
+- The JSON stores `hero` (the hero picture), `screens` (phone projects: up to three pictures, one per phone), `shots` (the two note tiles) and `sections[n].img` (a section figure) as `{ src, alt, caption?, w, h, focus?, zoom? }`. `focus` is `{x, y}` in percent (which part stays in view when the picture is cropped) and `zoom` is 1 to 4.
+- `frame: { h }` sets the height of the picture frame (it is always 520 wide; 160 to 640). The Wall, the Index preview, the page and the phone layout all draw the same frame, so they follow. Without it the height depends on the kind of project.
+- About books live in `content/site/about-0N.json` and the site's own text in `content/site/ui.json`. Pictures on About pages go to `public/about/`. Without one, the page keeps its drawn placeholder.
 
 ## Safety
 
