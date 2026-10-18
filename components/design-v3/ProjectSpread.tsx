@@ -66,9 +66,9 @@ const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 // dark and flip to near-black in light (same pattern as WallIndex2.tsx:575).
 
 const CSS = `
-.v3ps-hero{opacity:clamp(0,calc((var(--pr,1) - .56) / .2),1)}
-.v3ps-in1{opacity:clamp(0,calc((var(--pr,1) - .72) / .2),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .72) / .2),1)) * 16px)}
-.v3ps-in2{opacity:clamp(0,calc((var(--pr,1) - .82) / .18),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .82) / .18),1)) * 16px)}
+.v3ps-hero{opacity:clamp(0,calc((var(--pr,1) - .5) / .18),1)}
+.v3ps-in1{opacity:clamp(0,calc((var(--pr,1) - .76) / .18),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .76) / .18),1)) * 16px)}
+.v3ps-in2{opacity:clamp(0,calc((var(--pr,1) - .86) / .14),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .86) / .14),1)) * 16px)}
 .v3ps-ps{scrollbar-width:none}.v3ps-ps::-webkit-scrollbar{width:0}
 .v3ps-ul{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line-underline);transition:text-decoration-color .2s ease}
 .v3ps-ul:hover{text-decoration-color:var(--text-primary)}

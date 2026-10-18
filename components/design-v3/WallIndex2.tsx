@@ -750,7 +750,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
               onMouseEnter={() => { if (!(s.drag && s.drag.moved)) s.hover = i; }}
               onMouseLeave={() => { s.hover = null; }}
               ref={(el) => { tileEls.current[i] = el; }}
-              style={{ position: 'absolute', left: 0, top: 0, width: 520, display: 'block', color: 'inherit', textDecoration: 'none', transformOrigin: '50% 50%', pointerEvents: 'none', cursor: 'pointer' }}
+              style={{ position: 'absolute', left: 0, top: 0, width: 520, display: 'block', color: 'inherit', textDecoration: 'none', transformOrigin: '50% 50%', willChange: 'transform', pointerEvents: 'none', cursor: 'pointer' }}
             >
               <MediaBlock
                 kind={type}

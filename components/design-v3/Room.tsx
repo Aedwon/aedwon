@@ -240,7 +240,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.68)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.5) / 0.22)) : 1 - poE;
+      const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.68)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.68) / 0.16)) : 1 - poE;
       wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
       let camT = '';
       if (cam) {
@@ -321,7 +321,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       <canvas ref={dotsRef} width={ROOM_W} height={ROOM_H} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, pointerEvents: 'none' }} />
 
       {/* the wall of work */}
-      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%' }}>
+      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%', willChange: 'transform' }}>
         <WallIndex2
           ref={wall2}
           bare
