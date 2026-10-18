@@ -16,6 +16,7 @@ import Link from 'next/link';
 import BookPage from './BookPage';
 import type { AboutVolumesHandle, Req } from './contracts';
 import { VOLUMES, type BookPageDef, type Volume } from '@/lib/design-v3/data/volumes';
+import { setStudio } from './studio/store';
 import { useTheme } from '@/lib/design-v3/theme';
 
 const LAST = VOLUMES.length - 1;
@@ -192,6 +193,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
     shelving: false, shelvedAt: null as number | null,
     wa: 0, wl: false, wt: null as ReturnType<typeof setTimeout> | null,
     lastO: null as '' | 'book' | 'contact' | null,
+    lastAi: -1 as number | null,
     swapped: false, // has the leaf fade-in hand-off fired for the current turn
     leafMounted: false, // mirror of disc.leafOn, to detect the crossing
   }).current;
@@ -537,6 +539,9 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
       // §2.1 onOpen, on change only
       const o = st.active === LAST || st.pending === LAST ? 'contact' : (st.active != null ? 'book' : '');
       if (o !== st.lastO) { st.lastO = o; cbs.current.onOpen?.(o); }
+      // tell the local studio which book is open, so it edits that book's file
+      const ai = st.active != null ? st.active : st.pending != null ? st.pending : null;
+      if (ai !== st.lastAi) { st.lastAi = ai; setStudio({ project: ai != null ? VOLUMES[ai].id : null }); }
 
       renderFrame(now);
       st.raf = requestAnimationFrame(loop);

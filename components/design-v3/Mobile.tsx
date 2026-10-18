@@ -16,6 +16,7 @@ import BookPage from './BookPage';
 import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
+import UI from '@/content/site/ui.json';
 
 const MOB_W = 390;
 const MOB_H = 844;
@@ -972,7 +973,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
               <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
             </div>
-            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 672 + Math.max(0, Math.min(18, dy)), textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
+            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 672 + Math.max(0, Math.min(18, dy)), textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>{UI.about.hint}</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
           <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700, perspectiveOrigin: `${W / 2}px ${335 + BOOK_DROP}px`, pointerEvents: 'none', visibility: 'hidden' }}>
@@ -1058,7 +1059,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== top bar ===== */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--room-bg)' }}>
-        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
+        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>{UI.nav.brand}</span>
         <span style={{ display: 'flex', alignItems: 'center' }}>
           {showBack && (
             <button className="v3tbtn" type="button" onClick={() => (screen === 'book' ? closeBook() : go(from))} style={{ '--c': 'var(--text-primary)', height: 44, padding: '0 12px', fontSize: 15 } as React.CSSProperties}>{screen === 'book' ? 'Close' : 'Back'}</button>
@@ -1073,7 +1074,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
       <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--room-bg)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' || (opening && screen === 'shelf') ? '100%' : '0px'}`, transition: 'translate .55s cubic-bezier(.22,1,.36,1)' }}>
-        {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
+        {[UI.nav.wall, UI.nav.index, UI.nav.about, UI.nav.contact].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
         <span aria-hidden style={{ position: 'absolute', left: 0, top: 46, width: 26, height: 1.5, background: 'var(--text-primary)', translate: `${(12 + ((W - 24) / 4) * tabIdx + ((W - 24) / 4 - 26) / 2).toFixed(1)}px 0`, transition: 'translate .55s cubic-bezier(.34,1.3,.64,1)' }} />

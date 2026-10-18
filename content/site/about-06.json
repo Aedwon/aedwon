@@ -1,0 +1,21 @@
+{
+  "id": "about-06",
+  "n": "06",
+  "title": "Next volume",
+  "tone": "#EDEDED",
+  "ink": "#0a0a0c",
+  "D": 56,
+  "contact": true,
+  "pages": [
+    {
+      "kind": "titleit"
+    },
+    {
+      "kind": "write"
+    },
+    {
+      "kind": "contact",
+      "quickTitle": "Or the quick way"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "about-01",
+  "n": "01",
+  "title": "Aerol",
+  "tone": "#EDEDED",
+  "ink": "#0a0a0c",
+  "D": 84,
+  "pages": [
+    {
+      "t": "Hello",
+      "kind": "text",
+      "eyebrow": "CHAPTER 1",
+      "title": "Hi. I’m Aerol.",
+      "titleSize": "50px",
+      "body": "I design and build apps, bots and websites, mostly for communities, events and people studying for something hard.",
+      "meta": "Manila · [open to freelance and full-time work]"
+    },
+    {
+      "t": "A photo",
+      "kind": "photo",
+      "slot": "[a photo of you]",
+      "caption": "[where this was taken]"
+    },
+    {
+      "kind": "text",
+      "eyebrow": "CHAPTER 2",
+      "title": "High school",
+      "titleSize": "44px",
+      "body": "[Where you went, and what you were into back then. The first thing you ever built, if you remember it.]",
+      "meta": "[School] · [years]"
+    },
+    {
+      "kind": "text",
+      "eyebrow": "CHAPTER 3",
+      "title": "College",
+      "titleSize": "44px",
+      "body": "[What you studied, and what you ended up doing outside class: the orgs, the events, the first real projects.]",
+      "meta": "[University] · [course] · [years]"
+    },
+    {
+      "t": "Why “Aedwon”",
+      "kind": "big",
+      "eyebrow": "CHAPTER 4 · ONLINE, I GO BY",
+      "big": "Aedwon",
+      "bigSize": "86px",
+      "body": "Online, that’s me. [Where the name comes from, in two sentences.]"
+    }
+  ]
+}

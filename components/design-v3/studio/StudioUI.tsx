@@ -64,6 +64,16 @@ const CSS = `
 
 type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+const isSite = (id: string) => id === 'ui' || id.startsWith('about-');
+const BOOKS = ['about-01', 'about-02', 'about-03', 'about-04', 'about-05', 'about-06'];
+
+// Every text value in a file, as [path, text].
+function leaves(v: unknown, prefix = ''): [string, string][] {
+  if (typeof v === 'string') return [[prefix, v]];
+  if (v && typeof v === 'object') return Object.entries(v).flatMap(([k, x]) => (prefix === '' && k === 'id' ? [] : leaves(x, prefix ? prefix + '.' + k : k)));
+  return [];
+}
+
 function useProjectId() {
   const [id, setId] = useState<string | null>(null);
   useEffect(() => {
@@ -78,7 +88,8 @@ function useProjectId() {
 export default function StudioUI() {
   const st = useStudio();
   const urlId = useProjectId();
-  const id = st.project ?? urlId; // the page says which project it shows; the address is the fallback (the phone layout)
+  // the page says which project (or About book) it shows; the address is the fallback (the phone layout); anywhere else it is the site's own text
+  const id = st.project ?? urlId ?? 'ui';
   const [git, setGit] = useState<PublishStatus | null>(null);
   const refreshGit = useCallback(() => { gitStatus().then(setGit).catch(() => {}); }, []);
   // what would be published: on load, after each save, and now and then
@@ -103,7 +114,7 @@ export default function StudioUI() {
     <>
       <style>{CSS}</style>
       {id && <Bar id={id} git={git} />}
-      {id && st.drawer && <Drawer id={id} key={id} />}
+      {id && st.drawer && (isSite(id) ? <SiteDrawer id={id} key={id} /> : <Drawer id={id} key={id} />)}
       {id && st.publish && <PublishPanel git={git} refresh={refreshGit} />}
     </>
   );
@@ -118,7 +129,7 @@ function Bar({ id, git }: { id: string; git: PublishStatus | null }) {
       <button type="button" aria-pressed={st.drawer} onClick={() => setStudio({ drawer: !st.drawer })}>Details</button>
       <button type="button" aria-pressed={st.publish} onClick={() => setStudio({ publish: !st.publish })}>Publish{git && (git.changes.length > 0 || git.ahead > 0) ? <span className="studio-badge">{git.changes.length || git.ahead}</span> : null}</button>
       <span style={{ minWidth: 150, color: st.status === 'error' ? '#F87171' : undefined }}>{label}</span>
-      <code>content/projects/{id}.json</code>
+      <code>content/{isSite(id) ? 'site' : 'projects'}/{id}.json</code>
     </div>
   );
 }
@@ -184,6 +195,76 @@ function PublishPanel({ git, refresh }: { git: PublishStatus | null; refresh: ()
         </>
       )}
     </section>
+  );
+}
+
+// The drawer for the site's own text: the loader, the nav, the 404 page and the About books' labels. Book pages
+// are edited on the page itself (Edit, then click the text); this holds the rest.
+function SiteDrawer({ id }: { id: string }) {
+  const [tab, setTab] = useState<'text' | 'json'>('text');
+  const [doc, setDoc] = useState<Doc | null>(null);
+  const [books, setBooks] = useState<Record<string, string>>({});
+  const [json, setJson] = useState('');
+  const [err, setErr] = useState('');
+  const refresh = () => {
+    loadProject(id).then((p) => { setDoc(p); setJson(JSON.stringify(p, null, 2)); setErr(''); }).catch((e) => setErr(e.message));
+    if (id === 'ui') Promise.all(BOOKS.map((b) => loadProject(b).then((p) => [b, String(p.title ?? '')] as const))).then((r) => setBooks(Object.fromEntries(r))).catch(() => {});
+  };
+  useEffect(() => { refresh(); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const commit = (target: string, op: Parameters<typeof saveOp>[1]) =>
+    saveOp(target, op).then((r) => { if (target === id) { setDoc(r.project); setJson(JSON.stringify(r.project, null, 2)); } setErr(''); }).catch((e) => setErr(e.message));
+  const rows = doc ? leaves(doc) : [];
+  const groups = [...new Set(rows.map(([p]) => p.split('.')[0]))];
+  const GROUP: Record<string, string> = { nav: 'Navigation', loader: 'Loading screen', notFound: 'Page not found', about: 'About', title: 'Book label' };
+  return (
+    <aside className="studio-drawer" aria-label="Site text">
+      <div className="studio-tabs">
+        <button type="button" aria-pressed={tab === 'text'} onClick={() => { setTab('text'); refresh(); }}>{id === 'ui' ? 'Site text' : 'This book'}</button>
+        <button type="button" aria-pressed={tab === 'json'} onClick={() => { setTab('json'); refresh(); }}>JSON</button>
+        <button type="button" style={{ flex: '0 0 34px' }} title="Close" onClick={() => setStudio({ drawer: false })}>×</button>
+      </div>
+      {err && <p style={{ color: '#F87171', margin: '8px 0' }}>{err}</p>}
+      {!doc && !err && <p>Loading…</p>}
+      {doc && tab === 'text' && (
+        <>
+          {id !== 'ui' && <p style={{ color: '#9a9aa6', margin: '8px 0' }}>Press Edit, then click any text on the pages. The label on the spine is below.</p>}
+          {groups.filter((g) => g !== 'title').map((g) => (
+            <div key={g}>
+              <h4>{GROUP[g] || g}</h4>
+              {rows.filter(([p]) => p.split('.')[0] === g).map(([p, v]) => (
+                <label key={p + v}>{p.split('.').slice(1).join(' · ') || p}<input defaultValue={v} onBlur={(e) => { if (e.target.value !== v) commit(id, { op: 'set', path: p, value: e.target.value }); }} /></label>
+              ))}
+            </div>
+          ))}
+          {id !== 'ui' && (
+            <>
+              <h4>Spine label</h4>
+              <label key={String(doc.title)}>Title<input defaultValue={String(doc.title ?? '')} onBlur={(e) => { if (e.target.value !== doc.title) commit(id, { op: 'set', path: 'title', value: e.target.value }); }} /></label>
+            </>
+          )}
+          {id === 'ui' && (
+            <>
+              <h4>About books: spine labels</h4>
+              {BOOKS.map((b, i) => (
+                <label key={b + books[b]}>{'Volume 0' + (i + 1)}<input defaultValue={books[b] ?? ''} onBlur={(e) => { if (e.target.value !== books[b]) commit(b, { op: 'set', path: 'title', value: e.target.value }).then(refresh); }} /></label>
+              ))}
+              <p style={{ color: '#9a9aa6' }}>The text inside a book: open it on the About page, press Edit, and click the text.</p>
+            </>
+          )}
+        </>
+      )}
+      {doc && tab === 'json' && (
+        <>
+          <p style={{ color: '#9a9aa6', margin: '8px 0' }}>The whole file.</p>
+          <textarea value={json} spellCheck={false} onChange={(e) => setJson(e.target.value)} />
+          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+            <button type="button" className="studio-small" style={{ padding: '0 14px', background: '#2563EB', borderColor: '#2563EB', color: '#fff' }}
+              onClick={() => { try { commit(id, { op: 'put', project: JSON.parse(json) }); } catch (e) { setErr('Not valid JSON: ' + (e as Error).message); } }}>Save JSON</button>
+            <button type="button" className="studio-small" style={{ padding: '0 14px' }} onClick={refresh}>Reload from disk</button>
+          </div>
+        </>
+      )}
+    </aside>
   );
 }
 

@@ -18,6 +18,8 @@
 
 import { memo, useEffect, useRef, useState } from 'react';
 import type { BookPageDef } from '@/lib/design-v3/data/volumes';
+import { Ed, LogoSlot } from './studio/Editable';
+import { useStudio } from './studio/store';
 
 export interface BookPageProps {
   page?: BookPageDef | null;
@@ -64,6 +66,14 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
   useEffect(() => () => { if (ct.current) clearTimeout(ct.current); }, []);
 
   const stop = (e: { stopPropagation: () => void }) => e.stopPropagation();
+  // While the studio is editing, text on the page is editable in place (and clicking it must not turn the page).
+  const { editing } = useStudio();
+  const sid = p.src?.id, si = p.src?.i ?? -1;
+  const E = (path: string, value: string, style: React.CSSProperties) => {
+    if (!sid || si < 0) return <span style={style}>{value}</span>;
+    const node = <Ed id={sid} path={`pages.${si}.${path}`} value={value} style={style} />;
+    return editing ? <span style={{ display: 'contents' }} onClick={stop}>{node}</span> : node;
+  };
   const copy = (e: React.MouseEvent) => {
     e.stopPropagation();
     try { if (navigator.clipboard) navigator.clipboard.writeText('aerol.balayon@gmail.com'); } catch { /* swallowed */ }
@@ -99,7 +109,7 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* contents: the inside of the cover */}
       {is('contents') && (
         <>
-          <span style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1 }}>{p.title}</span>
+          {sid ? (editing ? <span style={{ display: 'contents' }} onClick={stop}><Ed id={sid} path="title" value={p.title || ''} style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1 }} /></span> : <Ed id={sid} path="title" value={p.title || ''} style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1 }} />) : <span style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1 }}>{p.title}</span>}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {toc.map((t) => (
               <button
@@ -120,37 +130,37 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* a big statement */}
       {is('big') && (
         <>
-          <span style={{ marginTop: 'auto', fontSize: p.bigSize, fontWeight: 800, letterSpacing: '-0.065em', lineHeight: 0.88 }}>{p.big}</span>
-          <span style={{ fontSize: 18, lineHeight: 1.5, color: 'var(--paper-body)' }}>{p.body}</span>
+          {E('big', p.big || '', { marginTop: 'auto', fontSize: p.bigSize, fontWeight: 800, letterSpacing: '-0.065em', lineHeight: 0.88 })}
+          {E('body', p.body || '', { fontSize: 18, lineHeight: 1.5, color: 'var(--paper-body)' })}
         </>
       )}
 
       {/* a heading and a paragraph */}
       {is('text') && (
         <>
-          <span style={{ fontSize: p.titleSize, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02 }}>{p.title}</span>
-          <span style={{ fontSize: 17, lineHeight: 1.6, color: 'var(--paper-body)' }}>{p.body}</span>
-          {p.meta && <span style={{ marginTop: 'auto', fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)' }}>{p.meta}</span>}
+          {E('title', p.title || '', { fontSize: p.titleSize, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02 })}
+          {E('body', p.body || '', { fontSize: 17, lineHeight: 1.6, color: 'var(--paper-body)' })}
+          {(p.meta || editing) && E('meta', p.meta || '', { marginTop: 'auto', fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)' })}
         </>
       )}
 
       {/* a photo */}
       {is('photo') && (
         <>
-          <div style={{ flex: 1, border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 12, color: 'var(--paper-meta)', rotate: '-1deg' }}>{p.slot}</div>
-          <span style={{ fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)' }}>{p.caption}</span>
+          <div style={{ flex: 1, border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 12, color: 'var(--paper-meta)', rotate: '-1deg' }}>{E('slot', p.slot || '', {})}</div>
+          {E('caption', p.caption || '', { fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)' })}
         </>
       )}
 
       {/* a list */}
       {is('list') && (
         <>
-          <span style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.title}</span>
+          {E('title', p.title || '', { fontSize: 30, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05 })}
           <div style={{ display: 'flex', flexDirection: 'column', marginTop: 6 }}>
             {items?.map((it, i) => (
               <span key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderTop: '1px solid var(--paper-rule)', fontSize: 16 }}>
-                <span>{it.a}</span>
-                <span style={{ fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)', textAlign: 'right' }}>{it.b}</span>
+                {E(`items.${i}.a`, it.a, {})}
+                {E(`items.${i}.b`, it.b, { fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)', textAlign: 'right' })}
               </span>
             ))}
           </div>
@@ -160,16 +170,18 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* one company */}
       {is('org') && (
         <>
-          <div style={{ height: 64, border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)' }}>{`[${p.org || ''} logo]`}</div>
-          <span style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02 }}>{p.org}</span>
+          {sid && si >= 0
+            ? <LogoSlot id={sid} path={`pages.${si}.logo`} value={p.logo as string | undefined} label={p.org || ''} box={{ height: 64, border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }} />
+            : <div style={{ height: 64, border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)' }}>{`[${p.org || ''} logo]`}</div>}
+          {E('org', p.org || '', { fontSize: 32, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02 })}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {(p.roles || []).map((r, i) => (
               <span key={i} style={{ display: 'flex', flexDirection: 'column', gap: 3, paddingTop: 12, borderTop: '1px solid var(--paper-rule)' }}>
                 <span style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                  <span style={{ fontSize: 15.5, fontWeight: 700 }}>{r.title}</span>
-                  <span style={{ fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)', whiteSpace: 'nowrap' }}>{r.dates}</span>
+                  {E(`roles.${i}.title`, r.title, { fontSize: 15.5, fontWeight: 700 })}
+                  {E(`roles.${i}.dates`, r.dates, { fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)', whiteSpace: 'nowrap' })}
                 </span>
-                <span style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--paper-body)' }}>{r.desc}</span>
+                {E(`roles.${i}.desc`, r.desc, { fontSize: 14, lineHeight: 1.5, color: 'var(--paper-body)' })}
               </span>
             ))}
           </div>
@@ -179,13 +191,15 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* a guild category */}
       {is('guild') && (
         <>
-          <span style={{ fontSize: 34, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02 }}>{p.title}</span>
+          {E('title', p.title || '', { fontSize: 34, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02 })}
           <div style={{ flex: 1, display: 'grid', gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gridAutoRows: 'minmax(0, 1fr)', gap: 10, marginTop: 6 }}>
             {orgs?.map((o, i) => (
               <span key={i} style={{ border: '1.5px dashed var(--paper-slot)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, textAlign: 'center', padding: 10 }}>
-                <span style={{ fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' }}>[logo]</span>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>{o}</span>
-                <span style={{ fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' }}>[what you built for them]</span>
+                {sid && si >= 0
+                  ? <LogoSlot id={sid} path={`pages.${si}.logos.${i}`} value={(p.logos as string[] | undefined)?.[i]} label={o} box={{ height: 44, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }} />
+                  : <span style={{ fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' }}>[logo]</span>}
+                {E(`orgs.${i}`, o, { fontSize: 14, fontWeight: 600 })}
+                {E(`blurbs.${i}`, (p.blurbs as string[] | undefined)?.[i] || '[what you built for them]', { fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' })}
               </span>
             ))}
           </div>
@@ -197,10 +211,10 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
         <>
           <div style={{ alignSelf: 'center', width: 200, aspectRatio: '2 / 3', border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)', rotate: '1.5deg' }}>[cover]</div>
           <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em' }}>[title]</span>
-            <span style={{ fontSize: 15, color: 'var(--paper-body)' }}>{p.t}</span>
+            {E('rtitle', (p.rtitle as string | undefined) || '[title]', { fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em' })}
+            {E('t', p.t || '', { fontSize: 15, color: 'var(--paper-body)' })}
           </span>
-          <span style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--paper-body)' }}>[Why you like it, in a sentence.]</span>
+          {E('why', (p.why as string | undefined) || '[Why you like it, in a sentence.]', { fontSize: 15, lineHeight: 1.55, color: 'var(--paper-body)' })}
         </>
       )}
 

@@ -3,7 +3,7 @@ import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import {
-  arrayAt, guard, parsePath, removeKey, saveImage, setPath, StudioError, validateProject, CONTENT_DIR,
+  arrayAt, guard, parsePath, removeKey, saveImage, setPath, StudioError, validateProject, validateSite, isSiteId, listLogos, CONTENT_DIR, SITE_DIR, SITE_IDS,
 } from '../server';
 import { parseGithub, parsePorcelain, validateMessage } from '../git';
 
@@ -135,5 +135,32 @@ describe('git helpers', () => {
   it('accepts one short line as a commit message and refuses anything else', () => {
     expect(validateMessage('  content: update qr  ')).toBe('content: update qr');
     for (const bad of ['', '   ', 'a\nb', 'x'.repeat(121), 42, null, 'bell\u0007']) expect(status(() => validateMessage(bad)), String(bad)).toBe(400);
+  });
+});
+
+describe('site text files', () => {
+  it('only the listed files are site ids', () => {
+    expect(isSiteId('ui')).toBe(true);
+    expect(isSiteId('about-03')).toBe(true);
+    for (const bad of ['about-07', '../ui', 'ui.json', 'pantas', '', 'about-03/../x', undefined, 5]) expect(isSiteId(bad)).toBe(false);
+  });
+  it('every site file on disk is valid', async () => {
+    for (const id of SITE_IDS) {
+      const d = JSON.parse(await fs.readFile(path.join(SITE_DIR, id + '.json'), 'utf8'));
+      expect(validateSite(d, id), id).toEqual([]);
+    }
+  });
+  it('rejects bad shapes', () => {
+    expect(validateSite({ id: 'ui', x: () => 1 }, 'ui').length).toBeGreaterThan(0);
+    expect(validateSite({ id: 'other' }, 'ui').length).toBeGreaterThan(0);
+    expect(validateSite({ id: 'about-01', title: 'A', pages: [{ kind: 'text', logo: '../x' }] }, 'about-01').length).toBeGreaterThan(0);
+    expect(validateSite({ id: 'about-01', title: 'A', pages: [{ kind: 'org', logo: 'psysc' }] }, 'about-01')).toEqual([]);
+    expect(validateSite({ id: 'about-01', title: '', pages: [] }, 'about-01').length).toBeGreaterThan(0);
+  });
+  it('lists logos once each, with the light and dark files folded together', async () => {
+    const names = await listLogos();
+    expect(names).toContain('dls');
+    expect(names.filter((n) => n === 'dls').length).toBe(1);
+    expect(names.some((n) => /-(light|dark)$/.test(n))).toBe(false);
   });
 });

@@ -1,6 +1,6 @@
 // Local studio: upload one picture into a project slot (hero, shots.N, sections.N.img).
 // Re-encodes to WebP, saves under public/projects/<id>/, and points the project JSON at it.
-import { assertProject, assertSlot, fail, guard, parsePath, readProject, respond, saveImage, setPath, StudioError, withLock, writeProject } from '@/lib/studio/server';
+import { assertProject, assertSlot, fail, isSiteId, guard, parsePath, readProject, respond, saveImage, setPath, StudioError, withLock, writeProject } from '@/lib/studio/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,6 +10,7 @@ export async function POST(req: Request) {
     guard(req);
     const form = await req.formData();
     const id = await assertProject(form.get('id'));
+    if (isSiteId(id)) throw new StudioError(400, 'Pictures go on project pages');
     const slot = assertSlot(form.get('slot'));
     const f = form.get('file');
     if (!(f instanceof File)) throw new StudioError(400, 'No file');

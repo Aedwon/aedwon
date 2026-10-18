@@ -6,6 +6,10 @@ import crypto from 'node:crypto';
 
 export const CONTENT_DIR = path.join(process.cwd(), 'content', 'projects');
 export const IMAGE_DIR = path.join(process.cwd(), 'public', 'projects');
+export const SITE_DIR = path.join(process.cwd(), 'content', 'site');
+// The site's own text (loader, nav, 404, About books). A fixed list: nothing else under content/site can be written.
+export const SITE_IDS = ['ui', 'about-01', 'about-02', 'about-03', 'about-04', 'about-05', 'about-06'];
+export const isSiteId = (id: unknown): id is string => typeof id === 'string' && SITE_IDS.includes(id);
 
 export class StudioError extends Error {
   status: number;
@@ -44,10 +48,11 @@ export function fail(e: unknown) {
 // ---------------------------------------------------------------- projects
 
 const ID_RE = /^[a-z0-9][a-z0-9-]{0,40}$/;
-const file = (id: string) => path.join(CONTENT_DIR, id + '.json');
+const file = (id: string) => path.join(isSiteId(id) ? SITE_DIR : CONTENT_DIR, id + '.json');
 
 export async function assertProject(id: unknown): Promise<string> {
   if (typeof id !== 'string' || !ID_RE.test(id)) throw new StudioError(400, 'Bad project id');
+  if (isSiteId(id)) { try { await fs.access(file(id)); } catch { throw new StudioError(404, 'No such file'); } return id; }
   try { await fs.access(file(id)); } catch { throw new StudioError(404, 'No such project'); }
   return id;
 }
@@ -65,7 +70,7 @@ export function withLock<T>(id: string, fn: () => Promise<T>): Promise<T> {
 }
 
 export async function writeProject(id: string, project: unknown) {
-  const errors = validateProject(project, id);
+  const errors = isSiteId(id) ? validateSite(project, id) : validateProject(project, id);
   if (errors.length) throw new StudioError(400, errors.slice(0, 4).join('; '));
   const target = file(id), tmp = target + '.tmp-' + process.pid;
   await fs.writeFile(tmp, JSON.stringify(project, null, 2) + '\n');
@@ -175,6 +180,42 @@ export function validateProject(p: unknown, id: string): string[] {
     });
   }
   return e;
+}
+
+// The site's text files: plain data only (text, numbers, true/false, lists, objects), nothing that runs.
+const LOGO_RE = /^[a-z0-9][a-z0-9-]{0,40}$/;
+export function validateSite(d: unknown, id: string): string[] {
+  if (!isObj(d)) return ['The file must be an object'];
+  const e: string[] = [];
+  if (d.id !== id) e.push('id must stay "' + id + '"');
+  const deep = (v: unknown, where: string, depth: number) => {
+    if (e.length > 4) return;
+    if (depth > 8) { e.push(where + ' is nested too deep'); return; }
+    if (isStr(v)) { if (v.length > 4000) e.push(where + ' is too long'); return; }
+    if (v === null || typeof v === 'number' || typeof v === 'boolean') return;
+    if (Array.isArray(v)) { if (v.length > 200) e.push(where + ' has too many items'); v.forEach((x, i) => deep(x, where + '.' + i, depth + 1)); return; }
+    if (isObj(v)) { for (const k of Object.keys(v)) { if (BAD_KEYS.has(k)) e.push(where + ' has a bad key'); else deep(v[k], where + '.' + k, depth + 1); } return; }
+    e.push(where + ' has an unsupported value');
+  };
+  deep(d, 'file', 0);
+  if (id.startsWith('about-')) {
+    if (!isStr(d.title) || !d.title) e.push('title must be text');
+    if (!Array.isArray(d.pages) || !d.pages.every((p) => isObj(p) && isStr(p.kind))) e.push('pages must be a list of pages that each have a kind');
+    else d.pages.forEach((p, i) => {
+      const pg = p as Record<string, unknown>;
+      if (pg.logo !== undefined && pg.logo !== '' && !(isStr(pg.logo) && LOGO_RE.test(pg.logo))) e.push('pages.' + i + '.logo must be a logo name');
+      if (pg.logos !== undefined && !(Array.isArray(pg.logos) && pg.logos.every((l) => isStr(l) && (l === '' || LOGO_RE.test(l))))) e.push('pages.' + i + '.logos must be a list of logo names');
+    });
+  }
+  return e;
+}
+
+// The logo files in public/logos, one name per logo (the -light and -dark files are one logo with two looks).
+export async function listLogos(): Promise<string[]> {
+  const files = await fs.readdir(path.join(process.cwd(), 'public', 'logos'));
+  const names = new Set<string>();
+  for (const f of files) if (/\.(svg|webp)$/.test(f)) names.add(f.replace(/\.(svg|webp)$/, '').replace(/-(light|dark)$/, ''));
+  return [...names].sort();
 }
 
 // ---------------------------------------------------------------- images
