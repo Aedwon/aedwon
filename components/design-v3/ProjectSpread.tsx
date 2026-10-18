@@ -25,6 +25,7 @@ import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
 import { setStudio, useStudio } from './studio/store';
 import SystemViz from './SystemViz';
+import WishCounter from './WishCounterLazy';
 import { useTheme } from '@/lib/design-v3/theme';
 
 export interface ProjectSpreadProps {
@@ -446,6 +447,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                     ))}
                   </div>
                 )}
+                {s.kind === 'wishes' && <WishCounter />}
                 {s.kind === 'status' && (
                   <>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '24px 32px', fontSize: 15, lineHeight: 1.7, marginTop: 8 }}>

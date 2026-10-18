@@ -9,6 +9,7 @@
 
 import { useTheme } from '@/lib/design-v3/theme';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import WishCounter from './WishCounterLazy';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
@@ -33,7 +34,7 @@ const KINDS: [string, string, string[] | null][] = [
 ];
 
 // the phone wall's order: alternating kinds and depths, no two of a kind adjacent (mobile.py:398)
-const WALL_ORDER = [0, 2, 4, 13, 1, 8, 14, 3, 10, 7, 15, 9, 12, 5, 16, 11, 6];
+const WALL_ORDER = [0, 2, 4, 13, 1, 8, 14, 3, 10, 7, 15, 9, 12, 5, 17, 16, 11, 6];
 
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
@@ -877,6 +878,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       </div>
                     </div>
                   ))}
+                  {sec.kind === 'wishes' && <WishCounter compact />}
                   {sec.kind === 'status' && ((sec as { cols?: { h: string; items: string[] }[] }).cols || []).map((col: { h: string; items: string[] }, k: number) => (
                     <div key={k} style={{ display: 'flex', flexDirection: 'column', paddingTop: 10, borderTop: '1px solid var(--line-divider)', fontSize: 14.5, lineHeight: 1.7 }}>
                       <span style={{ fontSize: 13, color: 'var(--text-label)', paddingBottom: 4 }}>{col.h}</span>

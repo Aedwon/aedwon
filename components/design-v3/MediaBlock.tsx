@@ -5,7 +5,7 @@
 import { LOGO } from '@/lib/design-v3/data/icons';
 import type { Img } from '@/lib/design-v3/data/projects';
 
-export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper';
+export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper' | 'wishes';
 
 export interface MediaBlockProps {
   kind: MediaKind;
@@ -34,7 +34,7 @@ export function Photo({ img }: { img: Img }) {
 }
 
 // the height of each kind's 520-wide frame
-export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
+export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300, wishes: 300 };
 // the frame height of a project: the one you set in the studio, or the default for its kind
 export const frameH = (p: { media: string; frame?: { h: number } }): number => p.frame?.h ?? FRAME_H[p.media] ?? 300;
 
@@ -152,6 +152,29 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
         <span style={{ fontSize: 25, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.12 }}>{name}</span>
         <span style={{ fontSize: 14.5, lineHeight: 1.55, color: '#3f3f46' }}>{desc}</span>
         <span style={{ marginTop: 'auto', fontSize: 13, color: '#61616A' }}>Read · {mins}</span>
+      </div>
+    );
+  }
+  if (kind === 'wishes') {
+    // a drawn counter: banner chips, the pity bar, and one bar per 5-star. No numbers, so nothing here can go stale.
+    const bars = [62, 38, 88, 24, 71, 45, 80, 30];
+    return (
+      <div style={{ width: 520, height: H, boxSizing: 'border-box', padding: '26px 28px', borderRadius: 10, border: '1px solid var(--data-border)', background: 'var(--data-body)', display: 'flex', flexDirection: 'column', gap: 20, boxShadow: 'var(--shadow-object)' }}>
+        <span style={{ display: 'flex', gap: 8 }}>
+          {['Character', 'Weapon', 'Standard'].map((t, i) => (
+            <span key={t} style={{ ...mono, fontSize: 11, padding: '5px 11px', borderRadius: 99, border: '1px solid var(--data-border)', color: i === 0 ? 'var(--text-primary)' : 'var(--dev-label)' }}>{t}</span>
+          ))}
+        </span>
+        <span style={{ position: 'relative', height: 8, borderRadius: 99, background: 'var(--line-track)' }}>
+          <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '46%', borderRadius: 99, background: 'var(--status-live)' }} />
+          <span style={{ position: 'absolute', left: '82%', top: -4, bottom: -4, width: 1.5, background: 'var(--line-frame)' }} />
+        </span>
+        <span style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+          {bars.map((b, i) => (
+            <span key={i} style={{ flex: 1, height: b + '%', borderRadius: 3, background: b > 82 ? 'var(--status-wip)' : 'var(--status-live)', opacity: 0.85 }} />
+          ))}
+        </span>
+        <span style={{ ...mono, fontSize: 11.5, color: 'var(--dev-label)' }}>{name}</span>
       </div>
     );
   }

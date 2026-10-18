@@ -18,6 +18,7 @@ import dockroute from './dockroute.json';
 import bettergov from './bettergov.json';
 import spec from './spec.json';
 import factory from './factory.json';
+import genshin from './genshin.json';
 
 export const PROJECT_FILES = [
   pantas,
@@ -37,6 +38,7 @@ export const PROJECT_FILES = [
   opensre,
   dockroute,
   bettergov,
+  genshin,
   spec,
   factory,
 ] as const;
