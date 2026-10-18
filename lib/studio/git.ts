@@ -5,7 +5,7 @@ import { promisify } from 'node:util';
 import { StudioError } from './server';
 
 const run = promisify(execFile);
-const STUDIO_PATHS = ['content/projects', 'content/site', 'public/projects'];
+const STUDIO_PATHS = ['content/projects', 'content/site', 'public/projects', 'public/about'];
 
 async function git(args: string[], timeout = 20000): Promise<string> {
   try {

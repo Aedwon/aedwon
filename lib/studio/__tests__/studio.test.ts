@@ -3,7 +3,7 @@ import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import {
-  arrayAt, guard, parsePath, removeKey, saveImage, setPath, StudioError, validateProject, validateSite, isSiteId, listLogos, CONTENT_DIR, SITE_DIR, SITE_IDS,
+  assertSlot, arrayAt, guard, parsePath, removeKey, saveImage, setPath, StudioError, validateProject, validateSite, isSiteId, listLogos, CONTENT_DIR, SITE_DIR, SITE_IDS,
 } from '../server';
 import { parseGithub, parsePorcelain, validateMessage } from '../git';
 
@@ -170,5 +170,20 @@ describe('site text files', () => {
     expect(names).toContain('dls');
     expect(names.filter((n) => n === 'dls').length).toBe(1);
     expect(names.some((n) => /-(light|dark)$/.test(n))).toBe(false);
+  });
+});
+
+describe('pictures on About pages', () => {
+  it('accepts only page picture slots for site files', () => {
+    expect(assertSlot('pages.1.img', 'about-01')).toBe('pages.1.img');
+    expect(status(() => assertSlot('hero', 'about-01'))).toBe(400);
+    expect(status(() => assertSlot('pages.1.img', 'pantas'))).toBe(400);
+    expect(status(() => assertSlot('pages.1.img.src', 'about-01'))).toBe(400);
+  });
+  it('checks where a page picture points', () => {
+    const ok = { id: 'about-01', title: 'A', pages: [{ kind: 'photo', img: { src: '/about/about-01/x.webp', alt: '' } }] };
+    expect(validateSite(ok, 'about-01')).toEqual([]);
+    const bad = { id: 'about-01', title: 'A', pages: [{ kind: 'photo', img: { src: '/projects/x.webp' } }] };
+    expect(validateSite(bad, 'about-01').length).toBeGreaterThan(0);
   });
 });

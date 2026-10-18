@@ -18,7 +18,8 @@
 
 import { memo, useEffect, useRef, useState } from 'react';
 import type { BookPageDef } from '@/lib/design-v3/data/volumes';
-import { Ed, LogoSlot } from './studio/Editable';
+import { Ed, ImageSlot, LogoSlot } from './studio/Editable';
+import type { Img } from '@/lib/design-v3/data/projects';
 import { useStudio } from './studio/store';
 
 export interface BookPageProps {
@@ -69,6 +70,12 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
   // While the studio is editing, text on the page is editable in place (and clicking it must not turn the page).
   const { editing } = useStudio();
   const sid = p.src?.id, si = p.src?.i ?? -1;
+  // a picture on the page: the file when there is one, otherwise the placeholder; while editing, drop or choose a file
+  const pic = (frame: React.CSSProperties, placeholder: React.ReactNode) => {
+    if (!sid || si < 0) return <div style={frame}>{placeholder}</div>;
+    const slot = <ImageSlot id={sid} slot={`pages.${si}.img`} img={p.img as Img | undefined} fit="cover" frame={frame}>{placeholder}</ImageSlot>;
+    return editing ? <span style={{ display: 'contents' }} onClick={stop}>{slot}</span> : slot;
+  };
   const E = (path: string, value: string, style: React.CSSProperties) => {
     if (!sid || si < 0) return <span style={style}>{value}</span>;
     const node = <Ed id={sid} path={`pages.${si}.${path}`} value={value} style={style} />;
@@ -147,7 +154,10 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* a photo */}
       {is('photo') && (
         <>
-          <div style={{ flex: 1, border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 12, color: 'var(--paper-meta)', rotate: '-1deg' }}>{E('slot', p.slot || '', {})}</div>
+          {pic(
+            { flex: 1, minHeight: 0, rotate: '-1deg', overflow: 'hidden', ...(p.img ? {} : { border: '1.5px dashed var(--paper-slot)' }), display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 12, color: 'var(--paper-meta)' },
+            E('slot', p.slot || '', {}),
+          )}
           {E('caption', p.caption || '', { fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)' })}
         </>
       )}
@@ -209,7 +219,10 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* something I'm reading or watching */}
       {is('read') && (
         <>
-          <div style={{ alignSelf: 'center', width: 200, aspectRatio: '2 / 3', border: '1.5px dashed var(--paper-slot)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)', rotate: '1.5deg' }}>[cover]</div>
+          {pic(
+            { alignSelf: 'center', width: 200, aspectRatio: '2 / 3', rotate: '1.5deg', overflow: 'hidden', ...(p.img ? {} : { border: '1.5px dashed var(--paper-slot)' }), display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, color: 'var(--paper-meta)' },
+            '[cover]',
+          )}
           <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {E('rtitle', (p.rtitle as string | undefined) || '[title]', { fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em' })}
             {E('t', p.t || '', { fontSize: 15, color: 'var(--paper-body)' })}

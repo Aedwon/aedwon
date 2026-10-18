@@ -201,6 +201,9 @@ function PublishPanel({ git, refresh }: { git: PublishStatus | null; refresh: ()
 // The drawer for the site's own text: the loader, the nav, the 404 page and the About books' labels. Book pages
 // are edited on the page itself (Edit, then click the text); this holds the rest.
 function SiteDrawer({ id }: { id: string }) {
+  const st = useStudio();
+  const vis = st.visible.filter((v) => v.id === id).map((v) => v.i);
+  const visKey = vis.join(',');
   const [tab, setTab] = useState<'text' | 'json'>('text');
   const [doc, setDoc] = useState<Doc | null>(null);
   const [books, setBooks] = useState<Record<string, string>>({});
@@ -210,7 +213,7 @@ function SiteDrawer({ id }: { id: string }) {
     loadProject(id).then((p) => { setDoc(p); setJson(JSON.stringify(p, null, 2)); setErr(''); }).catch((e) => setErr(e.message));
     if (id === 'ui') Promise.all(BOOKS.map((b) => loadProject(b).then((p) => [b, String(p.title ?? '')] as const))).then((r) => setBooks(Object.fromEntries(r))).catch(() => {});
   };
-  useEffect(() => { refresh(); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { refresh(); }, [id, visKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const commit = (target: string, op: Parameters<typeof saveOp>[1]) =>
     saveOp(target, op).then((r) => { if (target === id) { setDoc(r.project); setJson(JSON.stringify(r.project, null, 2)); } setErr(''); }).catch((e) => setErr(e.message));
   const rows = doc ? leaves(doc) : [];
@@ -227,7 +230,30 @@ function SiteDrawer({ id }: { id: string }) {
       {!doc && !err && <p>Loading…</p>}
       {doc && tab === 'text' && (
         <>
-          {id !== 'ui' && <p style={{ color: '#9a9aa6', margin: '8px 0' }}>Press Edit, then click any text on the pages. The label on the spine is below.</p>}
+          {id !== 'ui' && vis.length === 0 && <p style={{ color: '#9a9aa6', margin: '8px 0' }}>Open a book, and the text of the pages you are looking at shows here.</p>}
+          {id !== 'ui' && vis.map((i) => {
+            const page = (doc.pages || [])[i] as Doc | undefined;
+            if (!page) return null;
+            const SKIP = /^(kind|titleSize|bigSize|logo|logos|img|src|cols)(\.|$)/;
+            const fields = leaves(page).filter(([k]) => !SKIP.test(k));
+            return (
+              <div key={i}>
+                <h4>Page {String(i + 1).padStart(2, '0')} · {String(page.kind)}</h4>
+                {fields.map(([k, v]) => {
+                  const path = `pages.${i}.${k}`;
+                  const save = (val: string) => { if (val !== v) commit(id, { op: 'set', path, value: val }); };
+                  return (
+                    <label key={path + v}>{k.replace(/\./g, ' · ')}
+                      {v.length > 60
+                        ? <textarea style={{ height: 96, padding: 8, font: '13px/1.4 system-ui', resize: 'vertical' }} defaultValue={v} onBlur={(e) => save(e.target.value)} />
+                        : <input defaultValue={v} onBlur={(e) => save(e.target.value)} />}
+                    </label>
+                  );
+                })}
+                <p style={{ color: '#9a9aa6', margin: '0 0 8px' }}>Pictures and logos: press Edit and use the controls on the page.</p>
+              </div>
+            );
+          })}
           {id === 'ui' && groups.map((g) => (
             <div key={g}>
               <h4>{GROUP[g] || g}</h4>

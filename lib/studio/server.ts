@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 export const CONTENT_DIR = path.join(process.cwd(), 'content', 'projects');
 export const IMAGE_DIR = path.join(process.cwd(), 'public', 'projects');
 export const SITE_DIR = path.join(process.cwd(), 'content', 'site');
+export const SITE_IMAGE_DIR = path.join(process.cwd(), 'public', 'about');
 // The site's own text (loader, nav, 404, About books). A fixed list: nothing else under content/site can be written.
 export const SITE_IDS = ['ui', 'about-01', 'about-02', 'about-03', 'about-04', 'about-05', 'about-06'];
 export const isSiteId = (id: unknown): id is string => typeof id === 'string' && SITE_IDS.includes(id);
@@ -203,6 +204,7 @@ export function validateSite(d: unknown, id: string): string[] {
     if (!Array.isArray(d.pages) || !d.pages.every((p) => isObj(p) && isStr(p.kind))) e.push('pages must be a list of pages that each have a kind');
     else d.pages.forEach((p, i) => {
       const pg = p as Record<string, unknown>;
+      if (pg.img !== undefined && !(isObj(pg.img) && isStr(pg.img.src) && pg.img.src.startsWith('/about/' + id + '/') && !pg.img.src.includes('..') && (pg.img.alt === undefined || isStr(pg.img.alt)))) e.push('pages.' + i + '.img must be a picture saved under /about/' + id + '/');
       if (pg.logo !== undefined && pg.logo !== '' && !(isStr(pg.logo) && LOGO_RE.test(pg.logo))) e.push('pages.' + i + '.logo must be a logo name');
       if (pg.logos !== undefined && !(Array.isArray(pg.logos) && pg.logos.every((l) => isStr(l) && (l === '' || LOGO_RE.test(l))))) e.push('pages.' + i + '.logos must be a list of logo names');
     });
@@ -221,10 +223,11 @@ export async function listLogos(): Promise<string[]> {
 // ---------------------------------------------------------------- images
 
 const SLOT_RE = /^(hero|shots\.[01]|sections\.\d{1,2}\.img)$/;
+const SITE_SLOT_RE = /^pages\.\d{1,2}\.img$/; // a picture on an About book page
 const MAX_BYTES = 12 * 1024 * 1024;
 
-export function assertSlot(slot: unknown): string {
-  if (typeof slot !== 'string' || !SLOT_RE.test(slot)) throw new StudioError(400, 'Bad image slot');
+export function assertSlot(slot: unknown, id?: string): string {
+  if (typeof slot !== 'string' || !(id && isSiteId(id) ? SITE_SLOT_RE : SLOT_RE).test(slot)) throw new StudioError(400, 'Bad image slot');
   return slot;
 }
 
@@ -245,8 +248,9 @@ export async function saveImage(id: string, slot: string, bytes: Buffer): Promis
   const sharp = (await import('sharp')).default;
   const out = await sharp(bytes).rotate().resize({ width: 1800, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer({ resolveWithObject: true });
   const name = slot.replace(/[^a-z0-9]+/gi, '-') + '-' + crypto.createHash('sha1').update(out.data).digest('hex').slice(0, 8) + '.webp';
-  const dir = path.join(IMAGE_DIR, id);
+  const site = isSiteId(id);
+  const dir = path.join(site ? SITE_IMAGE_DIR : IMAGE_DIR, id);
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(path.join(dir, name), out.data);
-  return { src: '/projects/' + id + '/' + name, w: out.info.width, h: out.info.height };
+  return { src: (site ? '/about/' : '/projects/') + id + '/' + name, w: out.info.width, h: out.info.height };
 }
