@@ -26,7 +26,7 @@ Pre-launch Android reviewer for Philippine civil service and university entrance
       <a href="https://github.com/Aedwon/marwie-server-bot"><img src="./public/projects/marwie/hero-084df0a2.webp" width="100%" alt="The Marwie cloud mascot" /></a><br /><br />
       <b><a href="https://github.com/Aedwon/marwie-server-bot">Marwie Community Bot</a></b><br /><br />
       Discord bot for the Marwie AI App Builders server. It handles moderation, tickets, temporary voice rooms and quizzes, and settings can also be changed from a web control panel.<br /><br />
-      <code>Python</code> <code>discord.py</code> <code>PostgreSQL</code>
+      <code>Python</code> <code>discord.py</code> <code>SQLite</code> <code>PostgreSQL</code>
     </td>
     <td width="50%" valign="top">
       <a href="https://github.com/Aedwon/Discord-Bot"><img src="./public/projects/msl/hero-6fc047eb.webp" width="100%" alt="MSL Network logo" /></a><br /><br />
@@ -45,8 +45,8 @@ Pre-launch Android reviewer for Philippine civil service and university entrance
     <td width="50%" valign="top">
       <a href="https://github.com/Aedwon/kiosk-survey"><img src="./public/projects/kiosk/hero-d5702330.webp" width="100%" alt="Kiosk Survey on an Android TV" /></a><br /><br />
       <b><a href="https://github.com/Aedwon/kiosk-survey">Kiosk Survey</a></b><br /><br />
-      Offline Android TV survey app. It ran for eight continuous hours at a live event and synced queued submissions once the connection returned.<br /><br />
-      <code>Flutter</code> <code>Dart</code> <code>Firebase</code>
+      Offline Android TV survey app. It ran for eight continuous hours at a live event with no internet, and the answers left the TV on a flash drive.<br /><br />
+      <code>Flutter</code> <code>Dart</code> <code>Hive</code>
     </td>
   </tr>
 </table>
