@@ -2,6 +2,8 @@
 
 [aedwon.com](https://aedwon.com) · [LinkedIn](https://linkedin.com/in/aedwon) · [Discord](https://discord.com/users/aedwon) · [Email](mailto:aerol.balayon@gmail.com)
 
+I build apps, bots and web tools, mostly for events, communities and exam prep. This repository is the source of my portfolio. The full list of work is on [aedwon.com](https://aedwon.com).
+
 ## Selected work
 
 ### [Pantas](https://pantas.app)
@@ -9,8 +11,6 @@
 Pre-launch Android reviewer for Philippine civil service and university entrance preparation. Study state is stored locally with Drift and SQLCipher, with FSRS-6 handling review scheduling.
 
 `Flutter` `Drift` `SQLCipher` `FSRS-6`
-
-[Pantas →](https://pantas.app)
 
 ---
 
@@ -23,8 +23,6 @@ Pre-launch Android reviewer for Philippine civil service and university entrance
 Single-server Discord infrastructure for MLBB verification, community activity, events, quests, moderation, and reporting.
 
 `Python` `Discord.py` `MySQL` `aiohttp`
-
-[Repository →](https://github.com/Aedwon/Discord-Bot)
 
 ---
 
@@ -45,51 +43,69 @@ Single-server Discord infrastructure for MLBB verification, community activity, 
     <td valign="top">
       <b><a href="https://github.com/Aedwon/QR-Code-Maker">QR Studio</a></b><br /><br />
       In-browser QR builder with gradient styling and SVG export. Encoding and rendering stay client-side.<br /><br />
-      <code>TypeScript</code> <code>Canvas</code> <code>Vite</code> <code>SVG</code><br /><br />
-      <a href="https://github.com/Aedwon/QR-Code-Maker">Repository →</a>
+      <code>TypeScript</code> <code>Canvas</code> <code>Vite</code> <code>SVG</code>
     </td>
     <td valign="top">
       <b><a href="https://github.com/Aedwon/kiosk-survey">Kiosk Survey</a></b><br /><br />
       Offline Android TV survey system. It ran for eight continuous hours at a live event and synced queued submissions after connectivity returned.<br /><br />
-      <code>Flutter</code> <code>Dart</code> <code>SQLite</code> <code>Android TV</code><br /><br />
-      <a href="https://github.com/Aedwon/kiosk-survey">Repository →</a>
+      <code>Flutter</code> <code>Dart</code> <code>SQLite</code> <code>Android TV</code>
     </td>
   </tr>
 </table>
 
 ## Open source
 
-**[BetterGov PH](https://bettergov.ph)** works on Philippine government web services and public data access. I contribute to the project.
+I contribute to [Microsoft Aspire](https://github.com/microsoft/aspire), [OpenSRE](https://github.com/Tracer-Cloud/opensre), [DockRoute](https://www.dockroute.dev/) and [BetterGov PH](https://bettergov.ph).
 
 ## This repository
 
-This is the source for [aedwon.com](https://aedwon.com), built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Framer Motion. Project facts live in a canonical registry that feeds the standard project pages, featured work, the Discord presentation, and the site's machine-readable responses.
+The site is a room. Projects hang on a **Wall**, the **Index** lists them, each project has its own page, and the About section is a shelf of books. The phone layout is designed separately at 390 by 844 instead of being a squeezed desktop page.
 
-The interface can switch between a default presentation, a neobrutalist one, and a Discord-style client. Default mode supports system, light, and dark color modes. Light and dark changes run through a custom Canvas star-vortex animation that flips the actual theme at the midpoint and skips the effect when reduced motion is requested. Theme-dependent logos are prewarmed only for the likely target presentation, with idle prewarming skipped on data-saver and slow connections.
+`Next.js 16` `React 19` `TypeScript` `Vitest`
 
-Discord mode replaces the normal shell without replacing the routing model. The current URL is mapped into channels and threads, so deep links and browser navigation still use the same `/projects` and `/blogs` routes. The standard navbar measures its active indicator from the rendered tabs with `ResizeObserver`, and page motion follows that same route order.
-
-`Next.js 16` `React 19` `TypeScript` `Tailwind CSS` `Framer Motion` `Vitest`
+- **Styling.** The current design uses role-based CSS tokens for dark and light modes (`lib/design-v3/tokens.css`). The older `/projects` and `/blogs` routes still use Tailwind CSS.
+- **Content.** Every project is one JSON file in `content/projects`, and the About books are in `content/site`. No project copy lives in TypeScript.
+- **Local studio.** Under `npm run dev`, press Edit on any project page to change text, pictures and links in the browser. It saves to the JSON files and can commit and push them. It only runs on localhost. See [`docs/studio.md`](docs/studio.md).
+- **Animated diagrams.** Some bot and tooling projects carry a small SVG flow diagram, driven by a spec in `lib/design-v3/data/flows.ts`. It plays on hover on the wall and loops on the project page, and it stays still when reduced motion is requested.
 
 <details>
 <summary><b>Agent-facing surface</b></summary>
 
-The same content model also has a machine-readable surface. [`/llms.txt`](https://aedwon.com/llms.txt) describes the portfolio and its canonical sources, while normal pages can return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://aedwon.com/sitemap.xml) and [`/robots.txt`](https://aedwon.com/robots.txt) expose the public index and crawler guidance.
+The same content has a machine-readable form. [`/llms.txt`](https://aedwon.com/llms.txt) describes the portfolio and its canonical sources, and pages return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://aedwon.com/sitemap.xml) and [`/robots.txt`](https://aedwon.com/robots.txt) cover the public index and crawler guidance.
 
-CI runs tests, lint, and the production build, then starts the built app and checks status codes, content negotiation, metadata, 404 behavior, and the public machine-readable endpoints with real HTTP requests.
+CI runs the tests, lint and the production build. It then starts the built app and checks status codes, content negotiation, metadata, 404 behavior and the machine-readable endpoints with real HTTP requests.
 
 </details>
 
-<details>
-<summary><b>Local development</b></summary>
+## Run it locally
+
+Node 24 is required.
 
 ```bash
 git clone https://github.com/Aedwon/aedwon.git
 cd aedwon
 npm install
-npm run dev
+npm run dev        # http://127.0.0.1:3000, local studio on
 npm test
+npm run lint
 npm run build
 ```
 
-</details>
+`npm run dev:lan` serves the site on your network for testing on a real phone. The studio is off in that mode.
+
+## Where things are
+
+| Path | What it holds |
+|---|---|
+| `app/(v3)` | The current routes: wall, index, work, writing, about, contact |
+| `app/(v2)` | The older `/projects`, `/blogs` and `/privacy` routes |
+| `components/design-v3` | The wall, index, project pages, About books and phone layout |
+| `content` | Project and About copy as JSON |
+| `lib/design-v3` | Tokens, theme and the data loaders and specs |
+| `lib/studio` | The local studio's server side |
+| `v3-design` | The approved design handoff: spec, reference prototype, recordings |
+| `docs` | Studio guide, blog and tone rules, the living copy file |
+
+## Writing rules
+
+Anything written for the site follows [`AGENTS.md`](AGENTS.md). Blog posts also follow [`docs/blog-writing.md`](docs/blog-writing.md).
