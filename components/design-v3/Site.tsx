@@ -8,7 +8,7 @@ import Room from './Room';
 import Mobile from './Mobile';
 import dynamic from 'next/dynamic';
 import Moments from './Moments';
-import { currentTheme, setTheme, ThemeContext, type Theme } from '@/lib/design-v3/theme';
+import { currentTheme, setTheme, THEME_KEY, ThemeContext, type Theme } from '@/lib/design-v3/theme';
 
 export const BREAKPOINT = 1024; // decision: desktop frame at >=1024px, phone below
 
@@ -39,34 +39,44 @@ function useIsDesktop(): boolean {
   );
 }
 
+const PHONE_MIN_H = 740, PHONE_MAX_H = 960;
+
 // Uniform scale + letterbox (decision). The 1440x900 (or 390x844) stage keeps its
 // layout at every window size; the room colour fills the letterbox.
 export function Stage({
-  w, h, children,
-}: { w: number; h: number; children: React.ReactNode }) {
-  const [box, setBox] = useState<{ s: number; x: number; y: number } | null>(null);
+  w, h, fit = 'box', children,
+}: { w: number; h: number; fit?: 'box' | 'width'; children: React.ReactNode | ((h: number) => React.ReactNode) }) {
+  const [box, setBox] = useState<{ s: number; x: number; y: number; h: number } | null>(null);
   useEffect(() => {
     const measure = () => {
       const vw = window.innerWidth, vh = window.innerHeight;
+      if (fit === 'width') {
+        // Phone: fill the width, and let the stage take whatever height the screen has (never under MIN_H design px).
+        const s = Math.min(vw / w, vh / PHONE_MIN_H);
+        const sh = Math.min(PHONE_MAX_H, vh / s);
+        setBox({ s, x: (vw - w * s) / 2, y: Math.max(0, (vh - sh * s) / 2), h: sh });
+        return;
+      }
       const s = Math.min(vw / w, vh / h);
-      setBox({ s, x: (vw - w * s) / 2, y: (vh - h * s) / 2 });
+      setBox({ s, x: (vw - w * s) / 2, y: (vh - h * s) / 2, h });
     };
     measure();
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
-  }, [w, h]);
+  }, [w, h, fit]);
+  const sh = box ? box.h : h;
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: 'var(--room-bg)' }}>
       <div
         style={{
           // first client render must match the server: no window reads in render
           position: 'absolute', left: box ? box.x : 0, top: box ? box.y : 0,
-          width: w, height: h,
+          width: w, height: sh,
           transform: box ? `scale(${box.s})` : undefined, transformOrigin: '0 0',
           visibility: box ? 'visible' : 'hidden',
         }}
       >
-        {children}
+        {typeof children === 'function' ? children(sh) : children}
       </div>
     </div>
   );
@@ -81,6 +91,19 @@ export default function Site({ initialPath }: { initialPath: string }) {
   const theme = useThemeAttr();
   const toggle = useCallback(() => {
     setTheme(currentTheme() === 'light' ? 'dark' : 'light');
+  }, []);
+
+  // With no saved choice, follow the device's light/dark setting live (a tap on the toggle saves a choice and stops this).
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const follow = () => {
+      let saved: string | null = null;
+      try { saved = localStorage.getItem(THEME_KEY); } catch { /* private mode */ }
+      if (saved === 'dark' || saved === 'light') return;
+      document.documentElement.setAttribute('data-theme', mq.matches ? 'dark' : 'light');
+    };
+    mq.addEventListener('change', follow);
+    return () => mq.removeEventListener('change', follow);
   }, []);
 
   const themeCtx = useMemo(() => ({ theme, toggle }), [theme, toggle]);
@@ -109,13 +132,17 @@ export default function Site({ initialPath }: { initialPath: string }) {
   return (
     <ThemeContext.Provider value={themeCtx}>
       <LoadedCtx.Provider value={firstLoad !== false}>
-        <Stage w={desktop ? 1440 : 390} h={desktop ? 900 : 844}>
-          {desktop ? <Room initialPath={initialPath} /> : <Mobile initialPath={initialPath} />}
-          {firstLoad && desktop ? (
-            <div style={{ position: 'absolute', inset: 0, zIndex: 60 }}>
-              <Moments which="loading" />
-            </div>
-          ) : null}
+        <Stage w={desktop ? 1440 : 390} h={desktop ? 900 : 844} fit={desktop ? 'box' : 'width'}>
+          {(sh) => (
+            <>
+              {desktop ? <Room initialPath={initialPath} /> : <Mobile initialPath={initialPath} height={sh} />}
+              {firstLoad ? (
+                <div style={{ position: 'absolute', inset: 0, zIndex: 60 }}>
+                  <Moments which="loading" w={desktop ? 1440 : 390} h={desktop ? 900 : sh} />
+                </div>
+              ) : null}
+            </>
+          )}
         </Stage>
         {Studio ? <Studio /> : null}
       </LoadedCtx.Provider>

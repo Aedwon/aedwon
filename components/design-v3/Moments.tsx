@@ -9,10 +9,6 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme, type Theme } from '@/lib/design-v3/theme';
 
-const W = 1440;
-const H = 900;
-const CX = 720;
-const CY = 450;
 
 // Points colours (tokens.md §6 role map). Dark is the source formula; light swaps
 // rgb + base/boost (0.11 / 0.30) with the same grid, radius, push and wave. Canvas
@@ -38,9 +34,12 @@ const CSS = `
 export interface MomentsProps {
   which: 'loading' | '404';
   theme?: 'dark' | 'light';
+  w?: number; // stage size, default the 1440x900 desktop frame; the phone passes 390 x its height
+  h?: number;
 }
 
-export default function Moments({ which, theme: themeProp }: MomentsProps) {
+export default function Moments({ which, theme: themeProp, w: W = 1440, h: H = 900 }: MomentsProps) {
+  const CX = W / 2, CY = H / 2, phone = W < 700;
   const { theme: ctxTheme } = useTheme();
   const theme: Theme = themeProp ?? ctxTheme;
 
@@ -190,15 +189,15 @@ export default function Moments({ which, theme: themeProp }: MomentsProps) {
           </div>
 
           {/* a stand-in nav that fades in where the Room nav takes over (spec §1.1) */}
-          <div ref={navRef} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 84, padding: '0 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: 0 }}>
+          <div ref={navRef} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: phone ? 56 : 84, padding: phone ? '0 22px' : '0 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: 0 }}>
             <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 36, fontSize: 14, color: 'var(--text-label)' }}>
+            {!phone && <div style={{ display: 'flex', alignItems: 'center', gap: 36, fontSize: 14, color: 'var(--text-label)' }}>
               <span style={{ color: 'var(--text-primary)' }}>Wall</span>
               <span>Index</span>
               <span aria-hidden style={{ width: 1, height: 16, background: 'var(--line-divider)' }} />
               <span>About</span>
               <span>Contact</span>
-            </div>
+            </div>}
           </div>
 
           {/* the note slot exists but has no copy in the source (moments.md §1.1) */}

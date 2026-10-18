@@ -7,6 +7,7 @@
 // The simulated keyboard of the prototype is removed (owner decision): the real
 // keyboard height comes from window.visualViewport.
 
+import { useTheme } from '@/lib/design-v3/theme';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
@@ -88,7 +89,10 @@ function pathFor(screen: Screen, p: Project | undefined, contact: boolean): stri
 
 interface Turn { from: number; to: number; then: 'L' | 'R' | null; dur: number; t0: number; x0: number }
 
-const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile({ initialPath }, ref) {
+const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number }>(function Mobile({ initialPath, height = MOB_H }, ref) {
+  // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
+  const { theme, toggle } = useTheme();
+  const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
   const P: Project[] = PROJECTS;
   const V = VOLUMES;
   const n = P.length;
@@ -608,7 +612,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
     <div
       ref={rootRef}
       style={{
-        position: 'relative', width: MOB_W, height: MOB_H, overflow: 'hidden', color: 'var(--text-primary)',
+        position: 'relative', width: MOB_W, height: height, overflow: 'hidden', color: 'var(--text-primary)',
         fontFamily: "'Geist', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased',
         backgroundColor: 'var(--room-bg)',
         backgroundImage: 'radial-gradient(circle, rgba(237,237,237,0.075) 1px, transparent 1.6px)',
@@ -618,7 +622,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       {/* ===== WALL: a vertical drum. Scrolling turns it; whichever project reaches the middle is chosen. ===== */}
       {(screen === 'wall' || leaving === 'wall') && (
         <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0 }}>
-          <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none' }}>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px` }}>
             {WALL_ORDER.map((i, k) => {
               const q2 = P[i], meta = postMeta(q2);
               return (
@@ -848,7 +852,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
 
       {/* ===== SHELF: volumes lie in a stack, spines out ===== */}
       {(screen === 'shelf' || leaving === 'shelf') && (
-        <div ref={shelfLayerRef} style={{ position: 'absolute', inset: 0 }}>
+        <div ref={shelfLayerRef} style={{ position: 'absolute', inset: 0, translate: `0 ${dy}px` }}>
           <div ref={stkRef} style={{ position: 'absolute', inset: 0 }}>
             <span ref={hint1Ref} style={{ position: 'absolute', left: 0, right: 0, top: 214, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>Six volumes</span>
             {V.map((b, i) => {
@@ -925,7 +929,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
       {screen === 'book' && (
-        <div ref={bookRootRef} style={{ position: 'absolute', inset: 0 }}>
+        <div ref={bookRootRef} style={{ position: 'absolute', inset: 0, translate: `0 ${dy}px` }}>
           <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .25s ease' }}>Vol. {v.n} · {v.title}</div>
           <div ref={boardRef} onPointerDown={swDown} onPointerUp={swUp} style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', transition: 'translate .38s cubic-bezier(.22,1,.36,1)', touchAction: 'pan-y' }}>
             <div ref={boardXRef} style={{ position: 'absolute', left: 25, top: 92, width: 680, height: 486, transformStyle: 'preserve-3d' }}>
@@ -961,9 +965,16 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string }>(function Mobile
       {/* ===== top bar ===== */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-room-80)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
         <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
-        {showBack && (
-          <button className="v3tbtn" type="button" onClick={() => (screen === 'book' ? closeBook() : go(from))} style={{ '--c': 'var(--text-primary)', height: 44, padding: '0 12px', fontSize: 15 } as React.CSSProperties}>{screen === 'book' ? 'Close' : 'Back'}</button>
-        )}
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          {showBack && (
+            <button className="v3tbtn" type="button" onClick={() => (screen === 'book' ? closeBook() : go(from))} style={{ '--c': 'var(--text-primary)', height: 44, padding: '0 12px', fontSize: 15 } as React.CSSProperties}>{screen === 'book' ? 'Close' : 'Back'}</button>
+          )}
+          <button className="v3tbtn" type="button" onClick={toggle} aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'} style={{ '--c': 'var(--text-label)', width: 44, height: 44 } as React.CSSProperties}>
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d={theme === 'light' ? 'M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z' : 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4'} />
+            </svg>
+          </button>
+        </span>
       </div>
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
