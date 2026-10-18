@@ -472,7 +472,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const focus = s.cur != null ? s.cur : (mo === 'follow' || zoomedOut ? null : near);
     if (onFocus) { const f = k > 0.5 ? s.ih : (focus != null ? focus : near); if (f !== s.lastF) { s.lastF = f; onFocus(f == null ? -1 : f); } }
     // the project opening: the neighbours fade out gradually with the camera move, and the caption leaves first
-    const oSm = (x: number) => x * x * (3 - 2 * x), fo = oSm(cl((s.openP - 0.04) / 0.46)), capF = 1 - oSm(cl(s.openP / 0.14));
+    const oSm = (x: number) => x * x * (3 - 2 * x), fo = oSm(cl((s.openP - 0.04) / 0.46)), capF = s.blk && !s.opening ? 0 : 1 - oSm(cl(s.openP / 0.14));
     // tiles
     P.forEach((p, i) => {
       const type = p.media as MediaKind, hh = H[type];
@@ -600,10 +600,12 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     if (qHintRef.current) qHintRef.current.style.opacity = s.q.length > 0 ? '0' : '1';
     if (ixRef.current) ixRef.current.style.pointerEvents = k > 0.5 ? 'auto' : 'none';
     // caption follows whatever is in focus; it re-enters softly when that changes
-    if (focus !== s.capId) { s.capId = focus; s.capAt = now; if (focus != null) s.capLast = focus; }
+    // on the way back the caption waits until the wall has landed, then fades in for whatever is in focus
+    const cFocus = s.blk && !s.opening ? null : focus;
+    if (cFocus !== s.capId) { s.capId = cFocus; s.capAt = now; if (cFocus != null) s.capLast = cFocus; }
     const ce = out((now - s.capAt) / 300);
-    const shown = focus != null ? focus : s.capLast;
-    const capOp = focus != null ? ce : 1 - ce;
+    const shown = cFocus != null ? cFocus : s.capLast;
+    const capOp = cFocus != null ? ce : 1 - ce;
     if (capRef.current) {
       capRef.current.style.opacity = String(+((shown != null ? ui * (1 - kc) * capOp * chromeK * capF : 0)).toFixed(3));
       capRef.current.style.translate = `0 ${(focus != null ? (1 - ce) * 8 : 0).toFixed(1)}px`;
