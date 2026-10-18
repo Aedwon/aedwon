@@ -207,6 +207,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [screen, s]);
   // once the outgoing layer is mounted, place both layers at the start pose before the first paint
   useLayoutEffect(() => { if (leaving && s.fx) applyFx(s.fx.t0); });
+  // the outgoing wall is mounted afresh for its exit: put it back on the project it was showing before anything paints
+  useLayoutEffect(() => { if (leaving === 'wall' && wallScrollRef.current) wallScrollRef.current.scrollTop = s.wf * 180; }, [leaving, s]);
 
   // ---- URL sync (client shell owns history)
   const push = useCallback((path: string) => {
