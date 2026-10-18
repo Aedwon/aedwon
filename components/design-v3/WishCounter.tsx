@@ -21,6 +21,25 @@ const PRIMOGEMS_PER_WISH = 160;
 
 const fmtDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
 
+// Art lives in public/genshin (portraits and weapon icons from the open Project Amber data, re-encoded to WebP).
+// A name with no file just shows nothing: the image hides itself on error.
+const slugOf = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function Art({ name, kind, size, style }: { name: string; kind: 'icon' | 'splash'; size?: number; style?: CSSProperties }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- small static WebP, no optimizer needed
+    <img
+      src={`/genshin/${slugOf(name)}-${kind}.webp`}
+      alt=""
+      draggable={false}
+      width={size}
+      height={size}
+      onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
+      style={{ display: 'block', ...style }}
+    />
+  );
+}
+
 function pityColor(pity: number, soft: number) {
   return pity < soft ? 'var(--status-live)' : 'var(--status-wip)';
 }
@@ -74,6 +93,23 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
         <div style={{ ...card, padding: pad, color: 'var(--text-secondary)', fontSize: 15 }}>No saved wishes on this banner yet.</div>
       ) : (
         <>
+          {stats.lastFiveStar && (
+            <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'center', justifyContent: 'space-between', minHeight: compact ? undefined : 220, background: 'radial-gradient(120% 140% at 85% 50%, var(--surface-control-hover) 0%, var(--surface-media) 70%)' }}>
+              <div style={{ padding: pad, display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
+                <span style={label}>Latest 5★</span>
+                <span style={{ fontSize: compact ? 26 : 34, fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.1, color: 'var(--text-primary)' }}>{stats.lastFiveStar.name}</span>
+                <span style={{ ...mono, fontSize: 13, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
+                  {stats.lastFiveStar.pity === null ? 'pity unknown' : `${stats.lastFiveStar.pity} pulls`} · {fmtDate.format(new Date(stats.lastFiveStar.time))}
+                </span>
+              </div>
+              {stats.lastFiveStar.itemType === 'Character' ? (
+                <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="splash" style={{ height: compact ? 190 : 250, width: 'auto', alignSelf: compact ? 'center' : 'auto', marginRight: compact ? 0 : 24, marginTop: compact ? -8 : 0, objectFit: 'contain' }} />
+              ) : (
+                <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="icon" size={compact ? 96 : 120} style={{ alignSelf: compact ? 'center' : 'auto', margin: compact ? '0 0 20px' : '0 56px 0 0' }} />
+              )}
+            </div>
+          )}
+
           <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
@@ -112,12 +148,13 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           {chart.length > 0 && (
             <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <span style={label}>Pulls it took to get each 5★ (oldest to newest)</span>
-              <div role="img" aria-label={`Pity of each 5 star: ${chart.map((c) => `${c.name} ${c.pity}`).join(', ')}`} style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: compact ? 6 : 10, height: compact ? 110 : 140 }}>
+              <div role="img" aria-label={`Pity of each 5 star: ${chart.map((c) => `${c.name} ${c.pity}`).join(', ')}`} style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: compact ? 6 : 10, height: compact ? 140 : 180 }}>
                 <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: `${(spec.soft / spec.hard) * 100}%`, borderTop: '1px dashed var(--line-hover)' }} />
                 {chart.map((c) => (
                   <div key={c.id} title={`${c.name}: ${c.pity}`} style={{ flex: '1 1 0', minWidth: 0, maxWidth: 56, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', height: '100%', gap: 4 }}>
                     <span style={{ ...mono, fontSize: 11, color: 'var(--text-secondary)' }}>{c.pity}</span>
                     <div style={{ width: '100%', height: `${((c.pity as number) / spec.hard) * 100}%`, minHeight: 3, borderRadius: 3, background: pityColor(c.pity as number, spec.soft) }} />
+                    <Art name={c.name} kind="icon" size={compact ? 22 : 32} style={{ borderRadius: 99, marginTop: 2 }} />
                   </div>
                 ))}
               </div>
@@ -127,10 +164,11 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ ...label, paddingBottom: 8 }}>5★ history</span>
             {stats.fiveStarHistory.map((h) => (
-              <div key={h.id} style={{ display: 'grid', gridTemplateColumns: compact ? 'minmax(0, 1fr) auto' : 'minmax(0, 1fr) 90px 130px', alignItems: 'baseline', columnGap: 16, rowGap: 2, padding: '12px 0', borderTop: '1px solid var(--line-hairline)' }}>
-                <span style={{ fontSize: 15.5, fontWeight: 500, color: 'var(--text-primary)', minWidth: 0 }}>
-                  {h.name}
-                  <span style={{ ...mono, fontSize: 11.5, color: 'var(--text-label)', marginLeft: 10 }}>{h.itemType}</span>
+              <div key={h.id} style={{ display: 'grid', gridTemplateColumns: compact ? 'minmax(0, 1fr) auto' : 'minmax(0, 1fr) 90px 130px', alignItems: 'center', columnGap: 16, rowGap: 2, padding: '12px 0', borderTop: '1px solid var(--line-hairline)' }}>
+                <span style={{ fontSize: 15.5, fontWeight: 500, color: 'var(--text-primary)', minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Art name={h.name} kind="icon" size={36} style={{ borderRadius: 99, flex: 'none', background: 'var(--surface-sunken)' }} />
+                  <span>{h.name}
+                  <span style={{ ...mono, fontSize: 11.5, color: 'var(--text-label)', marginLeft: 10 }}>{h.itemType}</span></span>
                 </span>
                 <span style={{ ...mono, fontSize: 13, textAlign: compact ? 'right' : 'left', color: h.pity === null ? 'var(--text-tertiary)' : pityColor(h.pity, spec.soft) }}>
                   {h.pity === null ? 'pity unknown' : `${h.pity} pulls`}
