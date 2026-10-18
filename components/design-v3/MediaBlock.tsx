@@ -6,6 +6,7 @@ import { LOGO } from '@/lib/design-v3/data/icons';
 import type { Img } from '@/lib/design-v3/data/projects';
 import AgentCompose from './AgentCompose';
 import FlowDiagram from './FlowDiagram';
+import MarwieSky from './MarwieSky';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 
 export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper' | 'wishes' | 'compose' | `flow-${string}`;
@@ -47,6 +48,8 @@ const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 
 export default function MediaBlock({ kind, name, repo, desc, date, mins, img, screens, h, renderScreen, live }: MediaBlockProps) {
   const H = h ?? FRAME_H[kind] ?? 300;
+  // the Marwie bot: its tile is the moving mascot, its page the diagram
+  if (kind === 'flow-marwie' && !live) return <MarwieSky h={H} />;
   // the bot projects: a logo on the wall tile (img), the animated diagram on the project page (live) or when there is no logo yet
   if (kind.startsWith('flow-') && FLOWS[kind.slice(5)] && (live || !img?.src)) return <FlowDiagram spec={FLOWS[kind.slice(5)]} h={H} live={live} />;
   if (kind !== 'phone' && img?.src) {
