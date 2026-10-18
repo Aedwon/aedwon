@@ -226,13 +226,13 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const cl = (x: number) => Math.max(0, Math.min(1, x));
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const c = s.c, cc = cl(c);
-    const sm = (x: number) => x * x * (3 - 2 * x);
+    const sm = (x: number) => x * x * (3 - 2 * x), sm5 = (x: number) => x * x * x * (x * (6 * x - 15) + 10);
     const poE = sm(s.po);
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      const cam = s.cam, kc = cam ? sm(cl((s.po - 0.3) / 0.5)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.58) / 0.22)) : 1 - poE;
-      wall2.current?.setLevel(cam ? sm(cl(s.po / 0.4)) : 0);
+      const cam = s.cam, kc = cam ? sm5(cl(s.po / 0.68)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.5) / 0.22)) : 1 - poE;
+      wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
       wallEl.style.transform = cam
         ? `translate(${(cam.tx * kc).toFixed(2)}px, ${(cam.ty * kc).toFixed(2)}px) scale(${(1 + (cam.sc - 1) * kc).toFixed(4)})`
         : `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
