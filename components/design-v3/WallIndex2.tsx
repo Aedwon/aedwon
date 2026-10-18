@@ -60,7 +60,7 @@ interface Spring { y: number; v: number; init?: number }
 const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIndex2(props, ref) {
   const {
     bare = false, wallColor = 'var(--room-bg)', view = 'index', motion = 'swap', mode = 'follow',
-    initialViewReq, escBlocked = false, theme = 'dark', hintSize,
+    initialViewReq, theme = 'dark', hintSize,
     onOpen, onFocus, onPeek,
   } = props;
   void initialViewReq; void hintSize;
@@ -139,7 +139,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     sig: null as string | null, visNow: [] as number[],
     chg: null as null | { sig: string; t0: number; prevM: Record<number, number>; prevGM: Record<number, number>; moved: Record<number, boolean>; rank: Record<number, number>; grank: Record<number, number>; ty: Record<number, number | null>; gy: Record<number, number | null> },
     cy0: {} as Record<number, number>, gy0: {} as Record<number, number>, mm: {} as Record<number, number>, gm: {} as Record<number, number>,
-    dim: 0,
+    dim: 0, held: true, lvl: 0, blk: false, openP: 0, opening: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
     O: [720, 470] as [number, number], ax0: 34, az0: -18,
     cy: 0, tCy: 0, vel: 0,
     zl: 1, zv: 0,
@@ -158,6 +158,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     amt: [] as number[], gAmt: 0, // per tile focus amount (0..1), and the wall dim amount
     lastF: null as number | null,
     pvY: null as null | { y: number; v: number }, pvA: 0,
+    ihHold: null as number | null, ihLeave: null as number | null, // the row the preview follows: it holds for a beat when the pointer leaves
+    pvTxtId: null as number | null, pvTxtOut: null as number | null, pvTxtIn: null as number | null, // the preview's words change in two soft steps
     pvo: {} as Record<number, number>,
     // per-frame output stash
     ixTotal: 0, near: 0, zoomedOut: false,
@@ -180,6 +182,25 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   useImperativeHandle(ref, () => ({
     viewReq(req: Req) { applyViewReq(req); },
     setDim(dim: number) { s.dim = dim; },
+    // the loading screen is done: the wall's entrance starts now
+    start() { if (s.held) { s.held = false; s.t0 = performance.now(); } },
+    setLevel(v: number) { s.lvl = v; },
+    // how far the project page is open (0..1): the lit tile holds, the caption goes first, the others fade with the move
+    setOpenP(p: number, opening: boolean) {
+      const was = s.blk; s.openP = p; s.opening = opening; s.blk = p > 0.001;
+      if (was && !s.blk) { s.cur = null; s.leaveAt = null; s.gAmt = 0; s.amt = []; s.ih = null; s.ihHold = null; s.ihLeave = null; } // back on the wall: the dim lets go on its own
+    },
+    // while the camera flies in, the wall's own screen-sized clip would ride along and show as a cut; the room clips instead
+    setFree(on: boolean) { const el = rootRef.current; if (el && (el.style.overflow === 'visible') !== on) el.style.overflow = on ? 'visible' : 'hidden'; },
+    // where tile i sits once the wall has levelled out, in room pixels: its centre and its width
+    centerOf(i: number) { return s.cen[i] || null; }, // where tile i is drawn right now, in room pixels
+    restRect(i: number) { return s.k < 0.5 ? s.rest[i] || null : null; },
+    rectOf(i: number) {
+      const el = s.k < 0.5 ? tileEls.current[i] : pvEls.current[i];
+      if (!el || (s.k >= 0.5 && parseFloat(el.style.opacity || '0') < 0.5)) return null;
+      const r = el.getBoundingClientRect();
+      return r.width > 0 ? { left: r.left, top: r.top, width: r.width, height: r.height } : null;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 
@@ -201,7 +222,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   };
 
   // ---- wheel (WallIndex2:397-407)
-  const peekAdd = (d: number) => { if (!onPeek || d <= 0) return; s.over += d; s.overAt = performance.now(); };
+  // read through refs so opening a project (which re-renders the room) never restarts the wall's setup, its entrance clock included
+  const onPeekRef = useRef(onPeek); onPeekRef.current = onPeek;
+  const peekAdd = (d: number) => { if (!onPeekRef.current || d <= 0) return; s.over += d; s.overAt = performance.now(); };
   const wheel = useCallback((e: WheelEvent) => {
     let d0 = e.deltaY; if (e.deltaMode === 1) d0 *= 16;
     if (s.kt === 1) { const ix = ixRef.current; if (ix && ix.scrollTop + ix.clientHeight >= ix.scrollHeight - 2) peekAdd(d0); return; } // index: normal page scroll
@@ -213,12 +236,12 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     let d = e.deltaY + e.deltaX; if (e.deltaMode === 1) d *= 16;
     s.tCy += d * 1.15; s.vel = 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, onPeek, bounds.maxY]);
+  }, [mode, bounds.maxY]);
 
   // ---- key (WallIndex2:408-419); gated while a project page is open (decision)
   const key = useCallback((e: KeyboardEvent) => {
     if (s.kt !== 1 || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (escBlocked) return;
+    if (s.blk) return;
     const t = e.target; if (t && ((t as HTMLElement).tagName === 'INPUT' || (t as HTMLElement).tagName === 'TEXTAREA')) return;
     if (e.key === 'Escape') { if (s.q) setQ(''); else setFilt(null); return; }
     if (e.key === 'Backspace') { if (s.q) { setQ(s.q.slice(0, -1)); e.preventDefault(); } return; }
@@ -229,7 +252,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     }
     if (e.key.length === 1 && /[0-9A-Za-z .\-]/.test(e.key)) { if (e.key === ' ' && !s.q) return; setQ((s.q + e.key).slice(0, 22)); e.preventDefault(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [escBlocked]);
+  }, []);
 
   useEffect(() => {
     s.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -257,10 +280,10 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       s.cy += (s.tCy - s.cy) * f;
       const zt = s.zoomedOut ? 0 : 1;
       if (s.reduced) s.zl = zt; else { s.zv += ((zt - s.zl) * 120 - s.zv * 20) * dt; s.zl += s.zv * dt; }
-      if (onPeek) {
+      if (onPeekRef.current) {
         if (s.over && now - s.overAt > 420) { s.over *= Math.pow(0.05, dt); if (s.over < 1) s.over = 0; }
         const pk = Math.min(1, s.over / 700);
-        if (Math.abs(pk - s.pk) > 0.002 || (pk === 0 && s.pk)) { s.pk = pk; onPeek(pk); }
+        if (Math.abs(pk - s.pk) > 0.002 || (pk === 0 && s.pk)) { s.pk = pk; onPeekRef.current?.(pk); }
         if (pk >= 1) s.over = 0;
       }
       frame(dt, now);
@@ -319,7 +342,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
 
   // ---- the frame (WallIndex2:421-620), verbatim math, DOM writes
   function frame(dt: number, now: number) {
-    const T = s.reduced ? 99 : (now - s.t0) / 1000;
+    const T = s.reduced ? 99 : s.held ? -1 : (now - s.t0) / 1000; // the entrance waits for the loading screen to finish
     const k = s.k, mo = mode, h = s.hover, onWall = k < 0.001;
     const zl = s.zl;
     const dts = s.reduced ? 0 : dt || 0;
@@ -407,7 +430,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         s.gm[g] = m; s.gop[g] = m; s.rs['g' + g] = { y: s.gy0[g] != null ? s.gy0[g] : 0, v: 0 };
       });
     }
-    if (s.ih != null) s.pvLast = s.ih;
+    if (s.ih != null && !s.blk) s.pvLast = s.ih; // an open project keeps the preview it flew in on
     // the frozen header waits until the rows have landed, and leaves first on the way back
     {
       const want = s.kt === 1 && k >= 0.9 && !s.leaving ? 1 : 0;
@@ -421,7 +444,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const dm = Math.max(0, Math.min(1, s.dim));
     // heading to About the camera comes level: the wall's tilt and roll ease out as it slides away, so the straight-on shelf
     // arrives in the same view instead of the wall tipping over on its own
-    const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = 1 - dl * dl * (3 - 2 * dl); // level by the time the camera is 40% of the way
+    const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = (1 - dl * dl * (3 - 2 * dl)) * (1 - s.lvl); // level by the time the camera is 40% of the way
     const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) * lv;
     const ay = lerp(s.ms.x * 3, 0, pp) * lv, az = lerp(s.az0 + (1 - zl) * 8, 0, pp) * lv, S = lerp(lerp(0.52, 0.9, zl), 1, pp);
     const rot = (x: number, y: number, z: number): [number, number, number] => {
@@ -433,6 +456,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const camY = lerp(bounds.midY, s.cy, zl);
     // first pass: where each tile lands on screen, to find the one nearest the middle
     const O = s.O;
+    s.rest = bp.map((b) => ({ x: O[0] + S * (b.x - O[0]), y: O[1] + S * (b.y - camY), w: 520 * S }));
     const scr = bp.map((b) => { const p = rot(b.x - O[0], b.y - camY, 0); return { X: O[0] + S * p[0], Y: O[1] + S * p[1] }; });
     let near = 0, nd = 1e12;
     scr.forEach((p, i) => { const d = (p.X - 720) ** 2 + ((p.Y - 480) * 1.4) ** 2; if (d < nd) { nd = d; near = i; } });
@@ -442,13 +466,15 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // a gap or a brief slip off the edge neither dims nor brightens the wall.
     const dragMoved = !!(s.drag && s.drag.moved);
     if (dragMoved) { s.cur = null; s.leaveAt = null; }
-    else if (h != null) { s.cur = h; s.leaveAt = null; }
-    else if (s.cur != null) {
+    else if (h != null && !s.blk) { s.cur = h; s.leaveAt = null; }
+    else if (s.cur != null && !s.blk) { // while a project is open the last tile stays lit, so the wall doesn't shift under the flight
       if (s.leaveAt == null) s.leaveAt = now;
       if (now - s.leaveAt >= 200) { s.cur = null; s.leaveAt = null; }
     }
     const focus = s.cur != null ? s.cur : (mo === 'follow' || zoomedOut ? null : near);
     if (onFocus) { const f = k > 0.5 ? s.ih : (focus != null ? focus : near); if (f !== s.lastF) { s.lastF = f; onFocus(f == null ? -1 : f); } }
+    // the project opening: the neighbours fade out gradually with the camera move, and the caption leaves first
+    const oSm = (x: number) => x * x * (3 - 2 * x), fo = oSm(cl((s.openP - 0.04) / 0.46)), capF = s.blk && !s.opening ? 0 : 1 - oSm(cl(s.openP / 0.14));
     // tiles
     P.forEach((p, i) => {
       const type = p.media as MediaKind, hh = H[type];
@@ -459,10 +485,12 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       // one focus amount per tile drives its opacity, size and lift together, quick to rise and slower to settle
       const stepA = (v: number, on: boolean, up: number, dn: number) => (s.reduced ? (on ? 1 : 0) : Math.max(0, Math.min(1, v + (on ? dts / up : -dts / dn))));
       const smooth = (x: number) => x * x * (3 - 2 * x);
-      const onF = onWall && isF && !dragMoved;
+      const hold = s.blk && isF && onWall, onF = onWall && isF && !dragMoved && !s.blk; // an open project: no hover lift, so the picture sits flat and exact
       const A = smooth((s.amt[i] = stepA(s.amt[i] || 0, onF, 0.11, 0.24)));
       const Gd = smooth((s.gAmt = i === 0 ? stepA(s.gAmt, onWall && focus != null && !dragMoved, 0.15, 0.32) : s.gAmt));
-      s.ops[i] = onWall ? 1 - (1 - dimTo) * Gd * (1 - A) : 1;
+      const GdE = Gd * (s.opening || !s.blk ? 1 : cl(s.openP / 0.5)); // coming back, the dim lets go as the camera pulls out, so the wall lands fully lit
+      const Ao = hold ? 1 : A;
+      s.ops[i] = (onWall ? 1 - (1 - dimTo) * GdE * (1 - Ao) : 1) * (hold ? 1 : 1 - fo);
       s.hs[i] = 1 + 0.035 * A;
       const isPost = p.media === 'paper';
       const w = { x: isPost ? 160 : bp[i].x, y: isPost ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: isPost ? 0 : s.ops[i] * intro };
@@ -483,11 +511,14 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const r = Math.sin(Math.PI * uc) * (i % 2 ? 7 : -7);
       const P3 = rot(x - O[0], y - O[1], z);
       const X = O[0] + S * P3[0], Y = O[1] + S * P3[1], Z = S * P3[2];
+      s.cen[i] = { x: X, y: Y };
       const el = tileEls.current[i]; if (el) {
         el.style.transform = `translate3d(${(X - 260).toFixed(2)}px, ${(Y - hh / 2).toFixed(2)}px, ${Z.toFixed(1)}px) rotateX(${ax.toFixed(3)}deg) rotateY(${ay.toFixed(3)}deg) rotateZ(${(az + r).toFixed(3)}deg) scale(${(S * sc).toFixed(4)})`;
         el.style.opacity = op.toFixed(3);
         el.style.pointerEvents = op > 0.3 && k < 0.5 ? 'auto' : 'none';
-        el.style.filter = 'none';
+        // while one tile is hovered, the others lose most of their colour; the hovered one keeps all of it
+        const gsv = onWall ? 0.9 * GdE * (1 - Ao) : 0, gsf = gsv > 0.01 ? `grayscale(${gsv.toFixed(2)})` : 'none';
+        if (el.style.filter !== gsf) el.style.filter = gsf;
       }
     });
     const rowAt = (j: number) => { const q2 = out((k - 0.36 - 0.016 * j) / 0.3) * out((T - 0.2 - 0.018 * j) / 0.45); return { q: q2, op: q2 }; };
@@ -496,7 +527,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const rk = vis.indexOf(i), a2 = rowAt(rk < 0 ? i : rk), w = s.vs[i];
       const el = rowEls.current[i]; if (el) {
         el.style.transform = `translate(0px, ${(R0 + s.rs[i].y + (1 - a2.q) * 8).toFixed(2)}px) perspective(700px) rotateX(0deg)`;
-        el.style.opacity = (a2.q * w).toFixed(3);
+        el.style.opacity = (a2.q * w * (1 - fo)).toFixed(3); // fades with the camera move
         el.style.pointerEvents = w > 0.5 && k > 0.5 ? 'auto' : 'none';
         el.tabIndex = w > 0.5 ? 0 : -1;
         const line = el.querySelector<HTMLElement>('[data-line]');
@@ -507,7 +538,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     KIND.forEach((_, g) => {
       const el = groupEls.current[g]; if (el) {
         el.style.transform = `translateY(${(R0 + s.rs['g' + g].y).toFixed(2)}px)`;
-        el.style.opacity = (s.gop[g] * rowAt(0).q).toFixed(3);
+        el.style.opacity = (s.gop[g] * rowAt(0).q * (1 - fo)).toFixed(3);
         el.style.pointerEvents = s.gop[g] > 0.5 && k > 0.5 ? 'auto' : 'none';
         const rule = el.querySelector<HTMLElement>('[data-rule]');
         if (rule) rule.style.scale = `${(s.gop[g] * rowAt(0).q).toFixed(3)} 1`;
@@ -517,10 +548,14 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     {
       const pl = s.pvLast != null ? s.pvLast : 0;
       const ph = Math.round(H[P[pl].media] * 0.5769);
-      const want = s.ih != null && k > 0.98 ? 1 : 0;
+      // Moving from one row to the next switches at once; leaving every row keeps the last for 160ms, so the preview does not blink out between rows.
+      if (s.blk) { s.ihLeave = null; } // opening: the preview holds exactly where it is
+      else if (s.ih != null) { s.ihHold = s.ih; s.ihLeave = null; }
+      else if (s.ihHold != null) { if (s.ihLeave == null) s.ihLeave = now; if (now - s.ihLeave >= 160) { s.ihHold = null; s.ihLeave = null; } }
+      const want = s.ihHold != null && k > 0.98 && !(s.blk && !s.opening) ? 1 : 0;
       const yT = Math.max(110, Math.min(900 - ph - 110, R0 + s.rs[pl].y + 30 - s.scrollY - ph / 2));
       if (s.pvY == null || s.pvA < 0.02) s.pvY = { y: yT, v: 0 };
-      else if (dts) { s.pvY.v += ((yT - s.pvY.y) * 120 - s.pvY.v * 20) * dts; s.pvY.y += s.pvY.v * dts; }
+      else if (dts && !s.blk) { s.pvY.v += ((yT - s.pvY.y) * 120 - s.pvY.v * 20) * dts; s.pvY.y += s.pvY.v * dts; }
       s.pvA = dts ? s.pvA + (want - s.pvA) * Math.min(1, dts * (want ? 10 : 7)) : want;
       P.forEach((_, i) => { const t = i === pl ? 1 : 0; const o = s.pvo[i] == null ? t : s.pvo[i]; s.pvo[i] = dts ? o + (t - o) * Math.min(1, dts * 12) : t; });
       const box = pvBoxRef.current;
@@ -529,8 +564,18 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         box.style.opacity = (s.pvA * cl(k * 2 - 1)).toFixed(3);
       }
       if (pvYRef.current) pvYRef.current.style.height = ph + 'px';
-      if (pvNameRef.current) pvNameRef.current.textContent = P[pl].name;
-      if (pvLineRef.current) pvLineRef.current.textContent = P[pl].desc;
+      // the name and line fade down, change, and rise again, instead of swapping while the picture is still crossfading
+      if (s.pvTxtId == null || s.reduced) s.pvTxtId = pl;
+      if (pl !== s.pvTxtId && s.pvTxtOut == null) s.pvTxtOut = now;
+      let txA = 1;
+      if (s.pvTxtOut != null) {
+        const x = (now - s.pvTxtOut) / 90;
+        if (x >= 1) { s.pvTxtId = pl; s.pvTxtOut = null; s.pvTxtIn = now; } else txA = 1 - x;
+      }
+      if (s.pvTxtOut == null && s.pvTxtIn != null) { const x = (now - s.pvTxtIn) / 200; if (x >= 1) s.pvTxtIn = null; else txA = out(x); }
+      const tid = s.pvTxtId;
+      if (pvNameRef.current) { pvNameRef.current.textContent = P[tid].name; pvNameRef.current.style.opacity = (txA * capF).toFixed(3); pvNameRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
+      if (pvLineRef.current) { pvLineRef.current.textContent = P[tid].desc; pvLineRef.current.style.opacity = (txA * capF).toFixed(3); pvLineRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
       P.forEach((_, i) => {
         const el = pvEls.current[i]; if (!el) return;
         el.style.opacity = s.pvo[i].toFixed(3);
@@ -540,7 +585,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const ui = out((T - 1.1) / 0.8), kc = cl(k * 2.5), chromeK = 1 - cl(s.dim * 6);
     // header band
     if (bandRef.current) {
-      bandRef.current.style.opacity = String(+(s.hk * out((T - 0.2) / 0.45)).toFixed(3));
+      bandRef.current.style.opacity = String(+(s.hk * out((T - 0.2) / 0.45) * (1 - fo)).toFixed(3));
       bandRef.current.style.pointerEvents = s.k > 0.5 ? 'auto' : 'none';
     }
     if (bandInnerRef.current) bandInnerRef.current.style.translate = `0 ${((1 - s.hk) * -8).toFixed(2)}px`;
@@ -558,12 +603,14 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     if (qHintRef.current) qHintRef.current.style.opacity = s.q.length > 0 ? '0' : '1';
     if (ixRef.current) ixRef.current.style.pointerEvents = k > 0.5 ? 'auto' : 'none';
     // caption follows whatever is in focus; it re-enters softly when that changes
-    if (focus !== s.capId) { s.capId = focus; s.capAt = now; if (focus != null) s.capLast = focus; }
+    // on the way back the caption waits until the wall has landed, then fades in for whatever is in focus
+    const cFocus = s.blk && !s.opening ? null : focus;
+    if (cFocus !== s.capId) { s.capId = cFocus; s.capAt = now; if (cFocus != null) s.capLast = cFocus; }
     const ce = out((now - s.capAt) / 300);
-    const shown = focus != null ? focus : s.capLast;
-    const capOp = focus != null ? ce : 1 - ce;
+    const shown = cFocus != null ? cFocus : s.capLast;
+    const capOp = cFocus != null ? ce : 1 - ce;
     if (capRef.current) {
-      capRef.current.style.opacity = String(+((shown != null ? ui * (1 - kc) * capOp * chromeK : 0)).toFixed(3));
+      capRef.current.style.opacity = String(+((shown != null ? ui * (1 - kc) * capOp * chromeK * capF : 0)).toFixed(3));
       capRef.current.style.translate = `0 ${(focus != null ? (1 - ce) * 8 : 0).toFixed(1)}px`;
     }
     if (capNRef.current) capNRef.current.textContent = shown != null ? String(shown + 1).padStart(2, '0') + ' / ' + NW : '';
@@ -573,7 +620,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     {
       const inView = scr.map((p) => p.X > 0 && p.X < 1440 && p.Y > 84 && p.Y < 900);
       if (railRef.current) {
-        railRef.current.style.opacity = (ui * (1 - kc) * chromeK).toFixed(3);
+        railRef.current.style.opacity = (ui * (1 - kc) * chromeK * capF).toFixed(3);
         railRef.current.style.pointerEvents = kc < 0.5 && chromeK > 0.5 ? 'auto' : 'none';
       }
       P.slice(0, NW).forEach((p, i) => {

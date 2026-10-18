@@ -155,7 +155,7 @@ export default function Site({ initialPath }: { initialPath: string }) {
         <Stage w={desktop ? 1440 : 390} h={desktop ? 900 : 844} fit={desktop ? 'box' : 'width'}>
           {(sw, sh) => (
             <>
-              {desktop ? <Room initialPath={initialPath} /> : <Mobile initialPath={initialPath} width={sw} height={sh} />}
+              {desktop ? <Room initialPath={initialPath} loading={firstLoad !== false} /> : <Mobile initialPath={initialPath} width={sw} height={sh} />}
               {firstLoad ? (
                 <div style={{ position: 'absolute', inset: 0, zIndex: 60 }}>
                   <Moments which="loading" w={desktop ? 1440 : sw} h={desktop ? 900 : sh} />

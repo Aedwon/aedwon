@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import WallIndex2 from './WallIndex2';
 import AboutVolumes from './AboutVolumes';
-import ProjectSpread from './ProjectSpread';
+import ProjectSpread, { heroScaleOf } from './ProjectSpread';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import type { AboutVolumesHandle, ProjectSpreadHandle, Req, WallIndex2Handle } from './contracts';
 import { useTheme, type Theme } from '@/lib/design-v3/theme';
@@ -53,15 +53,27 @@ const D = 740; // the shelf hangs 740px below the top of the wall of work
 
 // Dark/light canvas + colour pairs (room.md §5.2). Motion constants are identical.
 const DOT = {
-  dark: { rgb: '237,237,237', base: 0.075, boost: 0.33 },
-  light: { rgb: '17,17,20', base: 0.11, boost: 0.3 },
+  dark: { rgb: '237,237,237', base: 0.12, boost: 0.3 },
+  light: { rgb: '17,17,20', base: 0.17, boost: 0.27 },
 } as const;
 
 
 // Nav underline anchor x positions (Room:131)
+// where the project page puts its picture
+// cubic-bezier easing: a quick pull away, a long soft landing
+function bezier(x1: number, y1: number, x2: number, y2: number) {
+  const ax = 3 * x1 - 3 * x2 + 1, bx = 3 * x2 - 6 * x1, cx = 3 * x1, ay = 3 * y1 - 3 * y2 + 1, by = 3 * y2 - 6 * y1, cy = 3 * y1;
+  return (x: number) => {
+    let u = x;
+    for (let n = 0; n < 6; n++) { const f = ((ax * u + bx) * u + cx) * u - x, d = (3 * ax * u + 2 * bx) * u + cx; if (Math.abs(d) < 1e-6) break; u -= f / d; }
+    u = Math.max(0, Math.min(1, u));
+    return ((ay * u + by) * u + cy) * u;
+  };
+}
+const HERO = { x: 520, y: 108, w: 864, h: 520 };
 const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 } as const;
 
-export default function Room({ initialPath }: { initialPath: string }) {
+export default function Room({ initialPath, loading = false }: { initialPath: string; loading?: boolean }) {
   const { theme } = useTheme();
 
   // ---- instance state (Room:68-79). Continuous values live in refs.
@@ -88,6 +100,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     shelfSel: (initial.kind === 'contact' ? 'contact' : 'about') as 'about' | 'contact',
     bookOpen: false,
     pOpen: startI >= 0, po: startI >= 0 ? 1 : 0, pn: 0,
+    cam: null as { i: number; cx: number; cy: number; sc: number; live: boolean; index: boolean } | null, fadeExit: false,
     n: 0,
     mx: -999, my: -999, mxs: -999, mys: -999, bk: 0, focus: -1,
     reduced: false, last: 0, raf: 0,
@@ -98,6 +111,9 @@ export default function Room({ initialPath }: { initialPath: string }) {
   const nonce = useRef(1);
 
   const sendReq = (v: string): Req => ({ v, n: ++nonce.current });
+
+  // the wall's entrance waits for the loading screen
+  useEffect(() => { if (!loading) wall2.current?.start(); }, [loading]);
 
   // ---- navigation <-> URL
   const push = (path: string) => {
@@ -123,12 +139,29 @@ export default function Room({ initialPath }: { initialPath: string }) {
 
   const openProject = (i: number, doPush = true) => {
     s.pn += 1;
+    // the camera: fly in on the picture that was clicked so it lands where the page puts its own
+    s.cam = null; s.fadeExit = false;
+    const root = rootRef.current;
+    if (root && !s.pOpen && !s.reduced && s.c < 0.05) {
+      const w2 = wall2.current, rest = w2?.restRect(i), b = root.getBoundingClientRect(), k = ROOM_W / b.width;
+      let cx = 0, cy = 0, wd = 0;
+      if (rest) { cx = rest.x; cy = rest.y; wd = rest.w; } // the wall, once it has levelled out
+      else {
+        const r = w2?.rectOf(i); // the Index preview, which does not tilt
+        if (r) { cx = (r.left - b.left + r.width / 2) * k; cy = (r.top - b.top + r.height / 2) * k; wd = r.width * k; }
+      }
+      if (wd > 0) {
+                s.cam = { i, cx, cy, sc: (520 * heroScaleOf(i)) / wd, live: !!rest, index: !rest }; // lands at the size the page draws it
+      }
+    }
     spread.current?.openReq({ v: String(i), n: s.pn });
     s.pOpen = true; setProjOpen(true);
     if (doPush) push(pathForScene({ kind: 'project', i }));
   };
 
   const closeProject = (doPush = true) => {
+    // from the Index the hover will have changed by the time you come back, so it fades back instead of flying out
+    if (s.cam && s.cam.index) { s.cam = null; s.fadeExit = true; }
     s.pOpen = false; setProjOpen(false);
     if (doPush) push(s.view === 'index' ? '/index' : '/');
   };
@@ -165,7 +198,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       if (s.reduced) s.c = s.cT;
       else { s.cv += ((tgt - s.c) * 48 - s.cv * 14) * dt; s.c += s.cv * dt; }
       if (dotc) drawDots(dt, dotc);
-      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.pOpen ? 0.55 : 0.42)));
+      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.6 : s.po > 0.66 ? 1.45 : 1.75) : (s.pOpen ? 0.55 : s.fadeExit ? 0.75 : 0.42))));
       render();
       s.raf = requestAnimationFrame(loop);
     };
@@ -207,12 +240,28 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const cl = (x: number) => Math.max(0, Math.min(1, x));
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const c = s.c, cc = cl(c);
-    const poE = s.po * s.po * (3 - 2 * s.po);
+    const sm = (x: number) => x * x * (3 - 2 * x), camEase = bezier(0.55, 0, 0.1, 1);
+    const poE = sm(s.po);
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      wallEl.style.transform = `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
-      wallEl.style.opacity = String(+(((1 - cl((c - 0.08) / 0.34)) * (1 - poE)).toFixed(3))); // the wall is gone by c = 0.42
+      const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.66)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.76) / 0.16)) : 1 - poE;
+      wall2.current?.setOpenP(s.po, s.pOpen);
+      wall2.current?.setFree(!!cam && s.po > 0.001);
+      wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
+      let camT = '';
+      if (cam) {
+        // keep the clicked picture on a straight path from where it is drawn now to where the page puts it,
+        // so it never swings off screen while the wall levels out
+        const live = cam.live ? wall2.current?.centerOf(cam.i) : null, cx = live ? live.x : cam.cx, cy = live ? live.y : cam.cy;
+        const sk = 1 + (cam.sc - 1) * kc, ox = ROOM_W / 2, oy = ROOM_H;
+        const gx = cx + (HERO.x + HERO.w / 2 - cx) * kc, gy = cy + (HERO.y + HERO.h / 2 - cy) * kc;
+        camT = `translate(${(gx - ox - sk * (cx - ox)).toFixed(2)}px, ${(gy - oy - sk * (cy - oy)).toFixed(2)}px) scale(${sk.toFixed(4)})`;
+      }
+      wallEl.style.transform = cam
+        ? camT
+        : `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
+      wallEl.style.opacity = String(+(((1 - cl((c - 0.08) / 0.34)) * wf).toFixed(3))); // the wall is gone by c = 0.42
       wallEl.style.maskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;
       (wallEl.style as unknown as Record<string, string>).webkitMaskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;
       wallEl.style.visibility = c > 0.999 ? 'hidden' : 'visible';
@@ -228,8 +277,9 @@ export default function Room({ initialPath }: { initialPath: string }) {
       shelfEl.setAttribute('aria-hidden', c < 0.5 ? 'true' : 'false');
     }
     if (pjEl) {
-      pjEl.style.opacity = poE.toFixed(3);
-      pjEl.style.translate = `0 ${((1 - poE) * 26).toFixed(1)}px`;
+      pjEl.style.opacity = s.cam ? (s.po > 0.001 ? '1' : '0') : poE.toFixed(3);
+      pjEl.style.translate = s.cam ? 'none' : `0 ${((1 - poE) * 26).toFixed(1)}px`;
+      pjEl.style.setProperty('--pr', (s.cam ? s.po : 1).toFixed(3));
       pjEl.style.visibility = s.po > 0.001 ? 'visible' : 'hidden';
       pjEl.style.pointerEvents = s.pOpen ? 'auto' : 'none';
       pjEl.setAttribute('aria-hidden', s.pOpen ? 'false' : 'true');
@@ -278,7 +328,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       <canvas ref={dotsRef} width={ROOM_W} height={ROOM_H} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, pointerEvents: 'none' }} />
 
       {/* the wall of work */}
-      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%' }}>
+      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%', }}>
         <WallIndex2
           ref={wall2}
           bare
