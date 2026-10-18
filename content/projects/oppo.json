@@ -53,31 +53,54 @@
       "kind": "text"
     },
     {
-      "h": "How it works",
+      "h": "How the bot works",
       "p": [
-        "Verification, tickets and embeds all run through one bot, with MySQL behind it. Verifying assigns a role and a nickname. Closing a ticket sends the player a transcript and a five-star rating prompt by DM. Embeds come from Discohook links and can be scheduled for a later time."
+        "Four systems ran the event. Each animation below is one of them, drawn from what the code does."
       ],
-      "kind": "text",
-      "diagram": "oppo"
+      "kind": "systems",
+      "items": [
+        {
+          "h": "Verification and roles",
+          "which": "oppo-verify",
+          "vh": "370px",
+          "p": [
+            "Verification checks a player's UID and server ID against a cached copy of the team sheet, which expires after five minutes. A match writes one row to MySQL, grants the role that the sheet entry maps to, and sets the nickname to the team abbreviation and the in-game name. Staff use a shared access code instead, and the bot allows one coach and one manager per team."
+          ]
+        },
+        {
+          "h": "Support tickets",
+          "which": "oppo-tickets",
+          "vh": "370px",
+          "p": [
+            "Tickets open as private channels for the member and staff roles. The bot pings the category role at 24 hours and escalates at 48 hours, pinging League Ops as well. Closing writes an HTML transcript to the log channel and DMs it to the creator, who is then asked to rate the service from one to five stars."
+          ]
+        },
+        {
+          "h": "Match day",
+          "which": "oppo-match",
+          "vh": "370px",
+          "p": [
+            "A marshal logs each game with /game_result, and the bot waits for the two teams to type I acknowledge. After five minutes the bot fills any missing acknowledgement itself. A dispute freezes that clock, and the paused seconds are stored per game. Match state is kept in the database."
+          ]
+        },
+        {
+          "h": "Announcements",
+          "which": "oppo-embeds",
+          "vh": "370px",
+          "p": [
+            "Embeds take a Discohook link, read the first message in it, and post its content, embeds and buttons to a channel. A post can also be scheduled. Scheduled posts are stored in MySQL in Manila time, and each one gets its own timer."
+          ]
+        }
+      ]
     },
     {
-      "h": "Support, announcements and threads",
+      "h": "Everything around it",
       "p": [
-        "Players open a ticket in one of four categories: League Ops, Technical, Creatives or General. Each ticket is a private channel visible to the role that owns the category. Staff claim tickets (a player can't claim their own), and an unclaimed ticket pings its role after 24 hours and escalates after 48. A background check runs every 10 minutes for that. On close the bot builds an HTML transcript, posts it to a log channel and DMs it to the player along with the rating prompt. Pending ratings are stored in the database, so a restart doesn't lose them.",
-        "Announcements are built in Discohook, a web editor for Discord embeds. Pasting its link into a command sends the embed, and an optional date and time, read as UTC+8, schedules it. Scheduled embeds sit in MySQL and get picked up again after a restart. Separate commands create up to 50 private threads at once with retry on rate limits, and post a role mention into every thread of a channel. A trigger voice channel spawns a personal channel for whoever joins and deletes it when it empties."
-      ],
-      "kind": "text"
-    },
-    {
-      "h": "Match day",
-      "p": [
-        "The match tools arrived last. On 28 February I added match sessions and a Challonge integration, and most of the rest followed between 4 and 7 March.",
-        "A marshal opens a session for two teams with a best-of count, optionally starts a 15 minute grace period before a game, and logs each game result. After every result the bot opens a five minute window where each team's players type an acknowledgement. Anyone can file a dispute, which pauses the clock until a marshal or admin resolves it. If five minutes of undisputed time pass, the bot acknowledges for both teams and the result stands. Sessions, games and acknowledgements are written to the database as they happen, and the bot reloads open sessions on startup, so a restart mid-match doesn't lose the score.",
-        "Challonge links a bracket to a channel, lists its matches and reports a result through a guided flow of prompts. Three log channels record command use, tickets and embeds. A help command shows only the commands the person asking is allowed to run.",
+        "Separate commands create up to 50 private threads at once, with retry on rate limits, and post a role mention into every thread of a channel. A trigger voice channel spawns a personal channel for whoever joins and deletes it when it empties. Challonge links a bracket to a channel, lists its matches and reports a result through a guided flow of prompts. Three log channels record command use, tickets and embeds, and a help command shows only the commands the person asking is allowed to run.",
+        "Match tools arrived last. Sessions and Challonge went in on 28 February, and most of the rest followed between 4 and 7 March. A marshal can also start a 15 minute grace period before a game.",
         "I don't have a number for how the bot did on the day, and the repository doesn't hold one. What's there is the code and the commit history."
       ],
-      "kind": "text",
-      "diagram": "oppo-match"
+      "kind": "text"
     }
   ],
   "hero": {

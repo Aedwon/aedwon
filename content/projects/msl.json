@@ -52,23 +52,70 @@
       "fig": "[MSL Network Bot, in use]"
     },
     {
-      "h": "The parts worth reading the code for",
+      "h": "The server in numbers",
       "p": [
-        "XP is the busiest path, so it never writes to the database per message. Message, reaction and voice XP pile up in memory and flush in one batch every 60 seconds. The flush takes a snapshot and subtracts only what it saved, so XP earned during the write isn't lost, and unloading the cog flushes what's left. Abuse limits live in the same place. One message-XP gain per minute, a daily cap on reaction XP, a cap per message, and a four-hour daily cap on voice XP.",
-        "Every XP and Event Point path checks a verified-user set held in memory, so an unverified account earns nothing and the check costs no query. Verification itself enforces one Discord account per game UID. The student leader lookup reads a public Google Sheet as CSV, rebuilds a lookup every six hours, and matches on UID and server together. UID alone was not enough, and I changed it after the first version.",
-        "The quiz runs twice a day at noon and 8 PM Manila time, ten rounds of 20 seconds. A correct answer scores up to 1,000 points that fall away with time, and each member can score once per round. Top three get 150, 100 and 75 Event Points, everyone else who played gets 50, and a member can be paid once per day. Results are buffered during the session and written to a JSON journal after each round, and on startup the bot replays any unfinished session into the database.",
-        "The weekly booster raffle needed the most care. A member wins a normal slot at most once per calendar month. If there are more prize slots than eligible boosters, the extras go to whoever has the fewest extras so far, which keeps one person from collecting them all. Student leaders are excluded from this raffle. If the bot is down at the Sunday 8 AM draw, it runs the draw on startup unless that week already has one. When a draw goes wrong there are commands to diagnose it, repair it and reroll it, and the CSV export lists unverified winners at the bottom instead of blocking."
+        "These come from the bot's own analytics, as a snapshot. They cover the days the bot recorded, not every day since the first commit."
       ],
-      "kind": "text",
-      "diagram": "msl-raffle"
+      "kind": "systems",
+      "items": [
+        {
+          "h": "Activity since March",
+          "which": "msl-numbers",
+          "vh": "430px",
+          "p": [
+            "Over 168 recorded days the server sent 580,927 messages, logged 9,552 voice hours and took in 32,922 joins. Most of the joins, 26,434, came in the first 18 days of October. The bot verified 2,056 members and handled 141 support tickets in that time."
+          ]
+        }
+      ]
     },
     {
-      "h": "How it works",
+      "h": "How the bot works",
       "p": [
-        "Members verify with a short form, then earn XP and Event Points from chat, voice, quizzes and three daily quests. Quests pay 50, 150 or 500 XP by rarity, and the third slot is weighted 70, 25 and 5 percent toward common, uncommon and rare. Levels, booster perks and the prize raffle all read from that one system, and the raffle exports to CSV for the Moonton prizes."
+        "Five systems carry most of the weight. Each animation below is one of them, drawn from what the code does."
       ],
-      "kind": "text",
-      "diagram": "msl"
+      "kind": "systems",
+      "items": [
+        {
+          "h": "Verification",
+          "which": "msl-verify",
+          "vh": "370px",
+          "p": [
+            "Verification is a form behind one button. The bot checks that the UID and server are digits and that the UID isn't already tied to another Discord account. A pass grants the Verified role, and from then on the member can earn XP and Event Points. The MSL check compares the UID and server pair against a cached copy of a public sheet that reloads every six hours."
+          ]
+        },
+        {
+          "h": "The XP engine",
+          "which": "msl-xp",
+          "vh": "370px",
+          "p": [
+            "Chat, reaction and voice XP go into a dictionary in memory after a quick verified check, so nothing hits the database per message. Every 60 seconds the bot writes the whole dictionary in one transaction and subtracts what it wrote, so XP earned during the write isn't lost. Booster multipliers apply at write time. Event Points are a separate column, earned from quizzes, events and admin grants."
+          ]
+        },
+        {
+          "h": "Quizzes",
+          "which": "msl-quiz",
+          "vh": "370px",
+          "p": [
+            "The quiz runs twice a day in its channel. Ten questions get 20 seconds each, and anyone can type the exact answer. Faster answers score more, up to 1,000 per round. The top three players who haven't been paid that day get 150, 100 and 75 Event Points, and other scorers get 50."
+          ]
+        },
+        {
+          "h": "Boosters and the raffle",
+          "which": "msl-raffle",
+          "vh": "370px",
+          "p": [
+            "The Sunday draw runs at 8 AM Manila time. Verified MSL members are taken out of the pool first. Tickets depend on booster tier and each booster can take one normal slot, with priority for boosters who haven't won this month. Extra slots go to whoever has the fewest extra wins. The CSV export for prizes puts unverified winners last."
+          ]
+        },
+        {
+          "h": "Daily quests",
+          "which": "msl-quests",
+          "vh": "370px",
+          "p": [
+            "Each member gets three quests a day, generated the first time they run the quest command that day. Slot one is always common and slot two uncommon. Slot three rolls across the tiers with weights of 70, 25 and 5. Progress comes from messages, reactions and voice, and rewards are 50, 150 and 500 XP, paid through the normal XP path."
+          ]
+        }
+      ]
     },
     {
       "h": "What ships with it",
