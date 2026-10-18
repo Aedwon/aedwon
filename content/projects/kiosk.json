@@ -4,7 +4,7 @@
   "type": "Android TV",
   "media": "tv",
   "depth": "writeup",
-  "desc": "A touchscreen survey app for an Android TV kiosk. It stores every answer on the device, so it ran for 8 hours at a live event with no internet.",
+  "desc": "A touchscreen survey app for an Android TV kiosk. It stores every answer on the device and never needs a connection, so it ran for 8 hours at a live event with no internet.",
   "stack": [
     "Flutter",
     "Dart",
@@ -47,8 +47,7 @@
     {
       "h": "How it works",
       "p": [
-        "Nothing needs a network. Each finished survey is written to a local Hive box on the TV with a timestamp. A staff member opens a PIN-protected admin screen to see the entry count, export everything to CSV, or clear the data.",
-        "The app pins itself to the screen with Android's lock task mode and hides the system bars, so visitors can't leave it. Exiting goes through the admin screen. Most of the commit history is visual work on the screen layouts, including changes from client feedback."
+        "Nothing needs a network, and nothing syncs. Each finished survey is written to a local Hive box on the TV with a timestamp. Staff open a PIN-protected admin screen to see the entry count, export everything to CSV on a flash drive plugged into the TV, or clear the data. The app pins itself to the screen with Android's lock task mode and hides the system bars, so visitors can't leave it. Exiting goes through the admin screen. Most of the commit history is visual work on the screen layouts, including changes from client feedback."
       ],
       "fig": "[Kiosk Survey, in use]",
       "kind": "text"

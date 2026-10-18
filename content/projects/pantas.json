@@ -37,7 +37,7 @@
     },
     {
       "k": "Scale",
-      "v": "158 lessons, 2,364 questions"
+      "v": "158 lessons, 3,163 questions"
     }
   ],
   "points": [
@@ -139,7 +139,7 @@
       "h": "Building content before it reaches the app",
       "p": [
         "Lessons are Markdown and questions are YAML, and both pass tooling before they get packed into the app. A validator checks schema and content errors. Question Studio, a local review tool, shows flagged issues and duplicate stems for approval. Questions that need a figure stay inactive until the illustration exists.",
-        "The corpus is 158 lessons. Main holds 2,364 questions. A QA round on a content branch audited every question against a revised standard, added 799 and corrected 19 answer keys, and brought every lesson to at least 20 active questions, 3,163 in total. That round isn't merged, and 134 questions are flagged for my review.",
+        "The corpus is 158 lessons and 3,163 questions. A QA round audited every question against a revised standard, added 799 and corrected 19 answer keys, and brought every lesson to at least 20 active questions. 134 questions are still flagged for my review.",
         "The content model keeps two meanings of difficulty apart. Authored difficulty only orders the writing, from easier questions toward exam level, and isn't part of the runtime question model. FSRS difficulty belongs to one student's review state and comes from their answers.",
         "For the shipped database, a seed writer runs exported content through the project's parsers and writes content.db. It hashes the finished file and writes a short digest into a Dart constant. The installer compares that digest to tell that the bundled content changed, instead of relying on someone to bump a version by hand."
       ]

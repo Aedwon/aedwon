@@ -7,6 +7,7 @@
   "desc": "Community bot for the Marwie AI App Builders Discord server, with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. A web control panel changes its settings.",
   "stack": [
     "Python",
+    "SQLite",
     "PostgreSQL"
   ],
   "links": [

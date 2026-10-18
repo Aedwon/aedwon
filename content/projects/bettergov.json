@@ -5,15 +5,15 @@
   "media": "repo",
   "depth": "note",
   "repo": "bettergovph/bettergov",
-  "desc": "BetterGov PH is an open source project to build a better national website for the Philippines, live at bettergov.ph.",
+  "desc": "BetterGov PH is an open source project to build a better national website for the Philippines, live at bettergov.ph. I have two pull requests open upstream, a government acronym tooltip and a contributor documentation fix.",
   "stack": [
     "GitHub"
   ],
   "stackText": "bettergovph/bettergov",
   "links": [
     {
-      "label": "github.com/bettergovph/bettergov",
-      "href": "https://github.com/bettergovph/bettergov"
+      "label": "bettergov.ph",
+      "href": "https://bettergov.ph"
     },
     {
       "label": "Fork branch",
@@ -23,7 +23,7 @@
   "facts": [
     {
       "k": "Contribution",
-      "v": "Acronym tooltip, status not verified"
+      "v": "Two open pull requests"
     },
     {
       "k": "Year",
@@ -41,8 +41,15 @@
     {
       "h": "What I worked on",
       "p": [
-        "I forked the project on July 30, 2026. On the same day I committed to a branch called feature/acronym-tooltip, with two commits: \"feat: add government acronym tooltip wrapper\" and \"feat: expand acronym dictionary with exhaustive list\". The idea is a small component that wraps Philippine government acronyms in a tooltip that spells them out.",
-        "[Upstream PR number and its current status.] I couldn't read the upstream repo through GitHub when I checked on October 19, 2026, so I can't confirm a pull request or its state from here."
+        "I forked the project on July 30, 2026. The first piece is a reusable component that wraps Philippine government acronyms in Radix UI tooltips that spell them out, with the acronym data and tests (PR 706). A maintainer put it on standby on July 31 because there wasn't yet a place on the site to use it. It's still open.",
+        "The second piece is a change to the contributor guide so its instructions match the repository's pull request template. My first attempt (PR 707) was closed without merging, and a maintainer asked for a fresh version on current main. PR 744 is that version. The same maintainer approved it on September 1, 2026, and it's still open."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "Where it stands",
+      "p": [
+        "Those states are from my own records, last checked on September 3, 2026. The upstream repository no longer resolves at its old address, so I haven't been able to check them again since."
       ],
       "kind": "text"
     }
