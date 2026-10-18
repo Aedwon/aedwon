@@ -8,7 +8,7 @@
 // keyboard height comes from window.visualViewport.
 
 import { useTheme } from '@/lib/design-v3/theme';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import MediaBlock, { type MediaKind } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
@@ -41,16 +41,17 @@ const out = (x: number) => 1 - Math.pow(1 - cl(x), 3);
 const ease = (x: number) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 const OPEN_PRE = 1150; // ms: the volume lifts out of the stack, stands up and turns its cover to you; then the cover turn runs
 const CLOSE_PRE = 1000; // ms: the closed volume turns back to its spine, lies down and slides into the stack
+const BOOK_DROP = 22; // the open book sits a little lower, clear of the top bar
 const BOOK_W = 340, BOOK_H = 486; // the book at reading size, as the board shows it
 const seg = (u: number, a: number, b: number) => ease((u - a) / (b - a));
 // Pose of the proxy book at progress u (0 = lying in the stack, 1 = cover to you at the board). The book's centre is the
 // origin; we keep the centre of its nearest face on z = 0, so both ends match the flat pieces they hand over to.
-function bookPose(u: number, r: { x: number; y: number; w: number; h: number }, tx = 195, ty = 335, fit = 1) {
+function bookPose(u: number, r: { x: number; y: number; w: number; h: number }, tx = 195, ty = 335) {
   const ss = r.w / BOOK_H; // stack scale: the spine's length is the book's height
   const dk = r.h / ss; // thickness at reading size
   const stand = seg(u, 0.14, 0.62);
   const turn = seg(u, 0.5, 0.93);
-  const sc = ss + (fit - ss) * stand;
+  const sc = ss + (1 - ss) * stand;
   const th = 90 * (1 - turn);
   const rad = (th * Math.PI) / 180;
   const sx = r.x + r.w / 2, sy = r.y + r.h / 2;
@@ -62,8 +63,27 @@ function bookPose(u: number, r: { x: number; y: number; w: number; h: number }, 
   };
 }
 const FX_SLIDE = 620, FX_FADE = 380; // ms: Wall/Index to About and back, and Wall to Index
-// The wall fades out toward the top bar and toward the caption, so neighbours hint at what is next without crowding the one in focus.
-const WALL_MASK = 'linear-gradient(to bottom, transparent 40px, #000 150px, #000 440px, transparent 540px)';
+// The wall drum. d is a tile's distance from the focused spot (negative: above). Tiles below fade faster, so they are gone before the caption.
+const DRUM_STEP = 36, DRUM_R = 500, DRUM_REACH = 2.6;
+function drumAt(d: number) {
+  const ad = Math.abs(d), ang = Math.max(-DRUM_REACH, Math.min(DRUM_REACH, d)) * DRUM_STEP;
+  return {
+    y: DRUM_R * Math.sin((ang * Math.PI) / 180), ang, sc: 1 - 0.08 * ad,
+    op: Math.max(0, d > 0 ? 1 - 1.25 * d : 1 - 0.45 * ad),
+  };
+}
+// A light detent: the drum drags a little near each project and moves freely between them, so each one feels like it clicks in.
+const detent = (near: number) => near * (0.55 + 0.45 * Math.min(1, Math.abs(near) / 0.5));
+// The same drum as CSS keyframes against the scroller's own position, so the browser moves the tiles without any script per frame.
+// u is how far the scroll is from this tile's project, in projects; the keyframes are the same for every tile.
+const DRUM_CSS = (() => {
+  let k = '@keyframes v3drum{';
+  for (let i = 0; i <= 52; i++) {
+    const u = -DRUM_REACH + i * 0.1, r = Math.round(u), d = -(r + detent(u - r)), f = drumAt(d);
+    k += `${((i / 52) * 100).toFixed(3)}%{transform:translate3d(0,${f.y.toFixed(1)}px,0) rotateX(${(-f.ang).toFixed(2)}deg) scale(${f.sc.toFixed(4)});opacity:${f.op.toFixed(3)}}`;
+  }
+  return k + '}';
+})();
 const HOLD_MS = 170; // a landed leaf fades out over this long, so the page beneath settles in instead of popping
 
 type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
@@ -94,9 +114,9 @@ interface Turn { from: number; to: number; then: 'L' | 'R' | null; dur: number; 
 const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; width?: number }>(function Mobile({ initialPath, height = MOB_H, width = MOB_W }, ref) {
   // The wall, top bar and tab bar use the full width. The other screens are drawn 390 wide and sit centred.
   const W = width, ox = (W - MOB_W) / 2, TW = W - 32, CW = W - 44;
-  const fit = Math.min(W / MOB_W, 1.12); // the shelf and the open book grow with the screen, up to a point
-  const dimsRef = useRef({ W, H: height, fit });
-  dimsRef.current = { W, H: height, fit };
+  const fit = Math.min(W / MOB_W, 1.12); // the spines grow in length with the screen, up to a point; the open book keeps its size
+  const dimsRef = useRef({ W });
+  dimsRef.current = { W };
   // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
   const { theme, toggle } = useTheme();
   const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
@@ -127,6 +147,13 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const [closing, setClosing] = useState<{ t0: number } | null>(null);
   const [kb, setKb] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
+  // Browsers that can tie animations to a scroller (Safari 26, Chrome) move the wall's tiles from the scroll position alone.
+  const [sdOk, setSdOk] = useState(false);
+  useEffect(() => {
+    const ok = typeof CSS !== 'undefined' && CSS.supports('animation-timeline: scroll()') && CSS.supports('timeline-scope: --wall');
+    s.sd = ok; setSdOk(ok);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [cur, setCur] = useState(0);
   const [focus, setFocus] = useState(0); // wall drum focus
   const [form, setForm] = useState({ name: '', mail: '', msg: '', title: '' });
@@ -136,7 +163,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number } | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
-    wf: 0, lit: -1, settleT: 0, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
+    wf: 0, lit: -1, sd: false, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
     sp: 0, side: 'L' as 'L' | 'R', vol: 0,
     screen: init.screen === 'project' ? 'project' : init.screen === 'book' ? 'shelf' : (init.screen as Screen),
     lastPos: -1, lastEnds: '',
@@ -238,7 +265,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [busy, s, panTo, turnTo]);
 
   const stackRect = useCallback((i: number) => {
-    const Hh = [67, 54, 61, 77, 51, 45].map((h) => h * fit), Wd = [326, 312, 334, 304, 320, 298].map((w) => w * fit), O = [-4, 6, -2, 3, -6, 2];
+    const Hh = [67, 54, 61, 77, 51, 45], Wd = [326, 312, 334, 304, 320, 298].map((w) => w * fit), O = [-4, 6, -2, 3, -6, 2];
     let y = 652 - Hh.reduce((a, h) => a + h, 0);
     for (let k = 0; k < i; k++) y += Hh[k];
     return { x: W / 2 - Wd[i] / 2 + O[i], y, w: Wd[i], h: Hh[i] };
@@ -366,22 +393,17 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       // wall drum: which tile is in focus
       const wf = Math.max(0, Math.min(WALL_ORDER.length - 1, s.wf)), focusI = Math.round(wf);
-      // A light detent: the drum drags a little near each project and moves freely between them, so each one feels like it clicks in.
-      const near = wf - focusI, wfv = s.reduced ? wf : focusI + near * (0.55 + 0.45 * Math.min(1, Math.abs(near) / 0.5));
+      const near = wf - focusI, wfv = s.reduced ? wf : focusI + detent(near);
       if (focusI !== s.lockI) { s.lockI = focusI; s.lockT = now; if (s.lockSeen && !s.reduced) { try { navigator.vibrate?.(6); } catch { /* not supported */ } } s.lockSeen = true; }
       const pulse = s.reduced ? 0 : 1 - out((now - s.lockT) / 320); // a small settle when a project locks in
-      WALL_ORDER.forEach((i, k) => {
+      if (!s.sd) WALL_ORDER.forEach((i, k) => {
         const el = tileRefs.current[k]; if (!el) return;
-        const d = k - wfv, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 36;
-        const vis = ad < 2;
-        if (!vis) { if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden'; return; }
-        // transform and opacity only, so scrolling never forces layout
-        const y = 500 * Math.sin((ang * Math.PI) / 180);
-        const sc = (1 - 0.08 * ad) * (k === focusI ? 1 + 0.018 * pulse : 1);
-        el.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0) rotateX(${(-ang).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
-        el.style.opacity = Math.max(0, 1 - 0.5 * ad).toFixed(3);
+        const d = k - wfv, f = drumAt(d);
+        if (Math.abs(d) >= DRUM_REACH - 0.6) { if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden'; return; }
+        const sc = f.sc * (k === focusI ? 1 + 0.018 * pulse : 1);
+        el.style.transform = `translate3d(0, ${f.y.toFixed(1)}px, 0) rotateX(${(-f.ang).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+        el.style.opacity = f.op.toFixed(3);
         el.style.visibility = 'visible';
-        el.style.zIndex = String(20 - Math.round(ad * 4));
       });
       if (focusI !== focusRef.current) { focusRef.current = focusI; setFocus(focusI); }
       // caption: full strength while a project is locked, fading only as you cross to the next one
@@ -489,7 +511,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       });
       if (moRef.current) moRef.current.style.visibility = pu >= 0 ? 'visible' : 'hidden';
       if (pu >= 0) {
-        const dm = dimsRef.current, P = bookPose(pu, stackRect(pi), dm.W / 2, dm.H / 2 + (335 - dm.H / 2) * dm.fit, dm.fit);
+        const P = bookPose(pu, stackRect(pi), dimsRef.current.W / 2, 335 + BOOK_DROP);
         if (moBookRef.current) moBookRef.current.style.transform = `translate3d(${P.px.toFixed(2)}px, ${P.py.toFixed(2)}px, ${P.pz.toFixed(2)}px) rotateZ(${P.phi.toFixed(3)}deg) rotateY(${P.th.toFixed(3)}deg) scale3d(${P.sc.toFixed(4)}, ${P.sc.toFixed(4)}, ${P.sc.toFixed(4)})`;
         if (moShadowRef.current) moShadowRef.current.style.opacity = seg(pu, 0.72, 1).toFixed(3);
         // light falls on the cover and the spine as each faces you
@@ -580,16 +602,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     return { date: q2.media === 'paper' ? f('Published') : '', mins: q2.media === 'paper' ? f('Reading time').replace(/ read$/i, '') : '' };
   };
 
-  const onWallScroll = (e: React.UIEvent) => {
-    const el = e.currentTarget as HTMLDivElement;
-    s.wf = el.scrollTop / 180;
-    // if the browser's own snap stops a little off a project, finish the move
-    window.clearTimeout(s.settleT);
-    s.settleT = window.setTimeout(() => {
-      const off = el.scrollTop - Math.round(el.scrollTop / 180) * 180;
-      if (Math.abs(off) > 1 && Math.abs(off) < 90) el.scrollTo({ top: Math.round(el.scrollTop / 180) * 180, behavior: s.reduced ? 'auto' : 'smooth' });
-    }, 160);
-  };
+  const onWallScroll = (e: React.UIEvent) => { s.wf = (e.currentTarget as HTMLDivElement).scrollTop / 180; };
   const onProjScroll = (e: React.UIEvent) => {
     const sc = e.currentTarget as HTMLDivElement;
     let c = 0; secs.forEach((sec, i) => { const el = document.getElementById(sec.id); if (el && el.offsetTop - 300 <= sc.scrollTop) c = i; });
@@ -633,6 +646,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     </div>
   );
 
+  // The wall's tiles. Built once per width so a change of focus does not redraw every mock-up.
+  const wallTiles = useMemo(() => WALL_ORDER.map((i, k) => {
+    const q2 = P[i], meta = postMeta(q2), sc = Math.min(TW / 520, 220 / HH[q2.media]);
+    const sd = sdOk ? ({ animationName: 'v3drum', animationDuration: '1s', animationTimingFunction: 'linear', animationFillMode: 'both', animationTimeline: '--wall', animationRange: `${(k - DRUM_REACH) * 180}px ${(k + DRUM_REACH) * 180}px` } as React.CSSProperties) : { opacity: 0 };
+    return (
+      <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * sc), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', willChange: 'transform, opacity', ...sd }}>
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: sc.toFixed(4) }}>
+          <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
+        </div>
+      </div>
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [TW, sdOk]);
+
   return (
     <div
       ref={rootRef}
@@ -646,23 +673,13 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     >
       {/* ===== WALL: a vertical drum. Scrolling turns it; whichever project reaches the middle is chosen. ===== */}
       {(screen === 'wall' || leaving === 'wall') && (
-        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0 }}>
-          <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px`, WebkitMaskImage: WALL_MASK, maskImage: WALL_MASK }}>
-            {WALL_ORDER.map((i, k) => {
-              const q2 = P[i], meta = postMeta(q2);
-              return (
-                <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * Math.min(TW / 520, 220 / HH[q2.media])), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', opacity: 0, willChange: 'transform, opacity' }}>
-                  <div style={{ position: 'relative', width: TW, height: '100%', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(TW / 520, 220 / HH[q2.media]).toFixed(4) }}>
-                      <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0, ...(sdOk ? ({ timelineScope: '--wall' } as React.CSSProperties) : null) }}>
+          {sdOk && <style>{DRUM_CSS}</style>}
+          <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px` }}>
+            {wallTiles}
           </div>
           {/* the scroller only carries the snapping and the taps; it draws nothing */}
-          <div ref={wallScrollRef} className="v3ms" onScroll={onWallScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', scrollSnapType: 'y mandatory', scrollPaddingTop: 250 }}>
+          <div ref={wallScrollRef} className="v3ms" onScroll={onWallScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', scrollSnapType: 'y mandatory', scrollPaddingTop: 250, ...(sdOk ? ({ scrollTimeline: '--wall y' } as React.CSSProperties) : null) }}>
             <div style={{ height: 250 }} />
             {WALL_ORDER.map((i, k) => (
               <button
@@ -925,7 +942,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
             <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 690, textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
-          <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700 * fit, perspectiveOrigin: `${W / 2}px ${height / 2 + (335 - height / 2) * fit}px`, pointerEvents: 'none', visibility: 'hidden' }}>
+          <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700, perspectiveOrigin: `${W / 2}px ${335 + BOOK_DROP}px`, pointerEvents: 'none', visibility: 'hidden' }}>
             <div ref={moShadowRef} style={{ position: 'absolute', left: 25, top: 92, width: BOOK_W, height: BOOK_H, borderRadius: '3px 6px 6px 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0 }} />
             {(() => {
               const mi = V[vol], mr = stackRect(vol), mss = mr.w / BOOK_H, mdk = mr.h / mss;
@@ -971,7 +988,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== BOOK: an open book, read one page at a time ===== */}
       {screen === 'book' && (
-        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, scale: fit, translate: `0 ${dy}px` }}>
+        <div ref={bookRootRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W, translate: `0 ${dy + BOOK_DROP}px` }}>
           <div ref={headRef} style={{ opacity: 0, position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)', transition: 'opacity .25s ease' }}>Vol. {v.n} · {v.title}</div>
           <div ref={boardRef} onPointerDown={swDown} onPointerUp={swUp} style={{ position: 'absolute', left: 0, top: 0, width: 390, height: 700, perspective: 1700, perspectiveOrigin: '195px 335px', transition: 'translate .38s cubic-bezier(.22,1,.36,1)', touchAction: 'pan-y' }}>
             <div ref={boardXRef} style={{ position: 'absolute', left: 25, top: 92, width: 680, height: 486, transformStyle: 'preserve-3d' }}>
