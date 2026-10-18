@@ -327,7 +327,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
       const intro = st.reduced ? 1 : back((T - 0.15 - i * 0.08) / 0.9);
       const h = st.hov[i];
       // §3.2 shelf pose: spine out; hovered books slide out and tip toward you
-      let P: Pose = { x: SX[i], y: 780 - HH * S0 / 2 + (1 - intro) * 420, z: -210 * S0 + 70 * h, rx: -7 * h, ry: 100, rz: 0, s: S0, cover: 0 };
+      let P: Pose = { x: SX[i], y: 780 - HH * S0 / 2 + (1 - intro) * 420, z: -210 * S0 + 70 * h, rx: -7 * h, ry: 100 - 8 * h, rz: 0, s: S0, cover: 0 }; // a pulled-out book squares up to the camera, so its side face does not sweep over the book beside it
       P.y -= 22 * h;
       if (i === LAST) { P.rz += 3 * wob; P.y -= 6 * wob; } else if (i === LAST - 1) P.rz -= 1.4 * wob; // §3.8 shelved wobble
       let dim = 1 - cl(intro * 1.4);
