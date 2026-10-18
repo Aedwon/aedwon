@@ -8,50 +8,50 @@ I build apps, bots and web tools, mostly for events, communities and exam prep. 
 
 ### [Pantas](https://pantas.app)
 
-Pre-launch Android reviewer for Philippine civil service and university entrance preparation. Study state is stored locally with Drift and SQLCipher, with FSRS-6 handling review scheduling.
-
-`Flutter` `Drift` `SQLCipher` `FSRS-6`
-
----
+Pre-launch Android reviewer for Philippine civil service and university entrance preparation. Study state is stored locally and encrypted, and FSRS-6 schedules reviews on the device.
 
 <p align="center">
-  <img src="./public/projects/msl-network-discord.webp" width="90%" alt="MSL Network Discord interface" />
+  <img src="./public/projects/pantas/screens-1441d8b4.webp" width="30%" alt="Pantas home screen" />
+  <img src="./public/projects/pantas/screens-b57a6475.webp" width="30%" alt="Pantas lesson reader" />
+  <img src="./public/projects/pantas/screens-0f417aa4.webp" width="30%" alt="Pantas quiz question" />
 </p>
 
-### [MSL Network Bot](https://github.com/Aedwon/Discord-Bot)
-
-Single-server Discord infrastructure for MLBB verification, community activity, events, quests, moderation, and reporting.
-
-`Python` `Discord.py` `MySQL` `aiohttp`
+`Flutter` `Dart` `Firebase` `Drift` `RevenueCat`
 
 ---
 
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/QR-Code-Maker">
-        <img src="./public/projects/qr-studio.webp" width="100%" alt="QR Studio editor" />
-      </a>
+      <a href="https://github.com/Aedwon/marwie-server-bot"><img src="./public/projects/marwie/hero-084df0a2.webp" width="100%" alt="The Marwie cloud mascot" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/marwie-server-bot">Marwie Community Bot</a></b><br /><br />
+      Discord bot for the Marwie AI App Builders server. It handles moderation, tickets, temporary voice rooms and quizzes, and settings can also be changed from a web control panel.<br /><br />
+      <code>Python</code> <code>discord.py</code> <code>SQLite</code> <code>PostgreSQL</code>
     </td>
     <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/kiosk-survey">
-        <img src="./public/projects/kiosk-survey.webp" width="100%" alt="Kiosk Survey Android TV interface" />
-      </a>
+      <a href="https://github.com/Aedwon/Discord-Bot"><img src="./public/projects/msl/hero-6fc047eb.webp" width="100%" alt="MSL Network logo" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/Discord-Bot">MSL Network Bot</a></b><br /><br />
+      Single-server Discord bot for an MLBB community. It ties account verification to XP, Event Points, events, quests, moderation and reporting.<br /><br />
+      <code>Python</code> <code>discord.py</code> <code>MySQL</code>
     </td>
   </tr>
   <tr>
-    <td valign="top">
-      <b><a href="https://github.com/Aedwon/QR-Code-Maker">QR Studio</a></b><br /><br />
-      In-browser QR builder with gradient styling and SVG export. Encoding and rendering stay client-side.<br /><br />
-      <code>TypeScript</code> <code>Canvas</code> <code>Vite</code> <code>SVG</code>
+    <td width="50%" valign="top">
+      <a href="https://www.aedwon.site/work/cup"><img src="./public/projects/cup/hero-7b1d8e4e.webp" width="100%" alt="MSL Collegiate Cup logo" /></a><br /><br />
+      <b><a href="https://www.aedwon.site/work/cup">MSL Collegiate Cup Bot</a></b><br /><br />
+      Ran match operations for the Collegiate Cup. Teams log results, the other side acknowledges within five minutes or files a dispute, and live matches survive a restart.<br /><br />
+      <code>Python</code> <code>discord.py</code>
     </td>
-    <td valign="top">
+    <td width="50%" valign="top">
+      <a href="https://github.com/Aedwon/kiosk-survey"><img src="./public/projects/kiosk/hero-d5702330.webp" width="100%" alt="Kiosk Survey on an Android TV" /></a><br /><br />
       <b><a href="https://github.com/Aedwon/kiosk-survey">Kiosk Survey</a></b><br /><br />
-      Offline Android TV survey system. It ran for eight continuous hours at a live event and synced queued submissions after connectivity returned.<br /><br />
-      <code>Flutter</code> <code>Dart</code> <code>SQLite</code> <code>Android TV</code>
+      Offline Android TV survey app. It ran for eight continuous hours at a live event with no internet, and the answers left the TV on a flash drive.<br /><br />
+      <code>Flutter</code> <code>Dart</code> <code>Hive</code>
     </td>
   </tr>
 </table>
+
+The rest is on [aedwon.site](https://www.aedwon.site).
 
 ## Open source
 
