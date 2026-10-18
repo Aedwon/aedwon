@@ -14,8 +14,8 @@ import { useTheme, type Theme } from '@/lib/design-v3/theme';
 // rgb + base/boost (0.11 / 0.30) with the same grid, radius, push and wave. Canvas
 // fills are explicit rgb strings from the spec.
 const DOT = {
-  dark: { rgb: '237,237,237', base: 0.075, boost: 0.33 },
-  light: { rgb: '17,17,20', base: 0.11, boost: 0.3 },
+  dark: { rgb: '237,237,237', base: 0.12, boost: 0.3 },
+  light: { rgb: '17,17,20', base: 0.17, boost: 0.27 },
 } as const;
 
 type Dotc = { rgb: string; base: number; boost: number };

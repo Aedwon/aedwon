@@ -489,7 +489,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         el.style.transform = `translate3d(${(X - 260).toFixed(2)}px, ${(Y - hh / 2).toFixed(2)}px, ${Z.toFixed(1)}px) rotateX(${ax.toFixed(3)}deg) rotateY(${ay.toFixed(3)}deg) rotateZ(${(az + r).toFixed(3)}deg) scale(${(S * sc).toFixed(4)})`;
         el.style.opacity = op.toFixed(3);
         el.style.pointerEvents = op > 0.3 && k < 0.5 ? 'auto' : 'none';
-        el.style.filter = 'none';
+        // while one tile is hovered, the others lose most of their colour; the hovered one keeps all of it
+        const gsv = onWall ? 0.9 * Gd * (1 - A) : 0, gsf = gsv > 0.01 ? `grayscale(${gsv.toFixed(2)})` : 'none';
+        if (el.style.filter !== gsf) el.style.filter = gsf;
       }
     });
     const rowAt = (j: number) => { const q2 = out((k - 0.36 - 0.016 * j) / 0.3) * out((T - 0.2 - 0.018 * j) / 0.45); return { q: q2, op: q2 }; };

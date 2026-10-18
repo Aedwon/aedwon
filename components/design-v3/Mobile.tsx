@@ -696,7 +696,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
         position: 'relative', width: W, height: height, overflow: 'hidden', color: 'var(--text-primary)',
         fontFamily: "'Geist', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased',
         backgroundColor: 'var(--room-bg)',
-        backgroundImage: `radial-gradient(circle, ${theme === 'light' ? 'rgba(17,17,20,0.11)' : 'rgba(237,237,237,0.075)'} 1px, transparent 1.6px)`,
+        backgroundImage: `radial-gradient(circle, ${theme === 'light' ? 'rgba(17,17,20,0.17)' : 'rgba(237,237,237,0.12)'} 1px, transparent 1.6px)`,
         backgroundSize: '26px 26px', backgroundPosition: `0 0px`,
       }}
     >

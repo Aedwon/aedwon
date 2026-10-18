@@ -53,8 +53,8 @@ const D = 740; // the shelf hangs 740px below the top of the wall of work
 
 // Dark/light canvas + colour pairs (room.md §5.2). Motion constants are identical.
 const DOT = {
-  dark: { rgb: '237,237,237', base: 0.075, boost: 0.33 },
-  light: { rgb: '17,17,20', base: 0.11, boost: 0.3 },
+  dark: { rgb: '237,237,237', base: 0.12, boost: 0.3 },
+  light: { rgb: '17,17,20', base: 0.17, boost: 0.27 },
 } as const;
 
 
