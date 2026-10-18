@@ -62,6 +62,8 @@ function bookPose(u: number, r: { x: number; y: number; w: number; h: number }) 
   };
 }
 const FX_SLIDE = 620, FX_FADE = 380; // ms: Wall/Index to About and back, and Wall to Index
+// The wall fades out toward the top bar and toward the caption, so neighbours hint at what is next without crowding the one in focus.
+const WALL_MASK = 'linear-gradient(to bottom, transparent 40px, #000 150px, #000 440px, transparent 540px)';
 const HOLD_MS = 170; // a landed leaf fades out over this long, so the page beneath settles in instead of popping
 
 type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
@@ -131,7 +133,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number } | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
-    wf: 0, lit: -1, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
+    wf: 0, lit: -1, settleT: 0, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
     sp: 0, side: 'L' as 'L' | 'R', vol: 0,
     screen: init.screen === 'project' ? 'project' : init.screen === 'book' ? 'shelf' : (init.screen as Screen),
     lastPos: -1, lastEnds: '',
@@ -367,11 +369,11 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       const pulse = s.reduced ? 0 : 1 - out((now - s.lockT) / 320); // a small settle when a project locks in
       WALL_ORDER.forEach((i, k) => {
         const el = tileRefs.current[k]; if (!el) return;
-        const d = k - wfv, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 30;
+        const d = k - wfv, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 36;
         const vis = ad < 2;
         if (!vis) { if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden'; return; }
         // transform and opacity only, so scrolling never forces layout
-        const y = 390 * Math.sin((ang * Math.PI) / 180);
+        const y = 500 * Math.sin((ang * Math.PI) / 180);
         const sc = (1 - 0.08 * ad) * (k === focusI ? 1 + 0.018 * pulse : 1);
         el.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0) rotateX(${(-ang).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
         el.style.opacity = Math.max(0, 1 - 0.5 * ad).toFixed(3);
@@ -575,7 +577,16 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     return { date: q2.media === 'paper' ? f('Published') : '', mins: q2.media === 'paper' ? f('Reading time').replace(/ read$/i, '') : '' };
   };
 
-  const onWallScroll = (e: React.UIEvent) => { s.wf = (e.currentTarget as HTMLDivElement).scrollTop / 180; };
+  const onWallScroll = (e: React.UIEvent) => {
+    const el = e.currentTarget as HTMLDivElement;
+    s.wf = el.scrollTop / 180;
+    // if the browser's own snap stops a little off a project, finish the move
+    window.clearTimeout(s.settleT);
+    s.settleT = window.setTimeout(() => {
+      const off = el.scrollTop - Math.round(el.scrollTop / 180) * 180;
+      if (Math.abs(off) > 1 && Math.abs(off) < 90) el.scrollTo({ top: Math.round(el.scrollTop / 180) * 180, behavior: s.reduced ? 'auto' : 'smooth' });
+    }, 160);
+  };
   const onProjScroll = (e: React.UIEvent) => {
     const sc = e.currentTarget as HTMLDivElement;
     let c = 0; secs.forEach((sec, i) => { const el = document.getElementById(sec.id); if (el && el.offsetTop - 300 <= sc.scrollTop) c = i; });
@@ -633,7 +644,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       {/* ===== WALL: a vertical drum. Scrolling turns it; whichever project reaches the middle is chosen. ===== */}
       {(screen === 'wall' || leaving === 'wall') && (
         <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0 }}>
-          <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px` }}>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px`, WebkitMaskImage: WALL_MASK, maskImage: WALL_MASK }}>
             {WALL_ORDER.map((i, k) => {
               const q2 = P[i], meta = postMeta(q2);
               return (
@@ -648,7 +659,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
             })}
           </div>
           {/* the scroller only carries the snapping and the taps; it draws nothing */}
-          <div ref={wallScrollRef} className="v3ms" onScroll={onWallScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', scrollSnapType: 'y mandatory', scrollPaddingBottom: 164 }}>
+          <div ref={wallScrollRef} className="v3ms" onScroll={onWallScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', scrollSnapType: 'y mandatory', scrollPaddingTop: 250 }}>
             <div style={{ height: 250 }} />
             {WALL_ORDER.map((i, k) => (
               <button
@@ -658,10 +669,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 aria-label={P[i].name + ', ' + P[i].type}
                 onClick={() => { if (k === Math.round(s.wf)) openProject(i); else if (wallScrollRef.current) wallScrollRef.current.scrollTo({ top: k * 180, behavior: s.reduced ? 'auto' : 'smooth' }); }}
                 onFocus={() => { if (wallScrollRef.current && Math.round(s.wf) !== k) wallScrollRef.current.scrollTo({ top: k * 180, behavior: s.reduced ? 'auto' : 'smooth' }); }}
-                style={{ display: 'block', width: TW, height: 180, margin: '0 auto', scrollSnapAlign: 'center', scrollSnapStop: 'always' }}
+                style={{ display: 'block', width: TW, height: 180, margin: '0 auto', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
               />
             ))}
-            <div style={{ height: 414 }} />
+            <div style={{ height: Math.max(0, height - 430) }} />
           </div>
           {/* where you are among all of them, like the rail on the desktop wall */}
           <div aria-hidden style={{ position: 'absolute', right: 10, top: 272, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, pointerEvents: 'none' }}>
