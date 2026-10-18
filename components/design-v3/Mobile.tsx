@@ -36,7 +36,8 @@ const KINDS: [string, string, string[] | null][] = [
 ];
 
 // the phone wall's order: alternating kinds and depths, no two of a kind adjacent (mobile.py:398)
-const WALL_ORDER = [0, 2, 4, 13, 1, 8, 14, 3, 10, 7, 15, 9, 12, 5, 17, 16, 11, 6];
+const WALL_IDS = ['pantas', 'lakambini', 'kiosk', 'aspire', 'msl', 'norala', 'opensre', 'agent', 'ilocos', 'webp', 'dockroute', 'cup', 'kqm', 'genshin', 'bettergov', 'oppo', 'qr', 'marwie', 'mlbb', 'kanlungan'];
+const WALL_ORDER = WALL_IDS.map((id) => PROJECTS.findIndex((p) => p.id === id)).filter((i) => i >= 0);
 
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));

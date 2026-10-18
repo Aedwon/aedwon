@@ -15,7 +15,13 @@ import type { Theme } from '@/lib/design-v3/theme';
 
 const R0 = 240;
 // same wall, fixed arrangement: three columns balanced by height, no two of a kind stacked
-const COLS = [[0, 13, 1, 7, 15, 5, 18], [2, 14, 3, 9, 16, 6, 19], [4, 8, 10, 12, 11, 17]];
+// hung by project id, so adding or removing a project never shuffles the wall
+const COL_IDS = [
+  ['pantas', 'aspire', 'msl', 'webp', 'dockroute', 'spec', 'mlbb'],
+  ['lakambini', 'opensre', 'agent', 'cup', 'bettergov', 'qr', 'factory', 'kanlungan'],
+  ['kiosk', 'norala', 'ilocos', 'kqm', 'oppo', 'genshin', 'marwie'],
+];
+const COLS = COL_IDS.map((ids) => ids.map((id) => PROJECTS.findIndex((p) => p.id === id)).filter((i) => i >= 0));
 const GAP = 48;
 
 // five kinds, the way a visitor thinks about them (WallIndex2:309-316)
