@@ -103,7 +103,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
       ) : (
         <>
           {stats.lastFiveStar && (
-            <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'stretch', justifyContent: 'space-between', minHeight: compact ? undefined : 300, background: 'radial-gradient(90% 120% at 82% 40%, color-mix(in srgb, var(--status-wip) 20%, transparent) 0%, transparent 62%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 22px 22px, var(--surface-media)' }}>
+            <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'stretch', justifyContent: 'space-between', height: compact ? 400 : 300, background: 'radial-gradient(90% 120% at 82% 40%, color-mix(in srgb, var(--status-wip) 20%, transparent) 0%, transparent 62%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 22px 22px, var(--surface-media)' }}>
               <div style={{ padding: compact ? '20px 20px 0' : '32px 0 32px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: compact ? 14 : 24, position: 'relative', zIndex: 1, flex: '0 1 52%' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, ...label, color: 'var(--status-wip)' }}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 2.5l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.7 5.9 21.1l1.4-6.8L2.2 9.6l6.9-.8z" /></svg>
@@ -120,7 +120,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
                   </div>
                 </div>
               </div>
-              <div style={{ position: 'relative', flex: compact ? 'none' : '1 1 48%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: compact ? 210 : undefined }}>
+              <div style={{ position: 'relative', flex: compact ? 'none' : '1 1 48%', display: 'flex', alignItems: 'center', justifyContent: 'center', height: compact ? 210 : undefined }}>
                 {stats.lastFiveStar.itemType === 'Character' ? (
                   <Art key={stats.lastFiveStar.id} name={stats.lastFiveStar.name} kind="splash" style={{ height: compact ? 210 : 340, width: 'auto', maxWidth: '110%', objectFit: 'contain', marginRight: compact ? 0 : -8 }} />
                 ) : (
@@ -174,8 +174,8 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
             ))}
           </div>
 
-          {chart.length > 0 && (
-            <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {(
+            <div style={{ ...card, padding: pad, display: 'flex', flexDirection: 'column', gap: 14, height: compact ? 230 : 290 }}>
               <span style={label}>Wishes per 5-star</span>
               <div role="img" aria-label={`Pity of each 5 star: ${chart.map((c) => `${c.name} ${c.pity}`).join(', ')}`} style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: compact ? 6 : 10, height: compact ? 140 : 180 }}>
                 <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: `${(spec.soft / spec.hard) * 100}%`, borderTop: '1px dashed var(--line-hover)' }} />
