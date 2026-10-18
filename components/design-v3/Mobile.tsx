@@ -690,9 +690,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       {/* ===== INDEX ===== */}
       {(screen === 'index' || leaving === 'index') && (
-        <div ref={indexLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: ox, width: MOB_W }}>
+        <div ref={indexLayerRef} style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: W }}>
         <div className="v3ms" style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
-          <div style={{ padding: '76px 22px 110px' }}>
+          <div style={{ padding: '76px 18px 110px' }}>
             <div role="group" aria-label="Show a type" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', height: 48 }}>
               {KINDS.map((k, gi) => {
                 const on = gi === 0 ? filt == null : filt === gi - 1;
@@ -703,7 +703,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                   </button>
                 );
               })}
-              <span aria-hidden style={{ position: 'absolute', left: 0, bottom: 2, width: 22, height: 1.5, background: 'var(--text-primary)', translate: `${((filt == null ? 0 : filt + 1) * ((346 - 46) / 6)) + 15}px 0`, transition: 'translate .5s cubic-bezier(.34,1.3,.64,1)' }} />
+              <span aria-hidden style={{ position: 'absolute', left: 0, bottom: 2, width: 22, height: 1.5, background: 'var(--text-primary)', translate: `${((filt == null ? 0 : filt + 1) * ((W - 36 - 46) / 6)) + 12}px 0`, transition: 'translate .5s cubic-bezier(.34,1.3,.64,1)' }} />
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 18 }}>
               <span style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.035em' }}>{filt == null ? 'All projects' : KINDS[filt + 1][0]}</span>
@@ -726,7 +726,18 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                     </div>
                     <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
                       <span style={{ fontSize: 16, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.name}</span>
-                      <span style={{ fontSize: 12.5, color: 'var(--text-label)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.topic || q2.stackText || (q2.stack || []).join(' · ')}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, height: 18, fontSize: 12.5, color: 'var(--text-label)', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                        {q2.topic
+                          ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.topic}</span>
+                          : (
+                            <>
+                              {(q2.stack || []).map((st) => LOGO[st] && (
+                                <svg key={st} className="v3lg" width={Number(LOGO[st].w ?? 18) * 0.8} height={Number(LOGO[st].h ?? 18) * 0.8} viewBox={LOGO[st].vb ?? '0 0 24 24'} role="img" aria-label={st} style={{ flex: 'none' }}><path d={LOGO[st].d} fill={logoColor(st)} /></svg>
+                              ))}
+                              {(q2.stackText || (q2.stack || []).filter((st) => !LOGO[st]).join(' · ')) && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.stackText || (q2.stack || []).filter((st) => !LOGO[st]).join(' · ')}</span>}
+                            </>
+                          )}
+                      </span>
                     </span>
                     <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--text-label)" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={ICON[TYPEICON[q2.type]]} /></svg>
                   </button>
@@ -985,7 +996,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       )}
 
       {/* ===== top bar ===== */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-room-80)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--room-bg)' }}>
         <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
         <span style={{ display: 'flex', alignItems: 'center' }}>
           {showBack && (
@@ -1000,7 +1011,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       </div>
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
-      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--glass-room-86)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
+      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--room-bg)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
         {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
