@@ -418,7 +418,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     }
     const pp = ease(k / 0.8);
     // in the room, heading down to the shelf: the wall of work tips back and away, like looking down past it
-    const dm = Math.max(0, Math.min(1, s.dim)), dme = dm * dm * (3 - 2 * dm);
+    const dm = Math.max(0, Math.min(1, s.dim));
     // heading to About the camera comes level: the wall's tilt and roll ease out as it slides away, so the straight-on shelf
     // arrives in the same view instead of the wall tipping over on its own
     const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = 1 - dl * dl * (3 - 2 * dl); // level by the time the camera is 40% of the way
