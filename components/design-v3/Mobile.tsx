@@ -212,8 +212,6 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [screen, s]);
   // once the outgoing layer is mounted, place both layers at the start pose before the first paint
   useLayoutEffect(() => { if (leaving && s.fx) startFx(); });
-  // the outgoing wall is mounted afresh for its exit: put it back on the project it was showing before anything paints
-  useLayoutEffect(() => { if (leaving === 'wall' && wallScrollRef.current) wallScrollRef.current.scrollTop = s.wf * 180; }, [leaving, s]);
 
   // ---- URL sync (client shell owns history)
   const push = useCallback((path: string) => {
@@ -685,8 +683,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       }}
     >
       {/* ===== WALL: a vertical drum. Scrolling turns it; whichever project reaches the middle is chosen. ===== */}
-      {(screen === 'wall' || leaving === 'wall') && (
-        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0, ...(sdOk ? ({ timelineScope: '--wall' } as React.CSSProperties) : null) }}>
+      {/* The wall stays mounted and is only hidden, so leaving it and coming back never rebuilds it (a rebuild flashes the tiles unplaced). */}
+      {(
+        <div ref={wallLayerRef} style={{ position: 'absolute', inset: 0, visibility: screen === 'wall' || leaving === 'wall' ? 'visible' : 'hidden', ...(sdOk ? ({ timelineScope: '--wall' } as React.CSSProperties) : null) }}>
           {sdOk && <style>{DRUM_CSS}</style>}
           <div aria-hidden style={{ position: 'absolute', inset: 0, perspective: 900, perspectiveOrigin: '50% 340px', pointerEvents: 'none', translate: `0 ${dy}px` }}>
             {wallTiles}
