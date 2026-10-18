@@ -8,50 +8,50 @@ I build apps, bots and web tools, mostly for events, communities and exam prep. 
 
 ### [Pantas](https://pantas.app)
 
-Pre-launch Android reviewer for Philippine civil service and university entrance preparation. Study state is stored locally with Drift and SQLCipher, with FSRS-6 handling review scheduling.
-
-`Flutter` `Drift` `SQLCipher` `FSRS-6`
-
----
+Pre-launch Android reviewer for Philippine civil service and university entrance preparation. Study state is stored locally and encrypted, and FSRS-6 schedules reviews on the device.
 
 <p align="center">
-  <img src="./public/projects/msl-network-discord.webp" width="90%" alt="MSL Network Discord interface" />
+  <img src="./public/projects/pantas/screens-1441d8b4.webp" width="30%" alt="Pantas home screen" />
+  <img src="./public/projects/pantas/screens-b57a6475.webp" width="30%" alt="Pantas lesson reader" />
+  <img src="./public/projects/pantas/screens-0f417aa4.webp" width="30%" alt="Pantas quiz question" />
 </p>
 
-### [MSL Network Bot](https://github.com/Aedwon/Discord-Bot)
-
-Single-server Discord infrastructure for MLBB verification, community activity, events, quests, moderation, and reporting.
-
-`Python` `Discord.py` `MySQL` `aiohttp`
+`Flutter` `Dart` `Firebase` `Drift` `RevenueCat`
 
 ---
 
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/QR-Code-Maker">
-        <img src="./public/projects/qr-studio.webp" width="100%" alt="QR Studio editor" />
-      </a>
+      <a href="https://github.com/Aedwon/norala-sb-demo"><img src="./public/projects/norala/hero-f05d1460.webp" width="100%" alt="Norala SB Portal" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/norala-sb-demo">Norala SB Portal</a></b><br /><br />
+      Unofficial bilingual transparency prototype for a municipal council. Records come from the repository, and the demo is kept clearly separate from an official LGU service.<br /><br />
+      <code>Next.js</code> <code>TypeScript</code> <code>Tailwind</code>
     </td>
     <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/kiosk-survey">
-        <img src="./public/projects/kiosk-survey.webp" width="100%" alt="Kiosk Survey Android TV interface" />
-      </a>
+      <a href="https://github.com/Aedwon/kiosk-survey"><img src="./public/projects/kiosk/hero-d5702330.webp" width="100%" alt="Kiosk Survey on an Android TV" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/kiosk-survey">Kiosk Survey</a></b><br /><br />
+      Offline Android TV survey app. It ran for eight continuous hours at a live event and synced queued submissions once the connection returned.<br /><br />
+      <code>Flutter</code> <code>Dart</code> <code>Firebase</code> <code>Android TV</code>
     </td>
   </tr>
   <tr>
-    <td valign="top">
+    <td width="50%" valign="top">
+      <a href="https://github.com/Aedwon/QR-Code-Maker"><img src="./public/projects/qr/hero-a2d48d9c.webp" width="100%" alt="QR Studio editor" /></a><br /><br />
       <b><a href="https://github.com/Aedwon/QR-Code-Maker">QR Studio</a></b><br /><br />
       In-browser QR builder with gradient styling and SVG export. Encoding and rendering stay client-side.<br /><br />
-      <code>TypeScript</code> <code>Canvas</code> <code>Vite</code> <code>SVG</code>
+      <code>TypeScript</code> <code>Vite</code> <code>Tailwind</code> <code>SVG</code>
     </td>
-    <td valign="top">
-      <b><a href="https://github.com/Aedwon/kiosk-survey">Kiosk Survey</a></b><br /><br />
-      Offline Android TV survey system. It ran for eight continuous hours at a live event and synced queued submissions after connectivity returned.<br /><br />
-      <code>Flutter</code> <code>Dart</code> <code>SQLite</code> <code>Android TV</code>
+    <td width="50%" valign="top">
+      <a href="https://github.com/Aedwon/webp-unli"><img src="./public/projects/webp/hero-c5b14385.webp" width="100%" alt="WebP Unli converting a batch of images" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/webp-unli">WebP Unli</a></b><br /><br />
+      Image to WebP converter that runs in a wasm-vips worker. Each queued file keeps its own options, and results download one by one or as a ZIP.<br /><br />
+      <code>Next.js</code> <code>TypeScript</code> <code>wasm-vips</code>
     </td>
   </tr>
 </table>
+
+The rest, including the Discord bots, is on [aedwon.site](https://www.aedwon.site).
 
 ## Open source
 
