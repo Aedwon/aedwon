@@ -161,7 +161,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
   // ---- mutable scene for the loop
   const s = useRef({
-    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number; anims?: Animation[] } | null, pan: null as { from: number; t0: number } | null,
+    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number; anims?: Animation[] } | null, fxOld: null as Animation | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
     wf: 0, lit: -1, sd: false, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
@@ -212,6 +212,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [screen, s]);
   // once the outgoing layer is mounted, place both layers at the start pose before the first paint
   useLayoutEffect(() => { if (leaving && s.fx) startFx(); });
+  useLayoutEffect(() => { if (!leaving && s.fxOld) { s.fxOld.cancel(); s.fxOld = null; } }, [leaving, s]);
 
   // ---- URL sync (client shell owns history)
   const push = useCallback((path: string) => {
@@ -393,7 +394,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (s.fx) {
         if (s.fx.anims ? s.fx.anims.every((an) => an.playState === 'finished') : now - s.fx.t0 >= s.fx.dur + 400) {
           const n = fxLayer(s.fx.to);
-          s.fx.anims?.forEach((an) => an.cancel());
+          // the incoming layer ends where its animation ends, so it can be released now. The outgoing one stays at its last
+          // frame (gone) until React has hidden or removed it; releasing it earlier flashes it back for a frame.
+          s.fx.anims?.[1]?.cancel();
+          s.fxOld = s.fx.anims?.[0] ?? null;
           if (n) { n.style.transform = ''; n.style.opacity = ''; n.style.pointerEvents = ''; }
           s.fx = null; setLeaving(null);
         }
