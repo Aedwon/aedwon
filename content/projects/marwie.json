@@ -4,7 +4,7 @@
   "type": "Discord bot",
   "media": "flow-marwie",
   "depth": "writeup",
-  "desc": "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are changed from a web control panel instead of slash commands.",
+  "desc": "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings can also be changed from a web control panel.",
   "stack": [
     "Python",
     "PostgreSQL"
@@ -44,7 +44,7 @@
     {
       "h": "What I built",
       "p": [
-        "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are changed from a web control panel instead of slash commands.",
+        "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings can also be changed from a web control panel.",
         "[One or two sentences on the hardest part, and how you solved it.]"
       ],
       "kind": "text"

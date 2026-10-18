@@ -23,35 +23,35 @@ Pre-launch Android reviewer for Philippine civil service and university entrance
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/norala-sb-demo"><img src="./public/projects/norala/hero-f05d1460.webp" width="100%" alt="Norala SB Portal" /></a><br /><br />
-      <b><a href="https://github.com/Aedwon/norala-sb-demo">Norala SB Portal</a></b><br /><br />
-      Unofficial bilingual transparency prototype for a municipal council. Records come from the repository, and the demo is kept clearly separate from an official LGU service.<br /><br />
-      <code>Next.js</code> <code>TypeScript</code> <code>Tailwind</code>
+      <a href="https://github.com/Aedwon/marwie-server-bot"><img src="./public/projects/marwie/hero-084df0a2.webp" width="100%" alt="The Marwie cloud mascot" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/marwie-server-bot">Marwie Community Bot</a></b><br /><br />
+      Discord bot for the Marwie AI App Builders server. It handles moderation, tickets, temporary voice rooms and quizzes, and settings can also be changed from a web control panel.<br /><br />
+      <code>Python</code> <code>discord.py</code> <code>PostgreSQL</code>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://github.com/Aedwon/Discord-Bot"><img src="./public/projects/msl/hero-6fc047eb.webp" width="100%" alt="MSL Network logo" /></a><br /><br />
+      <b><a href="https://github.com/Aedwon/Discord-Bot">MSL Network Bot</a></b><br /><br />
+      Single-server Discord bot for an MLBB community. It ties account verification to XP, Event Points, events, quests, moderation and reporting.<br /><br />
+      <code>Python</code> <code>discord.py</code> <code>MySQL</code>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://www.aedwon.site/work/cup"><img src="./public/projects/cup/hero-7b1d8e4e.webp" width="100%" alt="MSL Collegiate Cup logo" /></a><br /><br />
+      <b><a href="https://www.aedwon.site/work/cup">MSL Collegiate Cup Bot</a></b><br /><br />
+      Ran match operations for the Collegiate Cup. Teams log results, the other side acknowledges within five minutes or files a dispute, and live matches survive a restart.<br /><br />
+      <code>Python</code> <code>discord.py</code>
     </td>
     <td width="50%" valign="top">
       <a href="https://github.com/Aedwon/kiosk-survey"><img src="./public/projects/kiosk/hero-d5702330.webp" width="100%" alt="Kiosk Survey on an Android TV" /></a><br /><br />
       <b><a href="https://github.com/Aedwon/kiosk-survey">Kiosk Survey</a></b><br /><br />
       Offline Android TV survey app. It ran for eight continuous hours at a live event and synced queued submissions once the connection returned.<br /><br />
-      <code>Flutter</code> <code>Dart</code> <code>Firebase</code> <code>Android TV</code>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/QR-Code-Maker"><img src="./public/projects/qr/hero-a2d48d9c.webp" width="100%" alt="QR Studio editor" /></a><br /><br />
-      <b><a href="https://github.com/Aedwon/QR-Code-Maker">QR Studio</a></b><br /><br />
-      In-browser QR builder with gradient styling and SVG export. Encoding and rendering stay client-side.<br /><br />
-      <code>TypeScript</code> <code>Vite</code> <code>Tailwind</code> <code>SVG</code>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://github.com/Aedwon/webp-unli"><img src="./public/projects/webp/hero-c5b14385.webp" width="100%" alt="WebP Unli converting a batch of images" /></a><br /><br />
-      <b><a href="https://github.com/Aedwon/webp-unli">WebP Unli</a></b><br /><br />
-      Image to WebP converter that runs in a wasm-vips worker. Each queued file keeps its own options, and results download one by one or as a ZIP.<br /><br />
-      <code>Next.js</code> <code>TypeScript</code> <code>wasm-vips</code>
+      <code>Flutter</code> <code>Dart</code> <code>Firebase</code>
     </td>
   </tr>
 </table>
 
-The rest, including the Discord bots, is on [aedwon.site](https://www.aedwon.site).
+The rest is on [aedwon.site](https://www.aedwon.site).
 
 ## Open source
 
