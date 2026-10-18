@@ -68,7 +68,7 @@ export default function MslNumbersViz({ P }: { P: Pal }) {
         </div>
       </div>
       <div style={{ paddingTop: 12, borderTop: '1px solid ' + P.track, fontSize: 11, fontStyle: 'italic', color: P.lbl, lineHeight: 1.5 }}>
-        Snapshot from the bot's analytics API, pulled {dayLabel(stats.pulledAt)} {stats.pulledAt.slice(0, 4)}. {stats.daysRecorded} recorded days from {dayLabel(stats.firstDay)}, so *{MONTHS[Number(first.slice(5)) - 1]} starts on the {Number(stats.firstDay.slice(8))}th and {MONTHS[Number(last.slice(5)) - 1]} ends on the {Number(stats.lastDay.slice(8))}th.
+        Snapshot from the bot&apos;s analytics API, pulled {dayLabel(stats.pulledAt)} {stats.pulledAt.slice(0, 4)}. {stats.daysRecorded} recorded days from {dayLabel(stats.firstDay)}, so *{MONTHS[Number(first.slice(5)) - 1]} starts on the {Number(stats.firstDay.slice(8))}th and {MONTHS[Number(last.slice(5)) - 1]} ends on the {Number(stats.lastDay.slice(8))}th.
       </div>
     </>
   );
