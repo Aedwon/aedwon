@@ -84,6 +84,9 @@ const DRUM_CSS = (() => {
   }
   return k + '}';
 })();
+// The project page arrives in order: title, description, stack, details, link, then the picture, each rising a little as it fades in.
+const RISE_CSS = '.v3rise{animation:v3rise .85s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*75ms + 80ms)}.v3rise-hero{animation-name:v3rise-hero}@keyframes v3rise{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}@keyframes v3rise-hero{from{opacity:0;transform:translate3d(0,22px,0) scale(.985)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.v3rise{animation:none}}';
+const rise = (i: number) => ({ '--i': i } as React.CSSProperties);
 const HOLD_MS = 170; // a landed leaf fades out over this long, so the page beneath settles in instead of popping
 
 type Screen = 'wall' | 'index' | 'project' | 'shelf' | 'book';
@@ -425,8 +428,6 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (capRef.current) capRef.current.style.opacity = Math.max(0.25, 1 - 1.6 * Math.max(0, Math.abs(near) - 0.1)).toFixed(3);
 
       // project fade-in
-      const fo = s.reduced ? 1 : out((now - (swapAtRef.current || -1e9)) / 380);
-      if (projInnerRef.current) projInnerRef.current.style.opacity = fo.toFixed(3);
 
       // ---- the book, per frame
       const v = V[s.vol], blank: BookPageDef = { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' };
@@ -789,16 +790,17 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       {screen === 'project' && (
         <>
           <div ref={projScrollRef} className="v3ms" onScroll={onProjScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: 'var(--room-bg)' }}>
-            <div ref={projInnerRef} style={{ width: W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column', opacity: 0 }}>
-              <h1 style={{ margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
-              <p style={{ margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
+            <div key={p.id} ref={projInnerRef} style={{ width: W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column' }}>
+              <style>{RISE_CSS}</style>
+              <h1 className="v3rise" style={{ ...rise(0), margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
+              <p className="v3rise" style={{ ...rise(1), margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
+              <div className="v3rise" style={{ ...rise(2), display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
                 {(p.stack || []).map((st) => LOGO[st] && (
                   <svg key={st} className="v3lg" width={LOGO[st].w ?? 18} height={LOGO[st].h ?? 18} viewBox={LOGO[st].vb ?? '0 0 24 24'} role="img" aria-label={st}><path d={LOGO[st].d} fill={logoColor(st)} /></svg>
                 ))}
                 <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)' }}>{stackText}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 11, marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--line-hairline)' }}>
+              <div className="v3rise" style={{ ...rise(3), display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 11, marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--line-hairline)' }}>
                 {details.map((d) => (
                   <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13.5, color: 'var(--text-strong)', minWidth: 0 }}>
                     <span style={{ display: 'flex', flex: 'none', width: 16, height: 16, color: 'var(--text-label)' }}>
@@ -813,9 +815,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 ))}
               </div>
               {(p.links || []).slice(0, 1).map((l) => (
-                <a key={l.href} href={l.href} style={{ marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
+                <a key={l.href} href={l.href} className="v3rise" style={{ ...rise(4), marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
-              <div style={{ marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
+              <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
                 <div style={{ position: 'relative', width: CW, height: Math.round(HH[p.media] * Math.min(CW / 520, 240 / HH[p.media]) + 28), overflow: 'hidden' }}>
                   {p.hero?.src
                     // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
