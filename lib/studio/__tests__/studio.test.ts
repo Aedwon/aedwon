@@ -228,8 +228,9 @@ describe('the logo list', () => {
     const { LOGOS } = await import('@/lib/design-v3/data/logos');
     const onDisk = await listLogos();
     expect(Object.keys(LOGOS).sort()).toEqual(onDisk.filter((n) => LOGOS[n]).sort());
-    for (const n of onDisk) expect(LOGOS[n], 'add ' + n + ' to lib/design-v3/data/logos.ts').toBeDefined();
-    for (const [n, v] of Object.entries(LOGOS)) for (const f of [v.light, v.dark].filter(Boolean) as string[]) await expect(fs.access(path.join(process.cwd(), 'public', f)), n + ' ' + f).resolves.toBeUndefined();
+    for (const n of onDisk) expect(LOGOS[n], 'run node scripts/logos.mjs: ' + n + ' is not in lib/design-v3/data/logos.ts').toBeDefined();
+    for (const [n, v] of Object.entries(LOGOS)) if (v.light.endsWith('.svg')) expect(v.bitmap, 'run node scripts/logos.mjs: ' + n + ' has no bitmap').toBeDefined();
+    for (const [n, v] of Object.entries(LOGOS)) for (const f of [v.light, v.dark, v.bitmap].filter(Boolean) as string[]) await expect(fs.access(path.join(process.cwd(), 'public', f)), n + ' ' + f).resolves.toBeUndefined();
   });
   it('every logo an About page names is in the list', async () => {
     const { LOGOS } = await import('@/lib/design-v3/data/logos');
