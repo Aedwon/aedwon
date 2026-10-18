@@ -161,7 +161,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
   // ---- mutable scene for the loop
   const s = useRef({
-    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number } | null, pan: null as { from: number; t0: number } | null,
+    turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number; anims?: Animation[] } | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
     wf: 0, lit: -1, sd: false, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
@@ -187,15 +187,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const shelfLayerRef = useRef<HTMLDivElement>(null);
   const prevScreen = useRef<Screen>(screen);
   const fxLayer = (sc: Screen) => (sc === 'wall' ? wallLayerRef.current : sc === 'index' ? indexLayerRef.current : sc === 'shelf' ? shelfLayerRef.current : null);
-  const applyFx = (now: number) => {
-    const fx = s.fx; if (!fx) return;
-    const p = ease((now - fx.t0) / fx.dur);
+  // The slide and fade between Wall, Index and About run as browser animations (off the script thread), started once both layers are mounted.
+  // Keyframe offsets are in eased progress, so each one is the same straight-line pose as before.
+  const startFx = () => {
+    const fx = s.fx; if (!fx || fx.anims) return;
     const o = fxLayer(fx.from), n = fxLayer(fx.to);
-    const set = (el: HTMLElement | null, y: number, op: number) => { if (!el) return; el.style.transform = `translateY(${y.toFixed(2)}px)`; el.style.opacity = op.toFixed(3); el.style.pointerEvents = 'none'; };
-    if (fx.from === 'shelf' || fx.to === 'shelf') {
-      if (fx.to === 'shelf') { set(o, -0.45 * MOB_H * p, 1 - cl((p - 0.15) / 0.6)); set(n, MOB_H * (1 - p), 1); }
-      else { set(o, MOB_H * p, 1); set(n, -0.45 * MOB_H * (1 - p), cl((p - 0.25) / 0.6)); }
-    } else { set(o, -10 * p, 1 - p); set(n, 10 * (1 - p), p); }
+    if (!o || !n) return;
+    const kf = (y0: number, y1: number, ops: [number, number][]) => ops.map(([off, op]) => ({ offset: off, transform: `translateY(${(y0 + (y1 - y0) * off).toFixed(2)}px)`, opacity: op }));
+    const timing: KeyframeAnimationOptions = { duration: fx.dur, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'both' };
+    let ko: Keyframe[], kn: Keyframe[];
+    if (fx.to === 'shelf') { ko = kf(0, -0.45 * MOB_H, [[0, 1], [0.15, 1], [0.75, 0], [1, 0]]); kn = kf(MOB_H, 0, [[0, 1], [1, 1]]); }
+    else if (fx.from === 'shelf') { ko = kf(0, MOB_H, [[0, 1], [1, 1]]); kn = kf(-0.45 * MOB_H, 0, [[0, 0], [0.25, 0], [0.85, 1], [1, 1]]); }
+    else { ko = kf(0, -10, [[0, 1], [1, 0]]); kn = kf(10, 0, [[0, 0], [1, 1]]); }
+    o.style.pointerEvents = 'none'; n.style.pointerEvents = 'none';
+    fx.anims = [o.animate(ko, timing), n.animate(kn, timing)];
   };
   useLayoutEffect(() => {
     const prev = prevScreen.current; prevScreen.current = screen;
@@ -206,7 +211,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     } else { s.fx = null; setLeaving(null); }
   }, [screen, s]);
   // once the outgoing layer is mounted, place both layers at the start pose before the first paint
-  useLayoutEffect(() => { if (leaving && s.fx) applyFx(s.fx.t0); });
+  useLayoutEffect(() => { if (leaving && s.fx) startFx(); });
   // the outgoing wall is mounted afresh for its exit: put it back on the project it was showing before anything paints
   useLayoutEffect(() => { if (leaving === 'wall' && wallScrollRef.current) wallScrollRef.current.scrollTop = s.wf * 180; }, [leaving, s]);
 
@@ -388,11 +393,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       }
       if (s.shut && now - s.shut.t0 > CLOSE_PRE) { s.shut = null; s.closing = null; setClosing(null); push('/about'); }
       if (s.fx) {
-        if (now - s.fx.t0 >= s.fx.dur) {
+        if (s.fx.anims ? s.fx.anims.every((an) => an.playState === 'finished') : now - s.fx.t0 >= s.fx.dur + 400) {
           const n = fxLayer(s.fx.to);
+          s.fx.anims?.forEach((an) => an.cancel());
           if (n) { n.style.transform = ''; n.style.opacity = ''; n.style.pointerEvents = ''; }
           s.fx = null; setLeaving(null);
-        } else applyFx(now);
+        }
       }
 
       // wall drum: which tile is in focus
