@@ -100,7 +100,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     shelfSel: (initial.kind === 'contact' ? 'contact' : 'about') as 'about' | 'contact',
     bookOpen: false,
     pOpen: startI >= 0, po: startI >= 0 ? 1 : 0, pn: 0,
-    cam: null as { i: number; cx: number; cy: number; sc: number; live: boolean } | null,
+    cam: null as { i: number; cx: number; cy: number; sc: number; live: boolean; index: boolean } | null, fadeExit: false,
     n: 0,
     mx: -999, my: -999, mxs: -999, mys: -999, bk: 0, focus: -1,
     reduced: false, last: 0, raf: 0,
@@ -137,7 +137,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
   const openProject = (i: number, doPush = true) => {
     s.pn += 1;
     // the camera: fly in on the picture that was clicked so it lands where the page puts its own
-    s.cam = null;
+    s.cam = null; s.fadeExit = false;
     const root = rootRef.current;
     if (root && !s.pOpen && !s.reduced && s.c < 0.05) {
       const w2 = wall2.current, rest = w2?.restRect(i), b = root.getBoundingClientRect(), k = ROOM_W / b.width;
@@ -148,7 +148,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
         if (r) { cx = (r.left - b.left + r.width / 2) * k; cy = (r.top - b.top + r.height / 2) * k; wd = r.width * k; }
       }
       if (wd > 0) {
-                s.cam = { i, cx, cy, sc: (520 * heroScaleOf(i)) / wd, live: !!rest }; // lands at the size the page draws it
+                s.cam = { i, cx, cy, sc: (520 * heroScaleOf(i)) / wd, live: !!rest, index: !rest }; // lands at the size the page draws it
       }
     }
     spread.current?.openReq({ v: String(i), n: s.pn });
@@ -157,6 +157,8 @@ export default function Room({ initialPath }: { initialPath: string }) {
   };
 
   const closeProject = (doPush = true) => {
+    // from the Index the hover will have changed by the time you come back, so it fades back instead of flying out
+    if (s.cam && s.cam.index) { s.cam = null; s.fadeExit = true; }
     s.pOpen = false; setProjOpen(false);
     if (doPush) push(s.view === 'index' ? '/index' : '/');
   };
@@ -193,7 +195,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       if (s.reduced) s.c = s.cT;
       else { s.cv += ((tgt - s.c) * 48 - s.cv * 14) * dt; s.c += s.cv * dt; }
       if (dotc) drawDots(dt, dotc);
-      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.6 : s.po > 0.66 ? 1.45 : 1.75) : (s.pOpen ? 0.55 : 0.42))));
+      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.6 : s.po > 0.66 ? 1.45 : 1.75) : (s.pOpen ? 0.55 : s.fadeExit ? 0.75 : 0.42))));
       render();
       s.raf = requestAnimationFrame(loop);
     };

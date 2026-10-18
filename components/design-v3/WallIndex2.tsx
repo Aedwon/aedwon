@@ -186,7 +186,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // how far the project page is open (0..1): the lit tile holds, the caption goes first, the others fade with the move
     setOpenP(p: number, opening: boolean) {
       const was = s.blk; s.openP = p; s.opening = opening; s.blk = p > 0.001;
-      if (was && !s.blk) { s.cur = null; s.leaveAt = null; s.gAmt = 0; s.amt = []; } // back on the wall: the dim lets go on its own
+      if (was && !s.blk) { s.cur = null; s.leaveAt = null; s.gAmt = 0; s.amt = []; s.ih = null; s.ihHold = null; s.ihLeave = null; } // back on the wall: the dim lets go on its own
     },
     // while the camera flies in, the wall's own screen-sized clip would ride along and show as a cut; the room clips instead
     setFree(on: boolean) { const el = rootRef.current; if (el && (el.style.overflow === 'visible') !== on) el.style.overflow = on ? 'visible' : 'hidden'; },
@@ -428,7 +428,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         s.gm[g] = m; s.gop[g] = m; s.rs['g' + g] = { y: s.gy0[g] != null ? s.gy0[g] : 0, v: 0 };
       });
     }
-    if (s.ih != null) s.pvLast = s.ih;
+    if (s.ih != null && !s.blk) s.pvLast = s.ih; // an open project keeps the preview it flew in on
     // the frozen header waits until the rows have landed, and leaves first on the way back
     {
       const want = s.kt === 1 && k >= 0.9 && !s.leaving ? 1 : 0;
@@ -525,7 +525,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const rk = vis.indexOf(i), a2 = rowAt(rk < 0 ? i : rk), w = s.vs[i];
       const el = rowEls.current[i]; if (el) {
         el.style.transform = `translate(0px, ${(R0 + s.rs[i].y + (1 - a2.q) * 8).toFixed(2)}px) perspective(700px) rotateX(0deg)`;
-        el.style.opacity = (a2.q * w).toFixed(3);
+        el.style.opacity = (a2.q * w * (1 - fo)).toFixed(3); // fades with the camera move
         el.style.pointerEvents = w > 0.5 && k > 0.5 ? 'auto' : 'none';
         el.tabIndex = w > 0.5 ? 0 : -1;
         const line = el.querySelector<HTMLElement>('[data-line]');
@@ -536,7 +536,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     KIND.forEach((_, g) => {
       const el = groupEls.current[g]; if (el) {
         el.style.transform = `translateY(${(R0 + s.rs['g' + g].y).toFixed(2)}px)`;
-        el.style.opacity = (s.gop[g] * rowAt(0).q).toFixed(3);
+        el.style.opacity = (s.gop[g] * rowAt(0).q * (1 - fo)).toFixed(3);
         el.style.pointerEvents = s.gop[g] > 0.5 && k > 0.5 ? 'auto' : 'none';
         const rule = el.querySelector<HTMLElement>('[data-rule]');
         if (rule) rule.style.scale = `${(s.gop[g] * rowAt(0).q).toFixed(3)} 1`;
@@ -547,12 +547,13 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const pl = s.pvLast != null ? s.pvLast : 0;
       const ph = Math.round(H[P[pl].media] * 0.5769);
       // Moving from one row to the next switches at once; leaving every row keeps the last for 160ms, so the preview does not blink out between rows.
-      if (s.ih != null) { s.ihHold = s.ih; s.ihLeave = null; }
+      if (s.blk) { s.ihLeave = null; } // opening: the preview holds exactly where it is
+      else if (s.ih != null) { s.ihHold = s.ih; s.ihLeave = null; }
       else if (s.ihHold != null) { if (s.ihLeave == null) s.ihLeave = now; if (now - s.ihLeave >= 160) { s.ihHold = null; s.ihLeave = null; } }
-      const want = s.ihHold != null && k > 0.98 ? 1 : 0;
+      const want = s.ihHold != null && k > 0.98 && !(s.blk && !s.opening) ? 1 : 0;
       const yT = Math.max(110, Math.min(900 - ph - 110, R0 + s.rs[pl].y + 30 - s.scrollY - ph / 2));
       if (s.pvY == null || s.pvA < 0.02) s.pvY = { y: yT, v: 0 };
-      else if (dts) { s.pvY.v += ((yT - s.pvY.y) * 120 - s.pvY.v * 20) * dts; s.pvY.y += s.pvY.v * dts; }
+      else if (dts && !s.blk) { s.pvY.v += ((yT - s.pvY.y) * 120 - s.pvY.v * 20) * dts; s.pvY.y += s.pvY.v * dts; }
       s.pvA = dts ? s.pvA + (want - s.pvA) * Math.min(1, dts * (want ? 10 : 7)) : want;
       P.forEach((_, i) => { const t = i === pl ? 1 : 0; const o = s.pvo[i] == null ? t : s.pvo[i]; s.pvo[i] = dts ? o + (t - o) * Math.min(1, dts * 12) : t; });
       const box = pvBoxRef.current;
@@ -571,8 +572,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       }
       if (s.pvTxtOut == null && s.pvTxtIn != null) { const x = (now - s.pvTxtIn) / 200; if (x >= 1) s.pvTxtIn = null; else txA = out(x); }
       const tid = s.pvTxtId;
-      if (pvNameRef.current) { pvNameRef.current.textContent = P[tid].name; pvNameRef.current.style.opacity = txA.toFixed(3); pvNameRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
-      if (pvLineRef.current) { pvLineRef.current.textContent = P[tid].desc; pvLineRef.current.style.opacity = txA.toFixed(3); pvLineRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
+      if (pvNameRef.current) { pvNameRef.current.textContent = P[tid].name; pvNameRef.current.style.opacity = (txA * capF).toFixed(3); pvNameRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
+      if (pvLineRef.current) { pvLineRef.current.textContent = P[tid].desc; pvLineRef.current.style.opacity = (txA * capF).toFixed(3); pvLineRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
       P.forEach((_, i) => {
         const el = pvEls.current[i]; if (!el) return;
         el.style.opacity = s.pvo[i].toFixed(3);
@@ -582,7 +583,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const ui = out((T - 1.1) / 0.8), kc = cl(k * 2.5), chromeK = 1 - cl(s.dim * 6);
     // header band
     if (bandRef.current) {
-      bandRef.current.style.opacity = String(+(s.hk * out((T - 0.2) / 0.45)).toFixed(3));
+      bandRef.current.style.opacity = String(+(s.hk * out((T - 0.2) / 0.45) * (1 - fo)).toFixed(3));
       bandRef.current.style.pointerEvents = s.k > 0.5 ? 'auto' : 'none';
     }
     if (bandInnerRef.current) bandInnerRef.current.style.translate = `0 ${((1 - s.hk) * -8).toFixed(2)}px`;
