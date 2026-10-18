@@ -520,7 +520,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       const pu = op ? cl((now - op.t0) / OPEN_PRE) : shut ? 1 - cl((now - shut.t0) / CLOSE_PRE) : -1; // -1: no proxy
       const pi = op ? op.i : s.vol;
       const back = s.back0 ? out((now - s.back0) / 380) : 1;
-      const rest = pu >= 0 ? (1 - seg(pu, 0, 0.3)).toFixed(3) : '1'; // the others in the stack step back while the book is out
+      const rest = pu >= 0 ? (1 - seg(pu, 0, 0.5)).toFixed(3) : '1'; // the others in the stack step back while the book is out
       if (stkRef.current) stkRef.current.style.opacity = pu >= 0 ? '1' : back.toFixed(3);
       if (hint1Ref.current) hint1Ref.current.style.opacity = rest;
       if (hint2Ref.current) hint2Ref.current.style.opacity = rest;
@@ -528,9 +528,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       V.forEach((b, i) => {
         const el = bookBtnRefs.current[i]; if (!el) return;
         el.style.translate = '0px 0';
-        el.style.opacity = pu >= 0 ? (i === pi ? '0' : rest) : '1';
+        // the chosen spine and the standing-up book trade places over the first stretch, so there is no hard swap
+        el.style.opacity = pu >= 0 ? (i === pi ? (1 - cl(pu / 0.12)).toFixed(3) : rest) : '1';
       });
-      if (moRef.current) moRef.current.style.visibility = pu >= 0 ? 'visible' : 'hidden';
+      if (moRef.current) { moRef.current.style.visibility = pu >= 0 ? 'visible' : 'hidden'; moRef.current.style.opacity = pu >= 0 ? cl(pu / 0.12).toFixed(3) : '0'; }
       if (pu >= 0) {
         const P = bookPose(pu, stackRect(pi), dimsRef.current.W / 2, 335 + BOOK_DROP);
         if (moBookRef.current) moBookRef.current.style.transform = `translate3d(${P.px.toFixed(2)}px, ${P.py.toFixed(2)}px, ${P.pz.toFixed(2)}px) rotateZ(${P.phi.toFixed(3)}deg) rotateY(${P.th.toFixed(3)}deg) scale3d(${P.sc.toFixed(4)}, ${P.sc.toFixed(4)}, ${P.sc.toFixed(4)})`;
@@ -967,7 +968,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <div style={{ position: 'absolute', left: 18, right: 18, top: 652, height: 2, background: 'var(--line-shelf-top)' }} />
               <div style={{ position: 'absolute', left: 18, right: 18, top: 654, height: 12, background: 'var(--surface-sunken)' }} />
             </div>
-            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 690, textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
+            <span ref={hint2Ref} style={{ position: 'absolute', left: 0, right: 0, top: 672 + Math.max(0, Math.min(18, dy)), textAlign: 'center', fontSize: 14, color: 'var(--text-label)' }}>Tap a volume to open it</span>
           </div>
           {/* the chosen volume, as a small 3D box: it stands up out of the stack and turns its cover to you (and back) */}
           <div ref={moRef} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: W, height: 700, perspective: 1700, perspectiveOrigin: `${W / 2}px ${335 + BOOK_DROP}px`, pointerEvents: 'none', visibility: 'hidden' }}>
