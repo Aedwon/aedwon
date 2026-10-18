@@ -1,6 +1,6 @@
 # Aerol Balayon
 
-[aedwon.com](https://aedwon.com) · [LinkedIn](https://linkedin.com/in/aedwon) · [Discord](https://discord.com/users/aedwon) · [Email](mailto:aerol.balayon@gmail.com)
+[aedwon.site](https://www.aedwon.site) · [LinkedIn](https://linkedin.com/in/aedwon) · [Discord](https://discord.com/users/aedwon) · [Email](mailto:aerol.balayon@gmail.com)
 
 ## Selected work
 
@@ -63,7 +63,7 @@ Single-server Discord infrastructure for MLBB verification, community activity, 
 
 ## This repository
 
-This is the source for [aedwon.com](https://aedwon.com), built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Framer Motion. Project facts live in a canonical registry that feeds the standard project pages, featured work, the Discord presentation, and the site's machine-readable responses.
+This is the source for [aedwon.site](https://www.aedwon.site), built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Framer Motion. Project facts live in a canonical registry that feeds the standard project pages, featured work, the Discord presentation, and the site's machine-readable responses.
 
 The interface can switch between a default presentation, a neobrutalist one, and a Discord-style client. Default mode supports system, light, and dark color modes. Light and dark changes run through a custom Canvas star-vortex animation that flips the actual theme at the midpoint and skips the effect when reduced motion is requested. Theme-dependent logos are prewarmed only for the likely target presentation, with idle prewarming skipped on data-saver and slow connections.
 
@@ -74,7 +74,7 @@ Discord mode replaces the normal shell without replacing the routing model. The 
 <details>
 <summary><b>Agent-facing surface</b></summary>
 
-The same content model also has a machine-readable surface. [`/llms.txt`](https://aedwon.com/llms.txt) describes the portfolio and its canonical sources, while normal pages can return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://aedwon.com/sitemap.xml) and [`/robots.txt`](https://aedwon.com/robots.txt) expose the public index and crawler guidance.
+The same content model also has a machine-readable surface. [`/llms.txt`](https://www.aedwon.site/llms.txt) describes the portfolio and its canonical sources, while normal pages can return Markdown when requested with `Accept: text/markdown`. [`/sitemap.xml`](https://www.aedwon.site/sitemap.xml) and [`/robots.txt`](https://www.aedwon.site/robots.txt) expose the public index and crawler guidance.
 
 CI runs tests, lint, and the production build, then starts the built app and checks status codes, content negotiation, metadata, 404 behavior, and the public machine-readable endpoints with real HTTP requests.
 

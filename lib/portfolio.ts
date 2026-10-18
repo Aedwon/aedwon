@@ -461,7 +461,7 @@ export const CONTACT = {
     subtitle:
         "Pick a time, fill in the form, or drop an email. All three get a reply within two business days.",
     calendarUrl: "https://calendar.app.google/n45XYFRHnmzTC5Fr6",
-    email: "contact@aedwon.com",
+    email: "aerol.balayon@gmail.com",
     replyPromise: "Reply within two business days.",
     call: {
         label: "Book a call",
