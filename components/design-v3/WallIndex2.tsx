@@ -139,7 +139,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     sig: null as string | null, visNow: [] as number[],
     chg: null as null | { sig: string; t0: number; prevM: Record<number, number>; prevGM: Record<number, number>; moved: Record<number, boolean>; rank: Record<number, number>; grank: Record<number, number>; ty: Record<number, number | null>; gy: Record<number, number | null> },
     cy0: {} as Record<number, number>, gy0: {} as Record<number, number>, mm: {} as Record<number, number>, gm: {} as Record<number, number>,
-    dim: 0,
+    dim: 0, lvl: 0, rest: [] as { x: number; y: number; w: number }[],
     O: [720, 470] as [number, number], ax0: 34, az0: -18,
     cy: 0, tCy: 0, vel: 0,
     zl: 1, zv: 0,
@@ -182,6 +182,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   useImperativeHandle(ref, () => ({
     viewReq(req: Req) { applyViewReq(req); },
     setDim(dim: number) { s.dim = dim; },
+    setLevel(v: number) { s.lvl = v; },
+    // where tile i sits once the wall has levelled out, in room pixels: its centre and its width
+    restRect(i: number) { return s.k < 0.5 ? s.rest[i] || null : null; },
     rectOf(i: number) {
       const el = s.k < 0.5 ? tileEls.current[i] : pvEls.current[i];
       if (!el || (s.k >= 0.5 && parseFloat(el.style.opacity || '0') < 0.5)) return null;
@@ -429,7 +432,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const dm = Math.max(0, Math.min(1, s.dim));
     // heading to About the camera comes level: the wall's tilt and roll ease out as it slides away, so the straight-on shelf
     // arrives in the same view instead of the wall tipping over on its own
-    const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = 1 - dl * dl * (3 - 2 * dl); // level by the time the camera is 40% of the way
+    const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = (1 - dl * dl * (3 - 2 * dl)) * (1 - s.lvl); // level by the time the camera is 40% of the way
     const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) * lv;
     const ay = lerp(s.ms.x * 3, 0, pp) * lv, az = lerp(s.az0 + (1 - zl) * 8, 0, pp) * lv, S = lerp(lerp(0.52, 0.9, zl), 1, pp);
     const rot = (x: number, y: number, z: number): [number, number, number] => {
@@ -441,6 +444,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const camY = lerp(bounds.midY, s.cy, zl);
     // first pass: where each tile lands on screen, to find the one nearest the middle
     const O = s.O;
+    s.rest = bp.map((b) => ({ x: O[0] + S * (b.x - O[0]), y: O[1] + S * (b.y - camY), w: 520 * S }));
     const scr = bp.map((b) => { const p = rot(b.x - O[0], b.y - camY, 0); return { X: O[0] + S * p[0], Y: O[1] + S * p[1] }; });
     let near = 0, nd = 1e12;
     scr.forEach((p, i) => { const d = (p.X - 720) ** 2 + ((p.Y - 480) * 1.4) ** 2; if (d < nd) { nd = d; near = i; } });

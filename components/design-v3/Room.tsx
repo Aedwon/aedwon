@@ -128,12 +128,19 @@ export default function Room({ initialPath }: { initialPath: string }) {
     s.pn += 1;
     // the camera: fly in on the picture that was clicked so it lands where the page puts its own
     s.cam = null;
-    const root = rootRef.current, r = !s.pOpen && !s.reduced && s.c < 0.05 ? wall2.current?.rectOf(i) : null;
-    if (root && r) {
-      const b = root.getBoundingClientRect(), k = ROOM_W / b.width;
-      const cx = (r.left - b.left + r.width / 2) * k, cy = (r.top - b.top + r.height / 2) * k;
-      const sc = Math.min(5, (HERO.w) / (r.width * k)), ox = ROOM_W / 2, oy = ROOM_H;
-      s.cam = { sc, tx: HERO.x + HERO.w / 2 - ox - sc * (cx - ox), ty: HERO.y + HERO.h / 2 - oy - sc * (cy - oy) };
+    const root = rootRef.current;
+    if (root && !s.pOpen && !s.reduced && s.c < 0.05) {
+      const w2 = wall2.current, rest = w2?.restRect(i), b = root.getBoundingClientRect(), k = ROOM_W / b.width;
+      let cx = 0, cy = 0, wd = 0;
+      if (rest) { cx = rest.x; cy = rest.y; wd = rest.w; } // the wall, once it has levelled out
+      else {
+        const r = w2?.rectOf(i); // the Index preview, which does not tilt
+        if (r) { cx = (r.left - b.left + r.width / 2) * k; cy = (r.top - b.top + r.height / 2) * k; wd = r.width * k; }
+      }
+      if (wd > 0) {
+        const sc = Math.min(5, HERO.w / wd), ox = ROOM_W / 2, oy = ROOM_H;
+        s.cam = { sc, tx: HERO.x + HERO.w / 2 - ox - sc * (cx - ox), ty: HERO.y + HERO.h / 2 - oy - sc * (cy - oy) };
+      }
     }
     spread.current?.openReq({ v: String(i), n: s.pn });
     s.pOpen = true; setProjOpen(true);
@@ -177,7 +184,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       if (s.reduced) s.c = s.cT;
       else { s.cv += ((tgt - s.c) * 48 - s.cv * 14) * dt; s.c += s.cv * dt; }
       if (dotc) drawDots(dt, dotc);
-      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.15 : 0.8) : (s.pOpen ? 0.55 : 0.42))));
+      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.6 : 1.0) : (s.pOpen ? 0.55 : 0.42))));
       render();
       s.raf = requestAnimationFrame(loop);
     };
@@ -224,7 +231,8 @@ export default function Room({ initialPath }: { initialPath: string }) {
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      const cam = s.cam, kc = cam ? sm(cl(s.po / 0.7)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.45) / 0.3)) : 1 - poE;
+      const cam = s.cam, kc = cam ? sm(cl((s.po - 0.3) / 0.5)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.58) / 0.22)) : 1 - poE;
+      wall2.current?.setLevel(cam ? sm(cl(s.po / 0.4)) : 0);
       wallEl.style.transform = cam
         ? `translate(${(cam.tx * kc).toFixed(2)}px, ${(cam.ty * kc).toFixed(2)}px) scale(${(1 + (cam.sc - 1) * kc).toFixed(4)})`
         : `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
