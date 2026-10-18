@@ -115,8 +115,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   // The wall, top bar and tab bar use the full width. The other screens are drawn 390 wide and sit centred.
   const W = width, ox = (W - MOB_W) / 2, TW = W - 32, CW = W - 44;
   const fit = Math.min(W / MOB_W, 1.12); // the spines grow in length with the screen, up to a point; the open book keeps its size
-  const dimsRef = useRef({ W });
-  dimsRef.current = { W };
+  // read by the animation loop, which keeps the first render's closures: it must always see the current width
+  const dimsRef = useRef({ W, fit });
+  dimsRef.current = { W, fit };
   // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
   const { theme, toggle } = useTheme();
   const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
@@ -265,11 +266,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, [busy, s, panTo, turnTo]);
 
   const stackRect = useCallback((i: number) => {
+    const { W, fit } = dimsRef.current;
     const Hh = [67, 54, 61, 77, 51, 45], Wd = [326, 312, 334, 304, 320, 298].map((w) => w * fit), O = [-4, 6, -2, 3, -6, 2];
     let y = 652 - Hh.reduce((a, h) => a + h, 0);
     for (let k = 0; k < i; k++) y += Hh[k];
     return { x: W / 2 - Wd[i] / 2 + O[i], y, w: Wd[i], h: Hh[i] };
-  }, [fit, W]);
+  }, []);
 
   const openVol = useCallback((i: number) => {
     if (s.opening || s.shut) return;
@@ -326,7 +328,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     const onFin = (e: FocusEvent) => {
       const root = rootRef.current, t = e.target as HTMLElement | null;
       if (!root || !t || !root.contains(t) || !/^(INPUT|TEXTAREA)$/.test(t.tagName) || s.screen !== 'book') return;
-      const rr = root.getBoundingClientRect(), k = rr.width / W, r = t.getBoundingClientRect(), d = s.kbDy || 0;
+      const rr = root.getBoundingClientRect(), k = rr.width / dimsRef.current.W, r = t.getBoundingClientRect(), d = s.kbDy || 0;
       s.kbField = { top: (r.top - rr.top) / k - d, bottom: (r.bottom - rr.top) / k - d };
       setKb(true);
     };
@@ -345,7 +347,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       // keyboard height, corrected for the letterbox scale (k = screen px per design px)
       if (s.kb) {
         const rr2 = rootRef.current ? rootRef.current.getBoundingClientRect() : null;
-        const kr = rr2 && rr2.width ? rr2.width / W : 1;
+        const kr = rr2 && rr2.width ? rr2.width / dimsRef.current.W : 1;
         s.kbH = vv ? kbH / kr : 0;
       } else s.kbH = 0;
       // finish whatever the book is doing (Mobile:439-442)
@@ -476,7 +478,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       if (s.kb && s.kbField) {
         const f = s.kbField;
         const rr3 = rootRef.current ? rootRef.current.getBoundingClientRect() : null;
-        const kr3 = rr3 && rr3.width ? rr3.width / W : 1;
+        const kr3 = rr3 && rr3.width ? rr3.width / dimsRef.current.W : 1;
         const vhD = window.innerHeight / kr3;
         dy = Math.min(0, vhD - s.kbH - 18 - f.bottom); if (f.top + dy < 70) dy = Math.min(0, 70 - f.top);
       }
@@ -580,8 +582,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const bNow = lt ? (lt.to > lt.from ? lt.to : lt.from) : 0;
   const leafA = covNow ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * aNow + 1);
   const leafB = pg(2 * bNow);
-  const staticL = closedIdle ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * Math.max(0, sp));
-  const staticR = pg(2 * Math.max(0, sp) + 1);
+  // While a leaf turns, the page it leaves behind is already the new one: the right page for a forward turn, the left for a backward one.
+  const fwdTurn = !!turn && turn.to > turn.from;
+  const staticL = closedIdle ? { kind: 'end', vol: v.n, nextVol: '', nextTitle: '' } : pg(2 * Math.max(0, turn && !fwdTurn ? turn.to : sp));
+  const staticR = pg(2 * Math.max(0, turn && fwdTurn ? turn.to : sp) + 1);
   const tabIdx = ({ wall: 0, index: 1, project: from === 'index' ? 1 : 0, shelf: vol === V.length - 1 && (opening || closing) ? 3 : 2, book: vol === V.length - 1 ? 3 : 2 } as Record<Screen, number>)[screen];
   const showBack = screen === 'project' || screen === 'book';
   const clock = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit' });
@@ -639,7 +643,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
         <span className="v3shade" ref={(el) => { shadeRefs.current[k * 2] = el; }} style={{ opacity: 0 }} />
       </div>
       <div className="v3face" style={{ inset: '0 -1px 0 0', transform: 'rotateY(180deg)', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: -350 + k * 70, top: 0, width: 420, height: 600 }}><BookPage page={leafB} side="left" clock={clock} form={form} /></div>
+        {/* the face is 71 wide (1px overlap) and turned about its middle, so its picture sits 1px further over to land exactly where the static left page is */}
+        <div style={{ position: 'absolute', left: -349 + k * 70, top: 0, width: 420, height: 600 }}><BookPage page={leafB} side="left" clock={clock} form={form} /></div>
         <span className="v3shade" ref={(el) => { shadeRefs.current[k * 2 + 1] = el; }} style={{ opacity: 0 }} />
       </div>
       {k < 5 ? leafStrip(k + 1) : null}
