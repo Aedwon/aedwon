@@ -91,8 +91,20 @@ const Studio = process.env.NODE_ENV === 'development' ? dynamic(() => import('./
 
 export default function Site({ initialPath }: { initialPath: string }) {
   const theme = useThemeAttr();
-  const toggle = useCallback(() => {
-    setTheme(currentTheme() === 'light' ? 'dark' : 'light');
+  // The new theme spreads out from the tap or click as a circle (View Transitions); without support or with reduced motion it just switches.
+  const toggle = useCallback((e?: { clientX: number; clientY: number }) => {
+    const next = currentTheme() === 'light' ? 'dark' : 'light';
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
+    if (!doc.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setTheme(next); return; }
+    const x = e?.clientX ?? window.innerWidth / 2, y = e?.clientY ?? 0;
+    const reach = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    const t = doc.startViewTransition(() => setTheme(next));
+    t.ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${reach}px at ${x}px ${y}px)`] },
+        { duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' },
+      );
+    }).catch(() => {});
   }, []);
 
   // With no saved choice, follow the device's light/dark setting live (a tap on the toggle saves a choice and stops this).

@@ -35,7 +35,7 @@ export function setTheme(t: Theme) {
 }
 
 // React context for the current theme
-export interface ThemeCtx { theme: Theme; toggle: () => void }
+export interface ThemeCtx { theme: Theme; toggle: (e?: { clientX: number; clientY: number }) => void }
 export const ThemeContext = createContext<ThemeCtx>({ theme: 'dark', toggle: () => {} });
 
 export function useTheme(): ThemeCtx {
