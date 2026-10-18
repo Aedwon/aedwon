@@ -73,7 +73,7 @@ function bezier(x1: number, y1: number, x2: number, y2: number) {
 const HERO = { x: 520, y: 108, w: 864, h: 520 };
 const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 } as const;
 
-export default function Room({ initialPath }: { initialPath: string }) {
+export default function Room({ initialPath, loading = false }: { initialPath: string; loading?: boolean }) {
   const { theme } = useTheme();
 
   // ---- instance state (Room:68-79). Continuous values live in refs.
@@ -111,6 +111,9 @@ export default function Room({ initialPath }: { initialPath: string }) {
   const nonce = useRef(1);
 
   const sendReq = (v: string): Req => ({ v, n: ++nonce.current });
+
+  // the wall's entrance waits for the loading screen
+  useEffect(() => { if (!loading) wall2.current?.start(); }, [loading]);
 
   // ---- navigation <-> URL
   const push = (path: string) => {

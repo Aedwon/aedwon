@@ -139,7 +139,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     sig: null as string | null, visNow: [] as number[],
     chg: null as null | { sig: string; t0: number; prevM: Record<number, number>; prevGM: Record<number, number>; moved: Record<number, boolean>; rank: Record<number, number>; grank: Record<number, number>; ty: Record<number, number | null>; gy: Record<number, number | null> },
     cy0: {} as Record<number, number>, gy0: {} as Record<number, number>, mm: {} as Record<number, number>, gm: {} as Record<number, number>,
-    dim: 0, lvl: 0, blk: false, openP: 0, opening: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
+    dim: 0, held: true, lvl: 0, blk: false, openP: 0, opening: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
     O: [720, 470] as [number, number], ax0: 34, az0: -18,
     cy: 0, tCy: 0, vel: 0,
     zl: 1, zv: 0,
@@ -182,6 +182,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   useImperativeHandle(ref, () => ({
     viewReq(req: Req) { applyViewReq(req); },
     setDim(dim: number) { s.dim = dim; },
+    // the loading screen is done: the wall's entrance starts now
+    start() { if (s.held) { s.held = false; s.t0 = performance.now(); } },
     setLevel(v: number) { s.lvl = v; },
     // how far the project page is open (0..1): the lit tile holds, the caption goes first, the others fade with the move
     setOpenP(p: number, opening: boolean) {
@@ -340,7 +342,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
 
   // ---- the frame (WallIndex2:421-620), verbatim math, DOM writes
   function frame(dt: number, now: number) {
-    const T = s.reduced ? 99 : (now - s.t0) / 1000;
+    const T = s.reduced ? 99 : s.held ? -1 : (now - s.t0) / 1000; // the entrance waits for the loading screen to finish
     const k = s.k, mo = mode, h = s.hover, onWall = k < 0.001;
     const zl = s.zl;
     const dts = s.reduced ? 0 : dt || 0;
