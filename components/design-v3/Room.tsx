@@ -212,7 +212,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
       wallEl.style.transform = `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
-      wallEl.style.opacity = String(+(((1 - cl((c - 0.3) / 0.45)) * (1 - poE)).toFixed(3)));
+      wallEl.style.opacity = String(+(((1 - cl((c - 0.08) / 0.34)) * (1 - poE)).toFixed(3))); // the wall is gone by c = 0.42
       wallEl.style.maskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;
       (wallEl.style as unknown as Record<string, string>).webkitMaskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;
       wallEl.style.visibility = c > 0.999 ? 'hidden' : 'visible';
@@ -220,8 +220,10 @@ export default function Room({ initialPath }: { initialPath: string }) {
       wallEl.setAttribute('aria-hidden', c < 0.5 ? 'false' : 'true');
     }
     if (shelfEl) {
-      shelfEl.style.transform = `translateY(${(D * (1 - c)).toFixed(2)}px) rotateX(${(18 * (1 - cc) * (1 - cc)).toFixed(2)}deg)`; // arrives leaning back, as the wall was, and settles upright
-      shelfEl.style.visibility = c < 0.001 ? 'hidden' : 'visible';
+      // in two beats: the wall levels out and leaves first, then the shelf rises (leaning back, settling upright)
+      const st = cl((c - 0.3) / 0.7), se = st * st * (3 - 2 * st);
+      shelfEl.style.transform = `translateY(${(D * (1 - se)).toFixed(2)}px) rotateX(${(18 * (1 - se) * (1 - se)).toFixed(2)}deg)`;
+      shelfEl.style.visibility = se < 0.001 ? 'hidden' : 'visible';
       shelfEl.style.pointerEvents = c < 0.5 ? 'none' : 'auto';
       shelfEl.setAttribute('aria-hidden', c < 0.5 ? 'true' : 'false');
     }

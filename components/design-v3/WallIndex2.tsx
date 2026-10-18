@@ -421,7 +421,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const dm = Math.max(0, Math.min(1, s.dim)), dme = dm * dm * (3 - 2 * dm);
     // heading to About the camera comes level: the wall's tilt and roll ease out as it slides away, so the straight-on shelf
     // arrives in the same view instead of the wall tipping over on its own
-    const lv = 1 - dme;
+    const dl = Math.max(0, Math.min(1, dm / 0.4)), lv = 1 - dl * dl * (3 - 2 * dl); // level by the time the camera is 40% of the way
     const ax = lerp(s.ax0 - s.ms.y * 3 + (1 - zl) * -10, 0, pp) * lv;
     const ay = lerp(s.ms.x * 3, 0, pp) * lv, az = lerp(s.az0 + (1 - zl) * 8, 0, pp) * lv, S = lerp(lerp(0.52, 0.9, zl), 1, pp);
     const rot = (x: number, y: number, z: number): [number, number, number] => {
