@@ -46,11 +46,28 @@
       "kind": "text"
     },
     {
+      "h": "How it works",
+      "p": [
+        "A match opens with /match_start (best of 1, 3 or 5) and players log each game with /game_result. The other team has five minutes to acknowledge it. Either side can file a dispute instead, which pauses the timers and alerts the Marshals. Live matches are kept on disk, so a restart loses nothing."
+      ],
+      "kind": "text",
+      "diagram": "cup"
+    },
+    {
       "h": "How it went",
       "p": [
         "[The result: numbers if you have them, or what people said.]"
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/cup/hero-7b1d8e4e.webp",
+    "alt": "MSL Collegiate Cup logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

@@ -9,7 +9,12 @@
     "Python",
     "MySQL"
   ],
-  "links": [],
+  "links": [
+    {
+      "label": "github.com/Aedwon/isfe-discord-bot",
+      "href": "https://github.com/Aedwon/isfe-discord-bot"
+    }
+  ],
   "facts": [
     {
       "k": "Client",
@@ -46,11 +51,28 @@
       "kind": "text"
     },
     {
+      "h": "How it works",
+      "p": [
+        "Players verify through /verifypanel by picking a game and filling in their in-game name. Staff add teams with /teams and the bot links the bracket to Challonge, then reports match results back to it. Players, teams and rosters live in MySQL."
+      ],
+      "kind": "text",
+      "diagram": "ilocos"
+    },
+    {
       "h": "How it went",
       "p": [
         "[The result: numbers if you have them, or what people said.]"
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/ilocos/hero-a9a41e0f.webp",
+    "alt": "Ilocos Sur Festival logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

@@ -21,6 +21,8 @@ import {
 import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
+import FlowDiagram from './FlowDiagram';
+import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
 import { setStudio, useStudio } from './studio/store';
@@ -55,6 +57,7 @@ interface Sec {
   h?: string;
   p?: string[];
   fig?: string;
+  diagram?: string;
   img?: import('@/lib/design-v3/data/projects').Img;
   items?: { h: string; which: string; vh: string; p: string[] }[];
   cols?: { h: string; items: string[] }[];
@@ -365,6 +368,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
                   <MediaBlock
                     kind={p.media as MediaKind}
+                    live
                     img={p.hero}
                     h={frameH(p)}
                     name={p.name}
@@ -421,6 +425,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 680, fontSize: 17, lineHeight: 1.75, color: 'var(--text-secondary)' }}>
                   <Paras id={p.id} path={`sections.${i}.p`} items={s.p || []} pStyle={{ margin: 0 }} />
                 </div>
+                {s.diagram && FLOWS[s.diagram] && <FlowDiagram spec={FLOWS[s.diagram]} fluid live />}
                 {(s.fig || s.img) && (
                   <figure style={{ margin: '10px 0 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <ImageSlot id={p.id} slot={`sections.${i}.img`} img={s.img} frame={{ borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }} imgStyle={{ height: 'auto', maxHeight: 560 }}>

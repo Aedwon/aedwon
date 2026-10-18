@@ -34,5 +34,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/aspire/hero-92d18dd0.webp",
+    "alt": "The Microsoft and Aspire logos",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

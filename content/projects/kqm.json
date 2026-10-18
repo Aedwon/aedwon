@@ -32,5 +32,14 @@
       "k": "For",
       "v": "KQM-standard theorycrafting"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/kqm/hero-5573e158.webp",
+    "alt": "KQM logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

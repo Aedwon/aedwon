@@ -37,5 +37,14 @@
       "k": "Runs",
       "v": "Entirely in the browser"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/qr/hero-a2d48d9c.webp",
+    "alt": "QR Studio in the browser",
+    "w": 1800,
+    "h": 1114
+  },
+  "frame": {
+    "h": 322
+  }
 }

@@ -2,7 +2,7 @@
   "id": "agent",
   "name": "AI Agent Config",
   "type": "Developer tooling",
-  "media": "term",
+  "media": "compose",
   "depth": "writeup",
   "desc": "Portable configuration system for coding agents that composes shared policy with project-owned rules and renders the selected result into provider-specific instruction files.",
   "stack": [

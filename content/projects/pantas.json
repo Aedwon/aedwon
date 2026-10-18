@@ -184,5 +184,25 @@
         "href": "#"
       }
     }
+  ],
+  "screens": [
+    {
+      "src": "/projects/pantas/screens-1441d8b4.webp",
+      "alt": "Pantas home screen with today's plan and overall accuracy",
+      "w": 509,
+      "h": 1102
+    },
+    {
+      "src": "/projects/pantas/screens-b57a6475.webp",
+      "alt": "Pantas lesson reader showing Layers of the Earth and Composition",
+      "w": 509,
+      "h": 1102
+    },
+    {
+      "src": "/projects/pantas/screens-0f417aa4.webp",
+      "alt": "Pantas quiz question with four answer choices",
+      "w": 509,
+      "h": 1102
+    }
   ]
 }

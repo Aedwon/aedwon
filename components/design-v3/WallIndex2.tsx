@@ -15,14 +15,20 @@ import type { Theme } from '@/lib/design-v3/theme';
 
 const R0 = 240;
 // same wall, fixed arrangement: three columns balanced by height, no two of a kind stacked
-const COLS = [[0, 13, 1, 7, 15, 5, 18], [2, 14, 3, 9, 16, 6, 19], [4, 8, 10, 12, 11, 17]];
+// hung by project id, so adding or removing a project never shuffles the wall
+const COL_IDS = [
+  ['pantas', 'aspire', 'msl', 'webp', 'dockroute', 'spec', 'mlbb'],
+  ['lakambini', 'opensre', 'agent', 'cup', 'bettergov', 'qr', 'factory', 'kanlungan'],
+  ['kiosk', 'norala', 'ilocos', 'kqm', 'oppo', 'genshin', 'marwie'],
+];
+const COLS = COL_IDS.map((ids) => ids.map((id) => PROJECTS.findIndex((p) => p.id === id)).filter((i) => i >= 0));
 const GAP = 48;
 
 // five kinds, the way a visitor thinks about them (WallIndex2:309-316)
 const KIND: { label: string; types: string[] }[] = [
   { label: 'Apps', types: ['Mobile app', 'Android TV'] },
   { label: 'Bots', types: ['Discord bot'] },
-  { label: 'Web', types: ['Website redesign', 'Web tool', 'Civic tech'] },
+  { label: 'Web', types: ['Website redesign', 'Web tool', 'Civic tech', 'Concept'] },
   { label: 'Tools', types: ['Developer tooling', 'Data system'] },
   { label: 'Open source', types: ['Open source'] },
   { label: 'Writing', types: ['Writing'] },
@@ -843,7 +849,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       </div>
 
       {/* what's in focus (or under the pointer), always in the same spot */}
-      <div ref={capRef} aria-live="polite" style={{ position: 'absolute', left: 56, bottom: 52, display: 'flex', flexDirection: 'column', gap: 6, opacity: 0, pointerEvents: 'none' }}>
+      <div ref={capRef} aria-live="polite" style={{ position: 'absolute', left: 56, bottom: 52, display: 'flex', flexDirection: 'column', gap: 6, opacity: 0, pointerEvents: 'none', isolation: 'isolate' }}>
+        {/* the wall fades into the room colour along the bottom edge, so the words stay readable over a light tile */}
+        <span aria-hidden style={{ position: 'absolute', left: -56, bottom: -52, width: 1440, height: 300, zIndex: -1, background: 'linear-gradient(to top, var(--room-bg) 0%, color-mix(in srgb, var(--room-bg) 78%, transparent) 38%, var(--room-bg-0) 100%)' }} />
         <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12.5, color: 'var(--text-label)' }} />
         <span ref={capNameRef} style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.03em' }} />
         <span ref={capTypeRef} style={{ maxWidth: 560, fontSize: 15, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} />

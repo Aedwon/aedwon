@@ -11,8 +11,8 @@
   ],
   "links": [
     {
-      "label": "[Invite or demo link]",
-      "href": "#"
+      "label": "github.com/Aedwon/Discord-Bot",
+      "href": "https://github.com/Aedwon/Discord-Bot"
     }
   ],
   "facts": [
@@ -51,11 +51,28 @@
       "kind": "text"
     },
     {
+      "h": "How it works",
+      "p": [
+        "Members verify with a short form, then earn XP and Event Points from quizzes and three daily quests. Levels, booster perks and a prize raffle all read from that one system, and the raffle exports to CSV for the Moonton prizes."
+      ],
+      "kind": "text",
+      "diagram": "msl"
+    },
+    {
       "h": "How it went",
       "p": [
         "[The result: numbers if you have them, or what people said.]"
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/msl/hero-6fc047eb.webp",
+    "alt": "MSL Network logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

@@ -58,5 +58,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/norala/hero-f05d1460.webp",
+    "alt": "Norala SB Portal in the browser",
+    "w": 1800,
+    "h": 1086
+  },
+  "frame": {
+    "h": 314
+  }
 }

@@ -34,5 +34,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/dockroute/hero-079de9bf.webp",
+    "alt": "Pip, the DockRoute puffin mascot",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

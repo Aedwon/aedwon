@@ -30,5 +30,14 @@
       "k": "Platform",
       "v": "Web"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/lakambini/hero-f8deebdb.webp",
+    "alt": "Lakambini events website",
+    "w": 1800,
+    "h": 1122
+  },
+  "frame": {
+    "h": 324
+  }
 }

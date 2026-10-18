@@ -34,5 +34,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/opensre/hero-427cad7f.webp",
+    "alt": "OpenSRE terminal interface",
+    "w": 1800,
+    "h": 856
+  },
+  "frame": {
+    "h": 247
+  }
 }

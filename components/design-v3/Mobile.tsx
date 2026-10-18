@@ -10,6 +10,8 @@
 import { useTheme } from '@/lib/design-v3/theme';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WishCounter from './WishCounterLazy';
+import FlowDiagram from './FlowDiagram';
+import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
 import { flushSync } from 'react-dom';
@@ -27,14 +29,15 @@ const KINDS: [string, string, string[] | null][] = [
   ['All', 'all', null],
   ['Apps', 'phone', ['Mobile app', 'Android TV']],
   ['Bots', 'bot', ['Discord bot']],
-  ['Web', 'web', ['Website redesign', 'Web tool', 'Civic tech']],
+  ['Web', 'web', ['Website redesign', 'Web tool', 'Civic tech', 'Concept']],
   ['Tools', 'term', ['Developer tooling', 'Data system']],
   ['Open source', 'repo', ['Open source']],
   ['Writing', 'pen', ['Writing']],
 ];
 
 // the phone wall's order: alternating kinds and depths, no two of a kind adjacent (mobile.py:398)
-const WALL_ORDER = [0, 2, 4, 13, 1, 8, 14, 3, 10, 7, 15, 9, 12, 5, 17, 16, 11, 6];
+const WALL_IDS = ['pantas', 'lakambini', 'kiosk', 'aspire', 'msl', 'norala', 'opensre', 'agent', 'ilocos', 'webp', 'dockroute', 'cup', 'kqm', 'genshin', 'bettergov', 'oppo', 'qr', 'marwie', 'mlbb', 'kanlungan'];
+const WALL_ORDER = WALL_IDS.map((id) => PROJECTS.findIndex((p) => p.id === id)).filter((i) => i >= 0);
 
 
 const cl = (x: number) => Math.max(0, Math.min(1, x));
@@ -834,7 +837,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
                 <div style={{ position: 'relative', width: CW, height: Math.round(frameH(p) * Math.min(CW / 520, 240 / frameH(p)) + 28), overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / frameH(p)).toFixed(4) }}>
-                    <MediaBlock kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
+                    <MediaBlock live kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                   </div>
                 </div>
               </div>
@@ -855,6 +858,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                   {(sec.p || []).map((para: string, j: number) => (
                     <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
                   ))}
+                  {sec.diagram && FLOWS[sec.diagram] && <FlowDiagram spec={FLOWS[sec.diagram]} fluid live />}
                   {sec.img?.src && (
                     <figure style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {/* eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload */}
