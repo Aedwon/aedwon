@@ -131,7 +131,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     turn: null as Turn | null, hold: null as { tr: Turn; t0: number } | null, shut: null as { t0: number } | null, fx: null as { from: Screen; to: Screen; t0: number; dur: number } | null, pan: null as { from: number; t0: number } | null,
     opening: null as { i: number; t0: number } | null, closing: null as { t0: number } | null,
     kb: false, kbField: null as { top: number; bottom: number } | null, kbDy: 0, kbH: 0,
-    wf: 0, back0: 0, reduced: false, raf: 0, last: 0,
+    wf: 0, lit: -1, lockI: -1, lockT: 0, lockSeen: false, back0: 0, reduced: false, raf: 0, last: 0,
     sp: 0, side: 'L' as 'L' | 'R', vol: 0,
     screen: init.screen === 'project' ? 'project' : init.screen === 'book' ? 'shelf' : (init.screen as Screen),
     lastPos: -1, lastEnds: '',
@@ -361,20 +361,29 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
 
       // wall drum: which tile is in focus
       const wf = Math.max(0, Math.min(WALL_ORDER.length - 1, s.wf)), focusI = Math.round(wf);
+      // A light detent: the drum drags a little near each project and moves freely between them, so each one feels like it clicks in.
+      const near = wf - focusI, wfv = s.reduced ? wf : focusI + near * (0.55 + 0.45 * Math.min(1, Math.abs(near) / 0.5));
+      if (focusI !== s.lockI) { s.lockI = focusI; s.lockT = now; if (s.lockSeen && !s.reduced) { try { navigator.vibrate?.(6); } catch { /* not supported */ } } s.lockSeen = true; }
+      const pulse = s.reduced ? 0 : 1 - out((now - s.lockT) / 320); // a small settle when a project locks in
       WALL_ORDER.forEach((i, k) => {
         const el = tileRefs.current[k]; if (!el) return;
-        const d = k - wf, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 30;
-        const q = P[i], h = Math.round(HH[q.media] * Math.min(TW / 520, 220 / HH[q.media]));
-        el.style.top = (340 + 390 * Math.sin((ang * Math.PI) / 180)).toFixed(1) + 'px';
-        el.style.height = h + 'px';
-        el.style.transform = `rotateX(${(-ang).toFixed(2)}deg) scale(${(1 - 0.08 * ad).toFixed(4)})`;
+        const d = k - wfv, ad = Math.abs(d), ang = Math.max(-2.6, Math.min(2.6, d)) * 30;
+        const vis = ad < 2;
+        if (!vis) { if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden'; return; }
+        // transform and opacity only, so scrolling never forces layout
+        const y = 390 * Math.sin((ang * Math.PI) / 180);
+        const sc = (1 - 0.08 * ad) * (k === focusI ? 1 + 0.018 * pulse : 1);
+        el.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0) rotateX(${(-ang).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
         el.style.opacity = Math.max(0, 1 - 0.5 * ad).toFixed(3);
-        el.style.visibility = ad < 2 ? 'visible' : 'hidden';
+        el.style.visibility = 'visible';
         el.style.zIndex = String(20 - Math.round(ad * 4));
       });
       if (focusI !== focusRef.current) { focusRef.current = focusI; setFocus(focusI); }
-      // caption follows the drum; it fades as you cross between two
-      if (capRef.current) capRef.current.style.opacity = Math.max(0.25, 1 - 1.5 * Math.abs(wf - focusI)).toFixed(3);
+      // caption: full strength while a project is locked, fading only as you cross to the next one
+      // spotlight: the number and description rise to the brightest text colour as a project locks, and ease back while you move on
+      const lit = Math.round(cl(1 - (Math.abs(near) - 0.05) / 0.2) * 100);
+      if (lit !== s.lit) { s.lit = lit; if (capRef.current) capRef.current.style.setProperty('--lit', lit + '%'); }
+      if (capRef.current) capRef.current.style.opacity = Math.max(0.25, 1 - 1.6 * Math.max(0, Math.abs(near) - 0.1)).toFixed(3);
 
       // project fade-in
       const fo = s.reduced ? 1 : out((now - (swapAtRef.current || -1e9)) / 380);
@@ -628,7 +637,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
             {WALL_ORDER.map((i, k) => {
               const q2 = P[i], meta = postMeta(q2);
               return (
-                <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: 220, translate: '0 -50%', borderRadius: 10, overflow: 'hidden', opacity: 0 }}>
+                <div key={q2.id} ref={(el) => { tileRefs.current[k] = el; }} style={{ position: 'absolute', left: 16, top: 340, width: TW, height: Math.round(HH[q2.media] * Math.min(TW / 520, 220 / HH[q2.media])), translate: '0 -50%', borderRadius: 10, overflow: 'hidden', opacity: 0, willChange: 'transform, opacity' }}>
                   <div style={{ position: 'relative', width: TW, height: '100%', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(TW / 520, 220 / HH[q2.media]).toFixed(4) }}>
                       <MediaBlock kind={q2.media as MediaKind} name={q2.name} repo={q2.media === 'repo' ? q2.links[0]?.label : undefined} desc={q2.media === 'repo' ? q2.desc : undefined} date={meta.date} mins={meta.mins} />
@@ -661,9 +670,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
             ))}
           </div>
           <div aria-live="polite" ref={capRef} style={{ position: 'absolute', left: 22, right: 22, bottom: 96, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
-            <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'var(--text-label)' }}>{String(focus + 1).padStart(2, '0')} / {WALL_ORDER.length}</span>
+            <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 11.5, color: 'color-mix(in srgb, var(--text-primary) var(--lit, 0%), var(--text-label))' }}>{String(focus + 1).padStart(2, '0')} / {WALL_ORDER.length}</span>
             <span ref={capNameRef} style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.03em' }}>{P[WALL_ORDER[focus]].name}</span>
-            <span ref={capTypeRef} style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{P[WALL_ORDER[focus]].desc || P[WALL_ORDER[focus]].type}</span>
+            <span ref={capTypeRef} style={{ fontSize: 14, lineHeight: 1.45, color: 'color-mix(in srgb, var(--text-primary) var(--lit, 0%), var(--text-secondary))', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{P[WALL_ORDER[focus]].desc || P[WALL_ORDER[focus]].type}</span>
           </div>
         </div>
       )}
@@ -965,7 +974,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       )}
 
       {/* ===== top bar ===== */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-room-80)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 56, padding: '0 10px 0 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--glass-room-80)' }}>
         <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Aedwon</span>
         <span style={{ display: 'flex', alignItems: 'center' }}>
           {showBack && (
@@ -980,7 +989,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       </div>
 
       {/* ===== bottom bar: the same four as the desktop nav, and the same travelling line ===== */}
-      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--glass-room-86)', borderTop: '1px solid var(--line-hairline)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
+      <nav aria-label="Main" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 74, padding: '0 12px 14px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'var(--glass-room-86)', borderTop: '1px solid var(--line-hairline)', translate: `0 ${screen === 'project' || screen === 'book' ? '100%' : '0px'}`, transition: 'translate .4s cubic-bezier(.22,1,.36,1)' }}>
         {['Wall', 'Index', 'About', 'Contact'].map((label, i) => (
           <button key={label} className="v3tbtn" type="button" aria-current={i === tabIdx ? 'page' : 'false'} onClick={() => (i === 0 ? go('wall') : i === 1 ? go('index') : i === 2 ? (screen === 'book' ? closeBook() : go('shelf')) : screen === 'book' && vol === V.length - 1 ? undefined : openVol(V.length - 1))} style={{ '--c': i === tabIdx ? 'var(--text-primary)' : 'var(--text-label)', width: 82, height: 48, fontSize: 14.5 } as React.CSSProperties}>{label}</button>
         ))}
