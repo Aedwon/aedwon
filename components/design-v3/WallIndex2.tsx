@@ -158,6 +158,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     amt: [] as number[], gAmt: 0, // per tile focus amount (0..1), and the wall dim amount
     lastF: null as number | null,
     pvY: null as null | { y: number; v: number }, pvA: 0,
+    ihHold: null as number | null, ihLeave: null as number | null, // the row the preview follows: it holds for a beat when the pointer leaves
+    pvTxtId: null as number | null, pvTxtOut: null as number | null, pvTxtIn: null as number | null, // the preview's words change in two soft steps
     pvo: {} as Record<number, number>,
     // per-frame output stash
     ixTotal: 0, near: 0, zoomedOut: false,
@@ -517,7 +519,10 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     {
       const pl = s.pvLast != null ? s.pvLast : 0;
       const ph = Math.round(H[P[pl].media] * 0.5769);
-      const want = s.ih != null && k > 0.98 ? 1 : 0;
+      // Moving from one row to the next switches at once; leaving every row keeps the last for 160ms, so the preview does not blink out between rows.
+      if (s.ih != null) { s.ihHold = s.ih; s.ihLeave = null; }
+      else if (s.ihHold != null) { if (s.ihLeave == null) s.ihLeave = now; if (now - s.ihLeave >= 160) { s.ihHold = null; s.ihLeave = null; } }
+      const want = s.ihHold != null && k > 0.98 ? 1 : 0;
       const yT = Math.max(110, Math.min(900 - ph - 110, R0 + s.rs[pl].y + 30 - s.scrollY - ph / 2));
       if (s.pvY == null || s.pvA < 0.02) s.pvY = { y: yT, v: 0 };
       else if (dts) { s.pvY.v += ((yT - s.pvY.y) * 120 - s.pvY.v * 20) * dts; s.pvY.y += s.pvY.v * dts; }
@@ -529,8 +534,18 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         box.style.opacity = (s.pvA * cl(k * 2 - 1)).toFixed(3);
       }
       if (pvYRef.current) pvYRef.current.style.height = ph + 'px';
-      if (pvNameRef.current) pvNameRef.current.textContent = P[pl].name;
-      if (pvLineRef.current) pvLineRef.current.textContent = P[pl].desc;
+      // the name and line fade down, change, and rise again, instead of swapping while the picture is still crossfading
+      if (s.pvTxtId == null || s.reduced) s.pvTxtId = pl;
+      if (pl !== s.pvTxtId && s.pvTxtOut == null) s.pvTxtOut = now;
+      let txA = 1;
+      if (s.pvTxtOut != null) {
+        const x = (now - s.pvTxtOut) / 90;
+        if (x >= 1) { s.pvTxtId = pl; s.pvTxtOut = null; s.pvTxtIn = now; } else txA = 1 - x;
+      }
+      if (s.pvTxtOut == null && s.pvTxtIn != null) { const x = (now - s.pvTxtIn) / 200; if (x >= 1) s.pvTxtIn = null; else txA = out(x); }
+      const tid = s.pvTxtId;
+      if (pvNameRef.current) { pvNameRef.current.textContent = P[tid].name; pvNameRef.current.style.opacity = txA.toFixed(3); pvNameRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
+      if (pvLineRef.current) { pvLineRef.current.textContent = P[tid].desc; pvLineRef.current.style.opacity = txA.toFixed(3); pvLineRef.current.style.translate = `0 ${((1 - txA) * 5).toFixed(1)}px`; }
       P.forEach((_, i) => {
         const el = pvEls.current[i]; if (!el) return;
         el.style.opacity = s.pvo[i].toFixed(3);
