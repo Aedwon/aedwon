@@ -856,6 +856,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
           {/* contents: a small square in the corner shows where you are; tap it for the parts */}
           {secs.length > 1 && (
             <>
+              {/* tap anywhere outside the contents sheet to put it away */}
+              <div
+                aria-hidden
+                onClick={() => setTocOpen(false)}
+                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', opacity: tocOpen ? 1 : 0, pointerEvents: tocOpen ? 'auto' : 'none', transition: 'opacity .3s ease' }}
+              />
               <button
                 className="v3tbtn"
                 type="button"
