@@ -193,7 +193,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       if (s.reduced) s.c = s.cT;
       else { s.cv += ((tgt - s.c) * 48 - s.cv * 14) * dt; s.c += s.cv * dt; }
       if (dotc) drawDots(dt, dotc);
-      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.6 : 1.0) : (s.pOpen ? 0.55 : 0.42))));
+      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.6 : s.po > 0.66 ? 1.45 : 1.75) : (s.pOpen ? 0.55 : 0.42))));
       render();
       s.raf = requestAnimationFrame(loop);
     };
@@ -241,6 +241,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
       const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.66)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.76) / 0.16)) : 1 - poE;
+      wall2.current?.setOpenP(s.po, s.pOpen);
       wall2.current?.setFree(!!cam && s.po > 0.001);
       wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
       let camT = '';

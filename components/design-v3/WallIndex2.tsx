@@ -139,7 +139,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     sig: null as string | null, visNow: [] as number[],
     chg: null as null | { sig: string; t0: number; prevM: Record<number, number>; prevGM: Record<number, number>; moved: Record<number, boolean>; rank: Record<number, number>; grank: Record<number, number>; ty: Record<number, number | null>; gy: Record<number, number | null> },
     cy0: {} as Record<number, number>, gy0: {} as Record<number, number>, mm: {} as Record<number, number>, gm: {} as Record<number, number>,
-    dim: 0, lvl: 0, blk: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
+    dim: 0, lvl: 0, blk: false, openP: 0, opening: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
     O: [720, 470] as [number, number], ax0: 34, az0: -18,
     cy: 0, tCy: 0, vel: 0,
     zl: 1, zv: 0,
@@ -175,7 +175,6 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   const [emptyMsg, setEmptyMsg] = useState('');
 
   // sync discrete mirrors of ref state for handlers
-  useEffect(() => { s.blk = !!props.escBlocked; }, [props.escBlocked, s]);
   useEffect(() => { s.filt = filt; }, [filt, s]);
   useEffect(() => { s.q = q; }, [q, s]);
   useEffect(() => { s.sort = sort; }, [sort, s]);
@@ -184,6 +183,11 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     viewReq(req: Req) { applyViewReq(req); },
     setDim(dim: number) { s.dim = dim; },
     setLevel(v: number) { s.lvl = v; },
+    // how far the project page is open (0..1): the lit tile holds, the caption goes first, the others fade with the move
+    setOpenP(p: number, opening: boolean) {
+      const was = s.blk; s.openP = p; s.opening = opening; s.blk = p > 0.001;
+      if (was && !s.blk) { s.cur = null; s.leaveAt = null; } // back on the wall: the dim lets go on its own
+    },
     // while the camera flies in, the wall's own screen-sized clip would ride along and show as a cut; the room clips instead
     setFree(on: boolean) { const el = rootRef.current; if (el && (el.style.overflow === 'visible') !== on) el.style.overflow = on ? 'visible' : 'hidden'; },
     // where tile i sits once the wall has levelled out, in room pixels: its centre and its width
@@ -460,13 +464,15 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // a gap or a brief slip off the edge neither dims nor brightens the wall.
     const dragMoved = !!(s.drag && s.drag.moved);
     if (dragMoved) { s.cur = null; s.leaveAt = null; }
-    else if (h != null) { s.cur = h; s.leaveAt = null; }
+    else if (h != null && !s.blk) { s.cur = h; s.leaveAt = null; }
     else if (s.cur != null && !s.blk) { // while a project is open the last tile stays lit, so the wall doesn't shift under the flight
       if (s.leaveAt == null) s.leaveAt = now;
       if (now - s.leaveAt >= 200) { s.cur = null; s.leaveAt = null; }
     }
     const focus = s.cur != null ? s.cur : (mo === 'follow' || zoomedOut ? null : near);
     if (onFocus) { const f = k > 0.5 ? s.ih : (focus != null ? focus : near); if (f !== s.lastF) { s.lastF = f; onFocus(f == null ? -1 : f); } }
+    // the project opening: the neighbours fade out gradually with the camera move, and the caption leaves first
+    const oSm = (x: number) => x * x * (3 - 2 * x), fo = oSm(cl((s.openP - 0.04) / 0.46)), capF = 1 - oSm(cl(s.openP / 0.14));
     // tiles
     P.forEach((p, i) => {
       const type = p.media as MediaKind, hh = H[type];
@@ -480,8 +486,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       const hold = s.blk && isF && onWall, onF = onWall && isF && !dragMoved && !s.blk; // an open project: no hover lift, so the picture sits flat and exact
       const A = smooth((s.amt[i] = stepA(s.amt[i] || 0, onF, 0.11, 0.24)));
       const Gd = smooth((s.gAmt = i === 0 ? stepA(s.gAmt, onWall && focus != null && !dragMoved, 0.15, 0.32) : s.gAmt));
+      const GdE = Gd * (s.opening || !s.blk ? 1 : cl(s.openP / 0.5)); // coming back, the dim lets go as the camera pulls out, so the wall lands fully lit
       const Ao = hold ? 1 : A;
-      s.ops[i] = onWall ? 1 - (1 - dimTo) * Gd * (1 - Ao) : 1;
+      s.ops[i] = (onWall ? 1 - (1 - dimTo) * GdE * (1 - Ao) : 1) * (hold ? 1 : 1 - fo);
       s.hs[i] = 1 + 0.035 * A;
       const isPost = p.media === 'paper';
       const w = { x: isPost ? 160 : bp[i].x, y: isPost ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: isPost ? 0 : s.ops[i] * intro };
@@ -508,7 +515,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         el.style.opacity = op.toFixed(3);
         el.style.pointerEvents = op > 0.3 && k < 0.5 ? 'auto' : 'none';
         // while one tile is hovered, the others lose most of their colour; the hovered one keeps all of it
-        const gsv = onWall ? 0.9 * Gd * (1 - Ao) : 0, gsf = gsv > 0.01 ? `grayscale(${gsv.toFixed(2)})` : 'none';
+        const gsv = onWall ? 0.9 * GdE * (1 - Ao) : 0, gsf = gsv > 0.01 ? `grayscale(${gsv.toFixed(2)})` : 'none';
         if (el.style.filter !== gsf) el.style.filter = gsf;
       }
     });
@@ -598,7 +605,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const shown = focus != null ? focus : s.capLast;
     const capOp = focus != null ? ce : 1 - ce;
     if (capRef.current) {
-      capRef.current.style.opacity = String(+((shown != null ? ui * (1 - kc) * capOp * chromeK : 0)).toFixed(3));
+      capRef.current.style.opacity = String(+((shown != null ? ui * (1 - kc) * capOp * chromeK * capF : 0)).toFixed(3));
       capRef.current.style.translate = `0 ${(focus != null ? (1 - ce) * 8 : 0).toFixed(1)}px`;
     }
     if (capNRef.current) capNRef.current.textContent = shown != null ? String(shown + 1).padStart(2, '0') + ' / ' + NW : '';
@@ -608,7 +615,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     {
       const inView = scr.map((p) => p.X > 0 && p.X < 1440 && p.Y > 84 && p.Y < 900);
       if (railRef.current) {
-        railRef.current.style.opacity = (ui * (1 - kc) * chromeK).toFixed(3);
+        railRef.current.style.opacity = (ui * (1 - kc) * chromeK * capF).toFixed(3);
         railRef.current.style.pointerEvents = kc < 0.5 && chromeK > 0.5 ? 'auto' : 'none';
       }
       P.slice(0, NW).forEach((p, i) => {

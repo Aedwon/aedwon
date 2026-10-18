@@ -11,6 +11,7 @@ export interface WallIndex2Handle {
   viewReq(req: Req): void;
   setDim(dim: number): void;
   setFree(on: boolean): void;
+  setOpenP(p: number, opening: boolean): void;
   setLevel(v: number): void; // 0..1: the wall comes level (its tilt and roll ease out)
   centerOf(i: number): { x: number; y: number } | null;
   restRect(i: number): { x: number; y: number; w: number } | null;
