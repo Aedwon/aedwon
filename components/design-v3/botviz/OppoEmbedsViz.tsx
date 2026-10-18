@@ -84,7 +84,7 @@ export default function OppoEmbedsViz({ P }: { P: Pal }) {
     if (queueRef.current) queueRef.current.style.borderColor = a === 3 ? P.fg : P.div;
     if (queueRowRef.current) queueRowRef.current.style.opacity = rowIn ? '1' : '0';
     if (countRef.current) {
-      countRef.current.textContent = rowDone ? '-1' : rowIn ? '+1' : '';
+      countRef.current.textContent = rowDone ? 'row removed' : rowIn ? 'row added' : '';
       countRef.current.style.color = rowDone ? P.red : P.live;
     }
     let sec = 18;
@@ -182,7 +182,7 @@ export default function OppoEmbedsViz({ P }: { P: Pal }) {
           </span>
         </span>
 
-        <div ref={queueRef} style={{ ...box, left: '52%', top: 0, width: '48%', height: 74, padding: '8px 12px' }}>
+        <div ref={queueRef} style={{ ...box, left: '52%', top: 0, width: '48%', height: 72, padding: '8px 12px' }}>
           <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
             <span style={label}>Queue</span>
             <span ref={countRef} style={{ ...mono, fontSize: 11, color: P.live }} />
@@ -192,15 +192,15 @@ export default function OppoEmbedsViz({ P }: { P: Pal }) {
             <span style={{ color: P.sec }}>18:00</span>
           </span>
         </div>
-        <span ref={arrowAt(2)} style={{ ...line, left: '76%', top: 74, height: 16 }} />
+        <span ref={arrowAt(2)} style={{ ...line, left: '76%', top: 72, height: 10 }} />
 
-        <div ref={timerBoxRef} style={{ ...box, left: '52%', top: 90, width: '48%', height: 60, padding: '8px 12px' }}>
+        <div ref={timerBoxRef} style={{ ...box, left: '52%', top: 82, width: '48%', height: 74, padding: '8px 12px' }}>
           <span style={label}>Timer</span>
-          <span ref={timerTxtRef} style={{ display: 'block', ...mono, fontSize: 20, marginTop: 4, color: P.under }}>--:--:--</span>
+          <span ref={timerTxtRef} style={{ display: 'block', ...mono, fontSize: 20, lineHeight: 1.3, marginTop: 6, color: P.under }}>--:--:--</span>
         </div>
-        <span ref={arrowAt(3)} style={{ ...line, left: '76%', top: 150, height: 14 }} />
+        <span ref={arrowAt(3)} style={{ ...line, left: '76%', top: 156, height: 10 }} />
 
-        <div ref={channelRef} style={{ ...box, left: '52%', top: 164, width: '48%', height: 44, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div ref={channelRef} style={{ ...box, left: '52%', top: 166, width: '48%', height: 44, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={label}>Channel</span>
           <span ref={channelBodyRef} style={{ display: 'flex', gap: 6, flex: 1, minWidth: 0, opacity: 0, transition: 'opacity .4s ease' }}>
             <span style={{ width: 2, height: 22, borderRadius: 1, background: P.frame, flexShrink: 0 }} />
@@ -210,17 +210,17 @@ export default function OppoEmbedsViz({ P }: { P: Pal }) {
             </span>
           </span>
         </div>
-        <span ref={arrowAt(4)} style={{ ...line, left: '76%', top: 208, height: 12 }} />
+        <span ref={arrowAt(4)} style={{ ...line, left: '76%', top: 210, height: 10 }} />
 
-        <div ref={logRef} style={{ ...box, left: '52%', top: 220, width: '48%', height: 44, padding: '6px 12px' }}>
+        <div ref={logRef} style={{ ...box, left: '52%', top: 220, width: '48%', height: 54, padding: '8px 12px' }}>
           <span style={label}>Log channel</span>
-          <span ref={logTxtRef} style={{ display: 'block', marginTop: 2, ...mono, fontSize: 10.5, color: P.sec, whiteSpace: 'nowrap', opacity: 0, transition: 'opacity .4s ease' }}>jump link</span>
+          <span ref={logTxtRef} style={{ display: 'block', marginTop: 6, ...mono, fontSize: 10.5, lineHeight: 1.3, color: P.sec, whiteSpace: 'nowrap', opacity: 0, transition: 'opacity .4s ease' }}>jump link</span>
         </div>
 
         <span ref={statusRef} style={{ position: 'absolute', left: 0, top: 252, fontSize: 13, color: P.sec, whiteSpace: 'nowrap' }} />
 
-        <span style={{ position: 'absolute', left: 0, top: 278, fontSize: 11, fontStyle: 'italic', color: P.lbl }}>example id, time and countdown</span>
-        <span style={{ position: 'absolute', right: 0, top: 278, fontSize: 11, color: P.lbl }}>times in Manila</span>
+        <span style={{ position: 'absolute', left: 0, top: 284, fontSize: 11, fontStyle: 'italic', color: P.lbl }}>example id, time and countdown</span>
+        <span style={{ position: 'absolute', right: 0, top: 284, fontSize: 11, color: P.lbl }}>times in Manila</span>
       </div>
       <Caption P={P} numRef={captionNumRef} nameRef={captionNameRef} paused={paused} onToggle={toggle} />
     </>
