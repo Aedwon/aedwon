@@ -11,7 +11,7 @@ import {
 } from "../agent-markdown/route";
 import { proxy } from "../../proxy";
 
-const CANONICAL_ORIGIN = "https://www.aedwon.com";
+const CANONICAL_ORIGIN = "https://www.aedwon.site";
 
 describe("agent-facing endpoints", () => {
   it("publishes canonical sitemap entries with lastmod values", () => {

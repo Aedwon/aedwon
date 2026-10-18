@@ -1,4 +1,4 @@
-export const SITE_URL = "https://www.aedwon.com";
+export const SITE_URL = "https://www.aedwon.site";
 export const SITE_NAME = "Aedwon";
 export const PERSON_NAME = "Aerol Balayon";
 export const SITE_LAST_MODIFIED = new Date("2026-08-27T00:00:00.000Z");
