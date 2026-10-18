@@ -1046,7 +1046,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
           {showBack && (
             <button className="v3tbtn" type="button" onClick={() => (screen === 'book' ? closeBook() : go(from))} style={{ '--c': 'var(--text-primary)', height: 44, padding: '0 12px', fontSize: 15 } as React.CSSProperties}>{screen === 'book' ? 'Close' : 'Back'}</button>
           )}
-          <button className="v3tbtn" type="button" onClick={toggle} aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'} style={{ '--c': 'var(--text-label)', width: 44, height: 44 } as React.CSSProperties}>
+          <button className="v3tbtn" type="button" onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); toggle({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); }} aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'} style={{ '--c': 'var(--text-label)', width: 44, height: 44 } as React.CSSProperties}>
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d={theme === 'light' ? 'M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z' : 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4'} />
             </svg>

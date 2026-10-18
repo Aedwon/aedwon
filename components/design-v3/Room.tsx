@@ -346,7 +346,7 @@ function ThemeLink({ theme }: { theme: Theme }) {
   return (
     <button
       className="v3rn"
-      onClick={toggle}
+      onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); toggle({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); }}
       aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'}
       style={{ '--c': 'var(--text-label)', position: 'absolute', left: 1384, top: 20, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' } as React.CSSProperties}
     >
