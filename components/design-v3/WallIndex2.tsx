@@ -473,10 +473,11 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       // one focus amount per tile drives its opacity, size and lift together, quick to rise and slower to settle
       const stepA = (v: number, on: boolean, up: number, dn: number) => (s.reduced ? (on ? 1 : 0) : Math.max(0, Math.min(1, v + (on ? dts / up : -dts / dn))));
       const smooth = (x: number) => x * x * (3 - 2 * x);
-      const onF = onWall && isF && !dragMoved;
+      const hold = s.blk && isF && onWall, onF = onWall && isF && !dragMoved && !s.blk; // an open project: no hover lift, so the picture sits flat and exact
       const A = smooth((s.amt[i] = stepA(s.amt[i] || 0, onF, 0.11, 0.24)));
       const Gd = smooth((s.gAmt = i === 0 ? stepA(s.gAmt, onWall && focus != null && !dragMoved, 0.15, 0.32) : s.gAmt));
-      s.ops[i] = onWall ? 1 - (1 - dimTo) * Gd * (1 - A) : 1;
+      const Ao = hold ? 1 : A;
+      s.ops[i] = onWall ? 1 - (1 - dimTo) * Gd * (1 - Ao) : 1;
       s.hs[i] = 1 + 0.035 * A;
       const isPost = p.media === 'paper';
       const w = { x: isPost ? 160 : bp[i].x, y: isPost ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: isPost ? 0 : s.ops[i] * intro };
@@ -503,7 +504,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
         el.style.opacity = op.toFixed(3);
         el.style.pointerEvents = op > 0.3 && k < 0.5 ? 'auto' : 'none';
         // while one tile is hovered, the others lose most of their colour; the hovered one keeps all of it
-        const gsv = onWall ? 0.9 * Gd * (1 - A) : 0, gsf = gsv > 0.01 ? `grayscale(${gsv.toFixed(2)})` : 'none';
+        const gsv = onWall ? 0.9 * Gd * (1 - Ao) : 0, gsf = gsv > 0.01 ? `grayscale(${gsv.toFixed(2)})` : 'none';
         if (el.style.filter !== gsf) el.style.filter = gsf;
       }
     });
@@ -750,7 +751,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
               onMouseEnter={() => { if (!(s.drag && s.drag.moved)) s.hover = i; }}
               onMouseLeave={() => { s.hover = null; }}
               ref={(el) => { tileEls.current[i] = el; }}
-              style={{ position: 'absolute', left: 0, top: 0, width: 520, display: 'block', color: 'inherit', textDecoration: 'none', transformOrigin: '50% 50%', willChange: 'transform', pointerEvents: 'none', cursor: 'pointer' }}
+              style={{ position: 'absolute', left: 0, top: 0, width: 520, display: 'block', color: 'inherit', textDecoration: 'none', transformOrigin: '50% 50%', pointerEvents: 'none', cursor: 'pointer' }}
             >
               <MediaBlock
                 kind={type}

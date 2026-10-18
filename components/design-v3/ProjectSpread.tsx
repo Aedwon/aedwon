@@ -66,9 +66,9 @@ const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 // dark and flip to near-black in light (same pattern as WallIndex2.tsx:575).
 
 const CSS = `
-.v3ps-hero{opacity:clamp(0,calc((var(--pr,1) - .5) / .18),1)}
-.v3ps-in1{opacity:clamp(0,calc((var(--pr,1) - .76) / .18),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .76) / .18),1)) * 16px)}
-.v3ps-in2{opacity:clamp(0,calc((var(--pr,1) - .86) / .14),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .86) / .14),1)) * 16px)}
+.v3ps-hero{opacity:clamp(0,calc((var(--pr,1) - .64) / .14),1)}
+.v3ps-in1{opacity:clamp(0,calc((var(--pr,1) - .82) / .16),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .82) / .16),1)) * 16px)}
+.v3ps-in2{opacity:clamp(0,calc((var(--pr,1) - .9) / .1),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .9) / .1),1)) * 16px)}
 .v3ps-ps{scrollbar-width:none}.v3ps-ps::-webkit-scrollbar{width:0}
 .v3ps-ul{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line-underline);transition:text-decoration-color .2s ease}
 .v3ps-ul:hover{text-decoration-color:var(--text-primary)}
@@ -90,6 +90,11 @@ const CSS = `
 `;
 
 // Hero fit (ProjectSpread renderVals.fit): scale inside the 864x520 stage.
+// how large the page draws project i's picture (the Wall flies its own copy in to land at exactly this size)
+export function heroScaleOf(i: number): number {
+  const p = PROJECTS[i] as unknown as FullProject;
+  return Math.min((864 - 140) / 520, (520 - 80) / (HH[p.media] || 300), 1.6);
+}
 const HH: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300 };
 
 const out = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);

@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import WallIndex2 from './WallIndex2';
 import AboutVolumes from './AboutVolumes';
-import ProjectSpread from './ProjectSpread';
+import ProjectSpread, { heroScaleOf } from './ProjectSpread';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import type { AboutVolumesHandle, ProjectSpreadHandle, Req, WallIndex2Handle } from './contracts';
 import { useTheme, type Theme } from '@/lib/design-v3/theme';
@@ -148,7 +148,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
         if (r) { cx = (r.left - b.left + r.width / 2) * k; cy = (r.top - b.top + r.height / 2) * k; wd = r.width * k; }
       }
       if (wd > 0) {
-                s.cam = { i, cx, cy, sc: Math.min(5, HERO.w / wd), live: !!rest };
+                s.cam = { i, cx, cy, sc: (520 * heroScaleOf(i)) / wd, live: !!rest }; // lands at the size the page draws it
       }
     }
     spread.current?.openReq({ v: String(i), n: s.pn });
@@ -240,7 +240,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.68)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.68) / 0.16)) : 1 - poE;
+      const cam = s.cam, kc = cam ? camEase(cl(s.po / 0.66)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.76) / 0.16)) : 1 - poE;
       wall2.current?.setLevel(kc); // one move: the wall comes level while the camera closes in, both on the same curve
       let camT = '';
       if (cam) {
@@ -321,7 +321,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       <canvas ref={dotsRef} width={ROOM_W} height={ROOM_H} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, pointerEvents: 'none' }} />
 
       {/* the wall of work */}
-      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%', willChange: 'transform' }}>
+      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%', }}>
         <WallIndex2
           ref={wall2}
           bare
