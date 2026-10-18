@@ -844,8 +844,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
 
       {/* what's in focus (or under the pointer), always in the same spot */}
       <div ref={capRef} aria-live="polite" style={{ position: 'absolute', left: 56, bottom: 52, display: 'flex', flexDirection: 'column', gap: 6, opacity: 0, pointerEvents: 'none', isolation: 'isolate' }}>
-        {/* a soft patch of the room colour behind the words, so they stay readable over a light tile */}
-        <span aria-hidden style={{ position: 'absolute', inset: '-40px -110px -34px -70px', zIndex: -1, opacity: 0.88, background: 'radial-gradient(ellipse at 38% 55%, var(--room-bg) 12%, var(--room-bg-0) 74%)' }} />
+        {/* the wall fades into the room colour along the bottom edge, so the words stay readable over a light tile */}
+        <span aria-hidden style={{ position: 'absolute', left: -56, bottom: -52, width: 1440, height: 300, zIndex: -1, background: 'linear-gradient(to top, var(--room-bg) 0%, color-mix(in srgb, var(--room-bg) 78%, transparent) 38%, var(--room-bg-0) 100%)' }} />
         <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12.5, color: 'var(--text-label)' }} />
         <span ref={capNameRef} style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.03em' }} />
         <span ref={capTypeRef} style={{ maxWidth: 560, fontSize: 15, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} />
