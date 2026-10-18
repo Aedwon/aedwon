@@ -2,7 +2,7 @@
   "id": "msl",
   "name": "MSL Network Bot",
   "type": "Discord bot",
-  "media": "discord",
+  "media": "flow-msl",
   "depth": "writeup",
   "desc": "Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.",
   "stack": [
@@ -11,8 +11,8 @@
   ],
   "links": [
     {
-      "label": "[Invite or demo link]",
-      "href": "#"
+      "label": "github.com/Aedwon/Discord-Bot",
+      "href": "https://github.com/Aedwon/Discord-Bot"
     }
   ],
   "facts": [
@@ -57,5 +57,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/msl/hero-c62ec4a6.webp",
+    "alt": "Mobile Legends: Bang Bang logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

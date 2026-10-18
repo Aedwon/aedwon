@@ -4,8 +4,11 @@
 
 import { LOGO } from '@/lib/design-v3/data/icons';
 import type { Img } from '@/lib/design-v3/data/projects';
+import AgentCompose from './AgentCompose';
+import FlowDiagram from './FlowDiagram';
+import { FLOWS } from '@/lib/design-v3/data/flows';
 
-export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper' | 'wishes';
+export type MediaKind = 'phone' | 'tv' | 'web' | 'discord' | 'term' | 'data' | 'repo' | 'paper' | 'wishes' | 'compose' | `flow-${string}`;
 
 export interface MediaBlockProps {
   kind: MediaKind;
@@ -20,6 +23,8 @@ export interface MediaBlockProps {
   screens?: (Img | null)[] | null;
   // the frame height (520 wide always); the default for the kind when left out
   h?: number;
+  // compose: loop the animation (the project page) instead of playing it on hover
+  live?: boolean;
   // the local studio wraps each phone screen with its picture controls
   renderScreen?: (i: number, screen: React.ReactNode) => React.ReactNode;
 }
@@ -34,14 +39,16 @@ export function Photo({ img }: { img: Img }) {
 }
 
 // the height of each kind's 520-wide frame
-export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300, wishes: 300 };
+export const FRAME_H: Record<string, number> = { phone: 370, tv: 330, web: 325, discord: 325, term: 300, data: 300, repo: 260, paper: 300, wishes: 300, compose: 260 };
 // the frame height of a project: the one you set in the studio, or the default for its kind
 export const frameH = (p: { media: string; frame?: { h: number } }): number => p.frame?.h ?? FRAME_H[p.media] ?? 300;
 
 const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 
-export default function MediaBlock({ kind, name, repo, desc, date, mins, img, screens, h, renderScreen }: MediaBlockProps) {
+export default function MediaBlock({ kind, name, repo, desc, date, mins, img, screens, h, renderScreen, live }: MediaBlockProps) {
   const H = h ?? FRAME_H[kind] ?? 300;
+  // the bot projects: a logo on the wall tile (img), the animated diagram on the project page (live) or when there is no logo yet
+  if (kind.startsWith('flow-') && FLOWS[kind.slice(5)] && (live || !img?.src)) return <FlowDiagram spec={FLOWS[kind.slice(5)]} h={H} live={live} />;
   if (kind !== 'phone' && img?.src) {
     return (
       <div style={{ width: 520, height: H, borderRadius: 14, overflow: 'hidden', boxSizing: 'border-box', background: 'var(--dev-screen)', border: '1px solid var(--dev-bezel)', boxShadow: 'var(--shadow-object)' }}>
@@ -51,7 +58,7 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
   }
   if (H !== (FRAME_H[kind] ?? 300) && kind !== 'phone') {
     // a drawn mockup in a frame of another height: it stays its own size, centred
-    return <div style={{ width: 520, height: H, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MediaBlock kind={kind} name={name} repo={repo} desc={desc} date={date} mins={mins} /></div>;
+    return <div style={{ width: 520, height: H, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MediaBlock kind={kind} name={name} repo={repo} desc={desc} date={date} mins={mins} live={live} /></div>;
   }
   if (kind === 'phone') {
     const PH = H - 40, PW = Math.round((PH * 156) / 330); // the phones keep their proportions as the frame grows or shrinks
@@ -114,6 +121,7 @@ export default function MediaBlock({ kind, name, repo, desc, date, mins, img, sc
       </div>
     );
   }
+  if (kind === 'compose') return <AgentCompose h={H} live={live} />;
   if (kind === 'term') {
     return (
       <div style={{ width: 520, height: 300, boxSizing: 'border-box', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--term-border)', background: 'var(--surface-terminal)', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-object)' }}>

@@ -2,14 +2,19 @@
   "id": "ilocos",
   "name": "Ilocos Sur Esports Bot",
   "type": "Discord bot",
-  "media": "discord",
+  "media": "flow-ilocos",
   "depth": "writeup",
   "desc": "Tournament and community bot for the Ilocos Sur Provincial Government syncing player registrations with Challonge brackets on Hostinger VPS.",
   "stack": [
     "Python",
     "MySQL"
   ],
-  "links": [],
+  "links": [
+    {
+      "label": "github.com/Aedwon/isfe-discord-bot",
+      "href": "https://github.com/Aedwon/isfe-discord-bot"
+    }
+  ],
   "facts": [
     {
       "k": "Client",
@@ -52,5 +57,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/ilocos/hero-07f51b7b.webp",
+    "alt": "Provincial Government of Ilocos Sur seal",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

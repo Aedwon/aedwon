@@ -2,7 +2,7 @@
   "id": "cup",
   "name": "MSL Collegiate Cup Bot",
   "type": "Discord bot",
-  "media": "discord",
+  "media": "flow-cup",
   "depth": "writeup",
   "desc": "Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.",
   "stack": [
@@ -52,5 +52,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/cup/hero-06921617.webp",
+    "alt": "MOONTON Games logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

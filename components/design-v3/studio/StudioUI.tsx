@@ -8,7 +8,7 @@ import { gitPublish, gitStatus, loadProject, ping, saveOp, uploadImage, type Pub
 import { setStudio, useStudio } from './store';
 
 const LOCAL = ['localhost', '127.0.0.1', '[::1]', '::1'];
-const MEDIA = ['phone', 'tv', 'web', 'discord', 'term', 'data', 'repo', 'paper'];
+const MEDIA = ['phone', 'tv', 'web', 'discord', 'term', 'data', 'repo', 'paper', 'compose'];
 const DEPTH = ['case', 'writeup', 'note'];
 
 const CSS = `

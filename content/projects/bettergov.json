@@ -34,5 +34,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/bettergov/hero-dbb9d4cd.webp",
+    "alt": "BetterGov PH in the browser",
+    "w": 1800,
+    "h": 1089
+  },
+  "frame": {
+    "h": 315
+  }
 }

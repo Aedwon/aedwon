@@ -2,14 +2,19 @@
   "id": "oppo",
   "name": "OPPO Cup Bot",
   "type": "Discord bot",
-  "media": "discord",
+  "media": "flow-oppo",
   "depth": "writeup",
   "desc": "Corporate tournament bot for OPPO Philippines managing team verification, roster validation, and automated support workflows on Hostinger VPS.",
   "stack": [
     "Python",
     "MySQL"
   ],
-  "links": [],
+  "links": [
+    {
+      "label": "github.com/Aedwon/oppo-hlc-2026-bot",
+      "href": "https://github.com/Aedwon/oppo-hlc-2026-bot"
+    }
+  ],
   "facts": [
     {
       "k": "Client",
@@ -52,5 +57,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/oppo/hero-45d54685.webp",
+    "alt": "OPPO logo",
+    "w": 1040,
+    "h": 520
+  },
+  "frame": {
+    "h": 260
+  }
 }

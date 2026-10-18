@@ -834,7 +834,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
                 <div style={{ position: 'relative', width: CW, height: Math.round(frameH(p) * Math.min(CW / 520, 240 / frameH(p)) + 28), overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / frameH(p)).toFixed(4) }}>
-                    <MediaBlock kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
+                    <MediaBlock live kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                   </div>
                 </div>
               </div>

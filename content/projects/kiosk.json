@@ -54,5 +54,14 @@
       ],
       "kind": "text"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/kiosk/hero-d5702330.webp",
+    "alt": "Kiosk Survey app on the TV screen",
+    "w": 1800,
+    "h": 1111
+  },
+  "frame": {
+    "h": 321
+  }
 }

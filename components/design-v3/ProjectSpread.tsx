@@ -365,6 +365,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
                   <MediaBlock
                     kind={p.media as MediaKind}
+                    live
                     img={p.hero}
                     h={frameH(p)}
                     name={p.name}

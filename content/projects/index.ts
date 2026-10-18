@@ -11,6 +11,7 @@ import norala from './norala.json';
 import cup from './cup.json';
 import ilocos from './ilocos.json';
 import oppo from './oppo.json';
+import marwie from './marwie.json';
 import kqm from './kqm.json';
 import aspire from './aspire.json';
 import opensre from './opensre.json';
@@ -33,6 +34,7 @@ export const PROJECT_FILES = [
   cup,
   ilocos,
   oppo,
+  marwie,
   kqm,
   aspire,
   opensre,

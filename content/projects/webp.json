@@ -37,5 +37,14 @@
       "k": "Runs",
       "v": "Entirely in the browser"
     }
-  ]
+  ],
+  "hero": {
+    "src": "/projects/webp/hero-c5b14385.webp",
+    "alt": "WebP Unli in the browser",
+    "w": 1800,
+    "h": 1119
+  },
+  "frame": {
+    "h": 323
+  }
 }

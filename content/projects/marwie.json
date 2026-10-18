@@ -1,0 +1,63 @@
+{
+  "id": "marwie",
+  "name": "Marwie Community Bot",
+  "type": "Discord bot",
+  "media": "flow-marwie",
+  "depth": "writeup",
+  "desc": "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are changed from a web control panel instead of slash commands.",
+  "stack": [
+    "Python",
+    "PostgreSQL"
+  ],
+  "links": [
+    {
+      "label": "github.com/Aedwon/marwie-server-bot",
+      "href": "https://github.com/Aedwon/marwie-server-bot"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "2026"
+    },
+    {
+      "k": "Platform",
+      "v": "Discord and web"
+    },
+    {
+      "k": "Status",
+      "v": "[Status]"
+    }
+  ],
+  "sections": [
+    {
+      "h": "The brief",
+      "p": [
+        "[Who it was for and what they needed, in two or three sentences.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I built",
+      "p": [
+        "Community bot for the Marwie AI App Builders server with moderation, tickets, temporary voice rooms, quizzes and anonymous questions. Settings are changed from a web control panel instead of slash commands.",
+        "[One or two sentences on the hardest part, and how you solved it.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "How it went",
+      "p": [
+        "[The result: numbers if you have them, or what people said.]"
+      ],
+      "kind": "text"
+    }
+  ],
+  "frame": {
+    "h": 260
+  }
+}
