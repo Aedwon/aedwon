@@ -173,6 +173,12 @@
   --term-prompt: #4ADE80;
   --sheet-bg: #ECEBE6;
   --sheet-border: transparent;
+  /* the writing tile on the wall and index: a dark card in dark mode instead of a bright sheet */
+  --paper-tile-bg: #1B1B20;
+  --paper-tile-border: #2A2A31;
+  --paper-tile-ink: #ECECEE;
+  --paper-tile-body: #B4B4BB;
+  --paper-tile-meta: #8B8B93;
 
   /* shelf (§7.4) */
   --shelf-top-edge: #34343B;
@@ -299,6 +305,11 @@
   --data-body: #FFFFFF;
   --sheet-bg: #FFFFFF;
   --sheet-border: #E6E4DE;
+  --paper-tile-bg: #FFFFFF;
+  --paper-tile-border: #E6E4DE;
+  --paper-tile-ink: #111113;
+  --paper-tile-body: #3F3F46;
+  --paper-tile-meta: #61616A;
 
   --shelf-top-edge: #FFFFFF;
   --shelf-front: #E1DFD8;
