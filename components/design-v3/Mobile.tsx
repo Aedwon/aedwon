@@ -29,7 +29,7 @@ const KINDS: [string, string, string[] | null][] = [
   ['All', 'all', null],
   ['Apps', 'phone', ['Mobile app', 'Android TV']],
   ['Bots', 'bot', ['Discord bot']],
-  ['Web', 'web', ['Website redesign', 'Web tool', 'Civic tech']],
+  ['Web', 'web', ['Website redesign', 'Web tool', 'Civic tech', 'Concept']],
   ['Tools', 'term', ['Developer tooling', 'Data system']],
   ['Open source', 'repo', ['Open source']],
   ['Writing', 'pen', ['Writing']],

@@ -22,7 +22,7 @@ const GAP = 48;
 const KIND: { label: string; types: string[] }[] = [
   { label: 'Apps', types: ['Mobile app', 'Android TV'] },
   { label: 'Bots', types: ['Discord bot'] },
-  { label: 'Web', types: ['Website redesign', 'Web tool', 'Civic tech'] },
+  { label: 'Web', types: ['Website redesign', 'Web tool', 'Civic tech', 'Concept'] },
   { label: 'Tools', types: ['Developer tooling', 'Data system'] },
   { label: 'Open source', types: ['Open source'] },
   { label: 'Writing', types: ['Writing'] },

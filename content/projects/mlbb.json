@@ -1,0 +1,69 @@
+{
+  "id": "mlbb",
+  "name": "MLBB Post-Game Extractor",
+  "type": "Web tool",
+  "media": "web",
+  "depth": "writeup",
+  "desc": "Browser-only tool that reads Mobile Legends post-game screenshots with OCR and exports the player stats to CSV, so match data stops being typed in by hand.",
+  "stack": [
+    "React",
+    "Vite",
+    "Tesseract.js"
+  ],
+  "links": [
+    {
+      "label": "mlbb-post-game-extractor.vercel.app",
+      "href": "https://mlbb-post-game-extractor.vercel.app"
+    },
+    {
+      "label": "github.com/Aedwon/mlbb-post-game-extractor",
+      "href": "https://github.com/Aedwon/mlbb-post-game-extractor"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "2026"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Runs",
+      "v": "Entirely in the browser"
+    }
+  ],
+  "sections": [
+    {
+      "h": "The brief",
+      "p": [
+        "[Who it was for and what they needed, in two or three sentences.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I built",
+      "p": [
+        "Batch OCR runs in Tesseract.js web workers, so a whole set of screenshots is read without leaving the page. A bounding box drawn over one team's column can be mirrored across the center for the other team, and saved as a preset for the next batch.",
+        "Before anything is exported, a review step groups the numbers by player and lets hero and role be corrected. The export is either a long file with one row per player or a wide file with 226 columns."
+      ],
+      "kind": "text",
+      "fig": "[MLBB Post-Game Extractor, in use]"
+    },
+    {
+      "h": "How it went",
+      "p": [
+        "[The result: numbers if you have them, or what people said.]"
+      ],
+      "kind": "text"
+    }
+  ],
+  "frame": {
+    "h": 325
+  }
+}

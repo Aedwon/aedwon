@@ -1,0 +1,61 @@
+{
+  "id": "kanlungan",
+  "name": "Kanlungan",
+  "type": "Concept",
+  "media": "web",
+  "depth": "writeup",
+  "desc": "Concept for a premium interior design studio and curated furniture shop. The brief sets two services, seven shop categories and the rule for what the shop is allowed to sell.",
+  "stack": [],
+  "links": [
+    {
+      "label": "github.com/Aedwon/kanlungan",
+      "href": "https://github.com/Aedwon/kanlungan"
+    }
+  ],
+  "facts": [
+    {
+      "k": "Role",
+      "v": "[Role]"
+    },
+    {
+      "k": "Year",
+      "v": "2026"
+    },
+    {
+      "k": "Platform",
+      "v": "Web"
+    },
+    {
+      "k": "Status",
+      "v": "In progress"
+    }
+  ],
+  "sections": [
+    {
+      "h": "The brief",
+      "p": [
+        "[Who it was for and what they needed, in two or three sentences.]"
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "What I built",
+      "p": [
+        "The studio is fictional, so the work so far is the brief. It locks two services, Full-Service Furnishing and a Design-Only Interior Package, and splits the shop into seven categories from seating to art. Collections run three ways: by room first, then by mood, then by material.",
+        "Every piece has to pass one test. Would Kanlungan confidently specify it in one of its own finished spaces?"
+      ],
+      "kind": "text",
+      "fig": "[Kanlungan, home page]"
+    },
+    {
+      "h": "How it went",
+      "p": [
+        "[The result: numbers if you have them, or what people said.]"
+      ],
+      "kind": "text"
+    }
+  ],
+  "frame": {
+    "h": 325
+  }
+}
