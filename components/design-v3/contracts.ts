@@ -10,6 +10,8 @@ export interface Req {
 export interface WallIndex2Handle {
   viewReq(req: Req): void;
   setDim(dim: number): void;
+  // where project i's picture is on screen right now (client pixels), or null if it isn't showing
+  rectOf(i: number): { left: number; top: number; width: number; height: number } | null;
 }
 
 export interface AboutVolumesHandle {

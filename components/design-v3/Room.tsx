@@ -59,6 +59,8 @@ const DOT = {
 
 
 // Nav underline anchor x positions (Room:131)
+// where the project page puts its picture
+const HERO = { x: 520, y: 108, w: 864, h: 520 };
 const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 } as const;
 
 export default function Room({ initialPath }: { initialPath: string }) {
@@ -88,6 +90,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
     shelfSel: (initial.kind === 'contact' ? 'contact' : 'about') as 'about' | 'contact',
     bookOpen: false,
     pOpen: startI >= 0, po: startI >= 0 ? 1 : 0, pn: 0,
+    cam: null as { tx: number; ty: number; sc: number } | null,
     n: 0,
     mx: -999, my: -999, mxs: -999, mys: -999, bk: 0, focus: -1,
     reduced: false, last: 0, raf: 0,
@@ -123,6 +126,15 @@ export default function Room({ initialPath }: { initialPath: string }) {
 
   const openProject = (i: number, doPush = true) => {
     s.pn += 1;
+    // the camera: fly in on the picture that was clicked so it lands where the page puts its own
+    s.cam = null;
+    const root = rootRef.current, r = !s.pOpen && !s.reduced && s.c < 0.05 ? wall2.current?.rectOf(i) : null;
+    if (root && r) {
+      const b = root.getBoundingClientRect(), k = ROOM_W / b.width;
+      const cx = (r.left - b.left + r.width / 2) * k, cy = (r.top - b.top + r.height / 2) * k;
+      const sc = Math.min(5, (HERO.w) / (r.width * k)), ox = ROOM_W / 2, oy = ROOM_H;
+      s.cam = { sc, tx: HERO.x + HERO.w / 2 - ox - sc * (cx - ox), ty: HERO.y + HERO.h / 2 - oy - sc * (cy - oy) };
+    }
     spread.current?.openReq({ v: String(i), n: s.pn });
     s.pOpen = true; setProjOpen(true);
     if (doPush) push(pathForScene({ kind: 'project', i }));
@@ -165,7 +177,7 @@ export default function Room({ initialPath }: { initialPath: string }) {
       if (s.reduced) s.c = s.cT;
       else { s.cv += ((tgt - s.c) * 48 - s.cv * 14) * dt; s.c += s.cv * dt; }
       if (dotc) drawDots(dt, dotc);
-      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.pOpen ? 0.55 : 0.42)));
+      s.po = s.reduced ? (s.pOpen ? 1 : 0) : Math.max(0, Math.min(1, s.po + (s.pOpen ? 1 : -1) * dt / (s.cam ? (s.pOpen ? 1.15 : 0.8) : (s.pOpen ? 0.55 : 0.42))));
       render();
       s.raf = requestAnimationFrame(loop);
     };
@@ -207,12 +219,16 @@ export default function Room({ initialPath }: { initialPath: string }) {
     const cl = (x: number) => Math.max(0, Math.min(1, x));
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const c = s.c, cc = cl(c);
-    const poE = s.po * s.po * (3 - 2 * s.po);
+    const sm = (x: number) => x * x * (3 - 2 * x);
+    const poE = sm(s.po);
 
     const wallEl = wallWrapRef.current, shelfEl = shelfWrapRef.current, pjEl = projRef.current;
     if (wallEl) {
-      wallEl.style.transform = `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
-      wallEl.style.opacity = String(+(((1 - cl((c - 0.08) / 0.34)) * (1 - poE)).toFixed(3))); // the wall is gone by c = 0.42
+      const cam = s.cam, kc = cam ? sm(cl(s.po / 0.7)) : 0, wf = cam ? 1 - sm(cl((s.po - 0.45) / 0.3)) : 1 - poE;
+      wallEl.style.transform = cam
+        ? `translate(${(cam.tx * kc).toFixed(2)}px, ${(cam.ty * kc).toFixed(2)}px) scale(${(1 + (cam.sc - 1) * kc).toFixed(4)})`
+        : `translateY(${(-0.55 * D * c).toFixed(2)}px) scale(${(1 - 0.035 * poE).toFixed(4)})`;
+      wallEl.style.opacity = String(+(((1 - cl((c - 0.08) / 0.34)) * wf).toFixed(3))); // the wall is gone by c = 0.42
       wallEl.style.maskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;
       (wallEl.style as unknown as Record<string, string>).webkitMaskImage = c < 0.002 ? 'none' : `linear-gradient(to bottom, #000 0, #000 38%, rgba(0,0,0,${(1 - cl(c * 5)).toFixed(3)}) 88%)`;
       wallEl.style.visibility = c > 0.999 ? 'hidden' : 'visible';
@@ -228,8 +244,9 @@ export default function Room({ initialPath }: { initialPath: string }) {
       shelfEl.setAttribute('aria-hidden', c < 0.5 ? 'true' : 'false');
     }
     if (pjEl) {
-      pjEl.style.opacity = poE.toFixed(3);
-      pjEl.style.translate = `0 ${((1 - poE) * 26).toFixed(1)}px`;
+      pjEl.style.opacity = s.cam ? (s.po > 0.001 ? '1' : '0') : poE.toFixed(3);
+      pjEl.style.translate = s.cam ? 'none' : `0 ${((1 - poE) * 26).toFixed(1)}px`;
+      pjEl.style.setProperty('--pr', (s.cam ? s.po : 1).toFixed(3));
       pjEl.style.visibility = s.po > 0.001 ? 'visible' : 'hidden';
       pjEl.style.pointerEvents = s.pOpen ? 'auto' : 'none';
       pjEl.setAttribute('aria-hidden', s.pOpen ? 'false' : 'true');

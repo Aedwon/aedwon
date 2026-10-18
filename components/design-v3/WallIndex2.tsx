@@ -182,6 +182,12 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   useImperativeHandle(ref, () => ({
     viewReq(req: Req) { applyViewReq(req); },
     setDim(dim: number) { s.dim = dim; },
+    rectOf(i: number) {
+      const el = s.k < 0.5 ? tileEls.current[i] : pvEls.current[i];
+      if (!el || (s.k >= 0.5 && parseFloat(el.style.opacity || '0') < 0.5)) return null;
+      const r = el.getBoundingClientRect();
+      return r.width > 0 ? { left: r.left, top: r.top, width: r.width, height: r.height } : null;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 

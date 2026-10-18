@@ -66,6 +66,9 @@ const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 // dark and flip to near-black in light (same pattern as WallIndex2.tsx:575).
 
 const CSS = `
+.v3ps-hero{opacity:clamp(0,calc((var(--pr,1) - .5) / .25),1)}
+.v3ps-in1{opacity:clamp(0,calc((var(--pr,1) - .7) / .22),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .7) / .22),1)) * 16px)}
+.v3ps-in2{opacity:clamp(0,calc((var(--pr,1) - .8) / .2),1);translate:0 calc((1 - clamp(0,calc((var(--pr,1) - .8) / .2),1)) * 16px)}
 .v3ps-ps{scrollbar-width:none}.v3ps-ps::-webkit-scrollbar{width:0}
 .v3ps-ul{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line-underline);transition:text-decoration-color .2s ease}
 .v3ps-ul:hover{text-decoration-color:var(--text-primary)}
@@ -279,6 +282,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
 
       {/* left page: stays put. Who it is, what it is, what it's made of; then the details as glanceable icons */}
       <div ref={leftRef} style={{ position: 'absolute', left: 56, top: 108, bottom: 36, width: 392, display: 'flex', flexDirection: 'column', opacity: 1 }}>
+        <div className="v3ps-in1" style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <button className="v3ps-tb" type="button" onClick={onBack} style={{ alignSelf: 'flex-start', fontSize: 14, height: 32, marginBottom: 22 }}>{backText}</button>
         <Ed id={p.id} path="name" value={p.name} as="h1" style={{ margin: 0, fontSize: 46, fontWeight: 600, letterSpacing: '-0.045em', lineHeight: 1.02 }} />
         <Ed id={p.id} path="desc" value={p.desc} as="p" style={{ margin: '16px 0 0', fontSize: 16.5, lineHeight: 1.6, color: 'var(--text-secondary)' }} />
@@ -330,13 +334,14 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
             <span style={{ maxWidth: '100%', fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nx.name}</span>
           </button>
         </div>
+        </div>
       </div>
 
       {/* right page: the work, and the story if there is one */}
       <div ref={scrollerRef} className="v3ps-ps" onScroll={onScroll} style={{ position: 'absolute', left: 520, right: 0, top: 0, bottom: 0, overflowY: 'auto' }}>
         <div ref={rightRef} style={{ padding: '108px 56px 120px 0', opacity: 1 }}>
           {/* hero stage */}
-          <div style={{ position: 'relative', height: 520, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
+          <div className="v3ps-hero" style={{ position: 'relative', height: 520, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
             <ImageSlot id={p.id} slot="hero" img={p.hero} frame={{ position: 'absolute', inset: 0 }}>
               <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
                 <MediaBlock
@@ -350,6 +355,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
               </div>
             </ImageSlot>
           </div>
+          <div className="v3ps-in2">
           {p.hero?.src && (p.hero.caption || editing) && (
             <Ed id={p.id} path="hero.caption" value={p.hero.caption || ''} as="p" optional placeholder="Add a caption" style={{ margin: '12px 0 0', fontSize: 13.5, color: 'var(--text-label)' }} />
           )}
@@ -435,6 +441,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
               </section>
             ))}
             <AddSection id={p.id} count={secs.length} />
+          </div>
           </div>
         </div>
       </div>
