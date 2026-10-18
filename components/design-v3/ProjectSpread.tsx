@@ -27,6 +27,7 @@ import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
 import { setStudio, useStudio } from './studio/store';
 import SystemViz from './SystemViz';
+import BotViz, { isBotViz } from './BotViz';
 import WishCounter from './WishCounterLazy';
 import { useTheme } from '@/lib/design-v3/theme';
 
@@ -446,7 +447,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                         </div>
                         {/* holder must not clip: the viz runs 3px taller than vh by design */}
                         <div style={{ height: it.vh, marginTop: 8 }}>
-                          <SystemViz which={it.which} />
+                          {isBotViz(it.which) ? <BotViz which={it.which} /> : <SystemViz which={it.which} />}
                         </div>
                       </div>
                     ))}

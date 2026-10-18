@@ -43,42 +43,6 @@ export const FLOWS: Record<string, FlowSpec> = {
     ],
     caption: 'sign-up through to a synced bracket',
   },
-  oppo: {
-    label: 'Verification, tickets and scheduled embeds all run through one bot, which assigns team roles and collects a rating when a ticket closes',
-    nodes: [
-      { id: 'verify', x: 68, y: 60, label: 'Verify', sub: 'UID, server', tone: 'a' },
-      { id: 'ticket', x: 68, y: 130, label: 'Tickets', sub: '4 categories', tone: 'a' },
-      { id: 'embed', x: 68, y: 200, label: 'Embeds', sub: 'scheduled', tone: 'a' },
-      { id: 'bot', x: 260, y: 130, label: 'OPPO bot', sub: 'MySQL', tone: 'c', w: 104 },
-      { id: 'roles', x: 452, y: 80, label: 'Member role', sub: 'and nickname', tone: 'b' },
-      { id: 'rating', x: 452, y: 180, label: '5 star rating', sub: 'by DM on close', tone: 'b' },
-    ],
-    edges: [
-      { from: 'verify', to: 'bot', step: 0 },
-      { from: 'ticket', to: 'bot', step: 1 },
-      { from: 'embed', to: 'bot', step: 2 },
-      { from: 'bot', to: 'roles', step: 3 },
-      { from: 'bot', to: 'rating', step: 4 },
-    ],
-  },
-  msl: {
-    label: 'Verification, quizzes and daily quests feed one XP and Event Points system, which drives levels, booster perks and a raffle export',
-    nodes: [
-      { id: 'verify', x: 68, y: 60, label: '/verify', sub: 'UID, server', tone: 'a' },
-      { id: 'quiz', x: 68, y: 130, label: '/quiz', sub: 'speed bonus', tone: 'a' },
-      { id: 'quests', x: 68, y: 200, label: '/quests', sub: '3 daily', tone: 'a' },
-      { id: 'xp', x: 260, y: 130, label: 'XP + EP', sub: 'levels', tone: 'c', w: 104 },
-      { id: 'perks', x: 452, y: 80, label: 'Booster perks', sub: 'colors, roles', tone: 'b' },
-      { id: 'raffle', x: 452, y: 180, label: 'Raffle', sub: 'CSV for prizes', tone: 'b' },
-    ],
-    edges: [
-      { from: 'verify', to: 'xp', step: 0 },
-      { from: 'quiz', to: 'xp', step: 1 },
-      { from: 'quests', to: 'xp', step: 2 },
-      { from: 'xp', to: 'perks', step: 3 },
-      { from: 'xp', to: 'raffle', step: 4 },
-    ],
-  },
   marwie: {
     label: 'A setting changed on the website is queued in a database, the bot is woken by a webhook ping, applies it to the server, and the status is shown back on the site',
     nodes: [
@@ -98,40 +62,4 @@ export const FLOWS: Record<string, FlowSpec> = {
     ],
     caption: 'the bot never serves HTTP, the site never reaches it directly',
   },
-};
-
-FLOWS['msl-raffle'] = {
-  label: 'Active boosters enter the weekly raffle, student leaders are filtered out, normal slots go first, extra slots go to the people who have won least, and the export lists unverified rows last',
-  nodes: [
-    { id: 'boost', x: 70, y: 130, label: 'Boosters', sub: 'active perks', tone: 'a' },
-    { id: 'filter', x: 210, y: 60, label: 'Filter', sub: 'no MSL leaders', tone: 'c' },
-    { id: 'normal', x: 210, y: 200, label: 'Normal slots', sub: '1 win a month', tone: 'c' },
-    { id: 'excess', x: 350, y: 130, label: 'Extra slots', sub: 'fewest wins', tone: 'c' },
-    { id: 'csv', x: 460, y: 60, label: 'CSV export', sub: 'unverified last', tone: 'b' },
-  ],
-  edges: [
-    { from: 'boost', to: 'filter', step: 0 },
-    { from: 'filter', to: 'normal', step: 1 },
-    { from: 'normal', to: 'excess', step: 2 },
-    { from: 'excess', to: 'csv', step: 3 },
-  ],
-  caption: 'weekly, with a catch-up draw if the bot was down',
-};
-
-FLOWS['oppo-match'] = {
-  label: 'A game result is logged and both teams have five minutes to acknowledge it. If both do, or the time runs out, the result is final. A dispute pauses the timer',
-  nodes: [
-    { id: 'result', x: 68, y: 60, label: 'Game result', sub: '/game_result', tone: 'a' },
-    { id: 'window', x: 260, y: 60, label: 'Ack window', sub: '5 minutes', tone: 'c' },
-    { id: 'dispute', x: 260, y: 190, label: 'Dispute', sub: 'timer paused', tone: 'c' },
-    { id: 'final', x: 452, y: 60, label: 'Result final', sub: 'both teams ack', tone: 'b' },
-    { id: 'auto', x: 452, y: 150, label: 'Auto-ack', sub: 'time ran out', tone: 'b' },
-  ],
-  edges: [
-    { from: 'result', to: 'window', step: 0 },
-    { from: 'window', to: 'final', step: 1 },
-    { from: 'window', to: 'dispute', step: 1 },
-    { from: 'window', to: 'auto', step: 2 },
-  ],
-  caption: 'from result to acknowledgement',
 };

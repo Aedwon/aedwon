@@ -33,7 +33,7 @@
 import { useLayoutEffect, useRef, useState, type RefObject, type ReactNode } from 'react';
 import { useTheme } from '@/lib/design-v3/theme';
 
-interface Pal {
+export interface Pal {
   bg: string;      // sheet background / punched-through dividers
   fg: string;      // primary text + filled chips and bars
   onFill: string;  // text sitting on a filled chip
@@ -57,7 +57,7 @@ interface Pal {
   band2: string;   // insight band, second half
 }
 
-const DARK: Pal = {
+export const DARK: Pal = {
   bg: '#0c0c0e', fg: '#ededed', onFill: '#0c0c0e', sec: '#a1a1aa', lbl: '#8a8a93', red: '#f2555a',
   track: '#1f1f24', hair2: '#26262c', offBorder: '#18181b', colRule: '#1a1a1e', hatchStripe: '#111114',
   div: '#2a2a30', sep: '#3a3a42', under: '#4a4a52', frame: '#6b6b73', bezel: '#2e2e35',
@@ -65,7 +65,7 @@ const DARK: Pal = {
   band1: 'rgba(237,237,237,0.55)', band2: 'rgba(237,237,237,0.22)',
 };
 
-const LIGHT: Pal = {
+export const LIGHT: Pal = {
   bg: 'var(--surface-media)', fg: 'var(--text-primary)', onFill: 'var(--text-on-inverse)',
   sec: 'var(--text-secondary)', lbl: 'var(--text-label)', red: '#f2555a',
   track: 'var(--line-track)', hair2: 'var(--line-hairline-2)', offBorder: 'var(--line-hairline)',
@@ -76,11 +76,11 @@ const LIGHT: Pal = {
   band1: 'rgba(17,17,20,0.55)', band2: 'rgba(17,17,20,0.22)',
 };
 
-const mono = { fontFamily: "'Geist Mono', monospace" } as const;
+export const mono = { fontFamily: "'Geist Mono', monospace" } as const;
 
-const clamp01 = (k: number) => Math.max(0, Math.min(1, k));
-const easeInOut = (k: number) => { k = clamp01(k); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
-const easeOut = (k: number) => 1 - Math.pow(1 - clamp01(k), 3);
+export const clamp01 = (k: number) => Math.max(0, Math.min(1, k));
+export const easeInOut = (k: number) => { k = clamp01(k); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+export const easeOut = (k: number) => 1 - Math.pow(1 - clamp01(k), 3);
 
 const PH: Record<string, string[]> = {
   roadmap: ['Read the inputs', 'Plan the stretch', 'Order topics', 'Size each day', 'Add reviews', 'Place the mock', 'Split into sittings', 'Freeze today'],
@@ -93,7 +93,7 @@ const PH: Record<string, string[]> = {
 // One clock per visual, driven by the display's frame rate (SystemViz 223-241).
 // Reduced motion: the loop never starts; a representative still is applied once.
 // Each visual computes its own a/p from the clock inside its apply function.
-function useVizClock(elapsed: RefObject<number>, raf: RefObject<number>, applyRef: RefObject<() => void>, pausedRef: RefObject<boolean>, reducedRef: RefObject<boolean>, onReduced: () => void) {
+export function useVizClock(elapsed: RefObject<number>, raf: RefObject<number>, applyRef: RefObject<() => void>, pausedRef: RefObject<boolean>, reducedRef: RefObject<boolean>, onReduced: () => void) {
   useLayoutEffect(() => {
     const reduced = typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     reducedRef.current = reduced;
@@ -114,7 +114,7 @@ function useVizClock(elapsed: RefObject<number>, raf: RefObject<number>, applyRe
   }, []);
 }
 
-function Caption({ P, numRef, nameRef, paused, onToggle }: { P: Pal; numRef: RefObject<HTMLSpanElement | null>; nameRef: RefObject<HTMLSpanElement | null>; paused: boolean; onToggle: () => void }) {
+export function Caption({ P, numRef, nameRef, paused, onToggle }: { P: Pal; numRef: RefObject<HTMLSpanElement | null>; nameRef: RefObject<HTMLSpanElement | null>; paused: boolean; onToggle: () => void }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 16, paddingTop: 12, borderTop: '1px solid ' + P.track }}>
       <span style={{ fontSize: 13, color: P.sec }}>
@@ -130,7 +130,7 @@ function Caption({ P, numRef, nameRef, paused, onToggle }: { P: Pal; numRef: Ref
 }
 
 // Play/Pause is the only React state in a visual; the ref mirrors it for the loop.
-function usePaused() {
+export function usePaused() {
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
   const toggle = () => setPaused((v) => {
@@ -146,7 +146,7 @@ interface CaptionRefs {
 }
 
 // Shared caption applier.
-function putCaption(refs: CaptionRefs, num: string, name: string) {
+export function putCaption(refs: CaptionRefs, num: string, name: string) {
   if (refs.num.current) refs.num.current.textContent = num;
   if (refs.name.current) refs.name.current.textContent = name;
 }

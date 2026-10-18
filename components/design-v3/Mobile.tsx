@@ -14,6 +14,7 @@ import FlowDiagram from './FlowDiagram';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
+import BotViz, { isBotViz } from './BotViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
 import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
@@ -877,7 +878,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       ))}
                       <div style={{ position: 'relative', width: CW, height: (parseInt(it.vh, 10) * CW / 600).toFixed(0) + 'px', overflow: 'hidden' }}>
                         <div style={{ position: 'absolute', left: 0, top: 0, width: 600, transformOrigin: '0 0', scale: (CW / 600).toFixed(4) }}>
-                          <SystemViz which={it.which} hintSize="600px,370px" />
+                          {isBotViz(it.which) ? <BotViz which={it.which} /> : <SystemViz which={it.which} hintSize="600px,370px" />}
                         </div>
                       </div>
                     </div>
