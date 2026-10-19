@@ -54,7 +54,7 @@
     {
       "h": "The server in numbers",
       "p": [
-        "These come from the bot's own analytics, as a snapshot. They cover the days the bot recorded, not every day since the first commit."
+        "These come from the bot's own analytics and refresh once a day. They cover the days the bot recorded, not every day since the first commit."
       ],
       "kind": "systems",
       "items": [
@@ -63,7 +63,7 @@
           "which": "msl-numbers",
           "vh": "430px",
           "p": [
-            "Over 168 recorded days the server sent 580,927 messages, logged 9,552 voice hours and took in 32,922 joins. Most of the joins, 26,434, came in the first 18 days of October. The bot verified 2,056 members and handled 141 support tickets in that time."
+            "The server sent more than half a million messages and logged thousands of voice hours in the recorded period, and the bot verified members and handled support tickets throughout. Joins jump sharply in October, which is the biggest swing in the series."
           ]
         }
       ]

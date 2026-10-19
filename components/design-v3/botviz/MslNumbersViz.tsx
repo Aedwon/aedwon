@@ -1,11 +1,13 @@
 'use client';
 
-// The MSL server in numbers: a dated snapshot from the bot's analytics API (lib/design-v3/data/msl-stats.json,
-// refreshed with scripts/pull-msl-stats.mjs). Aggregates only. Still, so there is no clock or pause button.
+// The MSL server in numbers. It shows the saved snapshot (lib/design-v3/data/msl-stats.json, refreshed with
+// scripts/pull-msl-stats.mjs) and swaps in the daily numbers from /api/msl-stats when that answers.
+// Aggregates only. Still, so there is no clock or pause button.
 
-import type { CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { mono, type Pal } from '../SystemViz';
-import stats from '@/lib/design-v3/data/msl-stats.json';
+import snapshot from '@/lib/design-v3/data/msl-stats.json';
+import { isMslStats, type MslStats } from '@/lib/msl-stats';
 
 const nf = new Intl.NumberFormat('en-US');
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -14,6 +16,16 @@ const dayLabel = (iso: string) => { const [, m, d] = iso.split('-'); return Numb
 const hourLabel = (h: number) => (h === 0 ? '12a' : h < 12 ? h + 'a' : h === 12 ? '12p' : h - 12 + 'p');
 
 export default function MslNumbersViz({ P }: { P: Pal }) {
+  const [stats, setStats] = useState<MslStats>(snapshot as MslStats);
+  const [fresh, setFresh] = useState(false);
+  useEffect(() => {
+    let live = true;
+    fetch('/api/msl-stats')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (live && isMslStats(j)) { setStats(j); setFresh(true); } })
+      .catch(() => {});
+    return () => { live = false; };
+  }, []);
   const cells: [string, string][] = [
     ['messages', nf.format(stats.totals.messages)],
     ['voice hours', nf.format(stats.totals.voiceHours)],
@@ -68,7 +80,7 @@ export default function MslNumbersViz({ P }: { P: Pal }) {
         </div>
       </div>
       <div style={{ paddingTop: 12, borderTop: '1px solid ' + P.track, fontSize: 11, fontStyle: 'italic', color: P.lbl, lineHeight: 1.5 }}>
-        Snapshot from the bot&apos;s analytics API, pulled {dayLabel(stats.pulledAt)} {stats.pulledAt.slice(0, 4)}. {stats.daysRecorded} recorded days from {dayLabel(stats.firstDay)}, so *{MONTHS[Number(first.slice(5)) - 1]} starts on the {Number(stats.firstDay.slice(8))}th and {MONTHS[Number(last.slice(5)) - 1]} ends on the {Number(stats.lastDay.slice(8))}th.
+        {fresh ? 'From the bot&apos;s analytics API, updated daily, last pulled' : 'Snapshot from the bot&apos;s analytics API, pulled'} {dayLabel(stats.pulledAt)} {stats.pulledAt.slice(0, 4)}. {stats.daysRecorded} recorded days from {dayLabel(stats.firstDay)}, so *{MONTHS[Number(first.slice(5)) - 1]} starts on the {Number(stats.firstDay.slice(8))}th and {MONTHS[Number(last.slice(5)) - 1]} ends on the {Number(stats.lastDay.slice(8))}th.
       </div>
     </>
   );
