@@ -65,6 +65,7 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 
 - Project content lives in `content/projects/<id>.json` (one file per project). `lib/design-v3/data/projects.ts` only holds the types and loads those files. Do not move copy back into TypeScript.
 - The user edits projects on the page through the local studio (localhost dev only). See [`docs/studio.md`](docs/studio.md) for use, file format, safety rules and limits.
+- The private pricing tool keeps its data in a separate private repo (`../aedwon-pricing`). Never commit rates, hours from settings, or client data to this public repo. See [`docs/pricing.md`](docs/pricing.md).
 - `Room.tsx` and `Mobile.tsx` must export only their default component. Otherwise every content save reloads the whole page in dev.
 
 ## Delegate Bulk Work to a Haiku Subagent
