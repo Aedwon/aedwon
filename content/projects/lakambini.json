@@ -5,8 +5,12 @@
   "media": "web",
   "depth": "note",
   "desc": "A redesign of the website for Lakambini, an events and creative agency I worked with. It's rebuilt around the agency's real events and client work.",
-  "stack": [],
-  "stackText": "Next.js · TypeScript · Tailwind CSS · Framer Motion",
+  "stack": [
+    "Next.js",
+    "TypeScript",
+    "Tailwind",
+    "Framer Motion"
+  ],
   "links": [
     {
       "label": "lakambini-redesign.vercel.app",

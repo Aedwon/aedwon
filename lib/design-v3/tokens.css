@@ -407,3 +407,6 @@ button, a, .v3tbtn, .v3rn { -webkit-tap-highlight-color: transparent; -webkit-to
   .v3ms[data-live] .v3ms-bob, .v3ms:hover .v3ms-bob, a:hover .v3ms .v3ms-bob { animation: v3ms-bob 2.6s ease-in-out infinite; }
   .v3ms[data-live] .v3ms-eyes, .v3ms:hover .v3ms-eyes, a:hover .v3ms .v3ms-eyes { animation: v3ms-blink 5.2s ease-in-out infinite; }
 }
+
+/* the traced Tesseract.js mark is an outline with holes, so it needs even-odd fill */
+svg[aria-label="Tesseract.js"] path { fill-rule: evenodd; }
