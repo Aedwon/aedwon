@@ -7,10 +7,10 @@ import { StudioError } from './server';
 const run = promisify(execFile);
 const STUDIO_PATHS = ['content/projects', 'content/site', 'public/projects', 'public/about'];
 
-async function git(args: string[], timeout = 20000): Promise<string> {
+export async function git(args: string[], timeout = 20000, cwd = process.cwd()): Promise<string> {
   try {
     const { stdout } = await run('git', args, {
-      cwd: process.cwd(), timeout, maxBuffer: 4 * 1024 * 1024,
+      cwd, timeout, maxBuffer: 4 * 1024 * 1024,
       env: { ...process.env, GIT_TERMINAL_PROMPT: '0' }, // never wait on a prompt
     });
     return stdout;
