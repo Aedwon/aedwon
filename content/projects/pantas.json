@@ -69,7 +69,14 @@
         "Answering a practice question runs one operation. It checks the choice, turns correctness and response time into a rating, loads the question's review state (or creates it), runs the FSRS scheduler and saves the next due date. The same step writes a review log with the state before the review, the rating used, correctness, response time and the version of the rating rule.",
         "The scheduler uses FSRS-6, which has 21 default weights, a trainable decay value and a separate formula for same-day reviews, and the review log landed in that change along with a cross-check against an implementation outside this codebase."
       ],
-      "fig": "[5s silent loop: answer → next review date]"
+      "fig": "[5s silent loop: answer → next review date]",
+      "img": {
+        "src": "/projects/pantas/sections-1-img-220e236f.webp",
+        "alt": "",
+        "w": 1800,
+        "h": 1124,
+        "caption": "Web view"
+      }
     },
     {
       "kind": "systems",
