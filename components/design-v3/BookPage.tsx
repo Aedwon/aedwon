@@ -76,9 +76,9 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
     const slot = <ImageSlot id={sid} slot={`pages.${si}.img`} img={p.img as Img | undefined} fit="cover" frame={frame}>{placeholder}</ImageSlot>;
     return editing ? <span style={{ display: 'contents' }} onClick={stop}>{slot}</span> : slot;
   };
-  const E = (path: string, value: string, style: React.CSSProperties) => {
+  const E = (path: string, value: string, style: React.CSSProperties, placeholder?: string) => {
     if (!sid || si < 0) return <span style={style}>{value}</span>;
-    const node = <Ed id={sid} path={`pages.${si}.${path}`} value={value} style={style} />;
+    const node = <Ed id={sid} path={`pages.${si}.${path}`} value={value} style={style} placeholder={placeholder} />;
     return editing ? <span style={{ display: 'contents' }} onClick={stop}>{node}</span> : node;
   };
   const copy = (e: React.MouseEvent) => {
@@ -209,7 +209,7 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
                   ? <LogoSlot id={sid} path={`pages.${si}.logos.${i}`} value={(p.logos as string[] | undefined)?.[i]} label={o} box={{ height: 44, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }} />
                   : <span style={{ fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' }}>[logo]</span>}
                 {E(`orgs.${i}`, o, { fontSize: 14, fontWeight: 600 })}
-                {E(`blurbs.${i}`, (p.blurbs as string[] | undefined)?.[i] || '[what you built for them]', { fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' })}
+                {(editing || (p.blurbs as string[] | undefined)?.[i]) && E(`blurbs.${i}`, (p.blurbs as string[] | undefined)?.[i] || '', { fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' }, 'What you built for them')}
               </span>
             ))}
           </div>
