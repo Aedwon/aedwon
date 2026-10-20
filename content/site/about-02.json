@@ -12,7 +12,7 @@
       "eyebrow": "CHAPTER 1 · RESEARCH FIRST",
       "big": "80%",
       "bigSize": "176px",
-      "body": "of every project is research and planning, before any code."
+      "body": "of every project timeline is research and planning, before any code. I like being fully informed of the market and the competitors first before I start designing the system. Business instinct + supporting data is a killer combination."
     },
     {
       "t": "The optimal choice",
@@ -20,13 +20,13 @@
       "eyebrow": "CHAPTER 2 · OPTIMIZE",
       "title": "Is this the most optimal choice?",
       "titleSize": "40px",
-      "body": "I obsess over it. Every architecture and every workflow gets the same question before it stays."
+      "body": "I obsessively ask this question. Every single decision goes through a stringent review if, given the situation and scope, it is the most appropriate to make. I am very fussy with details. Some might find it to be \"nitpicking\" but I disagree. I think what it is is just attention to detail."
     },
     {
       "t": "Daily kit",
       "kind": "list",
       "eyebrow": "CHAPTER 3 · DAILY KIT",
-      "title": "What I build with",
+      "title": "Tools I build with",
       "items": [
         {
           "a": "Claude Code",

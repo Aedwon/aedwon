@@ -19,23 +19,29 @@
       "t": "A photo",
       "kind": "photo",
       "slot": "[a photo of you]",
-      "caption": "[where this was taken]"
+      "caption": "Taken at Studio I Might, QC for PSYSC",
+      "img": {
+        "src": "/about/about-01/pages-1-img-99684655.webp",
+        "alt": "",
+        "w": 1701,
+        "h": 2048
+      }
     },
     {
       "kind": "text",
       "eyebrow": "CHAPTER 2",
       "title": "High school",
       "titleSize": "44px",
-      "body": "[Where you went, and what you were into back then. The first thing you ever built, if you remember it.]",
-      "meta": "[School] · [years]"
+      "body": "I went to Philippine Science High School - SRC where I was first exposed to coding at 7th Grade. Since then, my interest and passion for tech things have only grown.",
+      "meta": "Pisay | Bio-CS & Bio-Chem"
     },
     {
       "kind": "text",
       "eyebrow": "CHAPTER 3",
       "title": "College",
       "titleSize": "44px",
-      "body": "[What you studied, and what you ended up doing outside class: the orgs, the events, the first real projects.]",
-      "meta": "[University] · [course] · [years]"
+      "body": "I studied Computer Science at the University of the Philippines Diliman, while also on a DOST Merit Scholarship. I'm the type you'd call BS Org, as you'll see in my affiliations and experience.",
+      "meta": "UP Diliman · BSCS (?)"
     },
     {
       "t": "Why “Aedwon”",
@@ -43,7 +49,7 @@
       "eyebrow": "CHAPTER 4 · ONLINE, I GO BY",
       "big": "Aedwon",
       "bigSize": "86px",
-      "body": "Online, that’s me. [Where the name comes from, in two sentences.]"
+      "body": "Online, that’s me. The origin of this can be traced back when I started watching SAO. The main character [Kiri]gaya Kazu[to] turned his alias to Kirito. Using that same mechanism, I turned [Ae]rol [Dw]ayne Balay[on] to Aedwon :)"
     }
   ]
 }
