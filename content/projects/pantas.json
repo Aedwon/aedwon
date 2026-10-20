@@ -4,7 +4,7 @@
   "type": "Mobile app",
   "media": "phone",
   "depth": "case",
-  "desc": "Android exam reviewer for the Philippine Civil Service Examination and UPCAT. It works offline, keeps study progress in an encrypted database on the phone, and schedules reviews on the device with FSRS-6.",
+  "desc": "PWA exam reviewer for the Philippine Civil Service Examination and College Entrance Tests (CETs). It works offline, keeps study progress in an encrypted database on the phone, and schedules reviews on the device with FSRS-6.",
   "stack": [
     "Flutter",
     "Dart",
@@ -14,7 +14,7 @@
   ],
   "links": [
     {
-      "label": "pantas.app",
+      "label": "pantas.study",
       "href": "https://pantas.app"
     }
   ],
@@ -33,7 +33,7 @@
     },
     {
       "k": "Timeline",
-      "v": "[Start] – present"
+      "v": "May 2026 – present"
     },
     {
       "k": "Scale",
@@ -59,17 +59,7 @@
       "kind": "text",
       "h": "Why Pantas",
       "p": [
-        "Pantas is a reviewer for people preparing for the Civil Service Examination (Professional level) and UPCAT, with four more Philippine exams planned after launch. It has lessons, quizzes, timed mock exams that sample from each exam's published subject weights, and a daily study plan.",
-        "The whole app works without a connection. Lessons and questions ship inside the install, and a student's answers are saved on the phone first. Only six things need a network: sign-in, sync, purchases, Pro content, the shareable Wrapped page, and account export or deletion."
-      ]
-    },
-    {
-      "kind": "text",
-      "h": "Keeping study state local",
-      "p": [
-        "Pantas keeps its study state in a Drift database on the phone, so a quiz never waits on a request. The database holds attempts, review state, quiz sessions, lesson progress, preferences, review logs and a queue of changes waiting to sync.",
-        "The database is encrypted. Pantas generates a 32-byte key with Random.secure(), stores it through flutter_secure_storage, and opens SQLite3MultipleCiphers in SQLCipher compatibility mode. The repo records the migration details too, because getting the cipher or key storage wrong would lock an existing install out of its own data.",
-        "Sync is built on that local state and wired into the app. It runs only for a named account that RevenueCat reports as Pro. Changes go into a persistent queue, upload in batches 5 seconds after the last one, and reach the student's other devices through Firestore listeners. Newest write wins per row, and lesson and question content never syncs. A real-device sync check is still on my list before release."
+        "Pantas is a reviewer for people preparing for Philippine exams such as CSE, CETs, scholarships, uniformed personnel exams, with more exams planned after launch. It has lessons, quizzes, timed mock exams that sample from each exam's published subject weights, and a daily study plan."
       ]
     },
     {
@@ -77,7 +67,7 @@
       "h": "What happens after an answer",
       "p": [
         "Answering a practice question runs one operation. It checks the choice, turns correctness and response time into a rating, loads the question's review state (or creates it), runs the FSRS scheduler and saves the next due date. The same step writes a review log with the state before the review, the rating used, correctness, response time and the version of the rating rule.",
-        "The scheduler started as FSRS-4.5 in May 2026. On 8 July it moved to FSRS-6, which has 21 default weights, a trainable decay value and a separate formula for same-day reviews, and the review log landed in that change along with a cross-check against an implementation outside this codebase. Everyone still runs the published default weights. Fitting weights to one student's history is specified but not written."
+        "The scheduler uses FSRS-6, which has 21 default weights, a trainable decay value and a separate formula for same-day reviews, and the review log landed in that change along with a cross-check against an implementation outside this codebase."
       ],
       "fig": "[5s silent loop: answer → next review date]"
     },
@@ -85,7 +75,7 @@
       "kind": "systems",
       "h": "How Pantas works",
       "p": [
-        "Five systems, from the daily plan to a second device. Study loop, Insights (the per-student archetypes), and Pro and backup are on main. The adaptive roadmap and the statistical confidence checks in Insights are built on a branch and still in review. The per-student optimizer is only specified."
+        "This has five systems, from the daily plan to a second device. Every single component is used by the adaptive roadmap engine to provide users with personalized roadmaps for their studying journey."
       ],
       "items": [
         {
@@ -93,7 +83,7 @@
           "which": "roadmap",
           "vh": "370px",
           "p": [
-            "Candidate, not on main yet. Each day, Pantas plans the student's day from what's left and how they actually study. The last stretch before the exam is review-only, which is the final 7 days or the final quarter of the time left, whichever is shorter. Topics go weakest first, prerequisites first. What's left is spread over the study days left, due reviews are added up to the student's typical daily answers, one mock lands 1 to 6 days before the exam, and today is split into short sittings and frozen.",
+            "Each day, Pantas plans the student's day from what's left and how they actually study. The last stretch before the exam is review-only, which is the final 7 days or the final quarter of the time left, whichever is shorter. Topics go weakest first, prerequisites first. What's left is spread over the study days left, due reviews are added up to the student's typical daily answers, one mock lands 1 to 6 days before the exam, and today is split into short sittings and frozen.",
             "It rebuilds when something changes, like the exam date or new content, and logs the cause."
           ]
         },
@@ -102,7 +92,7 @@
           "which": "study",
           "vh": "370px",
           "p": [
-            "The student never rates themselves. The app grades each answer from correctness and time. A wrong answer is Again. A right answer slower than 25 seconds (or twice the student's own median, if that's longer) is Hard. A right answer under 8 seconds on a question already scheduled 21 days out is Easy, and everything else is Good. FSRS then decides when the question comes back. It's all written to the encrypted local database, so it works offline."
+            "The student never rates themselves. The app grades each answer from correctness and time. A wrong answer is Again. A right answer slower than 25 seconds (or twice the student's own median, if that's longer) is Hard. A right answer under 8 seconds on a question already scheduled 21 days out is Easy, and everything else is Good. FSRS then decides when the question comes back."
           ]
         },
         {
@@ -110,8 +100,7 @@
           "which": "content",
           "vh": "370px",
           "p": [
-            "Lessons are Markdown and questions are YAML. A question passes a checklist and a blind solve by someone other than its author, then an importer rejects mistakes like a wrong choice with no explanation. Questions waiting on a figure stay inactive until it's drawn.",
-            "Content ships inside the app, and updates never touch a student's progress."
+            "Lessons are Markdown and questions are YAML (encrypted on delivery). A question passes a checklist and a blind solve by someone other than its author, then an importer rejects mistakes like a wrong choice with no explanation. Questions waiting on a figure stay inactive until it's drawn."
           ]
         },
         {
@@ -119,7 +108,7 @@
           "which": "insights",
           "vh": "410px",
           "p": [
-            "Pantas compares a student's own answers in two conditions, computed on the phone. The figures show once both sides have data, but a sentence about a tendency appears only when a standard test says the gap is unlikely to be chance. Nothing unlocks at a fixed day or session count. This is the candidate part. The shipping version still keeps archetypes behind a 14-session floor.",
+            "Pantas compares a student's own answers in two conditions. The figures show once both sides have data, but a sentence about a tendency appears only when a standard test says the gap is unlikely to be chance. Nothing unlocks at a fixed day or session count.",
             "The visual shows stamina, the first half of each mock against the second, checked with a two-proportion z-test. Other tendencies use Welch's t-test on log times, an exact binomial test and a Wilson interval. The student shown is an example."
           ]
         },
@@ -128,7 +117,7 @@
           "which": "pro",
           "vh": "370px",
           "p": [
-            "Pro is decided on the phone from Google Play through RevenueCat, so it works offline and a stale answer never drops a student to Free. Backup turns on only when three things are true. The student is signed in with Google, the phone shows Pro, and the server has set a Pro flag from RevenueCat's signed webhook events.",
+            "Pro is decided on the servers through RevenueCat, so it works offline and a stale answer never drops a student to Free. Backup turns on only when three things are true. The student is signed in with Google, the phone shows Pro, and the server has set a Pro flag from RevenueCat's signed webhook events.",
             "If Pro ends, backup stops and nothing is deleted from the phone."
           ]
         }
@@ -140,15 +129,14 @@
       "p": [
         "Lessons are Markdown and questions are YAML, and both pass tooling before they get packed into the app. A validator checks schema and content errors. Question Studio, a local review tool, shows flagged issues and duplicate stems for approval. Questions that need a figure stay inactive until the illustration exists.",
         "The corpus is 158 lessons and 3,163 questions. A QA round audited every question against a revised standard, added 799 and corrected 19 answer keys, and brought every lesson to at least 20 active questions. 134 questions are still flagged for my review.",
-        "The content model keeps two meanings of difficulty apart. Authored difficulty only orders the writing, from easier questions toward exam level, and isn't part of the runtime question model. FSRS difficulty belongs to one student's review state and comes from their answers.",
-        "For the shipped database, a seed writer runs exported content through the project's parsers and writes content.db. It hashes the finished file and writes a short digest into a Dart constant. The installer compares that digest to tell that the bundled content changed, instead of relying on someone to bump a version by hand."
+        "The content model keeps two meanings of difficulty apart. Authored difficulty only orders the writing, from easier questions toward exam level, and isn't part of the runtime question model. FSRS difficulty belongs to one student's review state and comes from their answers."
       ]
     },
     {
       "kind": "status",
       "h": "Status and what’s next",
       "p": [
-        "Pantas is pre-launch and Android-only. I keep unfinished work out of the feature claims until its runtime path is connected."
+        "Pantas is pre-launch and PWA. Android and iOS release is pending."
       ],
       "cols": [
         {

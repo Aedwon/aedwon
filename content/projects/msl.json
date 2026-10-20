@@ -11,18 +11,18 @@
   ],
   "links": [
     {
-      "label": "github.com/Aedwon/Discord-Bot",
+      "label": "https://discord.gg/mlbbphstudhub",
       "href": "https://github.com/Aedwon/Discord-Bot"
     }
   ],
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Lead System Designer and Developer"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026-present"
     },
     {
       "k": "Platform",
@@ -30,7 +30,7 @@
     },
     {
       "k": "Status",
-      "v": "[Status]"
+      "v": "Currently live on production"
     }
   ],
   "sections": [
@@ -45,11 +45,18 @@
     {
       "h": "How it grew",
       "p": [
-        "The first commit on January 24, 2026 was small. It had XP, moderation and a boost tracker. A week later it had tiered booster perks, every command converted to slash commands, and settings moved from code into the database so staff could change them without me.",
-        "Most of the larger systems landed in a burst around March 23. Event Points with seasonal ranks, Discord scheduled-event tracking, the quiz, tickets with HTML transcripts, the weekly booster raffle and account verification all arrived within days of each other. The next weeks added the Moonton student leader check, referral codes, confessions and counting channels, daily quests, and an analytics dashboard. April filled in the staff side with event workflows that track attendance automatically and a lot of repair tooling for raffles. The last commit in the repo is May 1, 2026, after 244 commits and roughly 10,000 lines of Python in the cogs and services alone."
+        "Planning for the whole system started on November 2025. It was a full suite of gamification. It had XP, moderation and a boost tracker. A week later it had tiered booster perks, every command converted to slash commands, and settings moved from code into the database so staff could change them without me.",
+        "Most of the larger systems landed in a burst around March. Event Points with seasonal ranks, Discord scheduled-event tracking, the quiz, tickets with HTML transcripts, the weekly booster raffle and account verification all arrived within days of each other. The next weeks added the Moonton student leader check, referral codes, confessions and counting channels, daily quests, and an analytics dashboard. April filled in the staff side with event workflows that track attendance automatically and a lot of repair tooling for raffles."
       ],
       "kind": "text",
-      "fig": "[MSL Network Bot, in use]"
+      "fig": "[MSL Network Bot, in use]",
+      "img": {
+        "src": "/projects/msl/sections-1-img-d3cfe4bf.webp",
+        "alt": "Daily Quiz system",
+        "w": 1800,
+        "h": 1246,
+        "caption": "The automated Daily Quiz system on its scheduled time."
+      }
     },
     {
       "h": "The server in numbers",
@@ -71,7 +78,7 @@
     {
       "h": "How the bot works",
       "p": [
-        "Five systems carry most of the weight. Each animation below is one of them, drawn from what the code does."
+        "Five systems carry most of the weight. Each animation below illustrates how each of them work."
       ],
       "kind": "systems",
       "items": [
@@ -80,7 +87,7 @@
           "which": "msl-verify",
           "vh": "370px",
           "p": [
-            "Verification is a form behind one button. The bot checks that the UID and server are digits and that the UID isn't already tied to another Discord account. A pass grants the Verified role, and from then on the member can earn XP and Event Points. The MSL check compares the UID and server pair against a cached copy of a public sheet that reloads every six hours."
+            "Verification is a form behind one button. The bot checks that the UID and Server are digits and that the UID isn't already tied to another Discord account. A pass grants the Verified role, and from then on the member can earn XP and Event Points. The MSL member check compares the UID and server pair against a the internal database for MSL program members."
           ]
         },
         {
@@ -118,10 +125,9 @@
       ]
     },
     {
-      "h": "What ships with it",
+      "h": "Other things included",
       "p": [
-        "Outside Discord, the repo has a documentation site for staff and members, an analytics dashboard with daily, weekly and monthly active users, and a quest editor, all on Vercel. The Vercel functions read the same MySQL tables the bot writes, so there is no second reporting store. The bot runs on a Pterodactyl panel, and a push to main triggers a restart through a GitHub Action.",
-        "I don't have usage numbers for the server in the repo, so I'm not putting any here. The code is public on GitHub."
+        "Outside Discord, the repo has a documentation site for staff and members, an analytics dashboard with daily, weekly and monthly active users, and a quest editor, all on Vercel. The Vercel functions read the same MySQL tables the bot writes, so there is no second reporting store. The bot runs on a Pterodactyl panel, and a push to main triggers a restart through a GitHub Action."
       ],
       "kind": "text"
     }
@@ -130,7 +136,8 @@
     "src": "/projects/msl/hero-6fc047eb.webp",
     "alt": "MSL Network logo",
     "w": 1040,
-    "h": 520
+    "h": 520,
+    "caption": "MSL Philippines logo"
   },
   "frame": {
     "h": 260
