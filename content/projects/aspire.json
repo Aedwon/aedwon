@@ -16,7 +16,7 @@
       "href": "https://github.com/microsoft/aspire"
     },
     {
-      "label": "PR 19614 (open)",
+      "label": "PR 19614",
       "href": "https://github.com/microsoft/aspire/pull/19614"
     }
   ],
@@ -27,7 +27,7 @@
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026"
     }
   ],
   "sections": [

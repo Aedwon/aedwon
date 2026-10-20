@@ -14,12 +14,16 @@
     {
       "label": "github.com/Aedwon/marwie-server-bot",
       "href": "https://github.com/Aedwon/marwie-server-bot"
+    },
+    {
+      "label": "https://discord.gg/EwmtJKkrqY",
+      "href": "https://"
     }
   ],
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Developer & Designer"
     },
     {
       "k": "Year",
@@ -31,7 +35,7 @@
     },
     {
       "k": "Status",
-      "v": "[Status]"
+      "v": "Live in production"
     }
   ],
   "sections": [

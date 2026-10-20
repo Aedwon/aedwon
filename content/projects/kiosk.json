@@ -20,11 +20,11 @@
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Developer"
     },
     {
       "k": "Event",
-      "v": "[Event]"
+      "v": "Honor of Kings Festival of Lanterns"
     },
     {
       "k": "Platform",
@@ -32,7 +32,7 @@
     },
     {
       "k": "Ran for",
-      "v": "8 hours, offline"
+      "v": "13 hours, offline"
     }
   ],
   "sections": [
@@ -55,7 +55,7 @@
     {
       "h": "Why it exists",
       "p": [
-        "[Why this was built, in a sentence.]"
+        "This was a commission from the Level Infinite (publisher of HoK) team to have a touchscreen survey onsite. I'd decided to make it offline-first so that there is no dependency on internet connections and that data would not be lost if the connection drops."
       ],
       "kind": "text"
     }

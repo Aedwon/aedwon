@@ -14,20 +14,16 @@
     {
       "label": "bettergov.ph",
       "href": "https://bettergov.ph"
-    },
-    {
-      "label": "Fork branch",
-      "href": "https://github.com/Aedwon/bettergov/tree/feature/acronym-tooltip"
     }
   ],
   "facts": [
     {
       "k": "Contribution",
-      "v": "Two open pull requests"
+      "v": "Two PRs"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026"
     }
   ],
   "sections": [

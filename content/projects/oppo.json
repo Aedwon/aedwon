@@ -1,6 +1,6 @@
 {
   "id": "oppo",
-  "name": "OPPO Hyper Legend Cup",
+  "name": "OPPO Hyper Legend Cup Bot",
   "type": "Discord bot",
   "media": "discord",
   "depth": "writeup",
@@ -22,11 +22,11 @@
     },
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Developer"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026"
     },
     {
       "k": "Hosting",
@@ -38,7 +38,7 @@
       "h": "The brief",
       "p": [
         "The 2026 OPPO Hyper Legend Cup x MLBB Campus Series is a university Mobile Legends: Bang Bang tournament that OPPO ran across Malaysia, Indonesia, Singapore and the Philippines. The OPPO event page lists registration from 16 to 28 February, online qualifiers on 7 and 14 March, and a cross-national final in Kuala Lumpur in April. The Philippine side of it lived in a Discord server, and that server needed to tell real registered players from everyone else, answer questions from teams, and keep match results straight on the days that mattered.",
-        "I built the bot for that server. The code is in a public repository, and the history runs from 12 February to 7 March 2026."
+        "I built the bot for that server, as the Tournament Director as well. The code is in a public repository, and showcases the most-evolved form of my tournament bot development from the MSL Collegiate Cup bots, ISFE, and this."
       ],
       "kind": "text"
     },
@@ -50,7 +50,14 @@
         "The sheet parser only reads player rows, so coaches and managers got their own button on 5 March. They pick Coach or Manager, enter a staff code, and give a team name that has to exist in the sheet. The bot allows one coach and one manager per team. League Ops staff who weren't in the sheet at all are handled by a manual entry list that the verification form falls back to."
       ],
       "fig": "[OPPO Hyper Legend Cup, in use]",
-      "kind": "text"
+      "kind": "text",
+      "img": {
+        "src": "/projects/oppo/sections-1-img-8c97ec07.webp",
+        "alt": "",
+        "w": 1800,
+        "h": 1253,
+        "caption": "The verification panel for auto-confirmation and role assignment"
+      }
     },
     {
       "h": "How the bot works",
@@ -97,8 +104,7 @@
       "h": "Everything around it",
       "p": [
         "Separate commands create up to 50 private threads at once, with retry on rate limits, and post a role mention into every thread of a channel. A trigger voice channel spawns a personal channel for whoever joins and deletes it when it empties. Challonge links a bracket to a channel, lists its matches and reports a result through a guided flow of prompts. Three log channels record command use, tickets and embeds, and a help command shows only the commands the person asking is allowed to run.",
-        "Match tools arrived last. Sessions and Challonge went in on 28 February, and most of the rest followed between 4 and 7 March. A marshal can also start a 15 minute grace period before a game.",
-        "I don't have a number for how the bot did on the day, and the repository doesn't hold one. What's there is the code and the commit history."
+        "Match tools arrived last. Sessions and Challonge went in on 28 February, and most of the rest followed between 4 and 7 March. A marshal can also start a 15 minute grace period before a game."
       ],
       "kind": "text"
     }

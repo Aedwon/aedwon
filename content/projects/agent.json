@@ -19,11 +19,11 @@
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Creator"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026"
     },
     {
       "k": "Platform",
@@ -31,7 +31,7 @@
     },
     {
       "k": "Status",
-      "v": "[Status]"
+      "v": "Constantly maintained"
     }
   ],
   "sections": [

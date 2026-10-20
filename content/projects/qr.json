@@ -12,7 +12,7 @@
   ],
   "links": [
     {
-      "label": "qr-code.aedwon.com",
+      "label": "qr-code.aedwon.site",
       "href": "https://qr-code.aedwon.com"
     },
     {
@@ -23,11 +23,11 @@
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Designer & Developer"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2025"
     },
     {
       "k": "Platform",
@@ -54,7 +54,14 @@
         "It's plain JavaScript on Vite, with the qr-code-styling library doing the drawing. Browser tests run in Playwright. Offline install as a PWA is on the roadmap in the README but isn't built yet."
       ],
       "fig": "[QR Studio, in use]",
-      "kind": "text"
+      "kind": "text",
+      "img": {
+        "src": "/projects/qr/sections-1-img-d3ce2f17.webp",
+        "alt": "",
+        "w": 1558,
+        "h": 704,
+        "caption": "It can serve multiple types of QR codes for different purposes."
+      }
     }
   ],
   "hero": {
@@ -65,5 +72,19 @@
   },
   "frame": {
     "h": 322
-  }
+  },
+  "shots": [
+    {
+      "src": "/projects/qr/shots-0-da60790c.webp",
+      "alt": "",
+      "w": 1800,
+      "h": 1411
+    },
+    {
+      "src": "/projects/qr/shots-1-adc90886.webp",
+      "alt": "",
+      "w": 1800,
+      "h": 1327
+    }
+  ]
 }

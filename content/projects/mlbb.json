@@ -23,7 +23,7 @@
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Developer"
     },
     {
       "k": "Year",
@@ -35,7 +35,7 @@
     },
     {
       "k": "Runs",
-      "v": "Entirely in the browser"
+      "v": "In progress"
     }
   ],
   "sections": [

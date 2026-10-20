@@ -13,26 +13,22 @@
   ],
   "links": [
     {
-      "label": "lakambini-redesign.vercel.app",
+      "label": "https://lakambini-redesign.aedwon.site",
       "href": "https://lakambini-redesign.vercel.app"
-    },
-    {
-      "label": "github.com/Aedwon/lakambini-redesign",
-      "href": "https://github.com/Aedwon/lakambini-redesign"
     }
   ],
   "facts": [
     {
       "k": "Client",
-      "v": "Lakambini"
+      "v": "Lakambini Events"
     },
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Lead Designer and Developer"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026"
     },
     {
       "k": "Platform",
@@ -52,11 +48,18 @@
     {
       "h": "What changed",
       "p": [
-        "The first version of the site was a quick Next.js build with placeholder images, testimonials and stats. The redesign replaced all of that with the agency's own material. Event photography and showreel footage come from the client's archive, and company facts come from their profile deck. Client logos are limited to confirmed clients.",
+        "The first version of the site was built on basic Wordpress templates. The redesign replaced all of that with the agency's own material, and the aesthetics were matched to what the company provides: premium and sophisticated events service. Event photography and showreel footage come from the client's archive, and company facts come from their profile deck.",
         "The site now has a homepage, an about page with the founder's story, a portfolio with four full case studies, and a contact page."
       ],
       "kind": "text",
-      "fig": "[Lakambini, home page]"
+      "fig": "[Lakambini, home page]",
+      "img": {
+        "src": "/projects/lakambini/sections-0-img-6b240c9e.webp",
+        "alt": "",
+        "w": 1800,
+        "h": 1126,
+        "caption": "At a glance and trust banner"
+      }
     },
     {
       "h": "How it's built",
@@ -65,6 +68,20 @@
         "The visual system is dark, with an ivory text color and a single brass accent, and a serif display face. The hero plays a short showreel and falls back to a still image if the visitor prefers reduced motion. Lint and the production build pass, and I checked every route at desktop and phone widths."
       ],
       "kind": "text"
+    }
+  ],
+  "shots": [
+    {
+      "src": "/projects/lakambini/shots-0-7259f87d.webp",
+      "alt": "",
+      "w": 1800,
+      "h": 1126
+    },
+    {
+      "src": "/projects/lakambini/shots-1-cace4f90.webp",
+      "alt": "",
+      "w": 1800,
+      "h": 1032
     }
   ]
 }

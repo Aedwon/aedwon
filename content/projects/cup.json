@@ -13,11 +13,11 @@
   "facts": [
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Developer"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2023-2025"
     },
     {
       "k": "Platform",
@@ -25,7 +25,7 @@
     },
     {
       "k": "Status",
-      "v": "[Status]"
+      "v": "Inactive until S3 is announced"
     }
   ],
   "sections": [
@@ -35,12 +35,19 @@
         "The MSL Collegiate Cup is a collegiate Mobile Legends: Bang Bang league in the Philippines, and this bot ran its Discord server. It covers three jobs. Marshals open matches and players report the results. Support requests go through private ticket channels, and when a ticket closes the bot sends an HTML transcript to the player and to a log channel. A separate module tracks how many months in a row each member has boosted the server and assigns milestone roles."
       ],
       "fig": "[MSL Collegiate Cup Bot, in use]",
-      "kind": "text"
+      "kind": "text",
+      "img": {
+        "src": "/projects/cup/sections-0-img-8074fe5c.webp",
+        "alt": "",
+        "w": 1800,
+        "h": 1417,
+        "caption": "The bot being used to send out announcements."
+      }
     },
     {
       "h": "Why it exists",
       "p": [
-        "[Why this was built, in a sentence.]"
+        "This was built to completely automate the role assignments, tracking, reporting, and logging - administrative tasks that are simple yet tedious. This bot was also the front for disputes and private messages, so that none of the internal staff are singled out for decisions or sanctions imposed."
       ],
       "kind": "text"
     },
@@ -55,7 +62,7 @@
     {
       "h": "Scale",
       "p": [
-        "My CV puts Season 2 of the Cup at over 3,000 student participants from more than 180 universities."
+        "This was used to categorize and manage 3,000+ student participants from more than 180 universities."
       ],
       "kind": "text"
     }

@@ -1,6 +1,6 @@
 {
   "id": "ilocos",
-  "name": "Ilocos Sur Esports Bot",
+  "name": "Ilocos Sur Festival Esports Bot",
   "type": "Discord bot",
   "media": "discord",
   "depth": "writeup",
@@ -22,11 +22,11 @@
     },
     {
       "k": "Role",
-      "v": "[Role]"
+      "v": "Sole Developer"
     },
     {
       "k": "Year",
-      "v": "[Year]"
+      "v": "2026"
     },
     {
       "k": "Hosting",
@@ -40,12 +40,19 @@
         "A Discord bot for the esports side of the Ilocos Sur Festival, built for the Ilocos Sur Provincial Government. The league ran Mobile Legends and Call of Duty Mobile, and the bot handles who plays for which team and keeps the brackets in step with Discord. It also covers support tickets, auto-created voice channels and scheduled announcements."
       ],
       "fig": "[Ilocos Sur Esports Bot, in use]",
-      "kind": "text"
+      "kind": "text",
+      "img": {
+        "src": "/projects/ilocos/sections-0-img-4c30f618.webp",
+        "alt": "",
+        "w": 1800,
+        "h": 1444,
+        "caption": "A League Operations staff using the /mention command so the bot mentions all the registered players for a specified team."
+      }
     },
     {
       "h": "Why it exists",
       "p": [
-        "[Why this was built, in a sentence.]"
+        "This was built for easier management of match threads, reporting, logging, and overall facilitation and conduct of the ISF Esports tournament."
       ],
       "kind": "text"
     },
