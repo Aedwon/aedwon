@@ -42,22 +42,22 @@
         {
           "title": "Tournament Director",
           "dates": "Nov 2023 – May 2026",
-          "desc": "Directed MSL Collegiate Cup operations for 3,000+ collegiate competitors across 180+ universities; programmed a custom Discord bot that automated match check-ins and cut admin overhead by 90%."
+          "desc": "Directed MSL Collegiate Cup operations for 3,000+ collegiate competitors across 180+ universities;"
         },
         {
           "title": "Partnerships Head",
           "dates": "Jan 2024 – May 2026",
-          "desc": "Founded The MSL Network (30,000+ members) across 80+ partner student esports orgs, managing a portfolio of 100+ ongoing collaborations."
+          "desc": "Founded The MSL Network (30,000+ members) across 80+ partners; 100+ collab events"
         },
         {
           "title": "Database Manager",
           "dates": "Feb 2022 – Nov 2023",
-          "desc": "Maintained centralized records for 10,000+ student members nationwide and automated reporting workflows to cut manual processing time by 70%."
+          "desc": "Maintained centralized records for 10,000+ student members nationwide; cut processing time by 70%."
         },
         {
-          "title": "UP Diliman Community Manager",
+          "title": "UPD Community Manager",
           "dates": "Sep 2020 – Feb 2022",
-          "desc": "Organized 30+ campus tournaments and community events for 400+ student players."
+          "desc": "Organized 30+ campus tournaments and community events for 400+ student players in UP Diliman."
         }
       ],
       "logo": "moonton"
@@ -73,9 +73,9 @@
           "desc": "Directed organizational operations and represented the varsity team in official university and external partner engagements."
         },
         {
-          "title": "Co-Founder & Head of Marketing",
-          "dates": "Aug 2024 – May 2025",
-          "desc": "Secured varsity sponsorships with Converge, MSI, Hotel101, and Chronos Athletics, while directing jersey merchandising that generated ₱150,000+ in profit from 200+ units. Managed team social media channels to reach 2,000+ followers in season 1."
+          "title": "Head of Marketing",
+          "dates": "Aug 2024 – Nov 2024",
+          "desc": "Co-founded the very first UP Esports Varsity team; Secured varsity sponsorships with Converge, MSI, Hotel101, and Chronos Athletics, while directing jersey merchandising that generated ₱150,000+ in profit from 200+ units sold. Managed team social media channels to reach 2,000+ followers in the inaugural season of UAAP Esports."
         }
       ],
       "logo": "up-maroons"
@@ -86,8 +86,8 @@
       "org": "UP Oblation Esports",
       "roles": [
         {
-          "title": "Team Manager, Mobile Legends: Bang Bang",
-          "dates": "Oct 2024 – May 2025",
+          "title": "Team Manager, MLBB",
+          "dates": "Oct 2023 – May 2024",
           "desc": "Coordinated player scrimmage schedules and official tournament participation."
         },
         {
@@ -106,7 +106,7 @@
         {
           "title": "Project Manager",
           "dates": "Oct 2024 – Jun 2025",
-          "desc": "Directed tournament operations for Estudyante Esports: The National Championships (₱1.5M+ funding across 4 game titles), managing publisher relations, venue vendors, and sponsor commitments. Managed PBA Esports Bakbakan (Dota 2 & Tekken 8), OPPO Smooth Legend Cup, and ZOWIE Perfect Play Night."
+          "desc": "Directed the end-to-end tournament operations for Estudyante Esports: The National Championships, managing publisher relations, venue vendors, and sponsor commitments; Co-managed PBA Esports Bakbakan (Dota 2 & Tekken 8), and ZOWIE Perfect Play Night."
         }
       ],
       "logo": "dls"
@@ -117,9 +117,9 @@
       "org": "UP Fair 2024",
       "roles": [
         {
-          "title": "Co-Head for Logistics & Security",
+          "title": "Core Staff for Logistics & Security",
           "dates": "Nov 2023 – Feb 2024",
-          "desc": "Co-led venue logistics and safety for a week-long music festival with 90,000+ attendees, managing 50+ on-site logistics and security personnel across entry control and stage zones."
+          "desc": "Co-led venue logistics and safety for a music festival with 90,000+ attendees, managing 50+ on-site logistics and security personnel across entry control and stage zones."
         }
       ],
       "logo": "up-fair"
@@ -130,9 +130,9 @@
       "org": "miHoYo (HoYoverse)",
       "roles": [
         {
-          "title": "Discord Moderator, Genshin Impact SEA",
+          "title": "Discord Moderator",
           "dates": "Oct 2023 – Dec 2024",
-          "desc": "Moderated the official 100,000+ member Southeast Asia server for Genshin Impact."
+          "desc": "Moderated the official 100,000+ member Southeast Asia server for Genshin Impact; Led events and sentiment tracking and analyses"
         }
       ],
       "logo": "mihoyo"

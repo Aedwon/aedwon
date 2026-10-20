@@ -7,19 +7,43 @@
   "D": 64,
   "pages": [
     {
-      "t": "Manhwa",
+      "t": "Webtoon",
       "kind": "read",
-      "eyebrow": "READING · MANHWA"
+      "eyebrow": "READING · MANHWA",
+      "rtitle": "Greatest Estate Developer",
+      "why": "Absolute peak. Enough said.",
+      "img": {
+        "src": "/about/about-05/pages-0-img-6707a3de.webp",
+        "alt": "",
+        "w": 800,
+        "h": 1068
+      }
     },
     {
-      "t": "Manga",
+      "t": "Anime/Manga",
       "kind": "read",
-      "eyebrow": "READING · MANGA"
+      "eyebrow": "READING · MANGA",
+      "rtitle": "Frieren",
+      "why": "When they say this anime is slow-paced, that's true, because that's the point. It's a story that tells you to cherish your time and enjoy moments as they happen.",
+      "img": {
+        "src": "/about/about-05/pages-1-img-b1b77e06.webp",
+        "alt": "",
+        "w": 1800,
+        "h": 2700
+      }
     },
     {
       "t": "Isekai and fantasy anime",
       "kind": "read",
-      "eyebrow": "WATCHING · ISEKAI & FANTASY"
+      "eyebrow": "WATCHING · ISEKAI & FANTASY",
+      "rtitle": "Tensura Slime",
+      "why": "Solid world-building. Satisfying MC progression. So much depth to the story despite it having the OP MC trope.",
+      "img": {
+        "src": "/about/about-05/pages-2-img-98503d3d.webp",
+        "alt": "",
+        "w": 1000,
+        "h": 1500
+      }
     }
   ]
 }
