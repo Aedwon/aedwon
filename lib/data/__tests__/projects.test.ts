@@ -44,7 +44,7 @@ import {
     const project = getProjectBySlug("bettergov-ph");
     expect(project?.role).toBe("Upstream PR Author");
     expect(project?.timeline).toBe("2026");
-    expect(project?.summary).toContain("Two open upstream BetterGov PRs");
+    expect(project?.summary).toContain("One approved BetterGov PR remains open");
     expect(project?.results).toContain("PR #706");
     expect(project?.results).toContain("PR #744");
     expect(project?.results).toContain("closed without merge");
