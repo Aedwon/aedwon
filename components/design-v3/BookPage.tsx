@@ -70,10 +70,10 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
   // While the studio is editing, text on the page is editable in place (and clicking it must not turn the page).
   const { editing } = useStudio();
   const sid = p.src?.id, si = p.src?.i ?? -1;
-  // a picture on the page: the file when there is one, otherwise the placeholder; while editing, drop or choose a file
+  // a picture on the page: the file when there is one; while editing, an empty slot shows its placeholder and takes a file
   const pic = (frame: React.CSSProperties, placeholder: React.ReactNode) => {
-    if (!sid || si < 0) return <div style={frame}>{placeholder}</div>;
-    const slot = <ImageSlot id={sid} slot={`pages.${si}.img`} img={p.img as Img | undefined} fit="cover" frame={frame}>{placeholder}</ImageSlot>;
+    if (!sid || si < 0) return editing ? <div style={frame}>{placeholder}</div> : null;
+    const slot = <ImageSlot id={sid} slot={`pages.${si}.img`} img={p.img as Img | undefined} fit="cover" frame={frame} hideEmpty>{placeholder}</ImageSlot>;
     return editing ? <span style={{ display: 'contents' }} onClick={stop}>{slot}</span> : slot;
   };
   const E = (path: string, value: string, style: React.CSSProperties, placeholder?: string) => {
@@ -302,7 +302,7 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       {/* end of a volume */}
       {is('end') && (
         <>
-          <span style={{ margin: 'auto 0', textAlign: 'center', fontFamily: MONO, fontSize: 12, letterSpacing: '0.2em', color: 'var(--paper-meta)' }}>— END OF VOLUME {p.vol} —</span>
+          <span style={{ margin: 'auto 0', textAlign: 'center', fontFamily: MONO, fontSize: 12, letterSpacing: '0.2em', color: 'var(--paper-meta)' }}>| END OF VOLUME {p.vol} |</span>
           {!!p.nextTitle && (
             <button
               className="bp-link"

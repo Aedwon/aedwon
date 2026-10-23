@@ -5,7 +5,7 @@ const SOCIAL_IMAGE = {
   url: "/opengraph-image",
   width: 1200,
   height: 630,
-  alt: `${SITE_NAME} — ${PERSON_NAME}`,
+  alt: `${SITE_NAME} | ${PERSON_NAME}`,
 } as const;
 
 interface PageMetadataOptions {

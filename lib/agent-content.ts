@@ -36,7 +36,7 @@ function trustPageMarkdown(content: TrustPageContent): string {
       const paragraphs = section.paragraphs.join("\n\n");
       const links = section.links?.length
         ? `\n\n${section.links
-            .map((link) => `- [${link.label}](${link.href.startsWith("http") || link.href.startsWith("mailto:") ? link.href : absolute(link.href)})${link.description ? ` — ${link.description}` : ""}`)
+            .map((link) => `- [${link.label}](${link.href.startsWith("http") || link.href.startsWith("mailto:") ? link.href : absolute(link.href)})${link.description ? ` | ${link.description}` : ""}`)
             .join("\n")}`
         : "";
       return `## ${section.heading}\n\n${paragraphs}${links}`;
@@ -66,7 +66,7 @@ function homeMarkdown(): string {
     )
     .join("\n\n");
 
-  return `# ${SITE_NAME} — Aerol Balayon\n\nI'm Aerol. You might also know me as Aedwon. I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following high school at Philippine Science High School. I build software across offline-first mobile systems, Discord automation, civic technology, browser tools, and event operations.\n\n## Featured projects\n\n${featured}\n\n## Open source\n\n${openSourceMarkdown()}\n\n## About this portfolio\n\n${SITE_DESCRIPTION} Project pages are the canonical source for current implementation details. Technical notes live under /blogs.\n\n## Contact\n\n- Email: [${CONTACT.email}](mailto:${CONTACT.email})\n- GitHub: [Aedwon](${CONTACT.github})\n- LinkedIn: [Aedwon](${CONTACT.linkedin})\n- Discord: ${CONTACT.discord}\n\n## Site map\n\n- [Projects](${absolute("/projects")})\n- [Blogs](${absolute("/blogs")})\n- [About](${absolute("/about")})\n- [Contact](${absolute("/contact")})\n- [Privacy](${absolute("/privacy")})\n- [llms.txt](${absolute("/llms.txt")})\n- [sitemap.xml](${absolute("/sitemap.xml")})\n`;
+  return `# ${SITE_NAME} | Aerol Balayon\n\nI'm Aerol. You might also know me as Aedwon. I studied Computer Science at UP Diliman on a DOST Merit Scholarship, following high school at Philippine Science High School. I build software across offline-first mobile systems, Discord automation, civic technology, browser tools, and event operations.\n\n## Featured projects\n\n${featured}\n\n## Open source\n\n${openSourceMarkdown()}\n\n## About this portfolio\n\n${SITE_DESCRIPTION} Project pages are the canonical source for current implementation details. Technical notes live under /blogs.\n\n## Contact\n\n- Email: [${CONTACT.email}](mailto:${CONTACT.email})\n- GitHub: [Aedwon](${CONTACT.github})\n- LinkedIn: [Aedwon](${CONTACT.linkedin})\n- Discord: ${CONTACT.discord}\n\n## Site map\n\n- [Projects](${absolute("/projects")})\n- [Blogs](${absolute("/blogs")})\n- [About](${absolute("/about")})\n- [Contact](${absolute("/contact")})\n- [Privacy](${absolute("/privacy")})\n- [llms.txt](${absolute("/llms.txt")})\n- [sitemap.xml](${absolute("/sitemap.xml")})\n`;
 }
 
 function projectsMarkdown(): string {
@@ -144,7 +144,7 @@ function contributionMarkdown(slug: string): AgentMarkdownResult {
 
   return {
     status: 200,
-    body: `# ${project.name} — Open Source Contribution\n\n${project.summary}\n\n- Repository: ${project.repositoryUrl}\n- Status: ${project.statusLabel}\n\n${prs}${review}\n\n## Scope\n\nThis page documents submitted upstream work and its current review state. It does not imply ownership or maintainership, and open or draft pull requests are not presented as merged work.\n`,
+    body: `# ${project.name} | Open Source Contribution\n\n${project.summary}\n\n- Repository: ${project.repositoryUrl}\n- Status: ${project.statusLabel}\n\n${prs}${review}\n\n## Scope\n\nThis page documents submitted upstream work and its current review state. It does not imply ownership or maintainership, and open or draft pull requests are not presented as merged work.\n`,
   };
 }
 

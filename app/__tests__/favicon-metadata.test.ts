@@ -5,7 +5,7 @@ import { PERSON_JSON_LD, SITE_URL, WEBSITE_JSON_LD } from "../../lib/site-conten
 
 describe("Metadata and Manifest Verification", () => {
   it("exports complete homepage identity metadata", () => {
-    expect(metadata.title).toBe("Aedwon — Aerol Balayon");
+    expect(metadata.title).toBe("Aedwon | Aerol Balayon");
     expect(metadata.metadataBase?.toString()).toBe(`${SITE_URL}/`);
     expect(metadata.alternates).toMatchObject({ canonical: "/" });
     expect(metadata.openGraph).toMatchObject({

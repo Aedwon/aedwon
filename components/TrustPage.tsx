@@ -46,7 +46,7 @@ export default function TrustPage({ content }: { content: TrustPageContent }) {
                     </Link>
                   )}
                   {link.description ? (
-                    <span className="text-[var(--text-dim)]"> — {link.description}</span>
+                    <span className="text-[var(--text-dim)]"> | {link.description}</span>
                   ) : null}
                 </li>
               ))}

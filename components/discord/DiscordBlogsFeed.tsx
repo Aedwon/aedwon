@@ -59,7 +59,7 @@ export default function DiscordBlogsFeed({
                 key={post.slug}
                 title={post.title}
                 borderColor="#5865F2"
-                summary={`${post.date} · ${post.readTime} — ${post.summary}`}
+                summary={`${post.date} · ${post.readTime} | ${post.summary}`}
                 stack={post.tags.join(" · ")}
                 linkText="Read article →"
                 onLinkClick={() => onOpenThread?.("blogs", post.slug, post.title)}

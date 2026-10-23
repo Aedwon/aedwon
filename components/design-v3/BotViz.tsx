@@ -32,13 +32,13 @@ const VIZ: Record<string, (props: { P: Pal }) => ReactNode> = {
 
 export const isBotViz = (which: string) => which in VIZ;
 
-export default function BotViz({ which }: { which: string }) {
+export default function BotViz({ which, compactSheet = false }: { which: string; compactSheet?: boolean }) {
   const { theme } = useTheme();
   const P = theme === 'light' ? LIGHT : DARK;
   const Viz = VIZ[which];
   if (!Viz) return null;
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box', background: P.bg, color: P.fg, fontFamily: "'Geist', system-ui, sans-serif", display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ width: '100%', boxSizing: 'border-box', background: P.bg, color: P.fg, padding: theme === 'light' ? (compactSheet ? 16 : 24) : 0, borderRadius: theme === 'light' ? 8 : 0, fontFamily: "'Geist', system-ui, sans-serif", display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Viz P={P} />
     </div>
   );

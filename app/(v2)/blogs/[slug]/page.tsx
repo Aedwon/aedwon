@@ -28,7 +28,7 @@ export async function generateMetadata({
   const post = BLOG_POSTS.find((p) => p.slug === slug);
   if (!post) return { title: "Post Not Found", robots: { index: false } };
 
-  const title = `${post.title} — Aerol (Aedwon)`;
+  const title = `${post.title} | Aerol (Aedwon)`;
   const canonical = `/blogs/${post.slug}`;
   const publishedTime = new Date(post.date).toISOString();
 

@@ -20,7 +20,7 @@ describe("agent-facing portfolio content", () => {
   it("serves a substantial homepage Markdown representation", () => {
     const result = markdownForPath("/");
     expect(result.status).toBe(200);
-    expect(result.body).toContain("# Aedwon — Aerol Balayon");
+    expect(result.body).toContain("# Aedwon | Aerol Balayon");
     expect(result.body).toContain("## Featured projects");
     expect(result.body).toContain("## Open source");
     expect(result.body).toContain("Microsoft Aspire");

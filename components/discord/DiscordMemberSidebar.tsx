@@ -38,7 +38,7 @@ export default function DiscordMemberSidebar({
     >
       <div>
         <div className="text-[11px] font-bold text-[#B5BAC1] uppercase tracking-wider mb-1 px-1">
-          Owner — 1
+          Owner | 1
         </div>
         <button
           type="button"
@@ -63,7 +63,7 @@ export default function DiscordMemberSidebar({
 
       <div>
         <div className="text-[11px] font-bold text-[#B5BAC1] uppercase tracking-wider mb-1.5 px-1">
-          Organizations &amp; LGUs — {orgGroup?.items.length ?? 0}
+          Organizations &amp; LGUs | {orgGroup?.items.length ?? 0}
         </div>
         <div className="space-y-1 text-xs">
           {orgGroup?.items.map((badge) => (
@@ -74,7 +74,7 @@ export default function DiscordMemberSidebar({
 
       <div>
         <div className="text-[11px] font-bold text-[#B5BAC1] uppercase tracking-wider mb-1.5 px-1">
-          Event &amp; brand partners — {partnerGroup?.items.length ?? 0}
+          Event &amp; brand partners | {partnerGroup?.items.length ?? 0}
         </div>
         <div className="space-y-1 text-xs">
           {partnerGroup?.items.map((badge) => (

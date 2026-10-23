@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import WallIndex2 from './WallIndex2';
 import AboutVolumes from './AboutVolumes';
-import ProjectSpread, { heroScaleOf } from './ProjectSpread';
+import ProjectSpread, { heroLayoutOf } from './ProjectSpread';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import UI from '@/content/site/ui.json';
 import type { AboutVolumesHandle, ProjectSpreadHandle, Req, WallIndex2Handle } from './contracts';
@@ -71,11 +71,13 @@ function bezier(x1: number, y1: number, x2: number, y2: number) {
     return ((ay * u + by) * u + cy) * u;
   };
 }
-const HERO = { x: 520, y: 108, w: 864, h: 520 };
 const X = { wall: 1052, index: 1124, about: 1220, contact: 1292 } as const;
 
-export default function Room({ initialPath, loading = false }: { initialPath: string; loading?: boolean }) {
+export default function Room({ initialPath, height = ROOM_H, loading = false }: { initialPath: string; height?: number; loading?: boolean }) {
   const { theme } = useTheme();
+  const heightRef = useRef(height);
+  heightRef.current = height;
+  const shelfScale = Math.min(1, Math.max(1, height - 84) / (ROOM_H - 84));
 
   // ---- instance state (Room:68-79). Continuous values live in refs.
   const initial = useMemo(() => sceneFromPath(initialPath), [initialPath]);
@@ -97,10 +99,12 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
   const s = useRef({
     c: startShelf ? 1 : 0, cv: 0, cT: startShelf ? 1 : 0,
     pW: 0, pS: 0, pSAt: 0,
-    view: 'wall' as 'wall' | 'index',
+    view: (initial.kind === 'index' || (startI >= 0 && PROJECTS[startI].type === 'Writing') ? 'index' : 'wall') as 'wall' | 'index',
     shelfSel: (initial.kind === 'contact' ? 'contact' : 'about') as 'about' | 'contact',
     bookOpen: false,
     pOpen: startI >= 0, po: startI >= 0 ? 1 : 0, pn: 0,
+    returning: false, returnN: 0,
+    returnTo: null as { view: 'wall' | 'index'; doPush: boolean } | null,
     cam: null as { i: number; cx: number; cy: number; sc: number; live: boolean; index: boolean } | null, fadeExit: false,
     n: 0,
     mx: -999, my: -999, mxs: -999, mys: -999, bk: 0, focus: -1,
@@ -115,6 +119,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
 
   // the wall's entrance waits for the loading screen
   useEffect(() => { if (!loading) wall2.current?.start(); }, [loading]);
+  useEffect(() => () => { s.returnN++; spread.current?.cancelReturn(); }, [s]);
 
   // ---- navigation <-> URL
   const push = (path: string) => {
@@ -122,6 +127,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
   };
 
   const toWall = (view: 'wall' | 'index', doPush = true) => {
+    if (s.pOpen) { void closeProject(doPush, view); return; }
     s.pOpen = false; setProjOpen(false);
     if (s.bookOpen) volumes.current?.closeReq(sendReq('close'));
     const away = s.c > 0.5;
@@ -131,6 +137,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
   };
 
   const toShelf = (contact: boolean, doPush = true) => {
+    s.returnN++; s.returning = false; spread.current?.cancelReturn();
     s.pOpen = false; setProjOpen(false);
     s.cT = 1; s.pW = 0;
     if (contact) { s.shelfSel = 'contact'; volumes.current?.openReq(sendReq('contact')); }
@@ -139,6 +146,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
   };
 
   const openProject = (i: number, doPush = true) => {
+    s.returnN++; s.returning = false; spread.current?.cancelReturn();
     s.pn += 1;
     // the camera: fly in on the picture that was clicked so it lands where the page puts its own
     s.cam = null; s.fadeExit = false;
@@ -152,7 +160,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
         if (r) { cx = (r.left - b.left + r.width / 2) * k; cy = (r.top - b.top + r.height / 2) * k; wd = r.width * k; }
       }
       if (wd > 0) {
-                s.cam = { i, cx, cy, sc: (520 * heroScaleOf(i)) / wd, live: !!rest, index: !rest }; // lands at the size the page draws it
+                s.cam = { i, cx, cy, sc: heroLayoutOf(i).w / wd, live: !!rest, index: !rest }; // lands at the size the page draws it
       }
     }
     spread.current?.openReq({ v: String(i), n: s.pn });
@@ -160,11 +168,43 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
     if (doPush) push(pathForScene({ kind: 'project', i }));
   };
 
-  const closeProject = (doPush = true) => {
-    // from the Index the hover will have changed by the time you come back, so it fades back instead of flying out
-    if (s.cam && s.cam.index) { s.cam = null; s.fadeExit = true; }
+  const closeProject = async (doPush = true, view = s.view) => {
+    if (!s.pOpen) return;
+    s.returnTo = { view, doPush };
+    if (s.returning) return;
+    s.returning = true;
+    const request = ++s.returnN;
+    const i = await spread.current?.prepareReturn();
+    if (request !== s.returnN) return;
+    s.returning = false;
+    if (i == null || !s.pOpen) return;
+    const destination = s.returnTo!;
+    s.returnTo = null;
+    const w2 = wall2.current, root = rootRef.current;
+    s.view = w2?.prepareReturn(i, destination.view) ?? destination.view;
+    s.c = s.cT = s.cv = s.pW = s.pS = 0;
+    s.cam = null; s.fadeExit = false;
+    if (w2 && root && !s.reduced) {
+      const rest = w2.restRect(i);
+      const b = root.getBoundingClientRect(), k = ROOM_W / b.width;
+      // Measure the Index preview in room coordinates, without the old camera zoom.
+      const wall = wallWrapRef.current, transform = wall?.style.transform;
+      if (wall && !rest) wall.style.transform = 'none';
+      const rect = rest ? null : w2.rectOf(i);
+      if (wall && transform !== undefined && !rest) wall.style.transform = transform;
+      const width = rest?.w ?? (rect ? rect.width * k : 0);
+      if (width > 0) {
+        s.cam = {
+          i, cx: rest?.x ?? ((rect!.left - b.left + rect!.width / 2) * k),
+          cy: rest?.y ?? ((rect!.top - b.top + rect!.height / 2) * k),
+          sc: heroLayoutOf(i).w / width, live: !!rest, index: !rest,
+        };
+      }
+    }
+    // The page's preview is back in its home position before the camera reverses.
+    s.po = 1;
     s.pOpen = false; setProjOpen(false);
-    if (doPush) push(s.view === 'index' ? '/index' : '/');
+    if (destination.doPush) push(s.view === 'index' ? '/index' : '/');
   };
 
   // ---- popstate: apply the scene the URL now describes
@@ -172,6 +212,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
     const apply = (sc: Scene) => {
       if (sc.kind === 'project') { openProject(sc.i, false); return; }
       if (sc.kind === 'wall' || sc.kind === 'index') {
+        if (s.pOpen) { void closeProject(false, sc.kind); return; }
         if (s.cT === 1) { toWall(sc.kind, false); return; } // away → instant view switch
         if (s.view !== sc.kind) { toWall(sc.kind, false); return; }
         if (s.pOpen) closeProject(false);
@@ -220,12 +261,13 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
   function drawDots(dt: number, dotc: { rgb: string; base: number; boost: number }) {
     const cv = dotsRef.current; if (!cv) return;
     const g = cv.getContext('2d'); if (!g) return;
-    g.clearRect(0, 0, ROOM_W, ROOM_H);
+    const roomHeight = heightRef.current;
+    g.clearRect(0, 0, ROOM_W, roomHeight);
     s.mxs += (s.mx - s.mxs) * Math.min(1, dt * 10); s.mys += (s.my - s.mys) * Math.min(1, dt * 10);
     const S = 30, off = (((-740 * s.c * 0.55) % S) + S) % S; // the points drift with the wall, a little slower (they're on the wall, behind the work)
     const band = s.view === 'index' && s.c < 0.5 ? 1 : 0;
     s.bk += (band - s.bk) * Math.min(1, dt * 6);
-    for (let y = off - S; y < ROOM_H + S; y += S) for (let x = 15; x < ROOM_W; x += S) {
+    for (let y = off - S; y < roomHeight + S; y += S) for (let x = 15; x < ROOM_W; x += S) {
       const dx = x - s.mxs, dy = y - s.mys, d = Math.sqrt(dx * dx + dy * dy);
       const w = Math.max(0, 1 - d / 200), e = w * w * (3 - 2 * w);
       let a = (dotc.base + dotc.boost * e) * (1 - 0.75 * (s.po || 0)); // while you read a project, the wall's points rest
@@ -255,8 +297,9 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
         // keep the clicked picture on a straight path from where it is drawn now to where the page puts it,
         // so it never swings off screen while the wall levels out
         const live = cam.live ? wall2.current?.centerOf(cam.i) : null, cx = live ? live.x : cam.cx, cy = live ? live.y : cam.cy;
-        const sk = 1 + (cam.sc - 1) * kc, ox = ROOM_W / 2, oy = ROOM_H;
-        const gx = cx + (HERO.x + HERO.w / 2 - cx) * kc, gy = cy + (HERO.y + HERO.h / 2 - cy) * kc;
+        const sk = 1 + (cam.sc - 1) * kc, ox = ROOM_W / 2, oy = heightRef.current;
+        const hero = heroLayoutOf(cam.i);
+        const gx = cx + (hero.x + hero.w / 2 - cx) * kc, gy = cy + (hero.y + hero.h / 2 - cy) * kc;
         camT = `translate(${(gx - ox - sk * (cx - ox)).toFixed(2)}px, ${(gy - oy - sk * (cy - oy)).toFixed(2)}px) scale(${sk.toFixed(4)})`;
       }
       wallEl.style.transform = cam
@@ -272,7 +315,10 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
     if (shelfEl) {
       // in two beats: the wall levels out and leaves first, then the shelf rises (leaning back, settling upright)
       const st = cl((c - 0.3) / 0.7), se = st * st * (3 - 2 * st);
-      shelfEl.style.transform = `translateY(${(D * (1 - se)).toFixed(2)}px) rotateX(${(18 * (1 - se) * (1 - se)).toFixed(2)}deg)`;
+      shelfEl.style.transform = `translateY(${(Math.max(D, heightRef.current) * (1 - se)).toFixed(2)}px) rotateX(${(18 * (1 - se) * (1 - se)).toFixed(2)}deg)`;
+      // Book faces manage their own visibility. Opacity keeps those faces hidden
+      // until the wall's end-of-scroll transition actually reveals the shelf.
+      shelfEl.style.opacity = se < 0.001 ? '0' : '1';
       shelfEl.style.visibility = se < 0.001 ? 'hidden' : 'visible';
       shelfEl.style.pointerEvents = c < 0.5 ? 'none' : 'auto';
       shelfEl.setAttribute('aria-hidden', c < 0.5 ? 'true' : 'false');
@@ -308,7 +354,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
   const track = (e: React.MouseEvent) => {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     s.mx = ((e.clientX - r.left) * ROOM_W) / r.width;
-    s.my = ((e.clientY - r.top) * ROOM_H) / r.height;
+    s.my = ((e.clientY - r.top) * heightRef.current) / r.height;
     if (s.mxs < -900) { s.mxs = s.mx; s.mys = s.my; }
   };
   const untrack = () => { s.mx = -999; s.my = -999; };
@@ -319,23 +365,24 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
       onMouseMove={track}
       onMouseLeave={untrack}
       style={{
-        position: 'relative', width: ROOM_W, height: ROOM_H, overflow: 'hidden',
+        position: 'relative', width: ROOM_W, height, overflow: 'hidden',
         background: 'var(--room-bg)', color: 'var(--text-primary)',
         fontFamily: "'Geist', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased',
         perspective: 1800, perspectiveOrigin: '50% 50%',
       }}
     >
       {/* B · a field of points on the wall that wakes up where your cursor is */}
-      <canvas ref={dotsRef} width={ROOM_W} height={ROOM_H} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, pointerEvents: 'none' }} />
+      <canvas ref={dotsRef} width={ROOM_W} height={Math.ceil(height)} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height, pointerEvents: 'none' }} />
 
       {/* the wall of work */}
-      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 100%', }}>
+      <div ref={wallWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height, transformOrigin: '50% 100%', }}>
         <WallIndex2
           ref={wall2}
           bare
+          height={height}
           dim={0}
           wallColor="var(--room-bg)"
-          view={initial.kind === 'index' ? 'index' : 'wall'}
+          view={s.view}
           motion="swap"
           initialViewReq={initial.kind === 'index' ? { v: 'index', n: 1 } : undefined}
           escBlocked={projOpen}
@@ -347,7 +394,7 @@ export default function Room({ initialPath, loading = false }: { initialPath: st
       </div>
 
       {/* the shelf, mounted on the same wall, just below */}
-      <div ref={shelfWrapRef} style={{ position: 'absolute', left: 0, top: 0, width: ROOM_W, height: ROOM_H, transformOrigin: '50% 0', visibility: 'hidden' }}>
+      <div ref={shelfWrapRef} style={{ position: 'absolute', left: (ROOM_W * (1 - shelfScale)) / 2, top: height < ROOM_H ? 84 * (1 - shelfScale) : (height - ROOM_H) / 2, width: ROOM_W, height: ROOM_H, scale: String(shelfScale), transformOrigin: '0 0', visibility: 'hidden', opacity: 0 }}>
         {/* A · the books' shadow on the wall (light from the upper left) */}
         <span aria-hidden style={{ position: 'absolute', left: 556, top: 262, width: 470, height: 516, borderRadius: 6, background: 'var(--room-shadow-book, rgba(0,0,0,0.5))', filter: 'blur(26px)', opacity: 0, transition: 'opacity .5s ease' }} />
         <AboutVolumes

@@ -34,7 +34,7 @@ export async function generateMetadata({
     return { title: "Contribution Not Found", robots: { index: false } };
   }
 
-  const title = `${project.name} — Open Source Contribution | Aerol (Aedwon)`;
+  const title = `${project.name} | Open Source Contribution | Aerol (Aedwon)`;
 
   return buildPageMetadata({
     title,

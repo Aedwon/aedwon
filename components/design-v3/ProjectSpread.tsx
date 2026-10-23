@@ -94,11 +94,11 @@ const CSS = `
 .v3ps a:focus-visible,.v3ps button:focus-visible{outline:2px solid var(--text-primary);outline-offset:3px}
 `;
 
-// Hero fit (ProjectSpread renderVals.fit): scale inside the 864x520 stage.
-// how large the page draws project i's picture (the Wall flies its own copy in to land at exactly this size)
-export function heroScaleOf(i: number): number {
+// Shared geometry keeps the page preview and both camera directions aligned.
+export function heroLayoutOf(i: number) {
   const p = PROJECTS[i] as unknown as FullProject;
-  return Math.min((864 - 140) / 520, (520 - 80) / frameH(p), 1.6);
+  const w = 864, scale = w / 520;
+  return { x: 520, y: 108, w, h: frameH(p) * scale, scale };
 }
 
 const out = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
@@ -128,6 +128,60 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const piRef = useRef(pi);
   const goRef = useRef<(d: number) => void>(() => {});
   const rafRef = useRef(0);
+  const returnRef = useRef<{ raf: number; finish: (i: number | null) => void; cancel: () => void } | null>(null);
+
+  const cancelReturn = () => returnRef.current?.cancel();
+  const prepareReturn = (): Promise<number | null> => {
+    cancelReturn();
+    const sc = scrollerRef.current;
+    if (!sc) return Promise.resolve(piRef.current);
+    const start = sc.scrollTop;
+    const left = leftRef.current;
+    const previousPointerEvents = sc.style.pointerEvents;
+    sc.style.pointerEvents = 'none';
+    return new Promise((resolve) => {
+      let settled = false;
+      const block = (e: Event) => e.preventDefault();
+      const blockKeys = (e: KeyboardEvent) => {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) e.preventDefault();
+      };
+      sc.addEventListener('wheel', block, { passive: false });
+      sc.addEventListener('touchmove', block, { passive: false });
+      window.addEventListener('keydown', blockKeys);
+      const finish = (i: number | null) => {
+        if (settled) return;
+        settled = true;
+        if (returnRef.current) cancelAnimationFrame(returnRef.current.raf);
+        returnRef.current = null;
+        sc.style.pointerEvents = previousPointerEvents;
+        sc.removeEventListener('wheel', block);
+        sc.removeEventListener('touchmove', block);
+        window.removeEventListener('keydown', blockKeys);
+        resolve(i);
+      };
+      returnRef.current = { raf: 0, finish, cancel: () => finish(null) };
+      if (reducedRef.current || start < 1) {
+        sc.scrollTop = 0;
+        if (left) left.scrollTop = 0;
+        setCur(0);
+        finish(piRef.current);
+        return;
+      }
+      const started = performance.now();
+      const duration = Math.min(850, 420 + Math.sqrt(start) * 5);
+      const leftStart = left?.scrollTop ?? 0;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - started) / duration);
+        const remaining = Math.pow(1 - t, 4);
+        sc.scrollTop = start * remaining;
+        if (left) left.scrollTop = leftStart * remaining;
+        if (t < 1) returnRef.current!.raf = requestAnimationFrame(tick);
+        else { sc.scrollTop = 0; setCur(0); finish(piRef.current); }
+      };
+      returnRef.current.raf = requestAnimationFrame(tick);
+    });
+  };
+  useEffect(() => () => { cancelReturn(); if (rafRef.current) cancelAnimationFrame(rafRef.current); }, []);
 
   piRef.current = pi;
   openRef.current = !!open;
@@ -159,6 +213,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   };
 
   const go = (d: number) => {
+    if (returnRef.current) return;
     const n = PROJECTS.length;
     dirRef.current = d;
     swapAtRef.current = performance.now();
@@ -177,6 +232,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
 
   // openReq: dedup by nonce; same index is a no-op (no fade, no scroll reset)
   const consumeReq = (req: Req) => {
+    cancelReturn();
     if (lastReqRef.current === req.n) return;
     lastReqRef.current = req.n;
     const j = parseInt(req.v, 10);
@@ -204,6 +260,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   };
 
   const jump = (i: number) => {
+    if (returnRef.current) return;
     const el = secEls.current[i];
     const sc = scrollerRef.current;
     if (el && sc) sc.scrollTo({ top: el.offsetTop - 100, behavior: reducedRef.current ? 'auto' : 'smooth' });
@@ -231,6 +288,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
 
   useImperativeHandle(ref, () => ({
     openReq: (req: Req) => consumeReq(req),
+    prepareReturn,
+    cancelReturn,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 
@@ -239,7 +298,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const pv = PROJECTS[(pi - 1 + PROJECTS.length) % PROJECTS.length] as unknown as FullProject;
   const backText = p.post ? '\u2190 Back to the index' : '\u2190 Back to the wall';
   const kindIcon = ICON[TYPEICON[p.type]] || '';
-  const heroScale = Math.min((864 - 140) / 520, (520 - 80) / frameH(p), 1.6).toFixed(4);
+  const heroLayout = heroLayoutOf(pi);
+  const heroScale = String(heroLayout.scale);
   const logos = (p.stack || []).map((s) => LOGO[s]).filter(Boolean)
     .map((g) => ({ ...g, w2: (Number(g.w) * 22 / 18).toFixed(1), h2: (Number(g.h) * 22 / 18).toFixed(1) }));
   const stackText = p.stackText || (p.stack || []).filter((s) => !LOGO[s]).join(' \u00b7 ');
@@ -290,7 +350,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
       </div>
 
       {/* left page: stays put. Who it is, what it is, what it's made of; then the details as glanceable icons */}
-      <div ref={leftRef} style={{ position: 'absolute', left: 56, top: 108, bottom: 36, width: 392, display: 'flex', flexDirection: 'column', opacity: 1 }}>
+      <div ref={leftRef} style={{ position: 'absolute', left: 56, top: 108, bottom: 36, width: 392, display: 'flex', flexDirection: 'column', overflowY: 'auto', opacity: 1 }}>
         <div className="v3ps-in1" style={{ flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <button className="v3ps-tb" type="button" onClick={onBack} style={{ alignSelf: 'flex-start', fontSize: 14, height: 32, marginBottom: 22 }}>{backText}</button>
         <Ed id={p.id} path="name" value={p.name} as="h1" style={{ margin: 0, fontSize: 46, fontWeight: 600, letterSpacing: '-0.045em', lineHeight: 1.02 }} />
@@ -350,7 +410,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
       <div ref={scrollerRef} className="v3ps-ps" onScroll={onScroll} style={{ position: 'absolute', left: 520, right: 0, top: 0, bottom: 0, overflowY: 'auto' }}>
         <div ref={rightRef} style={{ padding: '108px 56px 120px 0', opacity: 1 }}>
           {/* hero stage */}
-          <div className="v3ps-hero" style={{ position: 'relative', height: 520, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
+          <div className="v3ps-hero" style={{ position: 'relative', height: heroLayout.h }}>
             {p.media === 'phone' ? (
               // phones: one picture per phone, each with its own controls while editing
               <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
@@ -386,13 +446,14 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
           {p.hero?.src && (p.hero.caption || editing) && (
             <Ed id={p.id} path="hero.caption" value={p.hero.caption || ''} as="p" optional placeholder="Add a caption" style={{ margin: '12px 0 0', fontSize: 13.5, color: 'var(--text-label)' }} />
           )}
-          {isNote && (
+          {isNote && (editing || !!p.shots?.some((s) => s?.src)) && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, paddingTop: 16 }}>
               {[0, 1].map((n) => {
                 const shot = p.shots?.[n];
+                if (!editing && !shot?.src) return null;
                 return (
                   <figure key={n} style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <ImageSlot id={p.id} slot={`shots.${n}`} img={shot} frame={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
+                    <ImageSlot id={p.id} slot={`shots.${n}`} img={shot} hideEmpty frame={{ height: 300, borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)' }}>{n === 0 ? '[a detail]' : '[another detail]'}</div>
                     </ImageSlot>
                     {shot?.src && (shot.caption || editing) && <Ed id={p.id} path={`shots.${n}.caption`} value={shot.caption || ''} as="figcaption" optional placeholder="Add a caption" style={{ fontSize: 13.5, color: 'var(--text-label)' }} />}
@@ -427,14 +488,14 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                   <Paras id={p.id} path={`sections.${i}.p`} items={s.p || []} pStyle={{ margin: 0 }} />
                 </div>
                 {s.diagram && FLOWS[s.diagram] && <FlowDiagram spec={FLOWS[s.diagram]} fluid live />}
-                {(s.fig || s.img) && (
+                {(editing || s.img?.src) && (
                   <figure style={{ margin: '10px 0 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <ImageSlot id={p.id} slot={`sections.${i}.img`} img={s.img} frame={{ borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }} imgStyle={{ height: 'auto', maxHeight: 560 }}>
+                    <ImageSlot id={p.id} slot={`sections.${i}.img`} img={s.img} hideEmpty frame={{ borderRadius: 12, background: 'var(--surface-media)', overflow: 'hidden' }} imgStyle={{ height: 'auto', maxHeight: 560 }}>
                       <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 12, color: 'var(--text-figure)', textAlign: 'center', padding: '0 24px' }}>{s.fig}</div>
                     </ImageSlot>
                     {s.img
                       ? (s.img.caption || editing) && <Ed id={p.id} path={`sections.${i}.img.caption`} value={s.img.caption || ''} as="figcaption" optional placeholder="Add a caption" style={{ fontSize: 13.5, color: 'var(--text-label)' }} />
-                      : <figcaption style={{ fontSize: 13.5, color: 'var(--text-label)' }}>[Caption: what this shows.]</figcaption>}
+                      : editing && <figcaption style={{ fontSize: 13.5, color: 'var(--text-label)' }}>[Caption: what this shows.]</figcaption>}
                   </figure>
                 )}
                 {s.kind === 'systems' && (
@@ -446,7 +507,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                           <Paras id={p.id} path={`sections.${i}.items.${k}.p`} items={it.p || []} pStyle={{ margin: 0 }} />
                         </div>
                         {/* holder must not clip: the viz runs 3px taller than vh by design */}
-                        <div style={{ height: it.vh, marginTop: 8 }}>
+                        <div style={{ height: dark ? it.vh : undefined, minHeight: dark ? undefined : `calc(${it.vh} + 48px)`, marginTop: 8 }}>
                           {isBotViz(it.which) ? <BotViz which={it.which} /> : <SystemViz which={it.which} />}
                         </div>
                       </div>

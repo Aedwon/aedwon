@@ -1,6 +1,6 @@
 import { buildPageMetadata } from "@/lib/seo";
 
-const title = "Projects — Aerol (Aedwon)";
+const title = "Projects | Aerol (Aedwon)";
 const description =
   "Software projects by Aerol Balayon (Aedwon), including offline-first mobile systems, Discord automation, civic technology, and browser tools.";
 

@@ -1,7 +1,7 @@
 'use client';
 
 // Site shell: theme provider, desktop/phone switch (breakpoint 1024px, decided with
-// the owner), the uniform-scale letterbox frame, and the first-load moment.
+// the owner), the viewport-filling desktop frame, and the first-load moment.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Room from './Room';
@@ -42,15 +42,21 @@ function useIsDesktop(): boolean {
 
 const PHONE_MIN_W = 360, PHONE_MAX_W = 480, PHONE_MIN_H = 740, PHONE_MAX_H = 960;
 
-// Uniform scale + letterbox (decision). The 1440x900 (or 390x844) stage keeps its
-// layout at every window size; the room colour fills the letterbox.
+// Desktop keeps a 1440px design width and follows the viewport height.
+// Phone and standalone artboards retain their own fitting rules.
 export function Stage({
   w, h, fit = 'box', children,
-}: { w: number; h: number; fit?: 'box' | 'width'; children: React.ReactNode | ((w: number, h: number) => React.ReactNode) }) {
+}: { w: number; h: number; fit?: 'box' | 'width' | 'desktop'; children: React.ReactNode | ((w: number, h: number) => React.ReactNode) }) {
   const [box, setBox] = useState<{ s: number; x: number; y: number; w: number; h: number } | null>(null);
   useEffect(() => {
     const measure = () => {
       const vw = window.innerWidth, vh = window.innerHeight;
+      if (fit === 'desktop') {
+        // Keep artwork proportional while letting the room fill the window vertically.
+        const s = vw / w;
+        setBox({ s, x: 0, y: 0, w, h: vh / s });
+        return;
+      }
       if (fit === 'width') {
         // Phone: the stage takes the screen's width (PHONE_MIN_W to PHONE_MAX_W design px) and its height (PHONE_MIN_H and up).
         // Scale is 1 on a normal phone, a little under on a short or narrow one, and up on a tablet.
@@ -152,13 +158,13 @@ export default function Site({ initialPath }: { initialPath: string }) {
   return (
     <ThemeContext.Provider value={themeCtx}>
       <LoadedCtx.Provider value={firstLoad !== false}>
-        <Stage w={desktop ? 1440 : 390} h={desktop ? 900 : 844} fit={desktop ? 'box' : 'width'}>
+        <Stage w={desktop ? 1440 : 390} h={desktop ? 900 : 844} fit={desktop ? 'desktop' : 'width'}>
           {(sw, sh) => (
             <>
-              {desktop ? <Room initialPath={initialPath} loading={firstLoad !== false} /> : <Mobile initialPath={initialPath} width={sw} height={sh} />}
+              {desktop ? <Room initialPath={initialPath} height={sh} loading={firstLoad !== false} /> : <Mobile initialPath={initialPath} width={sw} height={sh} />}
               {firstLoad ? (
                 <div style={{ position: 'absolute', inset: 0, zIndex: 60 }}>
-                  <Moments which="loading" w={desktop ? 1440 : sw} h={desktop ? 900 : sh} />
+                  <Moments which="loading" w={sw} h={sh} />
                 </div>
               ) : null}
             </>

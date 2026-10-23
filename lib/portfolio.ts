@@ -56,7 +56,7 @@ export const CTA = {
     kicker: "START",
     title: "Still here?",
     subtitle:
-        "Then we should probably talk. Fifteen minutes. I'll tell you honestly if I can help — and if I can't, who might.",
+        "Then we should probably talk. Fifteen minutes. I'll tell you honestly if I can help, and if I can't, who might.",
     button: "Book a discovery call",
 } as const;
 
@@ -87,9 +87,9 @@ export const STEPS = [
         title: "Diagnostic",
         subtitle: "Figure out what's actually broken",
         description:
-            "Two weeks. I look at what you have — site, server, tools, data. I write up what's working, what isn't, and what I'd build next.",
+            "Two weeks. I look at what you have (site, server, tools, data). I write up what's working, what isn't, and what I'd build next.",
         short: "Two weeks. I look at what you have and write up what I'd build next.",
-        outcome: "You get a plan you can give to anyone — me, a hire, or nobody.",
+        outcome: "You get a plan you can give to anyone (me, a hire, or nobody).",
         footnote: "Sold on its own, this step is what /web-solutions calls the Audit tier.",
     },
     {
@@ -99,7 +99,7 @@ export const STEPS = [
         subtitle: "Agree on the shape before I touch it",
         description:
             "One document. Scope, deliverables, timeline, price. Signed off before the first commit. No surprise line items later.",
-        short: "One document. Scope, price, timeline — signed before the first commit.",
+        short: "One document. Scope, price, timeline, signed before the first commit.",
         outcome: "You know exactly what you're paying for and when it arrives.",
     },
     {
@@ -118,7 +118,7 @@ export const STEPS = [
         title: "Launch",
         subtitle: "We go live, and I stick around",
         description:
-            "Deploy. Write the docs. Train whoever runs it after me. 30 days of post-launch support — bugs, questions, tweaks — included.",
+            "Deploy. Write the docs. Train whoever runs it after me. 30 days of post-launch support (bugs, questions, tweaks) included.",
         short: "Deploy, document, train. Thirty days of post-launch support, included.",
         outcome: "The thing works, and the people who need to use it know how.",
     },
@@ -161,7 +161,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
         title: "The MSL Network Discord",
         labels: ["LIVE", "COMMUNITY · OPERATOR", "5,000+"],
         description:
-            "The Philippines hub for Mobile Legends: Bang Bang players. Currently running it — structure, rituals, growth.",
+            "The Philippines hub for Mobile Legends: Bang Bang players. Currently running it (structure, rituals, growth).",
         href: "/community-solutions",
         image: "/projects/msl-network-discord.webp",
     },
@@ -214,7 +214,7 @@ export const WEB_PROJECTS: WebProject[] = [
         id: 3,
         title: "QR Studio",
         description:
-            "Customizable QR code generator with gradients, logo embedding, and SVG/PNG/JPEG export. All processing stays in the browser — nothing uploaded.",
+            "Customizable QR code generator with gradients, logo embedding, and SVG/PNG/JPEG export. All processing stays in the browser. Nothing gets uploaded.",
         metric: "Client-side",
         tags: ["Next.js", "Canvas", "Tool"],
         category: "Tool",
@@ -283,7 +283,7 @@ export const COMMUNITY_BOTS: CommunityBot[] = [
         title: "Kiosk survey (offline-first)",
         labels: ["LIVE", "FIELD-TESTED", "Flutter"],
         description:
-            "Touchscreen Android TV app for a live event. Same shape of problem as community software — systems for rooms full of real people.",
+            "Touchscreen Android TV app for a live event. Same shape of problem as community software, with systems for rooms full of real people.",
         url: "https://kiosk-survey-three.vercel.app",
     },
 ];
@@ -300,13 +300,13 @@ export const COMMUNITY_OPS: CommunityOp[] = [
         title: "The MSL Network Discord",
         labels: ["LIVE", "5,000+ members", "OPERATOR"],
         description:
-            "The Philippines hub for Mobile Legends: Bang Bang players. Currently running it — structure, rituals, growth. Headcount climbing daily.",
+            "The Philippines hub for Mobile Legends: Bang Bang players. Currently running it (structure, rituals, growth). Headcount climbing daily.",
     },
     {
         title: "Genshin Impact SEA",
         labels: ["OFFICIAL SERVER", "100,000+ members", "MODERATOR"],
         description:
-            "Staff moderation on the official Southeast Asia Discord for Genshin Impact. Keeping conversations warm at six-figure scale — where triage matters more than rulebooks.",
+            "Staff moderation on the official Southeast Asia Discord for Genshin Impact. Keeping conversations warm at six-figure scale, where triage matters more than rulebooks.",
     },
     {
         title: "Blue Protocol: Star Resonance",
@@ -339,7 +339,7 @@ export const WEB_TIERS: Tier[] = [
         price: "$200",
         priceSuffix: "USD",
         description:
-            "Two weeks. I look at what you have. I write up what's broken, what's working, and what I'd build next. You get a plan you can give to anyone — me, a hire, or nobody.",
+            "Two weeks. I look at what you have. I write up what's broken, what's working, and what I'd build next. You get a plan you can give to anyone (me, a hire, or nobody).",
         features: [
             "Two-week diagnostic",
             "Written plan with scope and priorities",
@@ -374,7 +374,7 @@ export const WEB_TIERS: Tier[] = [
         features: [
             "Managed hosting & updates",
             "Monitoring & monthly health report",
-            "Month-to-month — no lock-in",
+            "Month-to-month, no lock-in",
         ],
         cta: "Get Care Plan",
     },
@@ -387,7 +387,7 @@ export const COMMUNITY_TIERS: Tier[] = [
         price: "$200",
         priceSuffix: "USD",
         description:
-            "Two weeks. I join, I watch, I write up what's broken and what to build. You get a plan you can give to anyone — me, a hire, or nobody.",
+            "Two weeks. I join, I watch, I write up what's broken and what to build. You get a plan you can give to anyone (me, a hire, or nobody).",
         features: [
             "Two-week community diagnostic",
             "Written plan with scope and priorities",
@@ -418,7 +418,7 @@ export const COMMUNITY_TIERS: Tier[] = [
         pricePrefix: "From",
         priceSuffix: "/ mo",
         description:
-            "I run the community with you. Bots, moderation, rituals, reports. Month-to-month, no lock-in — retention earns retention.",
+            "I run the community with you. Bots, moderation, rituals, reports. Month-to-month, no lock-in. Retention earns retention.",
         features: [
             "Strategy, events, and moderation",
             "Bot hosting & incident response",
@@ -442,8 +442,8 @@ export const WEB_PAGE = {
         "A sampler. Every project on this list shipped and is either still running or a tool you can use right now.",
     standardsHeading: "Standards I hold.",
     standards: [
-        "Core Web Vitals in the green. Lighthouse 90+ on launch. When a new marketing script would break that, I'll say so — and you decide.",
-        "Accessible by default — WCAG 2.1 AA on every page I touch.",
+        "Core Web Vitals in the green. Lighthouse 90+ on launch. When a new marketing script would break that, I'll say so, and you decide.",
+        "Accessible by default, with WCAG 2.1 AA on every page I touch.",
         "Semantic HTML. Real headings. Alt text that says something.",
     ],
     pricingHeading: "Pricing.",
@@ -471,7 +471,7 @@ export const CONTACT = {
     },
     form: {
         label: "Or write it out",
-        helper: "Prefer to think on the page? Fill this out — I reply within two business days.",
+        helper: "Prefer to think on the page? Fill this out. I reply within two business days.",
         submit: "Send it",
         nameLabel: "Your name",
         emailLabel: "Email",
@@ -483,7 +483,7 @@ export const CONTACT = {
         ],
         goalLabel: "What are you trying to get to",
         goalPlaceholder:
-            "A sentence or a pitch deck — both work. Say it however comes easiest.",
+            "A sentence or a pitch deck. Both work. Say it however comes easiest.",
     },
     emailSection: {
         label: "Or just email",
@@ -495,14 +495,14 @@ export const CONTACT = {
 export const COMMUNITY_PAGE = {
     kicker: "Community Solutions",
     title: "Keeping a crowd warm is a different job.",
-    subtitle: `${STATS.BOT_COUNT} bots in production. ${STATS.MODERATED_MEMBERS} members moderated across ${STATS.SERVER_COUNT} servers. The ones that stick have structure — roles, rituals, rules that carry their own weight.`,
+    subtitle: `${STATS.BOT_COUNT} bots in production. ${STATS.MODERATED_MEMBERS} members moderated across ${STATS.SERVER_COUNT} servers. The ones that stick have structure, with roles, rituals, rules that carry their own weight.`,
     botsHeading: "Bots & tooling.",
     botsSubtitle:
-        "Software I've built for communities — bots, dashboards, companion tools.",
+        "Software I've built for communities, including bots, dashboards, companion tools.",
     trustStatement: "Trusted Experience With Global Gaming Communities",
     opsHeading: "Community ops.",
     opsSubtitle:
-        "Communities I've helped run — as operator, moderator, or community manager.",
+        "Communities I've helped run as operator, moderator, or community manager.",
     whatIHandleHeading: "What I handle.",
     whatIHandle: [
         {

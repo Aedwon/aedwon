@@ -8,7 +8,7 @@
 // The prototype is dark-only; light was designed from spec/tokens.md role rules.
 // Dark keeps the prototype's literal hexes (byte-identical); light maps them:
 //
-//   #0c0c0e  sheet background, split dividers, boxes  -> var(--surface-media)
+//   #0c0c0e  sheet background, split dividers, boxes  -> var(--surface-sunken)
 //   #0c0c0e  text sitting on a filled chip            -> var(--text-on-inverse)
 //   #ededed  primary text + filled chips/bars         -> var(--text-primary)
 //   #a1a1aa  secondary text                           -> var(--text-secondary)
@@ -66,11 +66,11 @@ export const DARK: Pal = {
 };
 
 export const LIGHT: Pal = {
-  bg: 'var(--surface-media)', fg: 'var(--text-primary)', onFill: 'var(--text-on-inverse)',
+  bg: 'var(--surface-sunken)', fg: 'var(--text-primary)', onFill: 'var(--text-on-inverse)',
   sec: 'var(--text-secondary)', lbl: 'var(--text-label)', red: '#f2555a',
   track: 'var(--line-track)', hair2: 'var(--line-hairline-2)', offBorder: 'var(--line-hairline)',
   colRule: 'var(--line-hairline)', hatchStripe: 'var(--line-hairline)',
-  div: 'var(--line-divider)', sep: 'var(--line-hover)', under: 'var(--line-underline)',
+  div: 'var(--line-hover)', sep: 'var(--line-hover)', under: 'var(--line-underline)',
   frame: 'var(--line-frame)', bezel: 'var(--line-bezel)', sunken: 'var(--surface-sunken)',
   newQ: 'var(--line-hover)', live: 'var(--status-live)',
   band1: 'rgba(17,17,20,0.55)', band2: 'rgba(17,17,20,0.22)',
@@ -278,7 +278,7 @@ function RoadmapViz({ P }: { P: Pal }) {
   );
 }
 
-export default function SystemViz({ which, hintSize }: { which: string; hintSize?: string }) {
+export default function SystemViz({ which, hintSize, compactSheet = false }: { which: string; hintSize?: string; compactSheet?: boolean }) {
   void hintSize;
   const { theme } = useTheme();
   const P = theme === 'light' ? LIGHT : DARK;
@@ -289,7 +289,7 @@ export default function SystemViz({ which, hintSize }: { which: string; hintSize
   else if (which === 'pro') body = <ProViz P={P} />;
   else body = <RoadmapViz P={P} />;
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box', background: P.bg, color: P.fg, fontFamily: "'Geist', system-ui, sans-serif", display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ width: '100%', boxSizing: 'border-box', background: P.bg, color: P.fg, padding: theme === 'light' ? (compactSheet ? 16 : 24) : 0, borderRadius: theme === 'light' ? 8 : 0, fontFamily: "'Geist', system-ui, sans-serif", display: 'flex', flexDirection: 'column', gap: 16 }}>
       {body}
     </div>
   );
@@ -661,7 +661,7 @@ function InsightsViz({ P }: { P: Pal }) {
       const dotsShown = Math.round(answers / 10);
       const filled = Math.round(correct / 10);
       const pct = colEls.current[side * 62], nEl = colEls.current[side * 62 + 1];
-      if (pct) pct.textContent = nAns ? String(Math.round(p[side] * 100)) + '%' : '\u2014';
+      if (pct) pct.textContent = nAns ? String(Math.round(p[side] * 100)) + '%' : 'N/A';
       if (nEl) nEl.textContent = String(answers);
       // fixed 60 slots so each new dot can pop in instead of the grid re-rendering
       for (let i = 0; i < 60; i++) {
@@ -725,7 +725,7 @@ function InsightsViz({ P }: { P: Pal }) {
           <div key={side} style={{ position: 'absolute', left: side === 0 ? '0%' : '54%', top: 66, width: '46%', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 92 }}>
               <span style={{ fontSize: 12, color: P.lbl }}>{side === 0 ? 'first half' : 'second half'}</span>
-              <span ref={colElAt(side, 0)} style={{ ...mono, fontSize: 26, letterSpacing: '-0.02em', color: P.fg }}>{'\u2014'}</span>
+              <span ref={colElAt(side, 0)} style={{ ...mono, fontSize: 26, letterSpacing: '-0.02em', color: P.fg }}>{'N/A'}</span>
               <span style={{ fontSize: 10.5, color: P.lbl }}>answers so far: <span ref={colElAt(side, 1)}>0</span></span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, width: 128, paddingTop: 4 }}>

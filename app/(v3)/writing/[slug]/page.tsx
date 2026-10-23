@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = findPost(slug);
   if (!post) return { title: "Post Not Found", robots: { index: false } };
   return buildPageMetadata({
-    title: `${post.name} — Aerol (Aedwon)`,
+    title: `${post.name} | Aerol (Aedwon)`,
     description: post.desc,
     path: `/writing/${post.id}`,
     type: "article",

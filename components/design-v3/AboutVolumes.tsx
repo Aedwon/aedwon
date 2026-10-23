@@ -326,6 +326,18 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   const roomRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const dismissOutside = (event: PointerEvent) => {
+      if (event.button !== 0 || st.active == null || st.pt !== 1 || st.p < 0.98) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (bookRefs.current[st.active]?.root?.contains(target) || barRef.current?.contains(target) || doneRef.current?.contains(target)) return;
+      if (target.closest('button, a, input, textarea, select, label, [contenteditable="true"]')) return;
+      apiRef.current.close();
+    };
+    document.addEventListener('pointerdown', dismissOutside, true);
+    return () => document.removeEventListener('pointerdown', dismissOutside, true);
+  }, [st]);
   const hitRefs = useRef<(HTMLButtonElement | null)[]>(VOLUMES.map(() => null));
   const bookRefs = useRef<BookRefs[]>(VOLUMES.map(() => mkRefs()));
 

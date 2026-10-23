@@ -39,10 +39,10 @@ export async function generateMetadata({
   const isUnderConstruction = !isProjectIndexable(canonicalSlug);
   const isOpenSourceContribution = canonicalSlug === "bettergov-ph";
   const title = isUnderConstruction
-    ? `${project.title} — Under Construction | Aerol (Aedwon)`
+    ? `${project.title} | Under Construction | Aerol (Aedwon)`
     : isOpenSourceContribution
-      ? `${project.title} — Open Source Contributions | Aerol (Aedwon)`
-      : `${project.title} — Case Study | Aerol (Aedwon)`;
+      ? `${project.title} | Open Source Contributions | Aerol (Aedwon)`
+      : `${project.title} | Case Study | Aerol (Aedwon)`;
   const description = isUnderConstruction
     ? `The case study for ${project.title} is still under construction.`
     : project.summary;

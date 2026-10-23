@@ -36,7 +36,7 @@ describe("SEO metadata contracts", () => {
   it("builds complete page-specific Open Graph and Twitter metadata", () => {
     const publishedTime = "2026-08-24T00:00:00.000Z";
     const metadata = buildPageMetadata({
-      title: "Example article — Aerol (Aedwon)",
+      title: "Example article | Aerol (Aedwon)",
       description: "An example description.",
       path: "/blogs/example",
       type: "article",
@@ -45,7 +45,7 @@ describe("SEO metadata contracts", () => {
 
     expect(metadata.alternates).toEqual({ canonical: "/blogs/example" });
     expect(metadata.openGraph).toMatchObject({
-      title: "Example article — Aerol (Aedwon)",
+      title: "Example article | Aerol (Aedwon)",
       description: "An example description.",
       url: "/blogs/example",
       siteName: "Aedwon",
@@ -55,7 +55,7 @@ describe("SEO metadata contracts", () => {
     });
     expect(metadata.twitter).toMatchObject({
       card: "summary_large_image",
-      title: "Example article — Aerol (Aedwon)",
+      title: "Example article | Aerol (Aedwon)",
       description: "An example description.",
       images: ["/opengraph-image"],
     });

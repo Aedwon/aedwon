@@ -20,6 +20,7 @@ import BookPage from './BookPage';
 import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
+import { useStudio } from './studio/store';
 import UI from '@/content/site/ui.json';
 
 const MOB_W = 390;
@@ -128,6 +129,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   dimsRef.current = { W, fit };
   // Screens are drawn for 844 tall. A taller or shorter phone moves the centred content by half the difference, within limits.
   const { theme, toggle } = useTheme();
+  const { editing } = useStudio();
   const dy = Math.max(-30, Math.min(60, (height - MOB_H) / 2));
   const P: Project[] = PROJECTS;
   const V = VOLUMES;
@@ -315,6 +317,19 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const prevBtnRef = useRef<HTMLButtonElement>(null);
   const nextBtnRef = useRef<HTMLButtonElement>(null);
   const boardXRef = useRef<HTMLDivElement>(null); // the 680px spread, translate x = camX - 340
+  useEffect(() => {
+    if (screen !== 'book') return;
+    const dismissOutside = (event: PointerEvent) => {
+      if (event.button !== 0) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (boardXRef.current?.contains(target) || ctlRef.current?.contains(target)) return;
+      if (target.closest('button, a, input, textarea, select, label, [contenteditable="true"]')) return;
+      closeBook();
+    };
+    document.addEventListener('pointerdown', dismissOutside, true);
+    return () => document.removeEventListener('pointerdown', dismissOutside, true);
+  }, [screen, closeBook]);
   const lEdgeRef = useRef<HTMLSpanElement>(null);
   const rEdgeRef = useRef<HTMLSpanElement>(null);
   const castRRef = useRef<HTMLSpanElement>(null);
@@ -835,9 +850,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               {(p.links || []).slice(0, 1).map((l) => (
                 <a key={l.href} href={l.href} className="v3rise" style={{ ...rise(4), marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
-              <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26, borderRadius: 10, background: 'var(--surface-media)' }}>
-                <div style={{ position: 'relative', width: CW, height: Math.round(frameH(p) * Math.min(CW / 520, 240 / frameH(p)) + 28), overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: Math.min(CW / 520, 240 / frameH(p)).toFixed(4) }}>
+              <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26 }}>
+                <div style={{ position: 'relative', width: CW, height: frameH(p) * CW / 520, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: (CW / 520).toFixed(4) }}>
                     <MediaBlock live kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                   </div>
                 </div>
@@ -867,7 +882,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       {sec.img.caption && <figcaption style={{ fontSize: 13, color: 'var(--text-label)' }}>{sec.img.caption}</figcaption>}
                     </figure>
                   )}
-                  {sec.hasFig && !sec.img?.src && (
+                  {editing && sec.hasFig && !sec.img?.src && (
                     <div style={{ height: 220, borderRadius: 10, background: 'var(--surface-media)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Geist Mono', monospace", fontSize: 11, color: 'var(--text-label)', textAlign: 'center', padding: '0 16px' }}>{sec.fig}</div>
                   )}
                   {sec.kind === 'systems' && ((sec as { items?: { h: string; p: string[]; which: string; vh: string }[] }).items || []).map((it: { h: string; p: string[]; which: string; vh: string }, k: number) => (
@@ -876,9 +891,9 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       {(it.p || []).map((qq: string, j2: number) => (
                         <p key={j2} style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: 'var(--text-secondary)' }}>{qq}</p>
                       ))}
-                      <div style={{ position: 'relative', width: CW, height: (parseInt(it.vh, 10) * CW / 600).toFixed(0) + 'px', overflow: 'hidden' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 0, width: 600, transformOrigin: '0 0', scale: (CW / 600).toFixed(4) }}>
-                          {isBotViz(it.which) ? <BotViz which={it.which} /> : <SystemViz which={it.which} hintSize="600px,370px" />}
+                      <div style={{ position: 'relative', width: CW, height: ((parseInt(it.vh, 10) + (theme === 'light' ? 32 : 0)) * CW / (theme === 'light' ? 632 : 600)).toFixed(0) + 'px', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', left: 0, top: 0, width: theme === 'light' ? 632 : 600, transformOrigin: '0 0', scale: (CW / (theme === 'light' ? 632 : 600)).toFixed(4) }}>
+                          {isBotViz(it.which) ? <BotViz which={it.which} compactSheet /> : <SystemViz which={it.which} compactSheet hintSize="600px,370px" />}
                         </div>
                       </div>
                     </div>

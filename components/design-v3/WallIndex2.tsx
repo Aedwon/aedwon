@@ -45,6 +45,7 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const rad = Math.PI / 180;
 
 interface WallIndex2Props {
+  height?: number;
   bare?: boolean;
   dim?: number;
   wallColor?: string;
@@ -64,13 +65,15 @@ interface Spring { y: number; v: number; init?: number }
 
 const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIndex2(props, ref) {
   const {
-    bare = false, wallColor = 'var(--room-bg)', view = 'index', motion = 'swap', mode = 'follow',
+    height = 900, bare = false, wallColor = 'var(--room-bg)', view = 'index', motion = 'swap', mode = 'follow',
     initialViewReq, theme = 'dark', hintSize,
     onOpen, onFocus, onPeek,
   } = props;
   void initialViewReq; void hintSize;
 
   const P: Project[] = PROJECTS;
+  const heightRef = useRef(height);
+  heightRef.current = height;
   const N = P.length;
   const NW = COLS.flat().length; // everything on the wall is hung in COLS, and those entries come first
 
@@ -89,6 +92,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   const capNRef = useRef<HTMLSpanElement>(null);
   const capNameRef = useRef<HTMLSpanElement>(null);
   const capTypeRef = useRef<HTMLSpanElement>(null);
+  const capMoreRef = useRef<HTMLAnchorElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const tickEls = useRef<(HTMLButtonElement | null)[]>([]);
   const pvBoxRef = useRef<HTMLDivElement>(null);
@@ -145,12 +149,13 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     chg: null as null | { sig: string; t0: number; prevM: Record<number, number>; prevGM: Record<number, number>; moved: Record<number, boolean>; rank: Record<number, number>; grank: Record<number, number>; ty: Record<number, number | null>; gy: Record<number, number | null> },
     cy0: {} as Record<number, number>, gy0: {} as Record<number, number>, mm: {} as Record<number, number>, gm: {} as Record<number, number>,
     dim: 0, held: true, lvl: 0, blk: false, openP: 0, opening: false, rest: [] as { x: number; y: number; w: number }[], cen: [] as { x: number; y: number }[],
+    returnTile: null as number | null,
     O: [720, 470] as [number, number], ax0: 34, az0: -18,
     cy: 0, tCy: 0, vel: 0,
     zl: 1, zv: 0,
     su: {} as Record<number, { u: number; v: number }>, hs: {} as Record<number, number>, ops: {} as Record<number, number>,
     m: { x: 0, y: 0 }, ms: { x: 0, y: 0 }, scrollY: 0, lastInput: 0,
-    capId: null as number | null, capAt: 0, capLast: 0,
+    capId: null as number | null, capAt: 0, capLast: null as number | null,
     t0: 0, last: 0, reduced: false, raf: 0,
     over: 0, overAt: 0, pk: 0,
     magY: null as number | null,
@@ -193,6 +198,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // how far the project page is open (0..1): the lit tile holds, the caption goes first, the others fade with the move
     setOpenP(p: number, opening: boolean) {
       const was = s.blk; s.openP = p; s.opening = opening; s.blk = p > 0.001;
+      if (!s.blk) s.returnTile = null;
       if (was && !s.blk) { s.cur = null; s.leaveAt = null; s.gAmt = 0; s.amt = []; s.ih = null; s.ihHold = null; s.ihLeave = null; } // back on the wall: the dim lets go on its own
     },
     // while the camera flies in, the wall's own screen-sized clip would ride along and show as a cut; the room clips instead
@@ -200,6 +206,27 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     // where tile i sits once the wall has levelled out, in room pixels: its centre and its width
     centerOf(i: number) { return s.cen[i] || null; }, // where tile i is drawn right now, in room pixels
     restRect(i: number) { return s.k < 0.5 ? s.rest[i] || null : null; },
+    prepareReturn(i: number, view: 'wall' | 'index') {
+      const target = view === 'wall' && COLS.flat().includes(i) ? 'wall' : 'index';
+      s.returnTile = i;
+      s.k = s.kt = target === 'wall' ? 0 : 1;
+      s.leaving = false;
+      s.vel = 0;
+      s.over = 0; s.pk = 0;
+      s.held = false; s.t0 = performance.now() - 5000;
+      if (target === 'wall') {
+        // Keep an existing wall position when the tile is visible, otherwise center it.
+        const tile = s.rest[i];
+        if (!tile || tile.y < 140 || tile.y > heightRef.current - 140) s.cy = s.tCy = bp[i].y;
+        s.cur = i; s.hover = i; s.leaveAt = null;
+        s.capLast = i;
+      } else {
+        s.ih = i; s.ihHold = i; s.ihLeave = null; s.pvLast = i; s.pvA = 1;
+      }
+      setViewState(target === 'wall' ? 0 : 1);
+      frame(0, performance.now());
+      return target;
+    },
     rectOf(i: number) {
       const el = s.k < 0.5 ? tileEls.current[i] : pvEls.current[i];
       if (!el || (s.k >= 0.5 && parseFloat(el.style.opacity || '0') < 0.5)) return null;
@@ -461,10 +488,11 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const camY = lerp(bounds.midY, s.cy, zl);
     // first pass: where each tile lands on screen, to find the one nearest the middle
     const O = s.O;
+    O[1] = heightRef.current / 2 + 20;
     s.rest = bp.map((b) => ({ x: O[0] + S * (b.x - O[0]), y: O[1] + S * (b.y - camY), w: 520 * S }));
     const scr = bp.map((b) => { const p = rot(b.x - O[0], b.y - camY, 0); return { X: O[0] + S * p[0], Y: O[1] + S * p[1] }; });
     let near = 0, nd = 1e12;
-    scr.forEach((p, i) => { const d = (p.X - 720) ** 2 + ((p.Y - 480) * 1.4) ** 2; if (d < nd) { nd = d; near = i; } });
+    scr.forEach((p, i) => { const d = (p.X - 720) ** 2 + ((p.Y - (O[1] + 10)) * 1.4) ** 2; if (d < nd) { nd = d; near = i; } });
     s.magY = bp[near].y;
     const zoomedOut = zl < 0.5; s.zoomedOut = zoomedOut;
     // Hover intent: moving to another tile switches at once; leaving every tile keeps the last one for a beat, so crossing
@@ -557,8 +585,8 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       if (s.blk) { s.ihLeave = null; } // opening: the preview holds exactly where it is
       else if (s.ih != null) { s.ihHold = s.ih; s.ihLeave = null; }
       else if (s.ihHold != null) { if (s.ihLeave == null) s.ihLeave = now; if (now - s.ihLeave >= 160) { s.ihHold = null; s.ihLeave = null; } }
-      const want = s.ihHold != null && k > 0.98 && !(s.blk && !s.opening) ? 1 : 0;
-      const yT = Math.max(110, Math.min(900 - ph - 110, R0 + s.rs[pl].y + 30 - s.scrollY - ph / 2));
+      const want = s.ihHold != null && k > 0.98 && (!(s.blk && !s.opening) || s.returnTile != null) ? 1 : 0;
+      const yT = Math.max(110, Math.min(heightRef.current - ph - 110, R0 + s.rs[pl].y + 30 - s.scrollY - ph / 2));
       if (s.pvY == null || s.pvA < 0.02) s.pvY = { y: yT, v: 0 };
       else if (dts && !s.blk) { s.pvY.v += ((yT - s.pvY.y) * 120 - s.pvY.v * 20) * dts; s.pvY.y += s.pvY.v * dts; }
       s.pvA = dts ? s.pvA + (want - s.pvA) * Math.min(1, dts * (want ? 10 : 7)) : want;
@@ -609,7 +637,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     if (ixRef.current) ixRef.current.style.pointerEvents = k > 0.5 ? 'auto' : 'none';
     // caption follows whatever is in focus; it re-enters softly when that changes
     // on the way back the caption waits until the wall has landed, then fades in for whatever is in focus
-    const cFocus = s.blk && !s.opening ? null : focus;
+    const cFocus = s.blk && !s.opening ? null : (focus ?? s.capLast);
     if (cFocus !== s.capId) { s.capId = cFocus; s.capAt = now; if (cFocus != null) s.capLast = cFocus; }
     const ce = out((now - s.capAt) / 300);
     const shown = cFocus != null ? cFocus : s.capLast;
@@ -621,9 +649,16 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     if (capNRef.current) capNRef.current.textContent = shown != null ? String(shown + 1).padStart(2, '0') + ' / ' + NW : '';
     if (capNameRef.current) capNameRef.current.textContent = shown != null ? P[shown].name : '';
     if (capTypeRef.current) capTypeRef.current.textContent = shown != null ? (P[shown].desc || P[shown].type) : ''; // the short description, not the type
+    if (capMoreRef.current) {
+      const p = shown != null ? P[shown] : null;
+      const active = cFocus != null && ui * (1 - kc) * capOp * chromeK * capF > 0.5;
+      capMoreRef.current.href = p ? `${p.type === 'Writing' ? '/writing/' : '/work/'}${p.id}` : '#';
+      capMoreRef.current.tabIndex = active ? 0 : -1;
+      capMoreRef.current.style.pointerEvents = active ? 'auto' : 'none';
+    }
     // rail
     {
-      const inView = scr.map((p) => p.X > 0 && p.X < 1440 && p.Y > 84 && p.Y < 900);
+      const inView = scr.map((p) => p.X > 0 && p.X < 1440 && p.Y > 84 && p.Y < heightRef.current);
       if (railRef.current) {
         railRef.current.style.opacity = (ui * (1 - kc) * chromeK * capF).toFixed(3);
         railRef.current.style.pointerEvents = kc < 0.5 && chromeK > 0.5 ? 'auto' : 'none';
@@ -658,7 +693,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up} onPointerCancel={up}
       onMouseMove={lean} onMouseLeave={unlean}
       style={{
-        position: 'relative', width: 1440, height: 900, overflow: 'hidden', background: bare ? 'transparent' : 'var(--room-bg)',
+        position: 'relative', width: 1440, height, overflow: 'hidden', background: bare ? 'transparent' : 'var(--room-bg)',
         color: 'var(--text-primary)', fontFamily: "'Geist', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased',
         perspective: 2200, perspectiveOrigin: '50% 45%',
         touchAction: viewState === 1 ? 'pan-y' : 'none',
@@ -849,12 +884,17 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       </div>
 
       {/* what's in focus (or under the pointer), always in the same spot */}
-      <div ref={capRef} aria-live="polite" style={{ position: 'absolute', left: 56, bottom: 52, display: 'flex', flexDirection: 'column', gap: 6, opacity: 0, pointerEvents: 'none', isolation: 'isolate' }}>
+      <div ref={capRef} aria-live="polite" style={{ position: 'absolute', left: 56, right: 56, bottom: 52, display: 'flex', flexDirection: 'column', gap: 6, opacity: 0, pointerEvents: 'none', isolation: 'isolate' }}>
         {/* the wall fades into the room colour along the bottom edge, so the words stay readable over a light tile */}
         <span aria-hidden style={{ position: 'absolute', left: -56, bottom: -52, width: 1440, height: 300, zIndex: -1, background: 'linear-gradient(to top, var(--room-bg) 0%, color-mix(in srgb, var(--room-bg) 78%, transparent) 38%, var(--room-bg-0) 100%)' }} />
         <span ref={capNRef} style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12.5, color: 'var(--text-label)' }} />
         <span ref={capNameRef} style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-0.03em' }} />
         <span ref={capTypeRef} style={{ maxWidth: 560, fontSize: 15, lineHeight: 1.45, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} />
+        <a ref={capMoreRef} className="v3nlink" href="#" tabIndex={-1}
+          onClick={(e) => { if (s.capId == null) { e.preventDefault(); return; } if (onOpen && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onOpen(s.capId); } }}
+          style={{ position: 'absolute', right: 0, bottom: 0, padding: '12px 0', fontSize: 15, color: 'var(--text-secondary)', textUnderlineOffset: 5, pointerEvents: 'none' }}>
+          Click to view more details
+        </a>
       </div>
 
       {/* where you are: one tick per project */}

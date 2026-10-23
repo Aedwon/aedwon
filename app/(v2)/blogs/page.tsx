@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BLOG_POSTS } from "@/lib/data/blog-posts";
 import { buildPageMetadata } from "@/lib/seo";
 
-const title = "Blogs — Aerol (Aedwon)";
+const title = "Blogs | Aerol (Aedwon)";
 const description = "Notes on software, products, and the way I build them.";
 
 export const metadata = buildPageMetadata({

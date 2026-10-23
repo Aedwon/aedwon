@@ -64,8 +64,10 @@ export function Paras({ id, path, items, pStyle }: { id: string; path: string; i
 
 // A picture slot. Shows the picture when there is one, otherwise the placeholder you pass as children.
 // While editing: drop a file on it or choose one, edit its alt text, replace or remove it.
-export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, children, asChildren }: {
+// With hideEmpty, a slot that has no picture and no editor draws nothing at all, placeholder included.
+export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, children, asChildren, hideEmpty }: {
   id: string; slot: string; img?: Img | null; fit?: 'contain' | 'cover'; asChildren?: boolean; // asChildren: the children draw the picture (cropped to a frame); this only adds the controls
+  hideEmpty?: boolean; // no picture and no editor: draw nothing, placeholder included
   frame?: CSSProperties; imgStyle?: CSSProperties; children?: ReactNode;
 }) {
   const api = useApi();
@@ -75,7 +77,10 @@ export function ImageSlot({ id, slot, img, fit = 'contain', frame, imgStyle, chi
     // eslint-disable-next-line @next/next/no-img-element -- already re-encoded to WebP by the studio upload
     ? <img src={img.src} alt={img.alt || ''} width={img.w} height={img.h} draggable={false} style={{ display: 'block', width: '100%', height: '100%', objectFit: fit, ...imgStyle }} />
     : children;
-  if (!api) return frame ? <div style={frame}>{picture}</div> : <>{picture}</>;
+  if (!api) {
+    if (hideEmpty && !img?.src) return null;
+    return frame ? <div style={frame}>{picture}</div> : <>{picture}</>;
+  }
   const send = (file?: File | null) => { if (file) quiet(api.uploadImage(id, slot, file)); };
   return (
     <div

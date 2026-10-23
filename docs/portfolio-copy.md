@@ -8,6 +8,10 @@
 
 ## 1. Homepage (`/`)
 
+### Wall preview prompt
+
+The wall preview shows "Click to view more details" to the right of the project description. Clicking the prompt opens the currently previewed project.
+
 ### 1.1 Intro
 ```markdown
 I'm Aerol. You might also know me as Aedwon.
@@ -161,7 +165,7 @@ Get in touch for software projects or community infrastructure:
 
 ## 2. Exhaustive Project Directory (`/projects`)
 
-### 2.1 Pantas (`/projects/pantas`) — Flagship
+### 2.1 Pantas (`/projects/pantas`) | Flagship
 - **Tier:** Flagship
 - **Category:** Mobile & Offline
 - **Role:** Lead Architect & Developer
@@ -206,7 +210,7 @@ For the SQLite content path, the seed writer takes exported JSON and passes exam
 
 Pantas is still in active pre-launch development. The local study and scheduling paths are implemented, while Firebase-backed account sync and the mock-exam content path are not currently usable in the running build. I am keeping those unfinished pieces out of the feature claims until their runtime paths are actually connected.
 
-### 2.2 MSL Network Bot (`/projects/msl-network`) — Flagship
+### 2.2 MSL Network Bot (`/projects/msl-network`) | Flagship
 - **Tier:** Flagship
 - **Category:** Bots & Systems
 - **Role:** Developer
@@ -275,7 +279,7 @@ The handover document treats those restrictions as adoption steps. It explains h
 
 The current build is still incomplete around ordinance browsing. The home page includes a search form and links to recent legislation, but the `/ordinances` index and `/ordinances/[slug]` detail routes are placeholders in the current code. The project specification describes a FlexSearch index, URL-based filters, and a fuller document view, but those pieces are not implemented in the current `main` branch. The current repository also does not contain the SQLite, Prisma, Workbox, OCR, or PWA implementation claimed by the older portfolio article.
 
-### 2.4 PSO Automated Scorer & Ranking Engine (`/projects/pso-scoring-model`) — Flagship
+### 2.4 PSO Automated Scorer & Ranking Engine (`/projects/pso-scoring-model`) | Flagship
 - **Tier:** Flagship
 - **Category:** Bots & Systems
 - **Role:** Lead Scoring Architect
@@ -295,7 +299,7 @@ The current build is still incomplete around ordinance browsing. The home page i
 
 ---
 
-### 2.5 QR Studio (`/projects/qr-studio`) — Focused
+### 2.5 QR Studio (`/projects/qr-studio`) | Focused
 - **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator & Frontend Engineer
@@ -309,7 +313,7 @@ The current build is still incomplete around ordinance browsing. The home page i
   - `0ms`: Network latency with zero backend requests
   - `100%`: Client-side privacy and vector precision
 
-### 2.6 Kiosk Survey (`/projects/kiosk-survey`) — Focused
+### 2.6 Kiosk Survey (`/projects/kiosk-survey`) | Focused
 - **Tier:** Focused
 - **Category:** Mobile & Offline
 - **Role:** Lead Developer
@@ -323,7 +327,7 @@ The current build is still incomplete around ordinance browsing. The home page i
   - `8 Hours`: Continuous offline operation during live event
   - `0`: Dropped survey submissions or app crashes
 
-### 2.7 BetterGov PH (`/projects/bettergov-ph`) — Focused
+### 2.7 BetterGov PH (`/projects/bettergov-ph`) | Focused
 - **Tier:** Focused
 - **Category:** Civic Tech
 - **Role:** Open Source Contributor
@@ -338,7 +342,7 @@ The current build is still incomplete around ordinance browsing. The home page i
 - **Metrics:**
   - `Open Source`: Public citizen digital infrastructure
 
-### 2.8 MSL Collegiate Cup Bot (`/projects/msl-collegiate-cup-bot`) — Focused
+### 2.8 MSL Collegiate Cup Bot (`/projects/msl-collegiate-cup-bot`) | Focused
 - **Tier:** Focused
 - **Category:** Bots & Systems
 - **Role:** Developer
@@ -375,7 +379,7 @@ Challonge support was added in January 2026. A marshal or administrator can link
 
 The current client is a small asynchronous wrapper over Challonge API v1 using `aiohttp`. The Git history briefly moved the integration to the v2.1 OAuth flow before reverting to the API-key version that remains in the repository. The current code keeps this bracket state separate from `MatchSession`. Discord acknowledgements do not automatically submit a result to Challonge. Reporting the bracket result is still an explicit marshal or administrator action.
 
-### 2.9 Ilocos Sur Festival Esports Bot (`/projects/ilocos-sur-esports-bot`) — Focused
+### 2.9 Ilocos Sur Festival Esports Bot (`/projects/ilocos-sur-esports-bot`) | Focused
 - **Tier:** Focused
 - **Category:** Bots & Systems
 - **Role:** Bot Developer & Operations Lead
@@ -388,7 +392,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Metrics:**
   - `250+`: Players coordinated across municipal brackets
 
-### 2.10 OPPO Smooth / Hyper Legend Cup Bot (`/projects/oppo-legend-cup-bot`) — Focused
+### 2.10 OPPO Smooth / Hyper Legend Cup Bot (`/projects/oppo-legend-cup-bot`) | Focused
 - **Tier:** Focused
 - **Category:** Bots & Systems
 - **Role:** Project Lead & Bot Developer
@@ -401,7 +405,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Metrics:**
   - `32+`: Teams managed across nationwide qualifiers
 
-### 2.11 KQM-Standard Genshin Team DPS Calculator (`/projects/gi-damage-calculator`) — Focused
+### 2.11 KQM-Standard Genshin Team DPS Calculator (`/projects/gi-damage-calculator`) | Focused
 - **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator & Developer
@@ -414,7 +418,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Metrics:**
   - `Client-Side`: Instant reactive damage calculations
 
-### 2.12 AI Agent Instruction & Skills Framework (`/projects/ai-agent-framework`) — Focused
+### 2.12 AI Agent Instruction & Skills Framework (`/projects/ai-agent-framework`) | Focused
 - **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator
@@ -427,7 +431,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Metrics:**
   - `Modular`: Multi-agent engineering skills and guardrails
 
-### 2.13 WebP Unli (`/projects/webp-unli`) — Focused
+### 2.13 WebP Unli (`/projects/webp-unli`) | Focused
 - **Tier:** Focused
 - **Category:** Web & Tools
 - **Role:** Creator & Developer

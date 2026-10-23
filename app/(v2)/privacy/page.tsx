@@ -3,7 +3,7 @@ import { PRIVACY_CONTENT } from "@/lib/site-content";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-  title: "Privacy — Aedwon",
+  title: "Privacy | Aedwon",
   description: PRIVACY_CONTENT.description,
   path: "/privacy",
 });

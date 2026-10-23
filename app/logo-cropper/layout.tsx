@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/ThemeContext";
 
 export const metadata: Metadata = {
-  title: "Logo Cropper — Aedwon",
+  title: "Logo Cropper | Aedwon",
   robots: { index: false, follow: false },
 };
 
