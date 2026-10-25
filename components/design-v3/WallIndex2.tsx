@@ -8,7 +8,8 @@ import {
   forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState,
 } from 'react';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
-import { DARK_MARKS, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
+import { TechLogo, hasTechLogo } from './TechLogo';
+import { ICON, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project } from '@/lib/design-v3/data/projects';
 import type { Req, WallIndex2Handle } from './contracts';
 import type { Theme } from '@/lib/design-v3/theme';
@@ -120,9 +121,9 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   }, [bp]);
 
   const stackOf = useMemo(() => P.map((p) => {
-    if (p.media === 'repo') return { logos: [LOGO.GitHub], text: p.links[0]?.label ?? '' };
+    if (p.media === 'repo') return { logos: ['GitHub'], text: p.links[0]?.label ?? '' };
     const parts = p.stack;
-    return { logos: parts.map((n) => LOGO[n]).filter(Boolean), text: parts.filter((n) => !LOGO[n]).join(' · ') };
+    return { logos: parts.filter(hasTechLogo), text: parts.filter((n) => !hasTechLogo(n)).join(' · ') };
   }), [P]);
 
   const postMeta = useMemo(() => {
@@ -379,7 +380,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
     const zl = s.zl;
     const dts = s.reduced ? 0 : dt || 0;
     const q0 = s.q.trim().toLowerCase();
-    const hay = (i: number) => (P[i].name + ' ' + P[i].type + ' ' + stackOf[i].text + ' ' + KIND[kindOf[i]].label).toLowerCase();
+    const hay = (i: number) => (P[i].name + ' ' + P[i].type + ' ' + P[i].stack.join(' ') + ' ' + stackOf[i].text + ' ' + KIND[kindOf[i]].label).toLowerCase();
     const match = (i: number) => (s.filt == null || kindOf[i] === s.filt) && (!q0 || hay(i).indexOf(q0) >= 0);
     const order = P.map((_, i) => i);
     if (s.sort === 'name') order.sort((a, b) => P[a].name.localeCompare(P[b].name));
@@ -679,7 +680,6 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   }
 
   // ---- static render: rows, tiles, groups, ticks, previews (children never re-render)
-  const logoColor = (t: string) => (DARK_MARKS.has(t) ? (theme === 'light' ? '#111114' : '#EDEDED') : LOGO[t]?.c);
   const counts = KIND.map((_, gi) => P.filter((__, i) => kindOf[i] === gi).length);
   const kindBtns = [{ label: 'All', n: String(N), on: filt == null, g: null as number | null }].concat(
     KIND.map((g, gi) => ({ label: g.label, n: String(counts[gi]), on: filt === gi, g: gi as number | null })),
@@ -746,11 +746,10 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
                   <span className="v3tyl" style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, whiteSpace: 'nowrap' }}>{p.type}</span>
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
-                  {stackOf[i].logos.map((g2) => (
-                    <span key={g2.t} title={g2.t} style={{ display: 'flex', flex: 'none' }}>
-                      <svg className="v3lg" width={g2.w ?? 18} height={g2.h ?? 18} viewBox={g2.vb ?? '0 0 24 24'} role="img" aria-label={g2.t} style={{ '--b': logoColor(g2.t) } as React.CSSProperties}><path d={g2.d} /></svg>
-                    </span>
+                  {stackOf[i].logos.slice(0, 6).map((name) => (
+                    <TechLogo key={name} name={name} theme={theme} />
                   ))}
+                  {stackOf[i].logos.length > 6 && <span tabIndex={0} title={stackOf[i].logos.slice(6).join(', ')} aria-label={stackOf[i].logos.slice(6).join(', ')} style={{ flex: 'none', fontSize: 12, color: 'var(--text-secondary)' }}>+{stackOf[i].logos.length - 6}</span>}
                   <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12.5, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stackOf[i].text}</span>
                 </span>
                 <span className="v3arr" aria-hidden style={{ textAlign: 'right', color: 'var(--text-primary)' }}>→</span>

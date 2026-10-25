@@ -20,7 +20,7 @@ import {
 } from 'react';
 import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
-import { LOGO, ICON, TYPEICON, FI, FICON, DARK_MARKS } from '@/lib/design-v3/data/icons';
+import { ICON, TYPEICON, FI, FICON } from '@/lib/design-v3/data/icons';
 import FlowDiagram from './FlowDiagram';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
@@ -29,6 +29,7 @@ import { setStudio, useStudio } from './studio/store';
 import SystemViz from './SystemViz';
 import BotViz, { isBotViz } from './BotViz';
 import WishCounter from './WishCounterLazy';
+import { TechLogo, hasTechLogo } from './TechLogo';
 import { useTheme } from '@/lib/design-v3/theme';
 
 export interface ProjectSpreadProps {
@@ -300,9 +301,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const kindIcon = ICON[TYPEICON[p.type]] || '';
   const heroLayout = heroLayoutOf(pi);
   const heroScale = String(heroLayout.scale);
-  const logos = (p.stack || []).map((s) => LOGO[s]).filter(Boolean)
-    .map((g) => ({ ...g, w2: (Number(g.w) * 22 / 18).toFixed(1), h2: (Number(g.h) * 22 / 18).toFixed(1) }));
-  const stackText = p.stackText || (p.stack || []).filter((s) => !LOGO[s]).join(' \u00b7 ');
+  const logos = (p.stack || []).filter(hasTechLogo);
+  const stackText = p.stackText || (p.stack || []).filter((s) => !hasTechLogo(s)).join(' · ');
   const stackAria = 'Built with ' + ((p.stack || []).join(', ') || p.stackText || '');
   const isCase = p.depth === 'case';
   const isNote = p.depth === 'note';
@@ -357,19 +357,9 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
         <Ed id={p.id} path="desc" value={p.desc} as="p" style={{ margin: '16px 0 0', fontSize: 16.5, lineHeight: 1.6, color: 'var(--text-secondary)' }} />
         {/* built with: the logos, named on hover */}
         <div aria-label={stackAria} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 18, marginTop: 22, minHeight: 24 }}>
-          {logos.map((g) => (
-            <span key={g.t} className="v3ps-tip" data-tip={g.t} style={{ display: 'flex', flex: 'none' }}>
-              <svg
-                className="v3ps-lg"
-                width={g.w2}
-                height={g.h2}
-                viewBox={g.vb || '0 0 24 24'}
-                role="img"
-                aria-label={g.t}
-                style={{ '--b': DARK_MARKS.has(g.t) ? (dark ? '#EDEDED' : '#111114') : (g.c || 'var(--text-label)') } as CSSProperties}
-              >
-                <path d={g.d} />
-              </svg>
+          {logos.map((name) => (
+            <span key={name} className="v3ps-tip" data-tip={name} style={{ display: 'flex', flex: 'none' }}>
+              <TechLogo name={name} size={22} theme={theme} />
             </span>
           ))}
           {p.stackText

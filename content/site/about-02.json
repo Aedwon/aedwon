@@ -5,6 +5,7 @@
   "tone": "#26262c",
   "ink": "#EDEDED",
   "D": 68,
+  "nextVolumeLink": false,
   "pages": [
     {
       "t": "Research first",
@@ -48,6 +49,109 @@
           "a": "Gemini Deep Research",
           "b": "research"
         }
+      ]
+    },
+    {
+      "t": "Web apps",
+      "kind": "tech",
+      "title": "Web apps",
+      "body": "I use React for browser interfaces. Next.js and Vite support the apps I build.",
+      "tech": [
+        { "name": "TypeScript", "detail": "Typed application code" },
+        { "name": "React", "detail": "Browser interfaces" },
+        { "name": "Next.js", "detail": "Web framework" },
+        { "name": "Vite", "detail": "Build tooling" },
+        { "name": "Tailwind CSS", "detail": "Styling system" },
+        { "name": "Node.js", "detail": "JavaScript runtime" },
+        { "name": "Framer Motion", "detail": "Animation library" },
+        { "name": "next-intl", "detail": "Localization library" }
+      ]
+    },
+    {
+      "t": "Apps and data",
+      "kind": "tech",
+      "title": "Apps and data",
+      "body": "Flutter and Dart cover mobile apps. Local persistence uses embedded and key-value storage, with a backend service for authentication and application functions.",
+      "tech": [
+        { "name": "Flutter", "detail": "Application framework" },
+        { "name": "Dart", "detail": "Application language" },
+        { "name": "Riverpod", "detail": "State management" },
+        { "name": "GoRouter", "detail": "Application routing" },
+        { "name": "Drift + SQLite", "logo": "SQLite", "detail": "Typed local storage" },
+        { "name": "Hive", "detail": "Key-value storage" },
+        { "name": "Firebase", "detail": "Authentication and backend" },
+        { "name": "RevenueCat", "detail": "Webhook and declared SDK" }
+      ]
+    },
+    {
+      "t": "Bots and databases",
+      "kind": "tech",
+      "title": "Bots and databases",
+      "body": "Bot code uses Python and discord.py. MySQL integrations use asynchronous drivers. Other database adapters support relational storage.",
+      "tech": [
+        { "name": "Python", "detail": "Application language" },
+        { "name": "discord.py", "detail": "Bot framework" },
+        { "name": "MySQL", "detail": "Includes MySQL drivers" },
+        { "name": "PostgreSQL", "detail": "Includes asyncpg" },
+        { "name": "SQLAlchemy", "detail": "ORM and database adapters" }
+      ]
+    },
+    {
+      "t": "Browser tools",
+      "kind": "tech",
+      "title": "Browser tools",
+      "body": "Browser apps handle text recognition and image processing. Other tools render styled QR codes and manage client state or game data.",
+      "tech": [
+        { "name": "JavaScript", "detail": "Browser application code" },
+        { "name": "Tesseract.js", "detail": "Text recognition" },
+        { "name": "wasm-vips", "detail": "Image processing" },
+        { "name": "qr-code-styling", "detail": "QR code rendering" },
+        { "name": "Zustand", "detail": "State management" },
+        { "name": "genshin-db", "detail": "Game data library" }
+      ]
+    },
+    {
+      "t": "Checks before shipping",
+      "kind": "tech",
+      "title": "Checks before shipping",
+      "body": "Web code includes component and browser tests. Python projects use test and lint tools. Automated workflows run checks on changes.",
+      "tech": [
+        { "name": "Vitest", "detail": "JavaScript test runner" },
+        { "name": "Testing Library", "detail": "Component tests" },
+        { "name": "jsdom", "detail": "DOM test environment" },
+        { "name": "Playwright", "detail": "Browser tests" },
+        { "name": "pytest", "detail": "Python test runner" },
+        { "name": "Ruff", "detail": "Python linting" },
+        { "name": "ESLint", "detail": "JavaScript linting" },
+        { "name": "GitHub Actions", "detail": "Automated workflows" }
+      ],
+      "meta": "Development and test tooling"
+    },
+    {
+      "t": "Languages and formats",
+      "kind": "tech",
+      "title": "Languages and formats",
+      "body": "My source work spans application code, integrations, documentation, and configuration.",
+      "tech": [
+        { "name": "C#", "detail": "Application code" },
+        { "name": "Markdown", "detail": "Technical documentation" },
+        { "name": "YAML", "detail": "Configuration files" }
+      ]
+    },
+    {
+      "t": "Documented integrations",
+      "kind": "tech",
+      "title": "Documented integrations",
+      "body": "These also appear in project documentation and dependency lists, or in local development code.",
+      "tech": [
+        { "name": "Dio", "detail": "HTTP client" },
+        { "name": "Alembic", "detail": "Database migrations" },
+        { "name": "aiohttp", "detail": "Async HTTP client" },
+        { "name": "PostHog", "detail": "Product analytics" },
+        { "name": "Vercel Analytics", "detail": "Web analytics" },
+        { "name": "Cloudflare Workers", "detail": "Worker runtime" },
+        { "name": "Cloudflare KV", "detail": "Key-value storage" },
+        { "name": "Meilisearch", "detail": "Search engine" }
       ]
     }
   ]

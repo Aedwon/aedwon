@@ -7,8 +7,9 @@
   "desc": "A redesign of the website for Lakambini, an events and creative agency I worked with. It's rebuilt around the agency's real events and client work.",
   "stack": [
     "Next.js",
+    "React",
     "TypeScript",
-    "Tailwind",
+    "Tailwind CSS",
     "Framer Motion"
   ],
   "links": [

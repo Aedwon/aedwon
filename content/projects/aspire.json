@@ -7,9 +7,9 @@
   "repo": "microsoft/aspire",
   "desc": "Aspire is Microsoft's code-first toolchain for building, running and deploying distributed apps. You describe services, databases and caches in code, and the CLI runs the whole thing locally with OpenTelemetry-based observability.",
   "stack": [
-    "GitHub"
+    "C#"
   ],
-  "stackText": "microsoft/aspire",
+  "stackText": "",
   "links": [
     {
       "label": "github.com/microsoft/aspire",

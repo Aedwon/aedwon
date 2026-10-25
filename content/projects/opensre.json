@@ -7,9 +7,9 @@
   "repo": "Tracer-Cloud/opensre",
   "desc": "OpenSRE is an open source framework for building AI agents that investigate production incidents on your own infrastructure. It connects to the monitoring and cloud tools a team already runs, and the project calls itself a public alpha.",
   "stack": [
-    "GitHub"
+    "Python"
   ],
-  "stackText": "Tracer-Cloud/opensre",
+  "stackText": "",
   "links": [
     {
       "label": "github.com/Tracer-Cloud/opensre",

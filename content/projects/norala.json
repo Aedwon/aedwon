@@ -7,8 +7,10 @@
   "desc": "An unofficial, bilingual prototype of a transparency site for the municipal council of Norala, South Cotabato. It uses made-up data and is meant to be handed to the town.",
   "stack": [
     "Next.js",
+    "React",
     "TypeScript",
-    "Tailwind"
+    "Tailwind CSS",
+    "next-intl"
   ],
   "links": [
     {

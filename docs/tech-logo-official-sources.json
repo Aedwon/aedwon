@@ -1,0 +1,272 @@
+[
+  {
+    "technology": "C#",
+    "file": "public/tech-icons/csharp.svg",
+    "sourceUrl": "https://github.com/dotnet/brand/blob/91845f6ddf2123b3bb1bfd1b6a386d9ce02b43aa/logo/language-icons/csharp-72.svg",
+    "sourceRevision": "91845f6ddf2123b3bb1bfd1b6a386d9ce02b43aa",
+    "catalog": "first-party",
+    "license": "CC0-1.0",
+    "notes": "First-party repository SVG. Repository license shown; brand/trademark rights remain with their owners. SVG copied without path or color changes.",
+    "status": "available"
+  },
+  {
+    "technology": "Playwright",
+    "file": "public/tech-icons/playwright.svg",
+    "sourceUrl": "https://github.com/microsoft/playwright/blob/8c1b148f3d73120aa90f10119920358062fda177/packages/web/src/assets/playwright-logo.svg",
+    "sourceRevision": "8c1b148f3d73120aa90f10119920358062fda177",
+    "catalog": "first-party",
+    "license": "Apache-2.0",
+    "notes": "First-party repository SVG. Repository license shown; brand/trademark rights remain with their owners. SVG copied without path or color changes.",
+    "status": "available"
+  },
+  {
+    "technology": "Zustand",
+    "file": "public/tech-icons/zustand.svg",
+    "sourceUrl": "https://github.com/pmndrs/zustand/blob/382d29c485e67018c06e75ec7235130d0968522c/examples/starter/src/assets/zustand-mascot.svg",
+    "sourceRevision": "382d29c485e67018c06e75ec7235130d0968522c",
+    "catalog": "first-party",
+    "license": "MIT",
+    "notes": "First-party repository SVG. Repository license shown; brand/trademark rights remain with their owners. SVG copied without path or color changes. Added viewBox=\"0 0 128 128\" to match the upstream width and height; this is the only source alteration.",
+    "status": "available"
+  },
+  {
+    "technology": "Riverpod",
+    "file": "public/tech-icons/riverpod.svg",
+    "sourceUrl": "https://github.com/rrousselGit/riverpod/blob/abc89e5219bc26532db897b79b3878f33c7fb55d/website/static/img/logo.svg",
+    "sourceRevision": "abc89e5219bc26532db897b79b3878f33c7fb55d",
+    "catalog": "first-party",
+    "license": "MIT",
+    "notes": "First-party repository SVG. Repository license shown; brand/trademark rights remain with their owners. SVG copied without path or color changes.",
+    "status": "available"
+  },
+  {
+    "technology": "next-intl",
+    "file": "public/tech-icons/next-intl.svg",
+    "sourceUrl": "https://github.com/amannn/next-intl/blob/b9fc98a814957b9c97894c7b57151215ac39afa6/media/logo.svg",
+    "sourceRevision": "b9fc98a814957b9c97894c7b57151215ac39afa6",
+    "catalog": "first-party",
+    "license": "MIT",
+    "notes": "First-party repository SVG. Repository license shown; brand/trademark rights remain with their owners. SVG copied without path or color changes.",
+    "status": "available"
+  },
+  {
+    "technology": "jsdom",
+    "file": "public/tech-icons/jsdom.svg",
+    "sourceUrl": "https://github.com/jsdom/jsdom/blob/a394809bf24c9a84dbe2ab7e755c7d250135ec6b/logo.svg",
+    "sourceRevision": "a394809bf24c9a84dbe2ab7e755c7d250135ec6b",
+    "catalog": "first-party",
+    "license": "MIT",
+    "notes": "First-party repository SVG. Repository license shown; brand/trademark rights remain with their owners. SVG copied without path or color changes.",
+    "status": "available"
+  },
+  {
+    "technology": "Dio",
+    "file": null,
+    "sourceUrl": "https://github.com/cfug/dio/tree/f1bef462289b40992d625d4eb2a2f42321217573",
+    "sourceRevision": "f1bef462289b40992d625d4eb2a2f42321217573",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "Alembic",
+    "file": null,
+    "sourceUrl": "https://github.com/sqlalchemy/alembic/tree/c0fa30ce53cdd2ee6d92113333cc78b8e54da8d8",
+    "sourceRevision": "c0fa30ce53cdd2ee6d92113333cc78b8e54da8d8",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "aiomysql",
+    "file": null,
+    "sourceUrl": "https://github.com/aio-libs/aiomysql/tree/1aa9cfcbad60f14f5a8bdccaa660f10f69123015",
+    "sourceRevision": "1aa9cfcbad60f14f5a8bdccaa660f10f69123015",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "PyMySQL",
+    "file": null,
+    "sourceUrl": "https://github.com/PyMySQL/PyMySQL/tree/1aff0a859d73f5e63afe630c10e48604fb393fff",
+    "sourceRevision": "1aff0a859d73f5e63afe630c10e48604fb393fff",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "aiosqlite",
+    "file": null,
+    "sourceUrl": "https://github.com/omnilib/aiosqlite/tree/9b127cecc7de843bf4f343b6da63b641866533fb",
+    "sourceRevision": "9b127cecc7de843bf4f343b6da63b641866533fb",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "asyncpg",
+    "file": null,
+    "sourceUrl": "https://github.com/MagicStack/asyncpg/tree/13b01910da3fe01b8241c31cc86eccb1301a2d39",
+    "sourceRevision": "13b01910da3fe01b8241c31cc86eccb1301a2d39",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "gspread",
+    "file": null,
+    "sourceUrl": "https://github.com/burnash/gspread/tree/7ca71eaa4658320b89f82f49620dac6891986cdd",
+    "sourceRevision": "7ca71eaa4658320b89f82f49620dac6891986cdd",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "mocktail",
+    "file": null,
+    "sourceUrl": "https://github.com/felangel/mocktail/tree/d6a96e15b9203d33af61083e02e8c40ac07192d6",
+    "sourceRevision": "d6a96e15b9203d33af61083e02e8c40ac07192d6",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "freezed",
+    "file": null,
+    "sourceUrl": "https://github.com/rrousselGit/freezed/tree/b96b69b2d2be3c1713de098d31b90305f06785af",
+    "sourceRevision": "b96b69b2d2be3c1713de098d31b90305f06785af",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "mypy",
+    "file": null,
+    "sourceUrl": "https://github.com/python/mypy/tree/5b0b7f9516e2cb359cd45c2c8b3c810b0c860d18",
+    "sourceRevision": "5b0b7f9516e2cb359cd45c2c8b3c810b0c860d18",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "discord.py",
+    "file": null,
+    "sourceUrl": "https://github.com/Rapptz/discord.py/tree/65232c38702be5844cf2ce865a4777eb1928b5d0",
+    "sourceRevision": "65232c38702be5844cf2ce865a4777eb1928b5d0",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "qr-code-styling",
+    "file": null,
+    "sourceUrl": "https://github.com/kozakdenys/qr-code-styling/tree/43d41710221204858ccbd5b5065ec41d23b50544",
+    "sourceRevision": "43d41710221204858ccbd5b5065ec41d23b50544",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "genshin-db",
+    "file": null,
+    "sourceUrl": "https://github.com/theBowja/genshin-db/tree/49a6544a6c6ae36089cb42fa591fc46f01de8bcf",
+    "sourceRevision": "49a6544a6c6ae36089cb42fa591fc46f01de8bcf",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "build_runner",
+    "file": null,
+    "sourceUrl": "https://github.com/dart-lang/build/tree/62ad14217b5667de34c8b6745eb7ed6cd7dc2a30",
+    "sourceRevision": "62ad14217b5667de34c8b6745eb7ed6cd7dc2a30",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "json_serializable",
+    "file": null,
+    "sourceUrl": "https://github.com/google/json_serializable.dart/tree/c2c5c92f8f1b42e019e2f93a39399a8f9fa3dfba",
+    "sourceRevision": "c2c5c92f8f1b42e019e2f93a39399a8f9fa3dfba",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "GoRouter",
+    "file": null,
+    "sourceUrl": "https://github.com/flutter/packages/tree/23a05b6ad5d55bc0df5b9340623570b69064edf1",
+    "sourceRevision": "23a05b6ad5d55bc0df5b9340623570b69064edf1",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "flutter_test",
+    "file": null,
+    "sourceUrl": "https://github.com/flutter/flutter/tree/66b3ad90177ccbd2963836a5556076b370622fe4",
+    "sourceRevision": "66b3ad90177ccbd2963836a5556076b370622fe4",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "integration_test",
+    "file": null,
+    "sourceUrl": "https://github.com/flutter/flutter/tree/66b3ad90177ccbd2963836a5556076b370622fe4",
+    "sourceRevision": "66b3ad90177ccbd2963836a5556076b370622fe4",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "drift_dev",
+    "file": null,
+    "sourceUrl": "https://github.com/simolus3/drift/tree/85429ca2617eb923efa39dd9c947a592be6c70b2",
+    "sourceRevision": "85429ca2617eb923efa39dd9c947a592be6c70b2",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "pytest-asyncio",
+    "file": null,
+    "sourceUrl": "https://github.com/pytest-dev/pytest-asyncio/tree/983007120dcc53b14f8f7e9df492cbd1d20a242c",
+    "sourceRevision": "983007120dcc53b14f8f7e9df492cbd1d20a242c",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official SVG found in a bounded search of the current first-party repository tree. Unrelated icons, sponsor logos, and parent ecosystem marks are not substitutes. This records a search limit, not proof that no mark exists elsewhere.",
+    "status": "no dedicated official SVG found"
+  },
+  {
+    "technology": "Drift",
+    "file": null,
+    "sourceUrl": "https://github.com/simolus3/drift/tree/85429ca2617eb923efa39dd9c947a592be6c70b2",
+    "sourceRevision": "85429ca2617eb923efa39dd9c947a592be6c70b2",
+    "catalog": "first-party search",
+    "license": null,
+    "notes": "No dedicated official Drift SVG found in the pinned repository tree or https://drift.simonbinder.eu/. The documentation homepage uses text branding; its inline SVG badge identifies Jaspr, not Drift. The existing v3 Drift mark duplicates SQLite geometry and is a database proxy, not verified Drift branding. Do not label that mark as an official Drift logo.",
+    "status": "no dedicated official SVG found"
+  }
+]

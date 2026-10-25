@@ -7,7 +7,9 @@
   "desc": "A Discord bot for the 2026 OPPO Hyper Legend Cup x MLBB Campus Series. It checks players against the team registration sheet, runs the support desk, schedules announcements and records match results.",
   "stack": [
     "Python",
-    "MySQL"
+    "discord.py",
+    "MySQL",
+    "aiomysql"
   ],
   "links": [
     {

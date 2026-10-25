@@ -7,7 +7,9 @@
   "desc": "Discord bot for the Ilocos Sur Provincial Government's esports league during the Ilocos Sur Festival. It verifies players against team rosters and ties each bracket to Challonge.",
   "stack": [
     "Python",
-    "MySQL"
+    "discord.py",
+    "MySQL",
+    "aiomysql"
   ],
   "links": [
     {

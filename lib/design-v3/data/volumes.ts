@@ -17,6 +17,7 @@ export interface BookPageDef {
   titleSize?: string;
   body?: string;
   meta?: string;
+  tech?: { name: string; detail: string; logo?: string }[];
   slot?: string;
   caption?: string;
   big?: string;
@@ -47,7 +48,7 @@ export interface Volume {
   contact?: boolean;
 }
 
-interface RawVolume { id: string; n: string; title: string; tone: string; ink: string; D: number; contact?: boolean; pages: BookPageDef[] }
+interface RawVolume { id: string; n: string; title: string; tone: string; ink: string; D: number; contact?: boolean; nextVolumeLink?: boolean; pages: BookPageDef[] }
 
 const RAW = [a1, a2, a3, a4, a5, a6] as unknown as RawVolume[];
 
@@ -60,7 +61,7 @@ export const VOLUMES: Volume[] = RAW.map((v, vi) => {
     const toc = body.map((p, i) => ({ title: (p.t || p.title || p.org || p.big) as string, page: i + 1, n: String(i + 1).padStart(2, '0') }));
     all = [{ kind: 'contents', vol: v.n, title: v.title, toc, src: { id: v.id, i: -1 } }, ...body];
   }
-  if (all.length % 2) { const nx = RAW[vi + 1]; all.push({ kind: 'end', vol: v.n, nextVol: nx ? nx.n : '', nextTitle: nx ? nx.title : '' }); }
+  if (all.length % 2) { const nx = v.nextVolumeLink === false ? undefined : RAW[vi + 1]; all.push({ kind: 'end', vol: v.n, nextVol: nx ? nx.n : '', nextTitle: nx ? nx.title : '' }); }
   all.forEach((p, i) => { if (i > 0 && p.kind !== 'end') p.folio = String(i).padStart(2, '0'); });
   return { id: v.id, n: v.n, title: v.title, tone: v.tone, ink: v.ink, D: v.D, contact: v.contact, pages: v.pages, all, spreads: all.length / 2 };
 });

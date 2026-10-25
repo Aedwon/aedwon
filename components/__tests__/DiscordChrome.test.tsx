@@ -15,7 +15,7 @@ describe("Discord Chrome Components", () => {
 
   it("renders member list with organizations and brand partners", () => {
     render(<DiscordMemberSidebar isOpen={true} />);
-    expect(screen.getByText(/OWNER | 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/OWNER \| 1/i)).toBeInTheDocument();
     expect(screen.getByText(/ORGANIZATIONS & LGUS/i)).toBeInTheDocument();
     expect(screen.getByText(/EVENT & BRAND PARTNERS/i)).toBeInTheDocument();
     expect(screen.getByText("PSYSC")).toBeInTheDocument();

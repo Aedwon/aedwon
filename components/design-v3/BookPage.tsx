@@ -21,6 +21,7 @@ import type { BookPageDef } from '@/lib/design-v3/data/volumes';
 import { Ed, ImageSlot, LogoSlot } from './studio/Editable';
 import type { Img } from '@/lib/design-v3/data/projects';
 import { useStudio } from './studio/store';
+import { TechLogo, hasTechLogo } from './TechLogo';
 
 export interface BookPageProps {
   page?: BookPageDef | null;
@@ -53,6 +54,7 @@ textarea.bp-fld:focus{background-color:var(--paper-focus)}
 .bp-shelve{transition:background-color .15s ease,opacity .25s ease}
 .bp-shelve:active{background:#2a2a30}
 .bp-shelve:focus-visible{outline:2px solid var(--paper-ink);outline-offset:3px}
+.bp-tech-icon>.v3-tech-logo{max-width:22px;max-height:22px}
 `;
 
 interface ListItem { a: string; b: string }
@@ -149,6 +151,28 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
           {E('body', p.body || '', { fontSize: 17, lineHeight: 1.6, color: 'var(--paper-body)' })}
           {(p.meta || editing) && E('meta', p.meta || '', { marginTop: 'auto', fontFamily: MONO, fontSize: 11.5, color: 'var(--paper-meta)' })}
         </>
+      )}
+
+      {/* technology pages share the existing paper geometry */}
+      {is('tech') && (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          {E('title', p.title || '', { display: 'block', fontSize: 32, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, marginBottom: 16 })}
+          {p.body && E('body', p.body, { display: 'block', fontSize: 14.5, lineHeight: 1.5, color: 'var(--paper-body)', marginBottom: 18 })}
+          <div role="list" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', columnGap: 8, rowGap: 6 }}>
+            {(p.tech || []).map((item, i) => (
+              <div role="listitem" key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, minHeight: 48, boxSizing: 'border-box', borderTop: '1px solid var(--paper-rule)', paddingTop: 7 }}>
+                {hasTechLogo(item.logo || item.name) && <span className="bp-tech-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', width: 22, height: 22 }}><TechLogo name={item.logo || item.name} size={22} appearance="brand" paper /></span>}
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  {E(`tech.${i}.name`, item.name, { display: 'block', fontSize: 14, fontWeight: 500, lineHeight: 1.2, overflowWrap: 'anywhere' })}
+                  {E(`tech.${i}.detail`, item.detail, { display: 'block', marginTop: 3, fontSize: 11.5, lineHeight: 1.35, color: 'var(--paper-meta)' })}
+                </span>
+              </div>
+            ))}
+          </div>
+          <footer style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', borderTop: '1px solid var(--paper-rule)', paddingTop: 10, color: 'var(--paper-meta)', fontSize: 11.5, lineHeight: 1.4 }}>
+            <span>{p.running || 'My workflow'}</span><span>{p.folio}</span>
+          </footer>
+        </div>
       )}
 
       {/* a photo */}
@@ -316,7 +340,7 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       )}
 
       {/* running head and folio */}
-      <span style={{ position: 'absolute', left: 40, right: 40, bottom: 20, display: 'flex', justifyContent: sd === 'left' ? 'flex-start' : 'flex-end', gap: 12, fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-placeholder)' }}>{footText}</span>
+      {!is('tech') && <span style={{ position: 'absolute', left: 40, right: 40, bottom: 20, display: 'flex', justifyContent: sd === 'left' ? 'flex-start' : 'flex-end', gap: 12, fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-placeholder)' }}>{footText}</span>}
       {/* the gutter: paper curves into the spine */}
       <span
         aria-hidden

@@ -27,22 +27,22 @@ Featured projects [See all projects →]
 
 • Pantas
   Summary: Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.
-  Stack: [Flutter, Dart, Drift, SQLCipher, Riverpod, FSRS, Sanity, RevenueCat]
+  Stack: [Flutter, Dart, Riverpod, GoRouter, Drift, SQLite, Firebase, RevenueCat, TypeScript, Node.js]
   Link: [View case study →]
 
 • MSL Network Bot
   Summary: Single-server MLBB Discord bot that connects account verification with XP, Event Points, events, quests, moderation, and reporting.
-  Stack: [Python, Discord.py, MySQL, aiomysql, aiohttp, Vercel, Pterodactyl]
+  Stack: [Python, discord.py, MySQL, aiomysql, PyMySQL]
   Link: [View case study →]
 
 • QR Studio
   Summary: In-browser QR code builder with gradient styling and SVG export that runs entirely client-side without backend requests.
-  Stack: [TypeScript, HTML5 Canvas, Vite, Tailwind CSS]
+  Stack: [JavaScript, Vite, qr-code-styling]
   Link: [View case study →]
 
 • Kiosk Survey
   Summary: Touchscreen survey app for Android TV that operated for 8 continuous hours during a live event without internet, syncing queued submissions once reconnected.
-  Stack: [Flutter, Dart, Android TV, SQLite]
+  Stack: [Flutter, Dart, Hive, Android]
   Link: [View case study →]
 ```
 
@@ -54,8 +54,13 @@ Open source
 
 • BetterGov PH
   Summary: Contributor to civic tech initiatives modernizing Philippine government web services and open public data.
-  Stack: [TypeScript, Next.js, Tailwind CSS]
+  Stack: []
   Link: [bettergov.ph ↗]
+
+• DockRoute
+  Summary: Documentation contribution to the troubleshooting guide.
+  Stack: [Markdown]
+  Link: [PR 41 ↗]
 ```
 
 ### 1.4 Affiliations & Partners
@@ -147,6 +152,50 @@ About
 I spend around 80% of any project on research and planning before writing code. I obsess over hyper-optimization, always evaluating whether an architecture or workflow is truly the most optimal choice for the problem.
 
 My daily stack for agentic engineering includes Claude Code, Codex, the using-superpowers skill framework, Matt Pocock's engineering skills, and Gemini's Deep Research.
+
+Web apps
+
+I use React for browser interfaces. Next.js and Vite support the apps I build.
+
+Stack: [TypeScript, React, Next.js, Vite, Tailwind CSS, Node.js, Framer Motion, next-intl]
+
+Apps and data
+
+Flutter and Dart cover mobile apps. Local persistence uses embedded and key-value storage, with a backend service for authentication and application functions.
+
+Stack: [Flutter, Dart, Riverpod, GoRouter, Drift + SQLite, Hive, Firebase, RevenueCat]
+
+RevenueCat is implemented through a webhook. Its Flutter purchase SDK is declared, but app use is unconfirmed.
+
+Bots and databases
+
+Bot code uses Python and discord.py. MySQL integrations use asynchronous drivers. Other database adapters support relational storage.
+
+Stack: [Python, discord.py, MySQL, PostgreSQL, SQLAlchemy]
+
+Browser tools
+
+Browser apps handle text recognition and image processing. Other tools render styled QR codes and manage client state or game data.
+
+Stack: [JavaScript, Tesseract.js, wasm-vips, qr-code-styling, Zustand, genshin-db]
+
+Checks before shipping
+
+Web code includes component and browser tests. Python projects use test and lint tools. Automated workflows run checks on changes.
+
+Stack: [Vitest, Testing Library, jsdom, Playwright, pytest, Ruff, ESLint, GitHub Actions]
+
+Languages and formats
+
+My source work spans application code, integrations, documentation, and configuration.
+
+Stack: [C#, Markdown, YAML]
+
+Documented integrations
+
+These also appear in project documentation and dependency lists, or in local development code.
+
+Stack: [Dio, Alembic, aiohttp, PostHog, Vercel Analytics, Cloudflare Workers, Cloudflare KV, Meilisearch]
 ```
 
 ### 1.7 Contact
@@ -171,7 +220,7 @@ Get in touch for software projects or community infrastructure:
 - **Role:** Lead Architect & Developer
 - **Timeline:** 2026 to Present
 - **Platform:** Android (Flutter)
-- **Stack:** Flutter 3.41+, Dart, Drift (SQLite), SQLCipher, Riverpod 2.x, Open Spaced Repetition (FSRS), Firebase Firestore, Sanity CMS, RevenueCat
+- **Stack:** Flutter, Dart, Riverpod, GoRouter, Drift, SQLite, Firebase, RevenueCat, TypeScript, Node.js
 - **Live URL:** https://pantas.app
 - **Tagline:** Android-first exam reviewer for Philippine civil service and university entrance preparation, with encrypted local study state and on-device FSRS-6 scheduling.
 - **Summary:** Pre-launch Flutter reviewer for Philippine exam preparation, with local encrypted progress, FSRS-6 review scheduling, and a validated question-to-SQLite content pipeline.
@@ -216,7 +265,7 @@ Pantas is still in active pre-launch development. The local study and scheduling
 - **Role:** Developer
 - **Timeline:** 2026
 - **Platform:** Discord, Web
-- **Stack:** Python, Discord.py, MySQL, aiomysql, aiohttp, Vercel, Pterodactyl
+- **Stack:** Python, discord.py, MySQL, aiomysql, PyMySQL
 - **GitHub URL:** https://github.com/Aedwon/Discord-Bot
 
 #### From XP tracking to community operations
@@ -249,7 +298,7 @@ The analytics dashboard follows a similar split. Its serverless endpoint reads d
 - **Role:** Creator & Developer
 - **Timeline:** 2026
 - **Platform:** Web
-- **Stack:** Next.js 16, TypeScript, Tailwind CSS 4, next-intl
+- **Stack:** Next.js, React, TypeScript, Tailwind CSS, next-intl
 - **Live URL:** https://norala-sb-demo.vercel.app
 - **GitHub URL:** https://github.com/Aedwon/norala-sb-demo
 
@@ -305,7 +354,7 @@ The current build is still incomplete around ordinance browsing. The home page i
 - **Role:** Creator & Frontend Engineer
 - **Timeline:** 2024
 - **Platform:** Web
-- **Stack:** TypeScript, HTML5 Canvas, Vite, Tailwind CSS
+- **Stack:** JavaScript, Vite, qr-code-styling
 - **Why I Built This:** Most web QR code generators are bloated with popups, require account sign-ups, or transmit user payloads and Wi-Fi credentials to remote tracking servers.
 - **How It Works:** Generates the Reed-Solomon error correction matrix and encodes payload bits in-memory. Renders real-time gradient patterns directly on an HTML5 canvas and exports clean SVG path strings for print-ready vector files.
 - **Results & Numbers:** Instant in-browser generator with zero network latency, complete data privacy, and clean vector exports.
@@ -319,7 +368,7 @@ The current build is still incomplete around ordinance browsing. The home page i
 - **Role:** Lead Developer
 - **Timeline:** 2023 to 2024
 - **Platform:** Android TV OS
-- **Stack:** Flutter, Dart, SQLite, Android TV
+- **Stack:** Flutter, Dart, Hive, Android
 - **Why I Built This:** Event venues suffer from severe cellular congestion and dropped Wi-Fi under crowd loads. Standard web forms freeze or drop responses when attendees submit surveys at interactive booths.
 - **How It Works:** Built with Flutter for Android TV touch displays. Every attendee submission writes immediately to a local SQLite journal. A connectivity listener detects stable connections and flushes queued JSON records in atomic batches.
 - **Results & Numbers:** Ran continuously for 8 hours on-site during a high-density live event with zero dropped responses and zero crashes.
@@ -333,7 +382,7 @@ The current build is still incomplete around ordinance browsing. The home page i
 - **Role:** Open Source Contributor
 - **Timeline:** 2024 to Present
 - **Platform:** Web
-- **Stack:** TypeScript, Next.js, Tailwind CSS, Turborepo
+- **Stack:** []
 - **Live URL:** https://bettergov.ph
 - **GitHub URL:** https://github.com/bettergovph
 - **Why I Built This:** Public services in the Philippines frequently suffer from outdated web portals, confusing information architecture, and fragmented citizen accessibility.
@@ -348,7 +397,7 @@ The current build is still incomplete around ordinance browsing. The home page i
 - **Role:** Developer
 - **Timeline:** 2025 to 2026
 - **Platform:** Discord
-- **Stack:** Python, Discord.py, Google Sheets, requests, aiohttp, Challonge API, JSON and CSV persistence
+- **Stack:** Python, discord.py
 - **Summary:** Python Discord bot that connects tournament roster data to player verification and match acknowledgements, then keeps live match and support state on disk so those workflows can recover after restarts.
 
 #### Roster verification feeds match acknowledgement
@@ -385,7 +434,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Role:** Bot Developer & Operations Lead
 - **Timeline:** 2024
 - **Platform:** Discord, Hostinger (KVM2 VPS)
-- **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS), Challonge API
+- **Stack:** Python, discord.py, MySQL, aiomysql
 - **Why I Built This:** Running multi-game municipal qualifiers (MLBB, CODM) during the provincial festival without manual bracket delays.
 - **How It Works:** Synced Discord player registrations directly with live brackets on Hostinger KVM2 VPS with MySQL backend, handling automated match alerts and ticketing.
 - **Results & Numbers:** Smooth tournament execution for 250+ provincial competitors across municipal qualifiers.
@@ -398,7 +447,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Role:** Project Lead & Bot Developer
 - **Timeline:** 2024 to 2025
 - **Platform:** Discord, Hostinger (KVM2 VPS)
-- **Stack:** Python, Discord.py, MySQL, Hostinger (KVM2 VPS)
+- **Stack:** Python, discord.py, MySQL, aiomysql
 - **Why I Built This:** Enforcing roster verification and managing amateur match disputes for OPPO nationwide tournament qualifiers.
 - **How It Works:** Automated roster validation, schedule alerts, and match result logging on Hostinger KVM2 VPS with MySQL backend.
 - **Results & Numbers:** Managed 32+ teams across qualifiers without administrative overhead.
@@ -411,7 +460,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Role:** Creator & Developer
 - **Timeline:** 2022 to 2023
 - **Platform:** Web
-- **Stack:** JavaScript (ES6+), HTML5 Canvas, CSS3, Vite
+- **Stack:** TypeScript, React, Vite, Zustand, genshin-db
 - **Why I Built This:** Optimizing high-tier character builds requires complex damage formula calculations (motion values, defense multipliers, resistance shred, reaction scalars) that are tedious to calculate manually.
 - **How It Works:** Complete mathematical model of in-game scaling mechanics with real-time reactive substat optimization built with vanilla JavaScript and CSS3 on Vite.
 - **Results & Numbers:** Instant in-browser calculations with zero latency.
@@ -424,7 +473,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Role:** Creator
 - **Timeline:** 2024 to Present
 - **Platform:** Multi-Agent CLI & IDE Tooling
-- **Stack:** Markdown, Shell, Python, YAML
+- **Stack:** Python, Markdown, YAML
 - **Why I Built This:** Context degradation, prompt drift, and missing architectural guardrails when collaborating with AI coding agents across multiple codebases.
 - **How It Works:** Portable instruction system providing specialized engineering skills, testing guardrails, and subagent orchestration cheatsheets.
 - **Results & Numbers:** Reusable, stack-agnostic workflow framework for agentic pair programming.
@@ -437,7 +486,7 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
 - **Role:** Creator & Developer
 - **Timeline:** 2026
 - **Platform:** Web
-- **Stack:** Next.js 16, TypeScript, Tailwind CSS, wasm-vips, WebAssembly, Web Workers, fflate, Vitest, Playwright
+- **Stack:** Next.js, React, TypeScript, Tailwind CSS, wasm-vips
 - **Summary:** Next.js static export that converts supported images to WebP in a wasm-vips worker. Each queued file stores its own options, and completed results can be downloaded individually or as a ZIP.
 - **Article:**
   - **Browser-side conversion:** WebP Unli is a static Next.js 16 export. When the page loads, useVips starts a module worker from /worker.js and waits for wasm-vips to report that it is ready. Converting a file means reading it into an ArrayBuffer, transferring that buffer to the worker, decoding it with libvips, applying the selected resize and WebP options, then transferring the encoded buffer back to the page. The result is wrapped in a WebP Blob for download. There is no image-processing API in that path.

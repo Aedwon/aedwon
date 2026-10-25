@@ -6,10 +6,8 @@
   "depth": "note",
   "repo": "Dockroute/Dockroute",
   "desc": "DockRoute is External-DNS for plain Docker hosts. It reads labels on your running containers and keeps DNS records and Cloudflare Tunnel routes matching them.",
-  "stack": [
-    "GitHub"
-  ],
-  "stackText": "Dockroute/Dockroute",
+  "stack": ["Markdown"],
+  "stackText": "",
   "links": [
     {
       "label": "github.com/Dockroute/Dockroute",

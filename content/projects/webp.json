@@ -7,7 +7,9 @@
   "desc": "A bulk image to WebP converter that runs in the browser. libvips compiled to WebAssembly does the work in a worker, so files never get uploaded.",
   "stack": [
     "Next.js",
+    "React",
     "TypeScript",
+    "Tailwind CSS",
     "wasm-vips"
   ],
   "links": [

@@ -1,0 +1,383 @@
+[
+  {
+    "technology": "Node.js",
+    "file": "public/tech-icons/nodejs.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/nodedotjs.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "5FA04E",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://nodejs.org/en/about/branding",
+      "guidelines": "https://nodejs.org/en/about/branding",
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "Cloudflare Workers",
+    "file": "public/tech-icons/cloudflareworkers.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/cloudflareworkers.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "F38020",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://www.cloudflare.com/developer-platform/products/",
+      "guidelines": "https://www.cloudflare.com/trademark/",
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "Meilisearch",
+    "file": "public/tech-icons/meilisearch.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/meilisearch.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "FF5CAA",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://www.meilisearch.com",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "GitHub Actions",
+    "file": "public/tech-icons/githubactions.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/githubactions.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "2088FF",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://github.com/features/actions",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "Vitest",
+    "file": "public/tech-icons/vitest.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/vitest.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "00FF74",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://github.com/voidzero-dev/community-design-resources/blob/55902097229cf01cf2a4ceb376f992f5cf306756/brand-assets/vitest/vitest-icon-color-bracketless.svg",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "Testing Library",
+    "file": "public/tech-icons/testinglibrary.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/testinglibrary.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "E33332",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://testing-library.com",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "pytest",
+    "file": "public/tech-icons/pytest.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/pytest.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "0A9EDC",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://github.com/pytest-dev/design/blob/081f06cd2d6cd742e68f593560a2e8c1802feb7c/pytest_logo/pytest_logo.svg",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "Ruff",
+    "file": "public/tech-icons/ruff.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/ruff.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "D7FF64",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://astral.sh/ruff",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "ESLint",
+    "file": "public/tech-icons/eslint.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/eslint.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "4B32C3",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://eslint.org",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "SQLAlchemy",
+    "file": "public/tech-icons/sqlalchemy.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/sqlalchemy.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "D71F00",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": {
+        "type": "MIT"
+      },
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://commons.wikimedia.org/wiki/File:SQLAlchemy.svg",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "aiohttp",
+    "file": "public/tech-icons/aiohttp.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/aiohttp.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "2C5BB4",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": {
+        "type": "Apache-2.0"
+      },
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://github.com/aio-libs/aiohttp/blob/fb5fe72b1bca3b899af579d376f5fe45745410e4/docs/aiohttp-plain.svg",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "PostHog",
+    "file": "public/tech-icons/posthog.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/posthog.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "000000",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://posthog.com/handbook/company/brand-assets",
+      "guidelines": "https://posthog.com/handbook/company/brand-assets",
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": null
+    }
+  },
+  {
+    "technology": "Google Sheets",
+    "file": "public/tech-icons/googlesheets.svg",
+    "sourceUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/icons/googlesheets.svg",
+    "sourceRevision": "ed9a5192b24ad2f169bf1009931da0df27d5a49a",
+    "catalog": {
+      "name": "Simple Icons",
+      "version": "16.35.0",
+      "releaseUrl": "https://github.com/simple-icons/simple-icons/releases/tag/16.35.0",
+      "verifiedAt": "2026-10-25",
+      "verificationSources": [
+        "https://api.github.com/repos/simple-icons/simple-icons/releases/latest",
+        "https://registry.npmjs.org/simple-icons/latest"
+      ]
+    },
+    "brandHex": "34A853",
+    "license": {
+      "catalog": "CC0-1.0",
+      "catalogLicenseUrl": "https://raw.githubusercontent.com/simple-icons/simple-icons/ed9a5192b24ad2f169bf1009931da0df27d5a49a/LICENSE.md",
+      "upstream": null,
+      "notice": "Brand trademarks remain with their respective owners."
+    },
+    "notes": {
+      "upstreamArtworkSource": "https://sheets.google.com",
+      "guidelines": null,
+      "artwork": "Unmodified upstream Simple Icons SVG.",
+      "alias": "Existing inline Sheets alias retained. Standalone resource only."
+    }
+  }
+]
