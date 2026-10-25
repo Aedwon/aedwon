@@ -1,5 +1,7 @@
 'use client';
 
+import { TechLogo, hasTechLogo } from './TechLogo';
+
 // Mobile: the 390x844 phone build (spec/phone.md). Ported verbatim from
 // Mobile.dc.html with the data wired to lib/design-v3/data (projects.py port).
 // One rAF loop advances the scalars (turn/pan/opening/closing, wall drum, fades);
@@ -17,7 +19,7 @@ import SystemViz from './SystemViz';
 import BotViz, { isBotViz } from './BotViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
-import { DARK_MARKS, FICON, ICON, LOGO, TYPEICON } from '@/lib/design-v3/data/icons';
+import { FICON, ICON, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
 import { useStudio } from './studio/store';
@@ -633,8 +635,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   const tabIdx = ({ wall: 0, index: 1, project: from === 'index' ? 1 : 0, shelf: vol === V.length - 1 && (opening || closing) ? 3 : 2, book: vol === V.length - 1 ? 3 : 2 } as Record<Screen, number>)[screen];
   const showBack = screen === 'project' || screen === 'book';
   const clock = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit' });
-  const logoColor = (t: string) => (DARK_MARKS.has(t) ? 'var(--text-primary)' : (LOGO[t]?.c ?? undefined));
-  const stackText = p.stackText || (p.stack || []).filter((st) => !LOGO[st]).join(' · ');
+  const stackText = p.stackText || (p.stack || []).filter((st) => !hasTechLogo(st)).join(' · ');
   const details = (() => {
     const o: { label: string; v: string; icon?: string; dot?: string; status?: boolean }[] = p.post ? [] : [{ label: 'Platform', v: p.facts.find((f) => f.k === 'Platform')?.v || p.type, icon: ICON[TYPEICON[p.type]] }];
     p.facts.forEach((f) => {
@@ -801,10 +802,11 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                           ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.topic}</span>
                           : (
                             <>
-                              {(q2.stack || []).map((st) => LOGO[st] && (
-                                <svg key={st} className="v3lg" width={Number(LOGO[st].w ?? 18) * 0.8} height={Number(LOGO[st].h ?? 18) * 0.8} viewBox={LOGO[st].vb ?? '0 0 24 24'} role="img" aria-label={st} style={{ flex: 'none' }}><path d={LOGO[st].d} fill={logoColor(st)} /></svg>
+                              {(q2.stack || []).filter(hasTechLogo).slice(0, 4).map((st) => (
+                                <TechLogo key={st} name={st} size={14.4} appearance="brand" />
                               ))}
-                              {(q2.stackText || (q2.stack || []).filter((st) => !LOGO[st]).join(' · ')) && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.stackText || (q2.stack || []).filter((st) => !LOGO[st]).join(' · ')}</span>}
+                              {(q2.stack || []).filter(hasTechLogo).length > 4 && <span title={(q2.stack || []).filter(hasTechLogo).slice(4).join(', ')} aria-label={(q2.stack || []).filter(hasTechLogo).slice(4).join(', ')} style={{ flex: 'none' }}>+{(q2.stack || []).filter(hasTechLogo).length - 4}</span>}
+                              {(q2.stackText || (q2.stack || []).filter((st) => !hasTechLogo(st)).join(' · ')) && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{q2.stackText || (q2.stack || []).filter((st) => !hasTechLogo(st)).join(' · ')}</span>}
                             </>
                           )}
                       </span>
@@ -828,8 +830,8 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <h1 className="v3rise" style={{ ...rise(0), margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
               <p className="v3rise" style={{ ...rise(1), margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
               <div className="v3rise" style={{ ...rise(2), display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
-                {(p.stack || []).map((st) => LOGO[st] && (
-                  <svg key={st} className="v3lg" width={LOGO[st].w ?? 18} height={LOGO[st].h ?? 18} viewBox={LOGO[st].vb ?? '0 0 24 24'} role="img" aria-label={st}><path d={LOGO[st].d} fill={logoColor(st)} /></svg>
+                {(p.stack || []).map((st) => hasTechLogo(st) && (
+                  <TechLogo key={st} name={st} appearance="brand" />
                 ))}
                 <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)' }}>{stackText}</span>
               </div>

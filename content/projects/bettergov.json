@@ -6,10 +6,8 @@
   "depth": "note",
   "repo": "bettergovph/bettergov",
   "desc": "BetterGov PH is an open source project to build a better national website for the Philippines, live at bettergov.ph. I have two pull requests open upstream, a government acronym tooltip and a contributor documentation fix.",
-  "stack": [
-    "GitHub"
-  ],
-  "stackText": "bettergovph/bettergov",
+  "stack": [],
+  "stackText": "",
   "links": [
     {
       "label": "bettergov.ph",

@@ -1,0 +1,122 @@
+[
+  {
+    "technology": "Node.js",
+    "sourceFile": "public/tech-icons/nodejs.svg",
+    "variantFile": "public/tech-icons/nodejs.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#5FA04E",
+    "adjustedColor": "#5A974A",
+    "contrastBefore": 2.804633,
+    "contrastAfter": 3.117391,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "Cloudflare Workers",
+    "sourceFile": "public/tech-icons/cloudflareworkers.svg",
+    "variantFile": "public/tech-icons/cloudflareworkers.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#F38020",
+    "adjustedColor": "#D26E1C",
+    "contrastBefore": 2.346176,
+    "contrastAfter": 3.103224,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "Meilisearch",
+    "sourceFile": "public/tech-icons/meilisearch.svg",
+    "variantFile": "public/tech-icons/meilisearch.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#FF5CAA",
+    "adjustedColor": "#E55298",
+    "contrastBefore": 2.523382,
+    "contrastAfter": 3.100918,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "Vitest",
+    "sourceFile": "public/tech-icons/vitest.svg",
+    "variantFile": "public/tech-icons/vitest.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#00FF74",
+    "adjustedColor": "#009E48",
+    "contrastBefore": 1.194409,
+    "contrastAfter": 3.104856,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "pytest",
+    "sourceFile": "public/tech-icons/pytest.svg",
+    "variantFile": "public/tech-icons/pytest.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#0A9EDC",
+    "adjustedColor": "#0992CB",
+    "contrastBefore": 2.678414,
+    "contrastAfter": 3.104229,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "Ruff",
+    "sourceFile": "public/tech-icons/ruff.svg",
+    "variantFile": "public/tech-icons/ruff.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#D7FF64",
+    "adjustedColor": "#7B9139",
+    "contrastBefore": 1.011047,
+    "contrastAfter": 3.122014,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "ESLint",
+    "sourceFile": "public/tech-icons/eslint.svg",
+    "variantFile": "public/tech-icons/eslint.dark.svg",
+    "theme": "dark",
+    "background": "#0A0A0C",
+    "originalColor": "#4B32C3",
+    "adjustedColor": "#5F49CA",
+    "contrastBefore": 2.395783,
+    "contrastAfter": 3.101312,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "PostHog",
+    "sourceFile": "public/tech-icons/posthog.svg",
+    "variantFile": "public/tech-icons/posthog.dark.svg",
+    "theme": "dark",
+    "background": "#0A0A0C",
+    "originalColor": "#000000",
+    "adjustedColor": "#606060",
+    "contrastBefore": 1.061631,
+    "contrastAfter": 3.145549,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "Google Sheets",
+    "sourceFile": "public/tech-icons/googlesheets.svg",
+    "variantFile": "public/tech-icons/googlesheets.light.svg",
+    "theme": "light",
+    "background": "#F2F1ED",
+    "originalColor": "#34A853",
+    "adjustedColor": "#309C4D",
+    "contrastBefore": 2.703802,
+    "contrastAfter": 3.10283,
+    "notes": "Local derivative, not an official brand revision. Smallest sRGB mixture with black (light theme) or white (dark theme) reaching 3.1:1 after hex rounding. Original path geometry retained."
+  },
+  {
+    "technology": "next-intl",
+    "sourceFile": "public/tech-icons/next-intl.svg",
+    "variantFile": "public/tech-icons/next-intl.dark.svg",
+    "theme": "dark",
+    "background": "#0A0A0C",
+    "originalColor": "#24292F",
+    "adjustedColor": "#EDEDED",
+    "contrastBefore": 1.350032,
+    "contrastAfter": 16.896133,
+    "notes": "Local derivative, not an official brand revision. Only the next-intl wordmark fill changes. Blue globe artwork and all geometry remain unchanged."
+  }
+]

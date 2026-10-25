@@ -7,7 +7,9 @@
   "desc": "A read-only counter for my own Genshin Impact wish history. It tracks pity, 5-star pulls and how many pulls each one took.",
   "stack": [
     "TypeScript",
-    "Next.js"
+    "React",
+    "Next.js",
+    "Node.js"
   ],
   "links": [
     {

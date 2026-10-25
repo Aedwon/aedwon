@@ -8,7 +8,9 @@
   "stack": [
     "TypeScript",
     "React",
-    "Vite"
+    "Vite",
+    "Zustand",
+    "genshin-db"
   ],
   "links": [
     {

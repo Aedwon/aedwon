@@ -8,9 +8,14 @@
   "stack": [
     "Flutter",
     "Dart",
-    "Firebase",
+    "Riverpod",
+    "GoRouter",
     "Drift",
-    "RevenueCat"
+    "SQLite",
+    "Firebase",
+    "RevenueCat",
+    "TypeScript",
+    "Node.js"
   ],
   "links": [
     {

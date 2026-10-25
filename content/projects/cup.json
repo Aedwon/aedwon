@@ -7,7 +7,7 @@
   "desc": "Discord bot for the MSL Collegiate Cup, a collegiate Mobile Legends league in the Philippines. It handles match reporting, disputes, support tickets and booster tracking for players and staff.",
   "stack": [
     "Python",
-    "Sheets"
+    "discord.py"
   ],
   "links": [],
   "facts": [

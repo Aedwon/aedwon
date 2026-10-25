@@ -7,7 +7,10 @@
   "desc": "Discord bot for a Mobile Legends community server. Members verify their game account, then earn XP and Event Points through chat, voice, quizzes and quests, and staff run events, booster raffles, tickets and moderation from the same data.",
   "stack": [
     "Python",
-    "MySQL"
+    "discord.py",
+    "MySQL",
+    "aiomysql",
+    "PyMySQL"
   ],
   "links": [
     {
