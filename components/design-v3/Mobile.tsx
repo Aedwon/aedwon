@@ -19,7 +19,7 @@ import SystemViz from './SystemViz';
 import BotViz, { isBotViz, isFluidViz } from './BotViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
-import { FICON, ICON, TYPEICON } from '@/lib/design-v3/data/icons';
+import { FI, FICON, ICON, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
 import { useStudio } from './studio/store';
@@ -642,7 +642,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
       const k = f.k, val = f.v;
       if (k === 'Platform') return;
       if (k === 'Status') { const st = (val || '').toLowerCase(); o.push({ label: 'Status', v: val, dot: /live|shipped/.test(st) ? '#4ADE80' : /pre-launch|prototype|beta/.test(st) ? '#F0B45A' : '#61616A', status: true }); return; }
-      o.push({ label: k, v: val, icon: ICON[FICON[FICON_KEYS[k] || 'target']] });
+      o.push({ label: k, v: val, icon: FICON[FI[k] || 'target'] });
     });
     return o;
   })();
@@ -1104,8 +1104,5 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     </div>
   );
 });
-
-// FI keys, verbatim from generators/mobile.py:15
-const FICON_KEYS: Record<string, string> = { Published: 'calendar', 'Reading time': 'clock', Topic: 'tag', Role: 'person', Year: 'calendar', Timeline: 'calendar', Client: 'building', Scale: 'people', 'Ran for': 'clock', Hosting: 'server', Event: 'flag', Contribution: 'commit', For: 'target', Runs: 'browser' };
 
 export default Mobile;
