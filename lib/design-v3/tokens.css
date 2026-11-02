@@ -50,7 +50,7 @@
 .v3tick:hover .tl { background-color: var(--text-primary); }
 
 /* Mobile chrome (Mobile.dc.html:12-25), theme-aware */
-.v3ms { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.v3ms { overflow-x: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .v3ms::-webkit-scrollbar { width: 0; height: 0; }
 .v3tbtn { border: none; background: none; padding: 0; font-family: inherit; cursor: pointer; color: var(--c, var(--text-secondary)); transition: color 0.25s ease; }
 .v3lg path { fill: var(--text-label); }
@@ -396,16 +396,16 @@ button, a, .v3tbtn, .v3rn { -webkit-tap-highlight-color: transparent; -webkit-to
 }
 
 /* MarwieSky (the Marwie bot tile): still at rest; on hover the mascot bobs and blinks and the clouds drift */
-.v3ms { box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #d3e4f3; box-shadow: var(--shadow-object); }
-.v3ms svg { display: block; }
-.v3ms-eyes { transform-box: fill-box; transform-origin: center; }
-@keyframes v3ms-drift { to { transform: translateX(calc(-1 * var(--dist))); } }
-@keyframes v3ms-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-@keyframes v3ms-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+.v3sky { box-sizing: border-box; border-radius: 10px; overflow: hidden; border: 1px solid #d3e4f3; box-shadow: var(--shadow-object); }
+.v3sky svg { display: block; }
+.v3sky-eyes { transform-box: fill-box; transform-origin: center; }
+@keyframes v3sky-drift { to { transform: translateX(calc(-1 * var(--dist))); } }
+@keyframes v3sky-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes v3sky-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
 @media (prefers-reduced-motion: no-preference) {
-  .v3ms[data-live] .v3ms-drift, .v3ms:hover .v3ms-drift, a:hover .v3ms .v3ms-drift { animation: v3ms-drift linear infinite; }
-  .v3ms[data-live] .v3ms-bob, .v3ms:hover .v3ms-bob, a:hover .v3ms .v3ms-bob { animation: v3ms-bob 2.6s ease-in-out infinite; }
-  .v3ms[data-live] .v3ms-eyes, .v3ms:hover .v3ms-eyes, a:hover .v3ms .v3ms-eyes { animation: v3ms-blink 5.2s ease-in-out infinite; }
+  .v3sky[data-live] .v3sky-drift, .v3sky:hover .v3sky-drift, a:hover .v3sky .v3sky-drift { animation: v3sky-drift linear infinite; }
+  .v3sky[data-live] .v3sky-bob, .v3sky:hover .v3sky-bob, a:hover .v3sky .v3sky-bob { animation: v3sky-bob 2.6s ease-in-out infinite; }
+  .v3sky[data-live] .v3sky-eyes, .v3sky:hover .v3sky-eyes, a:hover .v3sky .v3sky-eyes { animation: v3sky-blink 5.2s ease-in-out infinite; }
 }
 
 /* the traced Tesseract.js mark is an outline with holes, so it needs even-odd fill */
