@@ -32,6 +32,10 @@ const VIZ: Record<string, (props: { P: Pal }) => ReactNode> = {
 
 export const isBotViz = (which: string) => which in VIZ;
 
+// These lay themselves out for the width they get and change height (the numbers chart opens a list), so
+// their holders neither fix the height nor scale a wider layout down.
+export const isFluidViz = (which: string) => which === 'msl-numbers';
+
 export default function BotViz({ which, compactSheet = false }: { which: string; compactSheet?: boolean }) {
   const { theme } = useTheme();
   const P = theme === 'light' ? LIGHT : DARK;

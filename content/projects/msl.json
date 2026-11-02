@@ -64,16 +64,16 @@
     {
       "h": "The server in numbers",
       "p": [
-        "These come from the bot's own analytics and refresh once a day. They cover the days the bot recorded, not every day since the first commit."
+        "The bot keeps its own analytics, and this chart reads them directly. The numbers refresh once a day."
       ],
       "kind": "systems",
       "items": [
         {
-          "h": "Activity since March",
+          "h": "Members and activity",
           "which": "msl-numbers",
-          "vh": "430px",
+          "vh": "720px",
           "p": [
-            "The server sent more than half a million messages and logged thousands of voice hours in the recorded period, and the bot verified members and handled support tickets throughout. Joins jump sharply in October, which is the biggest swing in the series."
+            "The server grew from about 5,800 members in March to about 35.8K. Move across the chart to read the count on any day, and open More for the smaller numbers."
           ]
         }
       ]

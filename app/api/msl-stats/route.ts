@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildMslStats, type HistoryResponse, type LiveResponse } from "@/lib/msl-stats";
+import { buildMslStats, type AnalyticsResponse } from "@/lib/msl-stats";
 
 // The MSL page's numbers, refreshed once a day from the bot's analytics API.
 // The key lives only in the ANALYTICS_API_KEY environment variable on the server and is never sent to the browser.
@@ -23,11 +23,8 @@ export async function GET() {
   const key = process.env.ANALYTICS_API_KEY;
   if (!key) return NextResponse.json({ error: "not configured" }, { status: 503 });
   try {
-    const [hist, live] = await Promise.all([
-      pull<HistoryResponse>("include=kpi,rollups&days=365&include_granular=true", key),
-      pull<LiveResponse>("include=live&days=30", key),
-    ]);
-    return NextResponse.json(buildMslStats(hist, live), {
+    const res = await pull<AnalyticsResponse>("include=kpi,rollups,rankings&days=365&include_granular=true&ranking_limit=25", key);
+    return NextResponse.json(buildMslStats(res), {
       headers: { "Cache-Control": `public, s-maxage=${DAY}, stale-while-revalidate=${DAY}` },
     });
   } catch {
