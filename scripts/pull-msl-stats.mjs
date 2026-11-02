@@ -19,8 +19,6 @@ async function get(query) {
   return res.json();
 }
 
-const hist = await get('include=kpi,rollups&days=365&include_granular=true');
-const live = await get('include=live&days=30');
-const out = buildMslStats(hist, live);
+const out = buildMslStats(await get('include=kpi,rollups,rankings&days=365&include_granular=true&ranking_limit=25'));
 fs.writeFileSync(new URL('../lib/design-v3/data/msl-stats.json', import.meta.url), JSON.stringify(out, null, 2) + '\n');
-console.log('wrote msl-stats.json', out.firstDay, out.lastDay, out.totals);
+console.log('wrote msl-stats.json', out.firstDay, out.lastDay, out.members.current, out.totals);

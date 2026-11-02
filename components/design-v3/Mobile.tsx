@@ -16,7 +16,7 @@ import FlowDiagram from './FlowDiagram';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
-import BotViz, { isBotViz } from './BotViz';
+import BotViz, { isBotViz, isFluidViz } from './BotViz';
 import { flushSync } from 'react-dom';
 import BookPage from './BookPage';
 import { FICON, ICON, TYPEICON } from '@/lib/design-v3/data/icons';
@@ -893,11 +893,15 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                       {(it.p || []).map((qq: string, j2: number) => (
                         <p key={j2} style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: 'var(--text-secondary)' }}>{qq}</p>
                       ))}
+                      {isFluidViz(it.which) ? (
+                        <div style={{ width: CW }}><BotViz which={it.which} compactSheet /></div>
+                      ) : (
                       <div style={{ position: 'relative', width: CW, height: ((parseInt(it.vh, 10) + (theme === 'light' ? 32 : 0)) * CW / (theme === 'light' ? 632 : 600)).toFixed(0) + 'px', overflow: 'hidden' }}>
                         <div style={{ position: 'absolute', left: 0, top: 0, width: theme === 'light' ? 632 : 600, transformOrigin: '0 0', scale: (CW / (theme === 'light' ? 632 : 600)).toFixed(4) }}>
                           {isBotViz(it.which) ? <BotViz which={it.which} compactSheet /> : <SystemViz which={it.which} compactSheet hintSize="600px,370px" />}
                         </div>
                       </div>
+                      )}
                     </div>
                   ))}
                   {sec.kind === 'wishes' && <WishCounter compact />}

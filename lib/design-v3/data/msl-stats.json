@@ -1,99 +1,70 @@
 {
-  "pulledAt": "2026-10-19",
+  "pulledAt": "2026-11-02",
   "timezone": "Asia/Manila",
   "firstDay": "2026-03-23",
-  "lastDay": "2026-10-18",
-  "daysRecorded": 168,
-  "totals": {
-    "messages": 580927,
-    "voiceHours": 9552,
-    "joins": 32922,
-    "reactions": 168565,
-    "verifications": 2056,
-    "tickets": 141
+  "lastDay": "2026-11-01",
+  "daysRecorded": 182,
+  "members": {
+    "current": 35788,
+    "verified": 2566,
+    "curve": [
+      {
+        "date": "2026-03-23",
+        "members": 5769
+      },
+      {
+        "date": "2026-03-31",
+        "members": 5872
+      },
+      {
+        "date": "2026-04-30",
+        "members": 8983
+      },
+      {
+        "date": "2026-05-31",
+        "members": 9009
+      },
+      {
+        "date": "2026-06-30",
+        "members": 8982
+      },
+      {
+        "date": "2026-07-31",
+        "members": 8963
+      },
+      {
+        "date": "2026-08-31",
+        "members": 11547
+      },
+      {
+        "date": "2026-09-30",
+        "members": 11537
+      },
+      {
+        "date": "2026-10-31",
+        "members": 35814
+      },
+      {
+        "date": "2026-11-01",
+        "members": 35788
+      }
+    ]
   },
-  "monthly": [
-    {
-      "month": "2026-03",
-      "messages": 1016,
-      "joins": 109,
-      "voiceHours": 374,
-      "days": 9
-    },
-    {
-      "month": "2026-04",
-      "messages": 167022,
-      "joins": 3330,
-      "voiceHours": 3983,
-      "days": 30
-    },
-    {
-      "month": "2026-05",
-      "messages": 40176,
-      "joins": 56,
-      "voiceHours": 946,
-      "days": 8
-    },
-    {
-      "month": "2026-06",
-      "messages": 11021,
-      "joins": 12,
-      "voiceHours": 107,
-      "days": 11
-    },
-    {
-      "month": "2026-07",
-      "messages": 39704,
-      "joins": 63,
-      "voiceHours": 559,
-      "days": 31
-    },
-    {
-      "month": "2026-08",
-      "messages": 81301,
-      "joins": 2792,
-      "voiceHours": 796,
-      "days": 31
-    },
-    {
-      "month": "2026-09",
-      "messages": 21328,
-      "joins": 126,
-      "voiceHours": 424,
-      "days": 30
-    },
-    {
-      "month": "2026-10",
-      "messages": 219359,
-      "joins": 26434,
-      "voiceHours": 2362,
-      "days": 18
-    }
-  ],
-  "messagesByHour": [
-    9012,
-    7618,
-    5712,
-    3555,
-    1816,
-    2049,
-    2773,
-    3176,
-    4789,
-    7200,
-    8147,
-    9123,
-    17581,
-    10067,
-    9247,
-    9358,
-    18482,
-    19232,
-    18056,
-    19951,
-    29229,
-    20052,
-    17484,
-    13368
-  ]
+  "totals": {
+    "messages": 695783,
+    "voiceHours": 11275,
+    "reactions": 217345,
+    "peakActive": 11469,
+    "peakMessages": 32540,
+    "peakVoice": 1120,
+    "quizDays": 176,
+    "raffles": 31,
+    "events": 20,
+    "correctAnswers": 23743,
+    "eventSignups": 1164,
+    "raffleEntries": 2638,
+    "referrals": 275,
+    "tickets": 158,
+    "supportRating": 4.76
+  }
 }

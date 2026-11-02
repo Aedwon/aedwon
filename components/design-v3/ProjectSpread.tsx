@@ -27,7 +27,7 @@ import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
 import { setStudio, useStudio } from './studio/store';
 import SystemViz from './SystemViz';
-import BotViz, { isBotViz } from './BotViz';
+import BotViz, { isBotViz, isFluidViz } from './BotViz';
 import WishCounter from './WishCounterLazy';
 import { TechLogo, hasTechLogo } from './TechLogo';
 import { useTheme } from '@/lib/design-v3/theme';
@@ -497,7 +497,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                           <Paras id={p.id} path={`sections.${i}.items.${k}.p`} items={it.p || []} pStyle={{ margin: 0 }} />
                         </div>
                         {/* holder must not clip: the viz runs 3px taller than vh by design */}
-                        <div style={{ height: dark ? it.vh : undefined, minHeight: dark ? undefined : `calc(${it.vh} + 48px)`, marginTop: 8 }}>
+                        <div style={{ height: dark && !isFluidViz(it.which) ? it.vh : undefined, minHeight: isFluidViz(it.which) ? it.vh : dark ? undefined : `calc(${it.vh} + 48px)`, marginTop: 8 }}>
                           {isBotViz(it.which) ? <BotViz which={it.which} /> : <SystemViz which={it.which} />}
                         </div>
                       </div>
