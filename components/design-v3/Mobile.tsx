@@ -24,6 +24,7 @@ import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/proje
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
 import { useStudio } from './studio/store';
 import UI from '@/content/site/ui.json';
+import { contactReady, sendContact } from '@/lib/contact/send';
 
 const MOB_W = 390;
 const MOB_H = 844;
@@ -169,7 +170,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
   }, []);
   const [cur, setCur] = useState(0);
   const [focus, setFocus] = useState(0); // wall drum focus
-  const [form, setForm] = useState({ name: '', mail: '', msg: '', title: '' });
+  const [form, setForm] = useState<{ name: string; mail: string; msg: string; title: string; website: string; status: 'idle' | 'sending' | 'error' }>({ name: '', mail: '', msg: '', title: '', website: '', status: 'idle' });
 
   // ---- mutable scene for the loop
   const s = useRef({
@@ -302,6 +303,20 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
     setClosing({ t0: performance.now() }); setKb(false);
     const a = document.activeElement as HTMLElement | null; if (a && a.blur) a.blur();
   }, [s]);
+
+  const formRef = useRef(form); formRef.current = form;
+  const fieldCb = useCallback((k: 'name' | 'mail' | 'msg' | 'title' | 'website', val: string) => {
+    setForm((f) => ({ ...f, [k]: val, status: f.status === 'error' ? 'idle' : f.status }));
+  }, []);
+  const shelveCb = useCallback(async () => {
+    if (!contactReady(formRef.current) || formRef.current.status === 'sending') return;
+    setForm((f) => ({ ...f, status: 'sending' }));
+    const sent = await sendContact(formRef.current);
+    if (!sent) { setForm((f) => ({ ...f, status: 'error' })); return; }
+    setForm((f) => ({ ...f, msg: '', title: '', status: 'idle' }));
+    closeBook();
+  }, [closeBook]);
+  const bookForm = useMemo(() => ({ ...form, ready: contactReady(form) }), [form]);
 
   // ---- refs for per-frame DOM writes
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -1055,12 +1070,12 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               <span aria-hidden ref={shLRef} style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, borderRadius: '3px 0 0 3px', boxShadow: 'var(--shadow-book-phone)', opacity: 0, pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', left: 0, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '3px 0 0 3px', visibility: closedIdle || coverTurn ? 'hidden' : 'visible' }}>
                 <div style={{ width: 420, height: 600, transformOrigin: '0 0', scale: '0.8095' }}>
-                  <BookPage page={staticL} side="left" clock={clock} form={form} onField={(k, val) => setForm((f) => ({ ...f, [k]: val }))} onShelve={() => { setForm((f) => ({ ...f, msg: '' })); closeBook(); }} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
+                  <BookPage page={staticL} side="left" clock={clock} form={bookForm} onField={fieldCb} onShelve={shelveCb} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
                 </div>
               </div>
               <div style={{ position: 'absolute', left: 340, top: 0, width: 340, height: 486, overflow: 'hidden', borderRadius: '0 3px 3px 0', boxShadow: 'var(--shadow-book-phone)' }}>
                 <div style={{ width: 420, height: 600, transformOrigin: '0 0', scale: '0.8095' }}>
-                  <BookPage page={staticR} side="right" clock={clock} form={form} onField={(k, val) => setForm((f) => ({ ...f, [k]: val }))} onShelve={() => { setForm((f) => ({ ...f, msg: '' })); closeBook(); }} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
+                  <BookPage page={staticR} side="right" clock={clock} form={bookForm} onField={fieldCb} onShelve={shelveCb} onGo={goPage} onNextVol={() => { if (vol < V.length - 1) { setScreen('shelf'); openVol(vol + 1); } }} />
                 </div>
                 <span aria-hidden ref={castRRef} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0, background: 'linear-gradient(90deg, rgba(0,0,0,.30), rgba(0,0,0,0))', opacity: 0, pointerEvents: 'none' }} />
               </div>

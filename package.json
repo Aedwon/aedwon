@@ -28,6 +28,7 @@
     "posthog-js": "^1.369.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.37.0",
     "simple-icons": "^16.28.0"
   },
   "devDependencies": {
