@@ -9,13 +9,19 @@ vi.mock("resend", () => ({
   },
 }));
 
+const checkContactLimit = vi.fn();
+vi.mock("@/lib/contact/ratelimit", () => ({ checkContactLimit: (h: Headers) => checkContactLimit(h) }));
+
 import { POST } from "../api/contact/route";
 
 const good = { name: "Maria Santos", mail: "maria@example.com", msg: "A booking app.", title: "", website: "" };
-const post = (body: unknown, raw = false) =>
-  POST(new Request("http://x/api/contact", { method: "POST", body: raw ? (body as string) : JSON.stringify(body) }));
+const sameOrigin = { origin: "http://x", host: "x" };
+const post = (body: unknown, raw = false, headers: Record<string, string> = sameOrigin) =>
+  POST(new Request("http://x/api/contact", { method: "POST", headers, body: raw ? (body as string) : JSON.stringify(body) }));
 
 beforeEach(() => {
+  checkContactLimit.mockReset();
+  checkContactLimit.mockResolvedValue("ok");
   send.mockReset();
   send.mockResolvedValue({ data: { id: "1" }, error: null });
   vi.stubEnv("RESEND_API_KEY", "re_test");
@@ -89,5 +95,43 @@ describe("POST /api/contact", () => {
   it("answers 502 when Resend throws", async () => {
     send.mockRejectedValue(new Error("down"));
     expect((await post(good)).status).toBe(502);
+  });
+
+  it("rejects a missing Origin with 403", async () => {
+    const res = await post(good, false, { host: "x" });
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ ok: false });
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("rejects a foreign Origin with 403", async () => {
+    const res = await post(good, false, { origin: "https://evil.example", host: "x" });
+    expect(res.status).toBe(403);
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("prefers x-forwarded-host over host", async () => {
+    const headers = { origin: "https://aedwon.site", host: "internal", "x-forwarded-host": "aedwon.site" };
+    expect((await post(good, false, headers)).status).toBe(200);
+  });
+
+  it("answers 429 and does not send when the visitor is limited", async () => {
+    checkContactLimit.mockResolvedValue("visitor");
+    const res = await post(good);
+    expect(res.status).toBe(429);
+    expect(await res.json()).toEqual({ ok: false });
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("answers 429 and does not send when the global limit is hit", async () => {
+    checkContactLimit.mockResolvedValue("global");
+    expect((await post(good)).status).toBe(429);
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("does not check the limit for invalid or honeypot requests", async () => {
+    await post({ ...good, name: " " });
+    await post({ ...good, website: "spam" });
+    expect(checkContactLimit).not.toHaveBeenCalled();
   });
 });

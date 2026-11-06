@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { CONTACT } from "@/lib/site-content";
+import { checkContactLimit } from "@/lib/contact/ratelimit";
 
 // The Chapter 1 form in the book. Sends one email to me through Resend and stores nothing.
 // RESEND_API_KEY lives only in the server environment. Errors never repeat the visitor's message.
@@ -15,6 +16,17 @@ const fail = (status: number) => NextResponse.json({ ok: false }, { status });
 const text = (v: unknown) => (typeof v === "string" ? v.trim() : null);
 
 export async function POST(req: Request) {
+  // Browsers always send Origin on a cross-site POST. Require it to match the host that served this request.
+  const origin = req.headers.get("origin");
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  let originHost: string | null = null;
+  try {
+    originHost = origin ? new URL(origin).host : null;
+  } catch {
+    originHost = null;
+  }
+  if (!originHost || !host || originHost !== host) return fail(403);
+
   const declared = Number(req.headers.get("content-length") ?? 0);
   if (declared > MAX_BODY) return fail(400);
 
@@ -47,6 +59,9 @@ export async function POST(req: Request) {
   if (mail.length > 254 || !EMAIL.test(mail)) return fail(400);
   if (msg.length < 1 || msg.length > 5000) return fail(400);
   if (title.length > 28) return fail(400);
+
+  const limited = await checkContactLimit(req.headers);
+  if (limited !== "ok") return fail(429);
 
   const key = process.env.RESEND_API_KEY;
   if (!key) {
