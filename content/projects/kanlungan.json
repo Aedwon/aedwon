@@ -4,9 +4,18 @@
   "type": "Concept",
   "media": "web",
   "depth": "writeup",
-  "desc": "A concept brief for Kanlungan, a fictional interior design studio with a small furniture shop. The studio isn't real and nothing is built yet. The repo holds the brief only.",
-  "stack": [],
+  "desc": "A fictional interior design studio with a small furniture shop, built as if it were a real business. The site has five furnished projects, 36 products, a cart and a demo checkout that takes no payment.",
+  "stack": [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Playwright"
+  ],
   "links": [
+    {
+      "label": "kanlungan.space",
+      "href": "https://www.kanlungan.space"
+    },
     {
       "label": "github.com/Aedwon/kanlungan",
       "href": "https://github.com/Aedwon/kanlungan"
@@ -27,29 +36,41 @@
     },
     {
       "k": "Status",
-      "v": "In progress"
+      "v": "Live, fictional brand"
     }
   ],
   "sections": [
     {
       "h": "What it is",
       "p": [
-        "Kanlungan is a made-up business I'm using as a portfolio piece. The idea is a premium interior design studio first and a small furniture and homeware shop second, with a warm modern Filipino look. The Filipino part is meant to show up in materials and craft instead of decorative motifs.",
-        "[Why this was built, in a sentence.]"
+        "Kanlungan is a made-up business. It's an interior design studio in Makati first and a furniture and homeware shop second, with a warm modern Filipino look that shows up in materials and craft instead of decorative motifs. The studio sells two services. Full-Service Furnishing takes an empty, already-built home to move-in ready and starts at ₱500,000. Interior Design Direction hands over the plans and specifications for ₱2,500 per square meter.",
+        "None of my real projects had a shop or a booking flow, so I made a brand that needed both. That meant it had to be believable down to the dull parts too, like delivery fees, made-to-order lead times, help pages and a 404."
       ],
-      "kind": "text",
-      "fig": "[Kanlungan, home page]"
+      "kind": "text"
     },
     {
-      "h": "What the brief decides",
+      "h": "How it came together",
       "p": [
-        "The studio offers two services. Full-Service Furnishing takes an empty, already-built space to move-in ready. The Design-Only Interior Package gives the client the plans and specifications to buy and install themselves.",
-        "The shop has seven categories, from seating to art, and mixes Kanlungan's own pieces with makers who are mostly Philippine. One test decides what gets in. Would Kanlungan confidently specify the piece in one of its own finished spaces? Generic furniture, major appliances and construction materials are out.",
-        "So far the repo is a README of these decisions. There's no site or design yet."
+        "The repo started on October 15 as a README of business decisions. Services, the shop's rules for what gets in, conversion goals and the site map were all settled before any design. Visual choices came after, and I picked each one from rendered options on a real page instead of a description. That took ten rounds, from the overall direction down to the services comparison on the home page.",
+        "The photography is generated. Every project room has a before and an after from the same camera, and the home page wipes from the empty room to the furnished one as you scroll. Keeping the pairs lined up took line drawings of each room to fix the camera before any image was made. The home page also numbers the pieces in one Lilim House photo and lists them underneath with their prices."
+      ],
+      "kind": "text"
+    },
+    {
+      "h": "The shop",
+      "p": [
+        "The catalog has 36 products. Product pages swap photos when you change the fabric, finish or color, and the cart and checkout carry that choice through. Checkout is the site's own set of screens, and the payment step says plainly that no payment is taken.",
+        "The commerce layer is written against the Shopify Storefront API, with a local catalog as the fallback. The live site runs on the local catalog for now because the free Shopify development store isn't connected yet. Playwright tests cover the main flows and run axe accessibility checks."
       ],
       "kind": "text"
     }
   ],
+  "hero": {
+    "src": "/projects/kanlungan/hero-64f8e964.webp",
+    "alt": "Kanlungan home page: a Lilim House living room with six numbered pieces, listed below with their prices",
+    "w": 1800,
+    "h": 1122
+  },
   "frame": {
     "h": 325
   }
