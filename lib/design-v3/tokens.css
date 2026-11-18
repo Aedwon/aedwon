@@ -99,6 +99,7 @@
   --line-underline: #4A4A52;
   --line-frame: #5A5A63;
   --line-bezel: #2E2E35;
+  --chart-bar-muted: #2E2E35;
   --line-shelf-top: #34343B;
 
   /* text + fills (§2.3) */
@@ -244,6 +245,7 @@
   --line-underline: #B3B1AB;
   --line-frame: #A3A29C;
   --line-bezel: #D3D1CA;
+  --chart-bar-muted: #DCDAD3;
   --line-shelf-top: #CFCDC6;
 
   --text-primary: #111114;
@@ -410,3 +412,32 @@ button, a, .v3tbtn, .v3rn { -webkit-tap-highlight-color: transparent; -webkit-to
 
 /* the traced Tesseract.js mark is an outline with holes, so it needs even-odd fill */
 svg[aria-label="Tesseract.js"] path { fill-rule: evenodd; }
+
+/* Figures in written posts (components/design-v3/charts). Sizes match the approved mockup. */
+.v3ch { margin: 6px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.v3ch-frame { background: var(--surface-media); border-radius: 12px; padding: 22px 22px 16px; position: relative; }
+.v3ch-title { font-size: 15px; font-weight: 500; color: var(--text-primary); margin: 0 0 2px; }
+.v3ch-sub { font-size: 13px; color: var(--text-label); margin: 0 0 14px; }
+.v3ch-cap { font-size: 13.5px; color: var(--text-label); line-height: 1.6; }
+.v3ch-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.v3ch-tick { font-family: 'Geist Mono', monospace; font-size: 11px; fill: var(--text-label); }
+.v3ch-val { font-size: 12.5px; fill: var(--text-primary); font-weight: 500; }
+.v3ch-note { font-size: 12px; fill: var(--text-label); }
+.v3ch-grid { stroke: var(--line-hairline); stroke-width: 1; }
+.v3ch-base { stroke: var(--line-divider); stroke-width: 1; }
+.v3ch-bar { fill: var(--text-strong); }
+.v3ch-bar-on { fill: var(--text-primary); }
+.v3ch-muted { fill: var(--chart-bar-muted); }
+.v3ch-target { stroke: var(--text-secondary); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.v3ch-gap { font-size: 13px; color: var(--text-label); margin-top: 6px; }
+.v3ch-tip { position: absolute; pointer-events: none; background: var(--room-bg); color: var(--text-primary); border: 1px solid var(--line-divider); font-size: 12px; padding: 6px 8px; border-radius: 6px; transition: opacity 0.12s; white-space: nowrap; }
+.v3ch-status { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.v3ch-status td { padding: 11px 0; border-top: 1px solid var(--line-hairline); vertical-align: top; line-height: 1.5; }
+.v3ch-status tr:first-child td { border-top: none; }
+.v3ch-status td.v3ch-s { width: 132px; color: var(--text-label); font-size: 13px; padding-top: 12px; }
+.v3ch-status td.v3ch-w { color: var(--text-strong); }
+.v3ch-d { display: block; color: var(--text-label); font-size: 13px; }
+.v3ch-mk { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; box-sizing: border-box; }
+.v3ch-mk-on { background: var(--text-strong); }
+.v3ch-mk-off { border: 1.5px solid var(--text-label); }
+@media (max-width: 560px) { .v3ch-status td.v3ch-s { width: 1%; white-space: nowrap; padding-right: 14px; } }

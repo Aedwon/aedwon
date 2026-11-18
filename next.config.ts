@@ -8,6 +8,7 @@ const blogPosts = {
 } as const;
 
 const blogShortLinks = {
+  "pax-silica": "/writing/pax-silica",
   factory: "/writing/factory",
   spec: "/writing/spec",
 } as const;

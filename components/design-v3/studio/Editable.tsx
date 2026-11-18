@@ -46,18 +46,21 @@ export function Ed({ id, path, value, as = 'span', style, className, optional, p
 }
 
 // The paragraphs of a section or item, with remove and add controls while editing.
-export function Paras({ id, path, items, pStyle }: { id: string; path: string; items: string[]; pStyle: CSSProperties }) {
+// A section that shows figures between paragraphs passes each piece with `start` (the index of its first paragraph
+// in the whole list) so edits hit the right paragraph, and `add` on the last piece only.
+// renderPara draws a paragraph differently when not editing (citations); editing always shows the raw text.
+export function Paras({ id, path, items, pStyle, start = 0, add = true, renderPara }: { id: string; path: string; items: string[]; pStyle: CSSProperties; start?: number; add?: boolean; renderPara?: (text: string, key: number) => ReactNode }) {
   const api = useApi();
-  if (!api) return <>{items.map((t, q) => <p key={q} style={pStyle}>{t}</p>)}</>;
+  if (!api) return <>{items.map((t, q) => renderPara ? renderPara(t, start + q) : <p key={start + q} style={pStyle}>{t}</p>)}</>;
   return (
     <>
       {items.map((t, q) => (
-        <div key={q} className="studio-row">
-          <Ed id={id} path={`${path}.${q}`} value={t} as="p" style={pStyle} />
-          <button type="button" className="studio-x" title="Remove this paragraph" onClick={() => quiet(api.saveOp(id, { op: 'remove', path, index: q }))}>×</button>
+        <div key={start + q} className="studio-row">
+          <Ed id={id} path={`${path}.${start + q}`} value={t} as="p" style={pStyle} />
+          <button type="button" className="studio-x" title="Remove this paragraph" onClick={() => quiet(api.saveOp(id, { op: 'remove', path, index: start + q }))}>×</button>
         </div>
       ))}
-      <button type="button" className="studio-add" onClick={() => quiet(api.saveOp(id, { op: 'insert', path, index: items.length, value: '[Body copy.]' }))}>+ paragraph</button>
+      {add && <button type="button" className="studio-add" onClick={() => quiet(api.saveOp(id, { op: 'insert', path, index: start + items.length, value: '[Body copy.]' }))}>+ paragraph</button>}
     </>
   );
 }

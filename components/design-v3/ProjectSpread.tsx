@@ -10,6 +10,7 @@
 // per frame).
 
 import {
+  Fragment,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -22,6 +23,7 @@ import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { ICON, TYPEICON, FI, FICON } from '@/lib/design-v3/data/icons';
 import FlowDiagram from './FlowDiagram';
+import { Chart, chunkParas, type ChartSpec } from './charts';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
@@ -31,6 +33,8 @@ import BotViz, { isBotViz, isFluidViz } from './BotViz';
 import WishCounter from './WishCounterLazy';
 import { TechLogo, hasTechLogo } from './TechLogo';
 import { useTheme } from '@/lib/design-v3/theme';
+import { CITE_CSS, isSourcesSection, renderPara } from './citations';
+import { hasHeroStage } from './heroStage';
 
 export interface ProjectSpreadProps {
   bare?: boolean;
@@ -60,6 +64,7 @@ interface Sec {
   p?: string[];
   fig?: string;
   diagram?: string;
+  charts?: ChartSpec[];
   img?: import('@/lib/design-v3/data/projects').Img;
   items?: { h: string; which: string; vh: string; p: string[] }[];
   cols?: { h: string; items: string[] }[];
@@ -93,7 +98,7 @@ const CSS = `
 .v3ps-rl{display:block;width:100%;border:none;background:none;padding:9px 14px;border-radius:8px;font-family:inherit;font-size:14px;text-align:left;cursor:pointer;color:var(--c);white-space:nowrap;transition:background-color .15s ease,color .15s ease}
 .v3ps-rl:hover{background:var(--surface-control-hover);color:var(--text-primary)}
 .v3ps a:focus-visible,.v3ps button:focus-visible{outline:2px solid var(--text-primary);outline-offset:3px}
-`;
+${CITE_CSS}`;
 
 // Shared geometry keeps the page preview and both camera directions aligned.
 export function heroLayoutOf(i: number) {
@@ -101,6 +106,9 @@ export function heroLayoutOf(i: number) {
   const w = 864, scale = w / 520;
   return { x: 520, y: 108, w, h: frameH(p) * scale, scale };
 }
+
+// Paragraphs of a written post: citations as raised links, and the sources section as numbered rows.
+const paraOf = (sources: boolean) => renderPara({ sources, style: sources ? { margin: 0, fontSize: 15, lineHeight: 1.6 } : { margin: 0 }, numWidth: 28, gap: 12 });
 
 const out = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
 
@@ -307,6 +315,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
   const isCase = p.depth === 'case';
   const isNote = p.depth === 'note';
   const hasToc = secs.length > 1;
+  const heroStage = hasHeroStage(p); // a post's own page starts with the essay, not the paper card
   const points = p.points;
 
   type Detail = { label: string; v: string; icon?: string; dot?: string; ring?: string; fi?: number };
@@ -399,8 +408,8 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
       {/* right page: the work, and the story if there is one */}
       <div ref={scrollerRef} className="v3ps-ps" onScroll={onScroll} style={{ position: 'absolute', left: 520, right: 0, top: 0, bottom: 0, overflowY: 'auto' }}>
         <div ref={rightRef} style={{ padding: '108px 56px 120px 0', opacity: 1 }}>
-          {/* hero stage */}
-          <div className="v3ps-hero" style={{ position: 'relative', height: heroLayout.h }}>
+          {/* hero stage (a written post draws none: the left page already says what the card would) */}
+          {heroStage && <div className="v3ps-hero" style={{ position: 'relative', height: heroLayout.h }}>
             {p.media === 'phone' ? (
               // phones: one picture per phone, each with its own controls while editing
               <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: heroScale }}>
@@ -431,7 +440,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 </div>
               </ImageSlot>
             )}
-          </div>
+          </div>}
           <div className="v3ps-in2">
           {p.hero?.src && (p.hero.caption || editing) && (
             <Ed id={p.id} path="hero.caption" value={p.hero.caption || ''} as="p" optional placeholder="Add a caption" style={{ margin: '12px 0 0', fontSize: 13.5, color: 'var(--text-label)' }} />
@@ -453,7 +462,7 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
             </div>
           )}
           {/* case points: the 48px wrapper is always there so the rhythm holds */}
-          <div style={{ paddingTop: 48 }}>
+          {heroStage && <div style={{ paddingTop: 48 }}>
             {isCase && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 32 }}>
                 {points.map((k, i) => (
@@ -464,18 +473,23 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 ))}
               </div>
             )}
-          </div>
+          </div>}
           <div>
             {secs.map((s, i) => (
               <section
                 key={(s.h || '') + i}
                 ref={(el) => { secEls.current[i] = el; }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 56, position: 'relative' }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: !heroStage && i === 0 ? 0 : 56, position: 'relative' }}
               >
                 <SectionTools id={p.id} index={i} count={secs.length} hasFigure={!!(s.fig || s.img)} />
                 {(s.h || editing) && <Ed id={p.id} path={`sections.${i}.h`} value={s.h || ''} as="h2" style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }} />}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 680, fontSize: 17, lineHeight: 1.75, color: 'var(--text-secondary)' }}>
-                  <Paras id={p.id} path={`sections.${i}.p`} items={s.p || []} pStyle={{ margin: 0 }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: p.post && isSourcesSection(s.h) ? 0 : 16, maxWidth: 680, fontSize: 17, lineHeight: 1.75, color: 'var(--text-secondary)' }}>
+                  {chunkParas(s.p || [], s.charts).map((c, k, all) => (
+                    <Fragment key={k}>
+                      <Paras id={p.id} path={`sections.${i}.p`} items={c.items} start={c.start} add={k === all.length - 1} pStyle={{ margin: 0 }} renderPara={p.post ? paraOf(isSourcesSection(s.h)) : undefined} />
+                      {c.chart && <Chart which={c.chart} />}
+                    </Fragment>
+                  ))}
                 </div>
                 {s.diagram && FLOWS[s.diagram] && <FlowDiagram spec={FLOWS[s.diagram]} fluid live />}
                 {(editing || s.img?.src) && (

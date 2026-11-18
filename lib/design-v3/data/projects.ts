@@ -57,6 +57,8 @@ export interface Section {
   fig?: string;
   // the id of a drawn flow diagram (lib/design-v3/data/flows.ts) shown under the text
   diagram?: string;
+  // figures drawn between the paragraphs (components/design-v3/charts): `after` is how many paragraphs come before it
+  charts?: { which: string; after: number }[];
   // a real picture for the figure, in place of the dashed placeholder
   img?: Img;
   [k: string]: unknown;

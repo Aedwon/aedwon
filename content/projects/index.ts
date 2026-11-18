@@ -16,6 +16,7 @@ import aspire from './aspire.json';
 import opensre from './opensre.json';
 import dockroute from './dockroute.json';
 import bettergov from './bettergov.json';
+import paxSilica from './pax-silica.json';
 import spec from './spec.json';
 import factory from './factory.json';
 import mlbb from './mlbb.json';
@@ -41,6 +42,7 @@ export const PROJECT_FILES = [
   dockroute,
   bettergov,
   genshin,
+  paxSilica,
   spec,
   factory,
   mlbb,

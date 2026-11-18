@@ -86,9 +86,11 @@ Do not deliberately lower grammatical quality. Correct factual errors, unclear s
 
 ## Repository implementation
 
-Blog data currently lives in `lib/data/blogs.ts`. The renderer supports `paragraph`, `heading`, `pullquote`, and `sources` blocks. Keep formatting semantic. Use a heading because the subject changes, a pull quote because a line deserves visual emphasis, and a sources block because the article has references.
+Posts live in the v3 Writing index as `content/projects/<id>.json` with `type: "Writing"`, rendered at `/writing/<id>`. A post is a list of text sections, each with an optional heading (`h`) and paragraphs (`p`). Citations stay as `[n]` text, and the last section, "Sources and further reading," lists one `[n] ...` line per source. Use a heading because the subject changes.
 
-Full article URLs use descriptive canonical slugs under `/blogs/<slug>`. Shareable short links use the `/b/<short-keyword>` redirect convention. The short key should be memorable, stable, lowercase, and meaningful instead of an opaque ID.
+A text section can show figures between its paragraphs with `charts: [{ "which": "<name>", "after": <paragraphs before it> }]`. Each name maps to a component registered in `components/design-v3/charts/index.tsx`. Charts use the v3 theme tokens, so they follow light and dark mode. Add a chart only when the data is central to the argument, and approve its look in a mockup first.
+
+The old `/blogs/<slug>` addresses redirect to `/writing/<id>`. Shareable short links use the `/b/<short-keyword>` redirect convention in `next.config.ts`. The short key should be memorable, stable, lowercase, and meaningful instead of an opaque ID.
 
 Tags may remain as internal post metadata, but they are not part of the visible blog presentation unless Aerol explicitly asks to expose them again.
 
