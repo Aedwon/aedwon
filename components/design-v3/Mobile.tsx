@@ -10,9 +10,10 @@ import { TechLogo, hasTechLogo } from './TechLogo';
 // keyboard height comes from window.visualViewport.
 
 import { useTheme } from '@/lib/design-v3/theme';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WishCounter from './WishCounterLazy';
 import FlowDiagram from './FlowDiagram';
+import { Chart, chunkParas } from './charts';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
@@ -873,8 +874,13 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               {secs.map((sec) => (
                 <section key={sec.id} id={sec.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 40 }}>
                   {sec.h && <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>{sec.h}</h2>}
-                  {(sec.p || []).map((para: string, j: number) => (
-                    <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
+                  {chunkParas(sec.p || [], sec.charts).map((c, k) => (
+                    <Fragment key={k}>
+                      {c.items.map((para: string, j: number) => (
+                        <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
+                      ))}
+                      {c.chart && <Chart which={c.chart} />}
+                    </Fragment>
                   ))}
                   {sec.diagram && FLOWS[sec.diagram] && <FlowDiagram spec={FLOWS[sec.diagram]} fluid live />}
                   {sec.img?.src && (

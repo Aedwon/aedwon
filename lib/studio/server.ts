@@ -186,6 +186,7 @@ export function validateProject(p: unknown, id: string): string[] {
       if (!isObj(s) || !isStr(s.kind)) { e.push('sections.' + i + ' needs a kind'); return; }
       if (s.h !== undefined && !isStr(s.h)) e.push('sections.' + i + '.h must be text');
       if (s.p !== undefined && !strList(s.p)) e.push('sections.' + i + '.p must be a list of paragraphs');
+      if (s.charts !== undefined && !(Array.isArray(s.charts) && s.charts.every((c) => isObj(c) && isStr(c.which) && Number.isInteger(c.after) && (c.after as number) >= 0))) e.push('sections.' + i + '.charts must be a list of { which, after }');
       e.push(...imgErrors(s.img, id, 'sections.' + i + '.img'));
       if (isObj(s.link) && (!isStr(s.link.href) || !HREF_RE.test(s.link.href))) e.push('sections.' + i + '.link.href must start with https://, http://, mailto:, / or #');
     });

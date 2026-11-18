@@ -94,7 +94,7 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 
 ### 10. Living Copy Reference File
 - All active copy, project descriptions, and case study notes must be maintained in [`docs/portfolio-copy.md`](file:///Users/aedwon/Documents/Projects/aedwon/docs/portfolio-copy.md).
-- Blog posts are stored in `lib/data/blogs.ts` and additionally follow [`docs/blog-writing.md`](docs/blog-writing.md).
+- Blog posts are stored in `content/projects/<id>.json` (type `Writing`) and additionally follow [`docs/blog-writing.md`](docs/blog-writing.md).
 - Edit the relevant source file directly when refining text instead of dumping walls of copy into conversation.
 
 ### 11. Skill Evaluation & User Confirmation Gate

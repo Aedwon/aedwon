@@ -10,6 +10,7 @@
 // per frame).
 
 import {
+  Fragment,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -22,6 +23,7 @@ import type { ProjectSpreadHandle, Req } from './contracts';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import { ICON, TYPEICON, FI, FICON } from '@/lib/design-v3/data/icons';
 import FlowDiagram from './FlowDiagram';
+import { Chart, chunkParas, type ChartSpec } from './charts';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import { AddSection, Ed, ImageSlot, Links, Paras, SectionTools } from './studio/Editable';
@@ -60,6 +62,7 @@ interface Sec {
   p?: string[];
   fig?: string;
   diagram?: string;
+  charts?: ChartSpec[];
   img?: import('@/lib/design-v3/data/projects').Img;
   items?: { h: string; which: string; vh: string; p: string[] }[];
   cols?: { h: string; items: string[] }[];
@@ -475,7 +478,12 @@ const ProjectSpread = forwardRef<ProjectSpreadHandle, ProjectSpreadProps>(functi
                 <SectionTools id={p.id} index={i} count={secs.length} hasFigure={!!(s.fig || s.img)} />
                 {(s.h || editing) && <Ed id={p.id} path={`sections.${i}.h`} value={s.h || ''} as="h2" style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--text-primary)' }} />}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 680, fontSize: 17, lineHeight: 1.75, color: 'var(--text-secondary)' }}>
-                  <Paras id={p.id} path={`sections.${i}.p`} items={s.p || []} pStyle={{ margin: 0 }} />
+                  {chunkParas(s.p || [], s.charts).map((c, k, all) => (
+                    <Fragment key={k}>
+                      <Paras id={p.id} path={`sections.${i}.p`} items={c.items} start={c.start} add={k === all.length - 1} pStyle={{ margin: 0 }} />
+                      {c.chart && <Chart which={c.chart} />}
+                    </Fragment>
+                  ))}
                 </div>
                 {s.diagram && FLOWS[s.diagram] && <FlowDiagram spec={FLOWS[s.diagram]} fluid live />}
                 {(editing || s.img?.src) && (
