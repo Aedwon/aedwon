@@ -22,6 +22,7 @@ import { Ed, ImageSlot, LogoSlot } from './studio/Editable';
 import type { Img } from '@/lib/design-v3/data/projects';
 import { useStudio } from './studio/store';
 import { TechLogo, hasTechLogo } from './TechLogo';
+import { CONTACT } from '@/lib/site-content';
 
 export interface BookPageProps {
   page?: BookPageDef | null;
@@ -29,8 +30,8 @@ export interface BookPageProps {
   onGo?: (page: number) => void;
   onNextVol?: () => void;
   clock?: string;
-  form?: { name?: string; mail?: string; msg?: string; title?: string; ready?: boolean };
-  onField?: (key: 'name' | 'mail' | 'msg' | 'title', value: string) => void;
+  form?: { name?: string; mail?: string; msg?: string; title?: string; website?: string; ready?: boolean; status?: 'idle' | 'sending' | 'error' };
+  onField?: (key: 'name' | 'mail' | 'msg' | 'title' | 'website', value: string) => void;
   onShelve?: () => void;
 }
 
@@ -92,7 +93,9 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
   };
 
   const f = form || {};
-  const ok = !!f.ready;
+  const sending = f.status === 'sending';
+  const failed = f.status === 'error';
+  const ok = !!f.ready && !sending;
   const is = (k: string) => p.kind === k;
   const toc = p.toc || [];
   const items = p.items as ListItem[] | undefined;
@@ -266,6 +269,7 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
             placeholder="Title this volume"
             aria-label="Title this volume"
             maxLength={28}
+            readOnly={sending}
           />
           <span style={{ fontSize: 15, color: 'var(--paper-meta)' }}>{`by ${(f.name || '').trim() || 'you'} and Aerol`}</span>
         </div>
@@ -277,11 +281,11 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
           <span style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05 }}>Chapter 1</span>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <span style={{ fontSize: 13, color: 'var(--paper-meta)' }}>Your name</span>
-            <input className="bp-fld" value={f.name || ''} onChange={(e) => onField?.('name', e.target.value)} placeholder="Maria Santos" autoComplete="name" />
+            <input className="bp-fld" value={f.name || ''} onChange={(e) => onField?.('name', e.target.value)} placeholder="Maria Santos" autoComplete="name" readOnly={sending} />
           </label>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <span style={{ fontSize: 13, color: 'var(--paper-meta)' }}>Where I can reach you</span>
-            <input className="bp-fld" type="email" value={f.mail || ''} onChange={(e) => onField?.('mail', e.target.value)} placeholder="you@example.com" autoComplete="email" />
+            <input className="bp-fld" type="email" value={f.mail || ''} onChange={(e) => onField?.('mail', e.target.value)} placeholder="you@example.com" autoComplete="email" readOnly={sending} />
           </label>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minHeight: 0 }}>
             <span style={{ fontSize: 13, color: 'var(--paper-meta)' }}>What we&apos;d build</span>
@@ -290,18 +294,36 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
               value={f.msg || ''}
               onChange={(e) => onField?.('msg', e.target.value)}
               placeholder="A booking app for our clinic, in time for…"
+              readOnly={sending}
               style={{ flex: 1, resize: 'none', borderBottom: 'none', lineHeight: '30px', paddingTop: 0, backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--paper-rule) 29px, var(--paper-rule) 30px)' }}
             />
           </label>
+          <input
+            name="website"
+            value={f.website || ''}
+            onChange={(e) => onField?.('website', e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            style={{ position: 'absolute', left: -9999, width: 1, height: 1, opacity: 0, overflow: 'hidden', pointerEvents: 'none' }}
+          />
           <button
             className="bp-shelve"
             type="button"
             onClick={(e) => { e.stopPropagation(); onShelve?.(); }}
             aria-disabled={!ok}
-            style={{ height: 52, flex: 'none', border: 'none', borderRadius: 10, background: 'var(--paper-ink)', color: 'var(--paper-bg)', fontFamily: 'inherit', fontSize: 15, fontWeight: 600, cursor: ok ? 'pointer' : 'default', opacity: ok ? 1 : 0.35 }}
+            disabled={sending}
+            aria-busy={sending ? 'true' : undefined}
+            style={{ height: 52, flex: 'none', border: 'none', borderRadius: 10, background: 'var(--paper-ink)', color: 'var(--paper-bg)', fontFamily: 'inherit', fontSize: 15, fontWeight: 600, cursor: ok ? 'pointer' : 'default', opacity: sending ? 0.6 : ok ? 1 : 0.35 }}
           >
-            Close and shelve
+            {sending ? 'Sending…' : 'Close and shelve'}
           </button>
+          {failed && (
+            <p role="alert" style={{ margin: '-6px 0 0', fontSize: 14, lineHeight: 1.45, color: '#9F1D1D' }}>
+              {"Couldn't send that. Try again, or email "}
+              <a href={`mailto:${CONTACT.email}`} style={{ color: 'inherit' }}>{CONTACT.email}</a>.
+            </p>
+          )}
         </div>
       )}
 
@@ -318,8 +340,8 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
             <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', translate: copied ? '0 -100%' : '0 0%', transition: 'translate .45s cubic-bezier(.34,1.56,.64,1)' }}>aerol.balayon@gmail.com</span>
             <span aria-live="polite" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', translate: copied ? '0 0%' : '0 100%', transition: 'translate .45s cubic-bezier(.34,1.56,.64,1)' }}>Copied ✓</span>
           </button>
-          <a className="bp-btn" href="https://github.com/" onClick={stop} style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--paper-ink)', color: 'var(--paper-ink)', fontSize: 15, textDecoration: 'none' }}>GitHub</a>
-          <a className="bp-btn" href="https://linkedin.com/" onClick={stop} style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--paper-ink)', color: 'var(--paper-ink)', fontSize: 15, textDecoration: 'none' }}>LinkedIn</a>
+          <a className="bp-btn" href={CONTACT.github} onClick={stop} style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--paper-ink)', color: 'var(--paper-ink)', fontSize: 15, textDecoration: 'none' }}>GitHub</a>
+          <a className="bp-btn" href={CONTACT.linkedin} onClick={stop} style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--paper-ink)', color: 'var(--paper-ink)', fontSize: 15, textDecoration: 'none' }}>LinkedIn</a>
         </>
       )}
 

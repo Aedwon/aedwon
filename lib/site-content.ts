@@ -87,7 +87,7 @@ export const CONTACT_CONTENT: TrustPageContent = {
     {
       heading: "What to include",
       paragraphs: [
-        "For a project inquiry, include the problem you are trying to solve, the expected users, any hard platform or deadline constraints, and links to material I should review. For a question about a portfolio project, name the project and the specific implementation detail you are asking about. I do not use a contact form on this site, so sending an email or using one of the linked platforms is the only information you intentionally submit to me through these contact paths.",
+        "For a project inquiry, include the problem you are trying to solve, the expected users, any hard platform or deadline constraints, and links to material I should review. For a question about a portfolio project, name the project and the specific implementation detail you are asking about. The Chapter 1 form in the book sends the name, email address, message and optional title you type to me by email through Resend. This site does not store it in a database. Emailing me or using one of the linked platforms works just as well.",
         "Messages are handled personally. I cannot promise a response to every unsolicited request, and this page should not be interpreted as a service-level agreement or commercial support commitment.",
       ],
     },
@@ -98,12 +98,12 @@ export const PRIVACY_CONTENT: TrustPageContent = {
   title: "Privacy",
   description: "Privacy notes for the Aedwon personal portfolio.",
   intro:
-    "Aedwon.com is a personal portfolio and does not currently provide accounts, a contact form, purchases, or other features that ask you to submit personal information directly on the site. Vercel Speed Insights is enabled to measure site performance. This version of the portfolio does not deliberately initialize PostHog, Microsoft Clarity, or Vercel Web Analytics in the application interface.",
+    "Aedwon.com is a personal portfolio and does not currently provide accounts or purchases. The only feature that asks you to submit personal information is the Chapter 1 contact form, which sends your name, email address and message to me by email through Resend and is not stored in a database on this site. Vercel Speed Insights is enabled to measure site performance. This version of the portfolio does not deliberately initialize PostHog, Microsoft Clarity, or Vercel Web Analytics in the application interface.",
   sections: [
     {
       heading: "What the site handles",
       paragraphs: [
-        "The site is hosted through web infrastructure that may process ordinary request information needed to deliver pages, such as an IP address, user agent, requested URL, timestamp, and network diagnostics. Performance telemetry may also be processed by Vercel Speed Insights. That infrastructure-level processing is separate from a portfolio feature collecting information from you. This site does not currently set up a user database, newsletter list, advertising profile, or first-party contact-form submission store.",
+        "The site is hosted through web infrastructure that may process ordinary request information needed to deliver pages, such as an IP address, user agent, requested URL, timestamp, and network diagnostics. Performance telemetry may also be processed by Vercel Speed Insights. That infrastructure-level processing is separate from a portfolio feature collecting information from you. This site does not currently set up a user database, newsletter list, advertising profile, or stored copy of contact-form submissions. A submitted form is delivered to my inbox through Resend, which processes it to send the email.",
         "If you choose an email link, GitHub link, LinkedIn link, Discord handle, or another external project link, your interaction leaves this site and is governed by the policies and account settings of that service. Email messages you send are processed by the mail providers used by the sender and recipient.",
       ],
     },

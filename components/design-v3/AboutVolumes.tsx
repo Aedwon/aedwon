@@ -19,6 +19,7 @@ import { VOLUMES, type BookPageDef, type Volume } from '@/lib/design-v3/data/vol
 import { setStudio } from './studio/store';
 import { preloadLogos } from '@/lib/design-v3/data/logos';
 import { useTheme } from '@/lib/design-v3/theme';
+import { contactReady, sendContact } from '@/lib/contact/send';
 
 const LAST = VOLUMES.length - 1;
 const HH = 600; // book height
@@ -211,7 +212,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
     setStudio({ visible: pages });
   }, [dv.active, dv.barAt]);
   const [clock, setClock] = useState('');
-  const [form, setForm] = useState({ name: '', mail: '', msg: '', title: '' });
+  const [form, setForm] = useState<{ name: string; mail: string; msg: string; title: string; website: string; status: 'idle' | 'sending' | 'error' }>({ name: '', mail: '', msg: '', title: '', website: '', status: 'idle' });
 
   // refs mirrored for the per-frame pass and for effects
   const formRef = useRef(form); formRef.current = form;
@@ -236,7 +237,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
 
   const okForm = useCallback(() => {
     const f = formRef.current;
-    return !!(f.name.trim() && f.msg.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.mail.trim()));
+    return contactReady(f);
   }, []);
   const fm = useMemo(() => ({ ...form, ready: okForm() }), [form, okForm]);
 
@@ -298,9 +299,13 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
     const to = Math.floor(pageIndex / 2);
     if (st.turn) st.queue = [to]; else startTurn(to); // a long jump is one fast leaf turn
   }
-  // NOTE for the build: post to a form endpoint here (Formspree, Resend, etc.) before shelving
-  function shelveIt() {
-    if (!okForm() || st.shelving || st.active !== LAST) return;
+  async function shelveIt() {
+    if (!okForm() || st.shelving || st.active !== LAST || formRef.current.status === 'sending') return;
+    setForm((f) => ({ ...f, status: 'sending' }));
+    const sent = await sendContact(formRef.current);
+    if (!sent) { setForm((f) => ({ ...f, status: 'error' })); return; }
+    setForm((f) => ({ ...f, status: 'idle' }));
+    if (st.shelving || st.active !== LAST) return;
     st.spread = 0; st.turn = null; st.queue = []; st.shelving = true; st.shelvedAt = null;
     const v = vRef.current[st.active];
     setDv((d) => ({ ...d, barAt: 0, ...idleRead(v, 0) }));
@@ -308,8 +313,8 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   }
   apiRef.current = { okForm, openVol, close, startTurn, forward, backward, goPage, shelveIt };
 
-  const setField = useCallback((k: 'name' | 'mail' | 'msg' | 'title', val: string) => {
-    setForm((f) => ({ ...f, [k]: val }));
+  const setField = useCallback((k: 'name' | 'mail' | 'msg' | 'title' | 'website', val: string) => {
+    setForm((f) => ({ ...f, [k]: val, status: f.status === 'error' ? 'idle' : f.status }));
   }, []);
   const again = useCallback(() => {
     setForm((f) => ({ ...f, msg: '', title: '' })); // keeps name and mail; running heads reset via V
