@@ -24,6 +24,8 @@ const COL_IDS = [
 ];
 const COLS = COL_IDS.map((ids) => ids.map((id) => PROJECTS.findIndex((p) => p.id === id)).filter((i) => i >= 0));
 const GAP = 48;
+// the Index thumbnails leave the wall one after another; the step shrinks with the list so the last one still reaches its row (k = 1)
+const stagger = Math.min(0.024, 0.42 / Math.max(1, PROJECTS.length - 1));
 
 // five kinds, the way a visitor thinks about them (WallIndex2:309-316)
 const KIND: { label: string; types: string[] }[] = [
@@ -528,7 +530,7 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       s.hs[i] = 1 + 0.035 * A;
       const offWall = bp[i].y > 90000; // not hung on the wall (Index only)
       const w = { x: offWall ? 160 : bp[i].x, y: offWall ? 2400 : bp[i].y - camY + O[1] + (1 - intro) * 140, z: 24 * (onWall ? A : 0), op: offWall ? 0 : s.ops[i] * intro };
-      const ut = ease((k - 0.024 * i) / 0.58); // every tile, even the 17th, lands exactly on its row
+      const ut = ease((k - stagger * i) / 0.58); // every tile, even the last, lands exactly on its row
       let su = s.su[i];
       if (!su || dt === 0 || s.reduced) su = s.su[i] = { u: ut, v: 0 };
       else { su.v += ((ut - su.u) * 230 - su.v * 23) * dt; su.u += su.v * dt; }
