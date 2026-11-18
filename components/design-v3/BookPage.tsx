@@ -11,7 +11,7 @@
 // - onGo      contents rows call it with the target page index.
 // - onNextVol the end-page "Vol. NN · Title →" button.
 // - clock     Manila time, shown on the contact page.
-// - form      shared Vol. 06 form state ({ name, mail, msg, title, ready }); the
+// - form      shared contact-volume form state ({ name, mail, msg, title, ready }); the
 //             parent owns it, so every page of the volume renders the same values.
 // - onField   typing in any form field ('name' | 'mail' | 'msg' | 'title').
 // - onShelve  the "Close and shelve" button.

@@ -9,7 +9,7 @@ export const IMAGE_DIR = path.join(process.cwd(), 'public', 'projects');
 export const SITE_DIR = path.join(process.cwd(), 'content', 'site');
 export const SITE_IMAGE_DIR = path.join(process.cwd(), 'public', 'about');
 // The site's own text (loader, nav, 404, About books). A fixed list: nothing else under content/site can be written.
-export const SITE_IDS = ['ui', 'about-01', 'about-02', 'about-03', 'about-04', 'about-05', 'about-06'];
+export const SITE_IDS = ['ui', 'about-01', 'about-02', 'about-03', 'about-04', 'about-05'];
 export const isSiteId = (id: unknown): id is string => typeof id === 'string' && SITE_IDS.includes(id);
 
 export class StudioError extends Error {
