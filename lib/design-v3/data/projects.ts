@@ -31,6 +31,8 @@ export interface Project {
   stackText?: string;
   repo?: string;
   post?: boolean;
+  // left out of the site (Wall, Index, pages, sitemap) while true; the file stays so it can come back
+  hidden?: boolean;
   topic?: string;
   mins?: string;
   date?: string;
@@ -64,6 +66,6 @@ export interface Section {
   [k: string]: unknown;
 }
 
-export const PROJECTS: Project[] = PROJECT_FILES as unknown as Project[];
+export const PROJECTS: Project[] = (PROJECT_FILES as unknown as Project[]).filter((p) => !p.hidden);
 
 export const KINDS = ["text","systems","status"];
