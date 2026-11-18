@@ -10,9 +10,11 @@ import { TechLogo, hasTechLogo } from './TechLogo';
 // keyboard height comes from window.visualViewport.
 
 import { useTheme } from '@/lib/design-v3/theme';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WishCounter from './WishCounterLazy';
 import FlowDiagram from './FlowDiagram';
+import { Chart } from './charts';
+import { PostList, sectionChunks } from './postText';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
@@ -23,6 +25,8 @@ import { FI, FICON, ICON, TYPEICON } from '@/lib/design-v3/data/icons';
 import { PROJECTS, type Project, type Section } from '@/lib/design-v3/data/projects';
 import { VOLUMES, type BookPageDef } from '@/lib/design-v3/data/volumes';
 import { useStudio } from './studio/store';
+import { CITE_CSS, isSourcesSection, renderPara } from './citations';
+import { hasHeroStage } from './heroStage';
 import UI from '@/content/site/ui.json';
 import { contactReady, sendContact } from '@/lib/contact/send';
 
@@ -841,7 +845,7 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
         <>
           <div ref={projScrollRef} className="v3ms" onScroll={onProjScroll} style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: 'var(--room-bg)' }}>
             <div key={p.id} ref={projInnerRef} style={{ width: W, boxSizing: 'border-box', margin: '0 auto', padding: '72px 22px 120px', display: 'flex', flexDirection: 'column' }}>
-              <style>{RISE_CSS}</style>
+              <style>{RISE_CSS + CITE_CSS}</style>
               <h1 className="v3rise" style={{ ...rise(0), margin: 0, fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.05 }}>{p.name}</h1>
               <p className="v3rise" style={{ ...rise(1), margin: '12px 0 0', fontSize: 15.5, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{p.desc}</p>
               <div className="v3rise" style={{ ...rise(2), display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, marginTop: 18 }}>
@@ -867,13 +871,13 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               {(p.links || []).slice(0, 1).map((l) => (
                 <a key={l.href} href={l.href} className="v3rise" style={{ ...rise(4), marginTop: 18, fontSize: 15, color: 'var(--text-primary)', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--line-underline)' }}>{l.label} ↗</a>
               ))}
-              <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26 }}>
+              {hasHeroStage(p) && <div className="v3rise v3rise-hero" style={{ ...rise(5), marginTop: 26 }}>
                 <div style={{ position: 'relative', width: CW, height: frameH(p) * CW / 520, overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', left: '50%', top: '50%', width: 520, translate: '-50% -50%', scale: (CW / 520).toFixed(4) }}>
                     <MediaBlock live kind={p.media as MediaKind} img={p.hero} screens={p.screens} h={frameH(p)} name={p.name} repo={p.media === 'repo' ? p.links[0]?.label : undefined} desc={p.media === 'repo' ? p.desc : undefined} date={postMeta(p).date} mins={postMeta(p).mins} />
                   </div>
                 </div>
-              </div>
+              </div>}
               {p.hero?.src && p.hero.caption && <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--text-label)' }}>{p.hero.caption}</p>}
               {p.depth === 'case' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 28 }}>
@@ -886,10 +890,16 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
                 </div>
               )}
               {secs.map((sec) => (
-                <section key={sec.id} id={sec.id} style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 40 }}>
+                <section key={sec.id} id={sec.id} style={{ display: 'flex', flexDirection: 'column', gap: p.post && isSourcesSection(sec.h) ? 0 : 12, paddingTop: 40 }}>
                   {sec.h && <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>{sec.h}</h2>}
-                  {(sec.p || []).map((para: string, j: number) => (
-                    <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>
+                  {sectionChunks(sec.p || [], sec.charts, p.post ? sec.list : undefined).map((c, k) => (
+                    <Fragment key={k}>
+                      {c.list && c.items.length > 0 && <PostList items={c.items} style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }} />}
+                      {!c.list && c.items.map((para: string, j: number) => p.post
+                        ? renderPara({ sources: isSourcesSection(sec.h), style: isSourcesSection(sec.h) ? { margin: 0, fontSize: 14.5, lineHeight: 1.6, color: 'var(--text-secondary)' } : { margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }, numWidth: 26, gap: 12 })(para, c.start + j)
+                        : <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>)}
+                      {c.chart && <Chart which={c.chart} />}
+                    </Fragment>
                   ))}
                   {sec.diagram && FLOWS[sec.diagram] && <FlowDiagram spec={FLOWS[sec.diagram]} fluid live />}
                   {sec.img?.src && (

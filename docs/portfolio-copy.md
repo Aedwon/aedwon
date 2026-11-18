@@ -498,3 +498,23 @@ The current client is a small asynchronous wrapper over Challonge API v1 using `
   - **Getting wasm-vips through a static build:** The worker first lived in lib/worker.ts and was constructed from a module URL. Turbopack emitted it as a raw TypeScript asset in production, which the browser could not execute. The worker never sent its ready message, so the page stayed on the loading screen. I moved the worker to public/worker.js as plain JavaScript and load that static asset directly instead.
 
     That fixed the worker asset, but wasm-vips still depended on cross-origin isolation because its SharedArrayBuffer and pthread path needs COOP and COEP. For local development, next.config.js sends Cross-Origin-Opener-Policy as same-origin and Cross-Origin-Embedder-Policy as require-corp. The Vercel deployment repeats those headers in vercel.json because the static export does not carry the Next.js header configuration into the built site.
+
+### 2.14 Kanlungan (`/work/kanlungan`) | Focused
+- **Tier:** Focused
+- **Category:** Web
+- **Role:** Sole Designer and Developer
+- **Timeline:** 2026
+- **Platform:** Web
+- **Stack:** Next.js, React, TypeScript, Playwright
+- **Live:** https://www.kanlungan.space
+- **Summary:** A fictional interior design studio with a small furniture shop, built as if it were a real business. The site has five furnished projects, 36 products, a cart and a demo checkout that takes no payment.
+- **Article:**
+  - **What it is:** Kanlungan is a made-up business. It's an interior design studio in Makati first and a furniture and homeware shop second, with a warm modern Filipino look that shows up in materials and craft instead of decorative motifs. The studio sells two services. Full-Service Furnishing takes an empty, already-built home to move-in ready and starts at ₱500,000. Interior Design Direction hands over the plans and specifications for ₱2,500 per square meter.
+
+    None of my real projects had a shop or a booking flow, so I made a brand that needed both. That meant it had to be believable down to the dull parts too, like delivery fees, made-to-order lead times, help pages and a 404.
+  - **How it came together:** The repo started on October 15 as a README of business decisions. Services, the shop's rules for what gets in, conversion goals and the site map were all settled before any design. Visual choices came after, and I picked each one from rendered options on a real page instead of a description. That took ten rounds, from the overall direction down to the services comparison on the home page.
+
+    The photography is generated. Every project room has a before and an after from the same camera, and the home page wipes from the empty room to the furnished one as you scroll. Keeping the pairs lined up took line drawings of each room to fix the camera before any image was made. The home page also numbers the pieces in one Lilim House photo and lists them underneath with their prices.
+  - **The shop:** The catalog has 36 products. Product pages swap photos when you change the fabric, finish or color, and the cart and checkout carry that choice through. Checkout is the site's own set of screens, and the payment step says plainly that no payment is taken.
+
+    The commerce layer is written against the Shopify Storefront API, with a local catalog as the fallback. The live site runs on the local catalog for now because the free Shopify development store isn't connected yet. Playwright tests cover the main flows and run axe accessibility checks.

@@ -31,6 +31,8 @@ export interface Project {
   stackText?: string;
   repo?: string;
   post?: boolean;
+  // left out of the site (Wall, Index, pages, sitemap) while true; the file stays so it can come back
+  hidden?: boolean;
   topic?: string;
   mins?: string;
   date?: string;
@@ -57,11 +59,15 @@ export interface Section {
   fig?: string;
   // the id of a drawn flow diagram (lib/design-v3/data/flows.ts) shown under the text
   diagram?: string;
+  // figures drawn between the paragraphs (components/design-v3/charts): `after` is how many paragraphs come before it
+  charts?: { which: string; after: number }[];
+  // written posts: paragraphs from index `from` on are drawn as one bulleted list; "**lead**" marks an item's lead phrase
+  list?: { from: number };
   // a real picture for the figure, in place of the dashed placeholder
   img?: Img;
   [k: string]: unknown;
 }
 
-export const PROJECTS: Project[] = PROJECT_FILES as unknown as Project[];
+export const PROJECTS: Project[] = (PROJECT_FILES as unknown as Project[]).filter((p) => !p.hidden);
 
 export const KINDS = ["text","systems","status"];

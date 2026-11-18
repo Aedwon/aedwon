@@ -9,6 +9,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import WallIndex2 from './WallIndex2';
 import AboutVolumes from './AboutVolumes';
 import ProjectSpread, { heroLayoutOf } from './ProjectSpread';
+import { hasHeroStage } from './heroStage';
 import { PROJECTS } from '@/lib/design-v3/data/projects';
 import UI from '@/content/site/ui.json';
 import type { AboutVolumesHandle, ProjectSpreadHandle, Req, WallIndex2Handle } from './contracts';
@@ -151,7 +152,7 @@ export default function Room({ initialPath, height = ROOM_H, loading = false }: 
     // the camera: fly in on the picture that was clicked so it lands where the page puts its own
     s.cam = null; s.fadeExit = false;
     const root = rootRef.current;
-    if (root && !s.pOpen && !s.reduced && s.c < 0.05) {
+    if (root && !s.pOpen && !s.reduced && s.c < 0.05 && hasHeroStage(PROJECTS[i])) { // a post's page has no picture to fly to
       const w2 = wall2.current, rest = w2?.restRect(i), b = root.getBoundingClientRect(), k = ROOM_W / b.width;
       let cx = 0, cy = 0, wd = 0;
       if (rest) { cx = rest.x; cy = rest.y; wd = rest.w; } // the wall, once it has levelled out
@@ -184,7 +185,7 @@ export default function Room({ initialPath, height = ROOM_H, loading = false }: 
     s.view = w2?.prepareReturn(i, destination.view) ?? destination.view;
     s.c = s.cT = s.cv = s.pW = s.pS = 0;
     s.cam = null; s.fadeExit = false;
-    if (w2 && root && !s.reduced) {
+    if (w2 && root && !s.reduced && hasHeroStage(PROJECTS[i])) {
       const rest = w2.restRect(i);
       const b = root.getBoundingClientRect(), k = ROOM_W / b.width;
       // Measure the Index preview in room coordinates, without the old camera zoom.

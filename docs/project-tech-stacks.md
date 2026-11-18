@@ -28,7 +28,7 @@ Snapshot audited 24 October 2026 (Asia/Manila), with a review pass on 25 October
 | The next model won’t fix your specification | Not applicable | None | Writing project. |
 | A perfect factory can still make something nobody wants | Not applicable | None | Writing project. |
 | MLBB Post-Game Extractor | JavaScript, React, Vite | Tesseract.js OCR | JavaScript is the implementation language. |
-| Kanlungan | Unknown | Unknown | Repository has a README only. |
+| Kanlungan | TypeScript, React, Next.js | Shopify Storefront API client (not connected); local catalog; Playwright with axe | Live site runs on the local catalog until a Shopify dev store is connected. |
 
 ## Aggregate technology inventory
 
@@ -97,7 +97,7 @@ This is the deduplicated inventory supported by the records above. It distinguis
 | Focused tools | Tesseract.js, wasm-vips, qr-code-styling | MLBB, WebP, QR Studio |
 | Contributions | C#, Python; documentation | Aspire, OpenSRE, DockRoute |
 
-Keep these out of unqualified first-person stack claims: Google Sheets is confined to the inferred MSL Cup backup helper; Pantas’ `purchases_flutter` and Dio are declared without confirmed app imports; BetterGov evidence covers only a local fork; and Kanlungan has no source code to inspect. The live deployment behind URL-only project links remains unverified.
+Keep these out of unqualified first-person stack claims: Google Sheets is confined to the inferred MSL Cup backup helper; Pantas’ `purchases_flutter` and Dio are declared without confirmed app imports; BetterGov evidence covers only a local fork; and Kanlungan's Shopify client is written but not connected, so the live shop runs on a local catalog. The live deployment behind URL-only project links remains unverified.
 <details>
 <summary>Source evidence and audit notes</summary>
 
@@ -167,9 +167,9 @@ External repository links use commit-pinned source files. Each SHA is the remote
 
 ### Kanlungan
 
-**Evidence gap:** The audited repository at `20d71384f70f5c725fe64aa83f89f643376c7c7f` contains only `README.md`. No source code, manifest, or deployment configuration verifies a stack. Do not infer one from README claims.
+**Verified (2026-11-17, remote `main` `9dfd94c`):** `site/` is Next.js 16 with React 19 and TypeScript, deployed on Vercel at kanlungan.space. A Shopify Storefront API provider exists in `site/src/lib/commerce/shopify.ts`, but it activates only when store env vars are set. The live site serves the local catalog. Tests use Playwright with `@axe-core/playwright`.
 
-**Portfolio stack:** Empty is accurate for this audit.
+**Portfolio stack:** Next.js, React, TypeScript, Playwright. Keep Shopify out of the stack list until the store is connected.
 
 ### Kiosk Survey
 
@@ -263,7 +263,7 @@ These are the exact remote default-branch commits inspected on 24 October 2026. 
 | MSL Cup likely source | [`9baad73`](https://github.com/Aedwon/msl-philippines-bot/tree/9baad7395ff58d041276bccb5303b378a0b3c113) | 2026-01-15 |
 | Genshin counter and portfolio host | [`e46c74c`](https://github.com/Aedwon/aedwon/tree/e46c74cab6bbef95c6d31e3b11a7c1b575080eb2) | 2026-10-20 |
 | Ilocos Bot | [`b85907f`](https://github.com/Aedwon/isfe-discord-bot/tree/b85907fd306fc97586373df4870468b2f3e0cf6f) | 2026-01-31 |
-| Kanlungan | [`20d7138`](https://github.com/Aedwon/kanlungan/tree/20d71384f70f5c725fe64aa83f89f643376c7c7f) | 2026-10-15 |
+| Kanlungan | [`9dfd94c`](https://github.com/Aedwon/kanlungan/tree/9dfd94c86f6f35bd214344f15bd180cdcbab251e) | 2026-11-17 |
 | Kiosk Survey | [`2879be2`](https://github.com/Aedwon/kiosk-survey/tree/2879be23dac01a6e0f8116b6fad5214a13c73431) | 2026-03-20 |
 | KQM Calculator | [`917a2b4`](https://github.com/Aedwon/genshin-impact-team-dps-calculator/tree/917a2b4c662aa45e412b09d0f693bb5d9b2ca0ef) | 2026-08-22 |
 | Lakambini | [`2c06c09`](https://github.com/Aedwon/lakambini-redesign/tree/2c06c0912aa29e86a039775c4c1d4dcf85680c40) | 2026-10-19 |
@@ -281,7 +281,7 @@ These are the exact remote default-branch commits inspected on 24 October 2026. 
 ## Open evidence gaps
 
 - BetterGov has no verified upstream code snapshot available through GitHub on the audit date. The local fork describes Aedwon’s branch only. Its relation to the deployed site remains unknown.
-- Kanlungan’s repository has no source beyond its README.
+- Kanlungan’s Shopify connection is not live; the shop runs on a local catalog.
 - The MSL Collegiate Cup repository match is inferred from a close title and feature match because the project record has no repository link. Its Google Sheets dependency is confined to a backup helper.
 - The live deployment configuration for projects linked only by their public URL cannot be proven from repository code alone.
 

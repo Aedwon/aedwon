@@ -4,6 +4,7 @@
   "type": "Web tool",
   "media": "web",
   "depth": "writeup",
+  "hidden": true,
   "desc": "A browser tool that reads Mobile Legends post-game screenshots with OCR and exports the player stats to CSV, so match data doesn't have to be typed in by hand.",
   "stack": [
     "JavaScript",
