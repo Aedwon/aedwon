@@ -150,7 +150,7 @@ describe('site text files', () => {
   it('only the listed files are site ids', () => {
     expect(isSiteId('ui')).toBe(true);
     expect(isSiteId('about-03')).toBe(true);
-    for (const bad of ['about-07', '../ui', 'ui.json', 'pantas', '', 'about-03/../x', undefined, 5]) expect(isSiteId(bad)).toBe(false);
+    for (const bad of ['about-06', 'about-07', '../ui', 'ui.json', 'pantas', '', 'about-03/../x', undefined, 5]) expect(isSiteId(bad)).toBe(false);
   });
   it('every site file on disk is valid', async () => {
     for (const id of SITE_IDS) {

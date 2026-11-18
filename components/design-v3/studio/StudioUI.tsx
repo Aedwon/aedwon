@@ -65,7 +65,7 @@ const CSS = `
 type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 const isSite = (id: string) => id === 'ui' || id.startsWith('about-');
-const BOOKS = ['about-01', 'about-02', 'about-03', 'about-04', 'about-05', 'about-06'];
+const BOOKS = ['about-01', 'about-02', 'about-03', 'about-04', 'about-05'];
 
 // Every text value in a file, as [path, text].
 function leaves(v: unknown, prefix = ''): [string, string][] {

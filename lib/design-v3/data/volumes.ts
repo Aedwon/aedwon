@@ -7,7 +7,6 @@ import a2 from '@/content/site/about-02.json';
 import a3 from '@/content/site/about-03.json';
 import a4 from '@/content/site/about-04.json';
 import a5 from '@/content/site/about-05.json';
-import a6 from '@/content/site/about-06.json';
 
 export interface BookPageDef {
   t?: string;
@@ -50,7 +49,7 @@ export interface Volume {
 
 interface RawVolume { id: string; n: string; title: string; tone: string; ink: string; D: number; contact?: boolean; nextVolumeLink?: boolean; pages: BookPageDef[] }
 
-const RAW = [a1, a2, a3, a4, a5, a6] as unknown as RawVolume[];
+const RAW = [a1, a2, a3, a4, a5] as unknown as RawVolume[];
 
 // page 0 of every volume (inside the cover) is its contents; the last spread closes the volume
 export const VOLUMES: Volume[] = RAW.map((v, vi) => {
