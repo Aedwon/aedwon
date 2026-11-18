@@ -219,7 +219,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   const cbs = useRef({ onScrollOut, onOpen }); cbs.current = { onScrollOut, onOpen };
   const kLightRef = useRef(0.5); kLightRef.current = theme === 'light' ? 0.26 : 0.5;
 
-  // Vol. 06's running heads follow the title the visitor typed (AV:405)
+  // the contact volume's running heads follow the title the visitor typed (AV:405)
   const V = useMemo(() => {
     const myTitle = form.title.trim();
     return VOLUMES.map((v, i) => (i === LAST && myTitle ? { ...v, all: v.all.map((pp) => ({ ...pp, running: myTitle })) } : v));
@@ -626,7 +626,7 @@ const AboutVolumes = forwardRef<AboutVolumesHandle, AboutVolumesProps>(function 
   const nextV = V[(dv.active == null ? 0 : dv.active) + 1];
   const barText = `Vol. ${vBar.n} · ${titleOf(vBar, dv.active == null ? 0 : dv.active)}${vBar.contact ? '' : ` · ${first === 0 ? 'Contents' : `pp. ${first}${lastP > first ? `–${lastP}` : ''}`} / ${vBar.all.length - 1}`}`;
   const cNav = dv.active === LAST || dv.pending === LAST;
-  const doneLine = `Vol. 06, ${myTitle || VOLUMES[LAST].title}, is on the shelf. I’ll write back to ${form.mail.trim() || 'you'}, usually within [a day].`;
+  const doneLine = `Vol. ${VOLUMES[LAST].n}, ${myTitle || VOLUMES[LAST].title}, is on the shelf. I’ll write back to ${form.mail.trim() || 'you'}, usually within [a day].`;
 
   // a leaf strip: 70px wide, nested in the previous strip so the angles accumulate (AV:89-108)
   const renderStrip = (i: number, k: number): React.ReactNode => (
