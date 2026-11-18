@@ -18,7 +18,7 @@ const R0 = 240;
 // same wall, fixed arrangement: three columns balanced by height, no two of a kind stacked
 // hung by project id, so adding or removing a project never shuffles the wall
 const COL_IDS = [
-  ['pantas', 'aspire', 'msl', 'webp', 'dockroute', 'spec', 'mlbb'],
+  ['pantas', 'aspire', 'msl', 'webp', 'dockroute', 'spec', 'pax-silica', 'mlbb'], // mlbb is hidden for now; pax-silica holds its spot
   ['lakambini', 'opensre', 'agent', 'cup', 'bettergov', 'qr', 'factory', 'kanlungan'],
   ['kiosk', 'norala', 'ilocos', 'kqm', 'oppo', 'genshin', 'marwie'],
 ];
