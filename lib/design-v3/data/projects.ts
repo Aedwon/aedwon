@@ -61,6 +61,8 @@ export interface Section {
   diagram?: string;
   // figures drawn between the paragraphs (components/design-v3/charts): `after` is how many paragraphs come before it
   charts?: { which: string; after: number }[];
+  // written posts: paragraphs from index `from` on are drawn as one bulleted list; "**lead**" marks an item's lead phrase
+  list?: { from: number };
   // a real picture for the figure, in place of the dashed placeholder
   img?: Img;
   [k: string]: unknown;

@@ -13,7 +13,8 @@ import { useTheme } from '@/lib/design-v3/theme';
 import { Fragment, forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WishCounter from './WishCounterLazy';
 import FlowDiagram from './FlowDiagram';
-import { Chart, chunkParas } from './charts';
+import { Chart } from './charts';
+import { PostList, sectionChunks } from './postText';
 import { FLOWS } from '@/lib/design-v3/data/flows';
 import MediaBlock, { type MediaKind, frameH } from './MediaBlock';
 import SystemViz from './SystemViz';
@@ -876,9 +877,10 @@ const Mobile = forwardRef<MobileHandle, { initialPath: string; height?: number; 
               {secs.map((sec) => (
                 <section key={sec.id} id={sec.id} style={{ display: 'flex', flexDirection: 'column', gap: p.post && isSourcesSection(sec.h) ? 0 : 12, paddingTop: 40 }}>
                   {sec.h && <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>{sec.h}</h2>}
-                  {chunkParas(sec.p || [], sec.charts).map((c, k) => (
+                  {sectionChunks(sec.p || [], sec.charts, p.post ? sec.list : undefined).map((c, k) => (
                     <Fragment key={k}>
-                      {c.items.map((para: string, j: number) => p.post
+                      {c.list && c.items.length > 0 && <PostList items={c.items} style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }} />}
+                      {!c.list && c.items.map((para: string, j: number) => p.post
                         ? renderPara({ sources: isSourcesSection(sec.h), style: isSourcesSection(sec.h) ? { margin: 0, fontSize: 14.5, lineHeight: 1.6, color: 'var(--text-secondary)' } : { margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }, numWidth: 26, gap: 12 })(para, c.start + j)
                         : <p key={j} style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{para}</p>)}
                       {c.chart && <Chart which={c.chart} />}
