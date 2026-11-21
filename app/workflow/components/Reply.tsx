@@ -19,17 +19,17 @@ function Inl({ nodes }: { nodes: Inline[] }) {
   );
 }
 
-/** A chat reply as it looked in the app: headings, rules, lists, bold and code terms. Scrolls inside a fixed box. */
+/** Parsed chat reply rendered with headings, lists, rules, bold, and code spans. */
 export function Reply({ source }: { source: string }) {
   return (
-    <div className="reply" role="region" aria-label="Reply" tabIndex={0}>
+    <>
       {parseReply(source).map((b, i) => {
         switch (b.t) {
           case "h":
             return (
-              <h3 key={i}>
+              <h4 key={i}>
                 <Inl nodes={b.children} />
-              </h3>
+              </h4>
             );
           case "hr":
             return <hr key={i} />;
@@ -54,6 +54,6 @@ export function Reply({ source }: { source: string }) {
             );
         }
       })}
-    </div>
+    </>
   );
 }

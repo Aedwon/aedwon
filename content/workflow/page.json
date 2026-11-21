@@ -25,7 +25,7 @@
     "parts": [
       {
         "id": "company-policy",
-        "title": "Company policy",
+        "title": "Company policy (global rules)",
         "paragraphs": [
           "I keep one file of rules that every agent reads first, in every project.",
           "This is my setup of how I want agents to talk to me. I do not like getting bombarded with unnecessary details that are only meant for other agents. As the executive, you're supposed to stay on top of things, because you could get lost in the details and lose sight of the bigger picture."
@@ -34,7 +34,7 @@
       },
       {
         "id": "project-playbook",
-        "title": "Project playbook",
+        "title": "Project playbook (project-specific rules)",
         "paragraphs": [
           "Each project has its own scaffolding. The project rules win when it disagrees with the global rules."
         ],
