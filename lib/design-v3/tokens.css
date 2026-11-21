@@ -24,6 +24,9 @@
 .v3kd, .v3sh { border: none; background: none; padding: 0; font-family: inherit; cursor: pointer; color: var(--c, var(--text-primary)); transition: color 0.25s ease; }
 .v3kd { transition: color 0.3s ease; }
 .v3kd[aria-pressed='false']:hover, .v3sh[aria-pressed='false']:hover { color: var(--text-hover-soft); }
+/* unselected filter counts stay readable (WCAG 2.0 AA 4.5:1); the icon keeps the dim color */
+.v3kd[aria-pressed='false'] sup { color: var(--text-label); transition: color 0.3s ease; }
+.v3kd[aria-pressed='false']:hover sup { color: inherit; }
 .v3row { transition: background-color 0.2s ease; }
 .v3row:hover, .v3row:focus-visible { background-color: var(--surface-row-hover); }
 /* the arrow only shows up on the row you're on */
