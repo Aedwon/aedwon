@@ -61,6 +61,11 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 - For every user request, actively evaluate if a specialized skill applies (e.g. Visual Companion for UI brainstorming, Prototype for interactive exploration, TDD for feature code, Subagent-Driven Development for execution).
 - Proactively tell the user which skill fits the task and ask for their confirmation before launching or proceeding.
 
+## Process improvement
+
+- Every agent reads [`docs/process-improvement.md`](docs/process-improvement.md) at the start of a session, including its active written rules.
+- When Aedwon rejects or corrects work, write the entry there in the same turn, before continuing with anything else.
+
 ## Project Content and the Local Studio
 
 - Project content lives in `content/projects/<id>.json` (one file per project). `lib/design-v3/data/projects.ts` only holds the types and loads those files. Do not move copy back into TypeScript.
