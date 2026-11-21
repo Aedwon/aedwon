@@ -198,6 +198,7 @@ function measurePage() {
         dataSignature: el.hasAttribute("data-signature") || (typeof el.className === "string" && /\bsignature\b/.test(el.className)),
       },
       visible,
+      ignore: pseudo ? "" : el.getAttribute("data-design-check-ignore") || "",
       textLen: ownText.length,
       text: ownText.slice(0, 80),
       fontSize: round(fontSize),

@@ -1,12 +1,12 @@
 # Design principles
 
-## 1. What this file is for
+## What this file is for
 
 Read this before you brief, build or review any design for this repo. It records what Aedwon prefers (from his own shipped projects), the standards he named, and the industry principles that apply to interactive pages and diagrams. Each principle names the anti-pattern it rules out and the check that covers it. The check is a script that measures a rendered page (`scripts/design-check/`). It finds symptoms and cannot judge taste, so his eye still decides.
 
-His preferences come from a study of six projects with real design work (the portfolio v3, Pantas design system 4, Kanlungan, Marwie Control, QR Studio, Genshin Guides). The principles come from sources linked in section 4.
+His preferences come from a study of six projects with real design work (the portfolio v3, Pantas design system 4, Kanlungan, Marwie Control, QR Studio, Genshin Guides). The principles come from sources linked in the Principles section.
 
-## 2. His taste
+## His taste
 
 Counts are out of the six projects. A rule here is a recurring choice, not a law of nature. Where his projects differ, the difference is noted.
 
@@ -38,7 +38,7 @@ Where they differ:
 - Density differs by product. Marwie is compact (34 to 40px rows) and Kanlungan is airy (128px sections). Pick by product type.
 - Hard offset shadows, thick borders and color blocks were approved once, in the superseded neobrutalist portfolio theme from August 2026. The v3 rebuild replaced it. Treat it as retired.
 
-## 3. Standards he named
+## Standards he named
 
 - **WCAG 2.0 AA** is the accessibility bar. He stated it on 2026-11-08 (Pantas, with Apple's guidelines) and again on 2026-11-21 ("i also follow WCAG 2.0 AA").
 - **Apple's Human Interface Guidelines** supply interaction and usability principles. They do not supply Apple's look. Two of his projects say so ("Use Apple's interface principles, not Apple's visual design"). No frosted glass, traffic lights or iOS controls.
@@ -49,9 +49,9 @@ The numbers that matter here, all from WCAG 2.0 AA success criterion 1.4.3:
 - Large text needs at least 3 to 1. Large means 18 point or larger regular weight (24 CSS px), or 14 point or larger bold (about 18.66 CSS px, weight 700 or more).
 - Ratios are not rounded. 4.499 to 1 fails.
 
-Also in 2.0 AA and relevant to pages like these: color is never the only cue (1.4.1), text resizes to 200 percent without loss (1.4.4), moving content longer than five seconds can be paused (2.2.2), nothing flashes more than three times a second (2.3.1), keyboard focus is visible (2.4.7), and controls expose name, role and state (4.1.2). The design check also enforces two numbers from later versions, as a stricter bar. These are the 24 px target floor (WCAG 2.2) and horizontal reflow (WCAG 2.1). See section 8.
+Also in 2.0 AA and relevant to pages like these: color is never the only cue (1.4.1), text resizes to 200 percent without loss (1.4.4), moving content longer than five seconds can be paused (2.2.2), nothing flashes more than three times a second (2.3.1), keyboard focus is visible (2.4.7), and controls expose name, role and state (4.1.2). The design check also enforces two numbers from later versions, as a stricter bar. These are the 24 px target floor (WCAG 2.2) and horizontal reflow (WCAG 2.1). See the section on disagreements and suggested numbers.
 
-## 4. Principles
+## Principles
 
 The check column holds a rule id from `scripts/design-check/rules.mjs`, or "by eye" with the question to ask.
 
@@ -105,7 +105,7 @@ The check column holds a rule id from `scripts/design-check/rules.mjs`, or "by e
 | Id | Principle | Source | Rules out | Check |
 |---|---|---|---|---|
 | I1 | Show the core up front. Defer the rest on request. Apply this everywhere. | [NN/G, Progressive disclosure](https://www.nngroup.com/articles/progressive-disclosure/) | All explanations, commands and legends visible at once | By eye: which facts does a first-time visitor need, and are exactly those visible? |
-| I2 | One disclosure rule for every item of the same kind, at most two levels. | NN/G, Progressive disclosure | Some nodes open a panel while their neighbors show detail inline | `disclosure-inconsistent` (partial). By eye for the rest, see section 7. |
+| I2 | One disclosure rule for every item of the same kind, at most two levels. | NN/G, Progressive disclosure | Some nodes open a panel while their neighbors show detail inline | `disclosure-inconsistent` (partial). By eye for the rest, see the limits under How to use the check. |
 | I3 | Put what most people need up front and the rare options behind a step. | NN/G, Progressive disclosure | Hiding the main payoff, or showing every rare option | By eye: list the top three visitor tasks. Is each one action away? Is anything visible that none of them needs? |
 | I4 | Triggers are labeled and announce their state. | NN/G, Progressive disclosure, [WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html) | Icon-only triggers with no name | By eye: does each trigger have a name and `aria-expanded` that matches what you see? |
 | I7 | The user can always back out. | [NN/G, Ten heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/) | A panel with no close, focus lost after closing | By eye: does Escape close the panel and return focus to its trigger? |
@@ -130,7 +130,7 @@ The check column holds a rule id from `scripts/design-check/rules.mjs`, or "by e
 |---|---|---|---|---|
 | K1 | Raw values live in the token file. Components use the tokens. | [Primer, Token names](https://primer.style/product/primitives/token-names/) | Hex colors and magic pixel values in component CSS | `token-colors`, `token-radii`, `token-font-sizes`, `token-spacing` (run with `--tokens`) |
 
-## 5. Copy rules
+## Copy rules
 
 From his words, as recorded in the project rules. Copy follows `AGENTS.md` for voice. These rules cover what the copy may contain.
 
@@ -142,7 +142,7 @@ From his words, as recorded in the project rules. Copy follows `AGENTS.md` for v
 
 No script can tell a needed sentence from filler. Count the words a visitor reads, as required step 1 in `docs/process-improvement.md` says.
 
-## 6. Things that read as generic AI output
+## Things that read as generic AI output
 
 This section is opinion. It comes from practitioner essays and a vendor post, not from standards. The tells agree with each other. The fixes do not always. Use the script as a smoke detector.
 
@@ -170,7 +170,7 @@ This section is opinion. It comes from practitioner essays and a vendor post, no
 
 Ask two questions by eye. Does this look like it came from somewhere? Would anyone notice if this element disappeared?
 
-## 7. How to use the check
+## How to use the check
 
 ```
 node scripts/design-check/cli.mjs <file-or-url> [--tokens <css file>] [--json] [--allow-network]
@@ -179,6 +179,10 @@ node scripts/design-check/cli.mjs <file-or-url> [--tokens <css file>] [--json] [
 Set `DESIGN_CHECK_CHROMIUM` to a Chromium binary. Without it, Playwright's own default browser is used. The script opens the page at 1440 by 900 and 390 by 844, waits for entrance animations (up to six seconds), and prints findings grouped by rule. It exits 1 if any rule reports an error, 0 if only warnings or nothing, and 2 if it could not open the page. Local files are loaded with outside network requests blocked, so web fonts fall back. Pass `--allow-network` to load them. The browser run is not part of CI.
 
 A failure means a measurable symptom of a banned pattern is present. Fix the cause. Do not tune a threshold to get a pass. A warning is a suggestion. Run the check on every sample before he sees it, as required step 8 in `docs/process-improvement.md` says.
+
+With `--tokens`, a color defined under a custom property whose name contains `status`, `success`, `warn`, `danger`, `error`, `done`, `progress` or `failed` counts as a status color and stays out of the `accent-hues` count. Without `--tokens`, status colors cannot be told apart from accents, and the finding says so.
+
+To exempt part of a page from a rule, put `data-design-check-ignore="rule-id other-rule-id"` on an element. It exempts that element and its descendants from those rules only. The report ends with every exemption used, with the rule id, the element and the number of elements it covers. An unknown rule id is an error. An exemption needs a reason a reviewer would accept, for example a specimen board that shows three typefaces side by side. "The check failed" is not a reason.
 
 Limits:
 
@@ -189,7 +193,7 @@ Limits:
 - Contrast skips text over photos and uses the worst gradient stop for gradients. A translucent layer over a busy canvas is approximated.
 - On pages that scale a fixed stage to fit, rendered text and targets shrink. The script measures them as rendered.
 
-## 8. Where sources disagree, and which numbers are suggestions
+## Where sources disagree, and which numbers are suggestions
 
 The sourced numbers are text contrast 4.5 to 1 and 3 to 1 (WCAG 1.4.3), the large text sizes (same), the 24 px target floor (WCAG 2.5.8), the 100 to 500 ms animation range (NN/G), the 70 ms floor and 700 ms ceiling (Carbon's shortest and longest tokens), and the 44 px touch size (Apple's default control size, used here as a floor, which is my choice).
 

@@ -21,7 +21,7 @@ ERROR budget-shadows (13)
   - rgba(255, 179, 71, 0.15) 0px 0px 0px 1px, rgba(255, 170, 60, 0.14) 0px...
 
 ERROR accent-hues (3)
-  3 chromatic hue families outside status colors. His projects use one accent, or none.
+  3 chromatic hue families outside status colors. His projects use one accent, or none. Without a token file (--tokens), status colors cannot be told apart from accents, so only status-like class names are skipped.
   - hue 35deg to 35deg, 13 elements, e.g. rgb(255,179,71)
   - hue 162deg to 162deg, 20 elements, e.g. rgb(94,240,196)
   - hue 256deg to 256deg, 4 elements, e.g. rgb(183,156,255)
@@ -61,8 +61,8 @@ ERROR duration-band (68)
   - div.head transition transform 800ms
 
 ERROR entrance-length (1)
-  Page motion kept running for 5691 ms after load (measured up to 6000 ms). Warn above 600 ms, error above 1500 ms.
-  - 5691 ms
+  Page motion kept running for 5698 ms after load (measured up to 6000 ms). Warn above 600 ms, error above 1500 ms.
+  - 5698 ms
 
 ERROR hover-scale (2)
   Hover, focus or selected state that scales parts above 1.02 or moves them more than 2px.
@@ -87,6 +87,9 @@ WARN target-size-touch (2)
   Interactive target under 44 by 44 px on the phone layout (suggested floor).
   - button.mode "One task" 177x40
   - button.mode "How the rules grew" 177x40
+
+Exemptions used (data-design-check-ignore):
+  none
 
 Result: FAIL
 ```

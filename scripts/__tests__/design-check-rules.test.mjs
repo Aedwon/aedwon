@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RULE_IDS, contrastRatio, parseShadows, parseTokens, runRule, runRules } from "../design-check/rules.mjs";
+import { RULE_IDS, contrastRatio, listExemptions, parseShadows, parseTokens, runRule, runRules } from "../design-check/rules.mjs";
 
 // ---- fixture helpers ----
 
@@ -17,6 +17,7 @@ function el(over = {}) {
     role: "",
     attrs: { ariaExpanded: false, ariaControls: false, ariaHaspopup: false, title: false, dataSignature: false },
     visible: true,
+    ignore: "",
     textLen: 0,
     text: "",
     fontSize: 16,
@@ -224,6 +225,60 @@ describe("accent-hues", () => {
   });
 });
 
+describe("accent-hues with status tokens", () => {
+  const tokens = parseTokens(":root{--accent:#0b7a68;--status-error:#c62828;--color-success:#2e7d32;--ink:#111111;}");
+  const colored = (c) => Array.from({ length: 2 }, () => el({ tag: "p", text: "x", color: c }));
+  const page = () => snap([...colored([11, 122, 104, 1]), ...colored([198, 40, 40, 1]), ...colored([46, 125, 50, 1])]);
+  it("parses status colors by token name", () => {
+    expect(tokens.statusColors).toEqual([[198, 40, 40], [46, 125, 50]]);
+  });
+  it("leaves token-defined status colors out of the accent count", () => {
+    expect(find("accent-hues", page(), { tokens })).toBeNull();
+  });
+  it("still counts them without a token file, and says why", () => {
+    const f = find("accent-hues", page());
+    expect(f.severity).toBe("error");
+    expect(f.message).toContain("cannot be told apart");
+  });
+  it("still counts a non-status color that the token file defines", () => {
+    const extra = [...page().views.desktop.elements, ...colored([183, 156, 255, 1])];
+    expect(find("accent-hues", snap(extra), { tokens }).count).toBe(2);
+  });
+});
+
+describe("exemptions", () => {
+  const glowy = (over) => el({ boxShadow: "rgba(255, 170, 60, 0.3) 0px 18px 60px 0px", ...over });
+  const page = (ignore) => [el({ ignore }), glowy({ parent: 0 }), glowy({ parent: 0 })];
+  it("exempts the element and its descendants from the named rule only", () => {
+    expect(find("glow", snap(page("glow")))).toBeNull();
+    expect(find("glow", snap(page("contrast")))).not.toBeNull();
+    const withText = [el({ ignore: "glow" }), el({ tag: "p", text: "Faint", color: [200, 200, 200, 1], parent: 0 })];
+    expect(find("contrast", snap(withText))).not.toBeNull();
+  });
+  it("accepts several rule ids", () => {
+    const els = [el({ ignore: "glow border-dashed" }), glowy({ parent: 0, borders: sides(1, "dashed") })];
+    expect(find("glow", snap(els))).toBeNull();
+    expect(find("border-dashed", snap(els))).toBeNull();
+  });
+  it("does not exempt elements outside the subtree", () => {
+    const els = [el({ ignore: "glow" }), glowy({ parent: 0 }), glowy({})];
+    expect(find("glow", snap(els)).count).toBe(1);
+  });
+  it("lists every exemption with the number of elements covered", () => {
+    const { used, unknown } = listExemptions(snap(page("glow contrast")));
+    expect(used.map((u) => [u.rule, u.covered])).toEqual([["glow", 3], ["contrast", 3]]);
+    expect(unknown).toEqual([]);
+  });
+  it("makes an unknown rule id an error", () => {
+    const f = runRules(snap(page("not-a-rule"))).find((x) => x.id === "exemption-unknown");
+    expect(f.severity).toBe("error");
+    expect(f.examples[0]).toContain("not-a-rule");
+  });
+  it("makes a known id produce no unknown finding", () => {
+    expect(runRules(snap(page("glow"))).some((x) => x.id === "exemption-unknown")).toBe(false);
+  });
+});
+
 describe("glow", () => {
   it("fails on a colored shadow", () => {
     const f = find("glow", snap([el({ boxShadow: "rgba(255, 170, 60, 0.3) 0px 18px 60px 0px" })]));
@@ -357,6 +412,12 @@ describe("uppercase-label", () => {
     expect(find("uppercase-label", snap([el({ tag: "span", text: "Label", textTransform: "uppercase" })])).severity).toBe("error");
     expect(find("uppercase-label", snap([el({ tag: "span", text: "LABEL TEXT" })]))).not.toBeNull();
     expect(find("uppercase-label", snap([el({ tag: "span", text: "Label", letterSpacingEm: 0.12 })]))).not.toBeNull();
+  });
+  it("ignores hex color codes, numbers and unit values", () => {
+    for (const t of ["#FFFFFF", "#0B7A68", "100PX", "1.5REM", "2024", "12,000"]) {
+      expect(find("uppercase-label", snap([el({ tag: "span", text: t, textTransform: "uppercase" })]))).toBeNull();
+    }
+    expect(find("uppercase-label", snap([el({ tag: "span", text: "FFFFFF TEXT" })]))).not.toBeNull();
   });
   it("passes sentence case, short acronyms, code, and tight tracking", () => {
     for (const e of [el({ tag: "span", text: "Label" }), el({ tag: "span", text: "API" }), el({ tag: "span", text: "Label", letterSpacingEm: -0.02 }), el({ tag: "code", text: "GET", textTransform: "uppercase", inCode: true })]) {

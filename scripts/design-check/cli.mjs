@@ -3,7 +3,7 @@
 // Exits 1 if any error finding exists, 2 on a usage or browser failure.
 import fs from "node:fs";
 import { collect } from "./collect.mjs";
-import { runRules, parseTokens } from "./rules.mjs";
+import { runRules, parseTokens, listExemptions } from "./rules.mjs";
 
 function usage() {
   console.error("Usage: node scripts/design-check/cli.mjs <file-or-url> [--tokens <css file>] [--json] [--allow-network]");
@@ -45,11 +45,12 @@ try {
 }
 
 const findings = runRules(snapshot, { tokens });
+const exemptions = listExemptions(snapshot).used;
 const errors = findings.filter((f) => f.severity === "error");
 const warns = findings.filter((f) => f.severity === "warn");
 
 if (asJson) {
-  console.log(JSON.stringify({ target, errors: errors.length, warnings: warns.length, findings }, null, 2));
+  console.log(JSON.stringify({ target, errors: errors.length, warnings: warns.length, exemptions, findings }, null, 2));
 } else {
   const lines = [];
   lines.push(`Design check: ${target}`);
@@ -63,6 +64,10 @@ if (asJson) {
     lines.push("");
   }
   if (!order.length) lines.push("No findings.");
+  lines.push("Exemptions used (data-design-check-ignore):");
+  if (!exemptions.length) lines.push("  none");
+  for (const x of exemptions) lines.push(`  - ${x.rule} on ${x.element}, ${x.covered} elements covered`);
+  lines.push("");
   lines.push(errors.length ? "Result: FAIL" : "Result: pass");
   console.log(lines.join("\n"));
 }

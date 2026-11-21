@@ -199,6 +199,12 @@ function median(nums) {
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
+// Text that is only a hex color code, a number or a unit value is data, not a label.
+export function isDataText(text) {
+  const t = (text || "").trim();
+  return /^#[0-9a-f]{3,8}$/i.test(t) || /^[+-]?[\d.,\s]+[a-z%]{0,3}$/i.test(t);
+}
+
 const STATUS_RE = /(^|[\s_-])(success|error|danger|warning|warn|status|valid|invalid|ok|fail|failed|alert|positive|negative|destructive)([\s_-]|$)/i;
 
 function isFloating(e) {
@@ -385,11 +391,14 @@ rule("budget-shadows", (snap) => {
   };
 });
 
-rule("accent-hues", (snap) => {
+rule("accent-hues", (snap, opts) => {
+  const statusTokens = (opts && opts.tokens && opts.tokens.statusColors) || [];
+  const hasTokens = !!(opts && opts.tokens);
   const v = desktop(snap);
   const entries = [];
   const add = (c, e) => {
     if (!c || (c[3] ?? 1) < 0.05 || chroma(c) < THRESHOLDS.chromaMin) return;
+    if (statusTokens.some((t) => Math.abs(t[0] - c[0]) <= 2 && Math.abs(t[1] - c[1]) <= 2 && Math.abs(t[2] - c[2]) <= 2)) return;
     entries.push({ hue: hueOf(c), rgb: c, e });
   };
   for (const e of v.elements) {
@@ -421,10 +430,13 @@ rule("accent-hues", (snap) => {
   const real = clusters.filter((c) => new Set(c.items.map((i) => i.e)).size >= 2);
   if (real.length <= 1) return null;
   real.sort((a, b) => b.items.length - a.items.length);
+  const note = hasTokens
+    ? " Colors defined under status-like token names are left out."
+    : " Without a token file (--tokens), status colors cannot be told apart from accents, so only status-like class names are skipped.";
   return finding(
     "accent-hues",
     "error",
-    `${real.length} chromatic hue families outside status colors. His projects use one accent, or none.`,
+    `${real.length} chromatic hue families outside status colors. His projects use one accent, or none.${note}`,
     real,
     (c) => {
       const rep = c.items[0].rgb.slice(0, 3).map(Math.round).join(",");
@@ -601,7 +613,7 @@ rule("heading-numbering", (snap) => {
 rule("uppercase-label", (snap) => {
   const v = desktop(snap);
   const bad = textEls(v).filter((e) => {
-    if (e.inCode) return false;
+    if (e.inCode || isDataText(e.text)) return false;
     const shout = /[A-Z]{4,}/.test(e.text) && e.text === e.text.toUpperCase() && /[A-Z]/.test(e.text);
     return e.textTransform === "uppercase" || shout || e.letterSpacingEm >= THRESHOLDS.letterSpacingMaxEm;
   });
@@ -777,9 +789,12 @@ rule("target-size-touch", (snap) => {
 
 // ---------- tokens ----------
 
+const STATUS_TOKEN_RE = /status|success|warn|danger|error|done|progress|failed/i;
+
 export function parseTokens(cssText) {
   const css = cssText.replace(/\/\*[\s\S]*?\*\//g, "");
   const colors = [];
+  const statusColors = [];
   const lengths = { all: [], radii: [], fontSizes: [], spacing: [] };
   const re = /--([\w-]+)\s*:\s*([^;}]+)/g;
   let m;
@@ -787,8 +802,10 @@ export function parseTokens(cssText) {
     const name = m[1];
     const value = m[2].trim();
     const color = parseColorString(value);
+    const isStatus = STATUS_TOKEN_RE.test(name);
     if (color && /^(#|rgb)/i.test(value)) {
       colors.push(color.slice(0, 3));
+      if (isStatus) statusColors.push(color.slice(0, 3));
       continue;
     }
     const hsl = value.match(/^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%/i);
@@ -802,6 +819,7 @@ export function parseTokens(cssText) {
         return Math.round((l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))) * 255);
       };
       colors.push([f(0), f(8), f(4)]);
+      if (isStatus) statusColors.push([f(0), f(8), f(4)]);
       continue;
     }
     const len = value.match(/^(-?[\d.]+)(px|rem|em)$/);
@@ -813,7 +831,7 @@ export function parseTokens(cssText) {
       if (/space|spacing|gap|pad|margin|inset|gutter/i.test(name)) lengths.spacing.push(px);
     }
   }
-  return { colors, lengths };
+  return { colors, statusColors, lengths };
 }
 
 function near(set, value, tol) {
@@ -913,6 +931,69 @@ rule("disclosure-inconsistent", (snap) => {
   );
 });
 
+// ---------- exemptions ----------
+
+export const IGNORE_ATTR = "data-design-check-ignore";
+
+function ignoreIds(e) {
+  return (e.ignore || "").split(/\s+/).filter(Boolean);
+}
+
+// Returns the indices of every element at or below `index`.
+function subtreeOf(v, index) {
+  const covered = [];
+  v.elements.forEach((e, i) => {
+    let p = i;
+    while (p !== null && p !== undefined) {
+      if (p === index) {
+        covered.push(i);
+        return;
+      }
+      p = v.elements[p].parent;
+    }
+  });
+  return covered;
+}
+
+// Lists every exemption on the page: rule id, element and how many elements it covers.
+export function listExemptions(snapshot) {
+  const v = desktop(snapshot);
+  const used = [];
+  const unknown = [];
+  if (!v) return { used, unknown };
+  v.elements.forEach((e, i) => {
+    for (const id of ignoreIds(e)) {
+      if (!RULE_IDS.includes(id)) unknown.push({ rule: id, element: describe(e) });
+      else used.push({ rule: id, element: describe(e), covered: subtreeOf(v, i).length, index: i });
+    }
+  });
+  return { used, unknown };
+}
+
+function withoutIgnored(snapshot, ruleId) {
+  const views = {};
+  let any = false;
+  for (const [name, v] of Object.entries(snapshot.views)) {
+    const excluded = new Set();
+    v.elements.forEach((e, i) => {
+      if (ignoreIds(e).includes(ruleId)) {
+        any = true;
+        for (const j of subtreeOf(v, i)) excluded.add(j);
+      }
+    });
+    if (!excluded.size) {
+      views[name] = v;
+      continue;
+    }
+    views[name] = {
+      ...v,
+      elements: v.elements.map((e, i) => (excluded.has(i) ? { ...e, visible: false, interactive: false } : e)),
+      headings: (v.headings || []).filter((h) => !excluded.has(h.index)),
+    };
+  }
+  return any ? { ...snapshot, views } : snapshot;
+}
+
 // ---------- runner ----------
 
 export const RULE_IDS = rules.map((r) => r.id);
@@ -920,14 +1001,17 @@ export const RULE_IDS = rules.map((r) => r.id);
 export function runRules(snapshot, options = {}) {
   const findings = [];
   for (const r of rules) {
-    const f = r.run(snapshot, options);
+    const f = r.run(withoutIgnored(snapshot, r.id), options);
     if (f) findings.push(f);
   }
+  const { unknown } = listExemptions(snapshot);
+  const bad = finding("exemption-unknown", "error", `An ${IGNORE_ATTR} names a rule id that does not exist.`, unknown, (u) => `${u.element} names "${u.rule}"`);
+  if (bad) findings.push(bad);
   return findings;
 }
 
 export function runRule(id, snapshot, options = {}) {
   const r = rules.find((x) => x.id === id);
   if (!r) throw new Error(`Unknown rule ${id}`);
-  return r.run(snapshot, options);
+  return r.run(withoutIgnored(snapshot, id), options);
 }
