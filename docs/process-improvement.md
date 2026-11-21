@@ -22,8 +22,17 @@ Run these before showing the work they name. Each came from an entry below.
 3. **Check a revision against what he already approved.** Before showing a new or shortened draft, list the decisions he approved earlier for that work and confirm the draft still carries each one. Name any it drops and why. For work that spans a session, keep those decisions in a file, not only in the chat.
 4. **Trace one real task before describing how he works.** Walk one real task from his first message to his sign-off and list each step in the order it happened. The description must carry every step, in that order. Steps that come from a plugin or a habit count, even when no rule file states them.
 5. **A recommendation about look or motion ships with a working demo.** Never recommend a visual, layout or motion idea in words alone, and never ask him to pick from a description. Build the recommendation as a live sample first, view it, then show it with the recommendation. If the sample is not ready, say it is being built and ask nothing until it is. References from other sites support the sample. They do not replace it.
+6. **Confirm the connections in words before drawing them.** Before drawing any diagram of how he works, write each connection as one sentence that says who calls whom, when, and whether it is optional. Get his yes on that list. Keep two kinds of picture apart. One shows who works for whom. The other shows what happens to a task in order.
+7. **Get his dislikes before the next visual pass.** When he says he dislikes a design, collect the specific things he dislikes before building again. A sample that carries over a look he has not approved must say so when it is shown.
 
 ## Entries
+
+### Motion sample drew wrong connections and carried an unapproved look (Nov 21)
+
+- **His words.** "i saw the structure. it works i guess, but the UI/UX really needs a lot of work. there's a lot of things there that I hate that was implemented. i don't like the colors either and other design decisions". On the task row, "shouldn't this whole row be another separate page or something?" Then "audits are optional, and they happen through the lead i talk to, idk why the connections are like that. it's just not intuitive and things don't make sense".
+- **What was wrong.** The sample drew the outside audit as a required step on the task path, fed by a line from Codex. In his setup an audit is optional and the lead calls it. The sample also put the company chart and the order of a task into one picture, which made the row of task steps hard to read. Its colors and other design choices came from the earlier sample B, which he had only called a direction that "makes a lot of sense".
+- **Why the process let it through.** The agent wrote the map's composition into the builder's brief from its own reading of the rule files. Required step 4 traced the order of a task, but nothing checked who calls whom. The agent also never asked which parts of sample B he disliked before building on its look.
+- **The fix.** Required steps 6 and 7 above.
 
 ### Recommended a mix of motions without showing it (Nov 21)
 
