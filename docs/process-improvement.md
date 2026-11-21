@@ -24,8 +24,16 @@ Run these before showing the work they name. Each came from an entry below.
 5. **A recommendation about look or motion ships with a working demo.** Never recommend a visual, layout or motion idea in words alone, and never ask him to pick from a description. Build the recommendation as a live sample first, view it, then show it with the recommendation. If the sample is not ready, say it is being built and ask nothing until it is. References from other sites support the sample. They do not replace it.
 6. **Confirm the connections in words before drawing them.** Before drawing any diagram of how he works, write each connection as one sentence that says who calls whom, when, and whether it is optional. Get his yes on that list. Keep two kinds of picture apart. One shows who works for whom. The other shows what happens to a task in order.
 7. **Get his dislikes before the next visual pass.** When he says he dislikes a design, collect the specific things he dislikes before building again. A sample that carries over a look he has not approved must say so when it is shown.
+8. **No visual work without the principles file.** Do not brief or build a design until `docs/design-principles.md` exists. Every design brief names the principles it applies and the anti-patterns it must avoid, and every sample is checked against them before he sees it. This step retires when the design check runs on every sample.
 
 ## Entries
+
+### The map sample looked like average AI output (Nov 21)
+
+- **His words.** "the current design regressed to an average and what others would call AI slop". Then "did you use principles of design, web design, animations, apple HIG, and other good references for design? i don't think so. it's not apparent here. did you use progressive disclosure? on some surface sure, but it seems inconsistent." Then "in hindsight, this is also a process in itself where I ask you to approach it using industry-proven standards, principles, patterns, setting checks for anti-patterns and whatnot". He also asked the agent to study his other projects for what he prefers, "in terms of border choice, principles, fundamentals".
+- **What was wrong.** The sample had no stated design principles behind it. Its brief listed things he bans and asked for "award-level craft", which names no standard. The builder fell back on the common dark dashboard look. Progressive disclosure appeared in the part panels and nowhere else.
+- **Why the process let it through.** Rules 1 to 6 say what to avoid and how to deliver. None says which principles a design must follow, and no step read his own projects for his taste. Nothing measured a sample before he saw it. This is the third visual rejection in this file, so the fix moves up to a check.
+- **The fix.** A check, in two parts, with a required step until both exist. First, `docs/design-principles.md` records the principles a design here must follow, drawn from his own projects and from named sources (Apple's Human Interface Guidelines and others), each with the anti-pattern it rules out. Second, a script checks a built page for the anti-patterns that can be measured, and it must fail on sample D before it is trusted. Until both exist, required step 8 applies.
 
 ### Motion sample drew wrong connections and carried an unapproved look (Nov 21)
 
