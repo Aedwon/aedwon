@@ -10,14 +10,14 @@
     "id": "mindset",
     "title": "Mindset",
     "paragraphs": [
-      "I'm the executive. One lead manages the workers, cheaper workers do it, and an outside auditor checks it. I write to agents the way I'd message people who work for me. The rules live in files, so that any vendor or model provider's model can follow them."
+      "I'm the executive. One lead manages the workers, cheaper workers do the work, and an outside auditor checks it. I write to agents the way I'd message people who work for me. The rules live in files, so that any vendor or model provider's model can follow them."
     ]
   },
   "treatment": {
     "id": "treatment",
     "title": "Treatment",
     "paragraphs": [
-      "Agents give options, recommendations, and their costs (pros and cons, time to build) - and I decide. I only check what a user would see (UI/UX), and I don't read the code. Nothing is done without proof/verification though. And every mistake gets fixed in the process-improvement process."
+      "Agents give options, recommendations, and their costs (pros and cons, time to build), and I decide. I only check what a user would see (UI/UX), and I don't read the code. Nothing is done without proof/verification, though. And every mistake gets fixed in the process-improvement process."
     ]
   },
   "setup": {
@@ -28,7 +28,7 @@
         "title": "Company policy (global rules)",
         "paragraphs": [
           "I keep one file of rules that every agent reads first, in every project.",
-          "This is my setup of how I want agents to talk to me. I do not like getting bombarded with unnecessary details that are only meant for other agents. As the executive, you're supposed to stay on top of things, because you could get lost in the details and lose sight of the bigger picture."
+          "This is my setup for how I want agents to talk to me. I do not like getting bombarded with unnecessary details that are only meant for other agents. As the executive, you're supposed to stay on top of things, because you could get lost in the details and lose sight of the bigger picture."
         ],
         "prompt": "- Under 150 words unless I ask for depth.\n- Answer what I asked, then stop. Do not implement without my explicit signal to do so.\n- A reason only when it changes my decision. If it does not, cut it.\n- A bare list beats a paragraph per item.\n- Push back when I'm wrong or have a misconception, plainly.\n- Options come with costs and a recommendation. I pick.\n- When you are wrong, one sentence, then move on. No ceremony.\n- Open the file before describing what is in it. Most errors are you describing something from memory that the file already answers.\n- Surface uncertainty instead of guessing.\n- Treat me as an executive making decisions: include the outcome, material tradeoffs, and what needs my decision."
       },
@@ -36,7 +36,7 @@
         "id": "project-playbook",
         "title": "Project playbook (project-specific rules)",
         "paragraphs": [
-          "Each project has its own scaffolding. The project rules win when it disagrees with the global rules."
+          "Each project has its own scaffolding. The project rules win when they disagree with the global rules."
         ],
         "prompt": "- Always read AGENTS.md first and other project scaffolding files. Ground yourself on my preferences for each project before starting any task.\n- Project-specific instructions override global user preferences when they conflict.\n- When that happens, follow the project-specific instruction and briefly note the override only if it materially affects the result."
       },
@@ -44,7 +44,7 @@
         "id": "the-org-chart",
         "title": "The org chart",
         "paragraphs": [
-          "I talk to one lead. Cheaper models do the bulk work. The best model is wasted on running tests. It names layers by the work, not the model, so I can change vendors.",
+          "I talk to one lead. Cheaper models do the bulk work. The best model is wasted on running tests. The org chart names layers by the work, not the model, so I can change vendors.",
           "We have limited usage, so this delegation layer is a usage-saving mechanism."
         ],
         "prompt": "I talk to one lead. Work is delegated down these layers.\n\n- Advisor, above the lead. Escalation from the lead and a second opinion on hard calls: design, rulings, subtle debugging, security. Advises; the lead still owns the conversation and final acceptance.\n- Lead, the main thread. Conversation with me, design, rulings, debugging reasoning, review of every subagent result, trivial one-file reads or one-line edits.\n- Implementation. Writing or changing code, scripts, tests and workflows.\n- Bulk. Test suites, lint and typecheck runs, mechanical edits, broad crawling, reading or summarizing more than a couple of files, reviewing generated output, checking results.\n\nWorkers get a written brief, do one job, return a short summary (pass or fail, errors, files touched). Keep raw logs and file dumps out of the main context.\n\nEscalation goes up one layer, never to an auditor. If a bulk result is unclear, contradictory, or needs judgment, move it to the implementation layer. If an implementation fails review, fails its tests twice, or needs judgment, the lead takes it over. Say in one line what was escalated and why. Do not accept a weak result to save usage.",
@@ -59,7 +59,7 @@
         "id": "codex",
         "title": "Codex",
         "paragraphs": [
-          "Codex never leads. I don't like how it talks, and it burns usage so much more when I use it as its own orchestrator. It's good as a worker and as the auditor. UI work goes to Sonnet 5.5, which follows my UI boards more closely."
+          "Codex never leads. I don't like how it talks, and it burns so much more usage when I use it as its own orchestrator. It's good as a worker and as the auditor. UI work goes to Sonnet 5.5, which follows my UI boards more closely."
         ]
       },
       {
@@ -67,7 +67,7 @@
         "title": "Tools",
         "paragraphs": [
           "I use models in their native harnesses. The labs tune these models to work best with their own harness, so it makes sense to configure them there.",
-          "T3Code holds all of them in one window. I also like T3Code because it works like an email inbox where the latest thing that needs your attention goes to the very top regardless of projects. This works for me well because I work on multiple projects."
+          "T3Code holds all of them in one window. I also like T3Code because it works like an email inbox where the latest thing that needs your attention goes to the very top regardless of project. This works well for me because I work on multiple projects."
         ]
       }
     ],
@@ -208,7 +208,7 @@
         "title": "Top-down approach",
         "paragraphs": [
           "Work starts with a brainstorm, before anything is written or built. This is where I make sure my intent lands, and that the model I talk to and I are on the same page. It asks me questions one at a time until I approve the design. I use the Superpowers plugin for this.",
-          "Then it goes top-down. The agent writes a spec, I approve the plain-language part, then it plans and builds. In my experience, work drifts when it's built straight from one plan."
+          "Then it goes top-down. The agent writes a spec, I approve the plain-language part, and then it plans and builds. In my experience, work drifts when it's built straight from one plan."
         ],
         "prompt": "1. Recover the current context, clarify the intended outcome, and agree on scope.\n2. Brainstorm alternatives and write the spec.\n3. Review and refine the spec for completeness, consistency, and simplicity. Put every consequential scope, behavior, cost, risk, and maintenance decision in its plain-language approval section. Put technical detail in a separate agent section that agrees with it. Explain how completion will be judged.\n4. I approve the plain-language spec section.\n5. The agent writes the implementation plan, reviews it against the spec, and fixes gaps before execution.\n6. Implement within the approved scope. Report the outcome and any remaining limitation honestly.\n\nThere is no separate human implementation-plan approval. A material change to the spec returns to me as a specific revision."
       },
@@ -217,7 +217,7 @@
         "title": "Scope before work",
         "paragraphs": [
           "At the end of the brainstorm, the agent asks how much to build. I pick minimal, balanced or hardened.",
-          "In my experience, agents are too eager to build and thus tend to overbuild when nobody sets the scope. It must state scope and estimated time for each size, and I choose."
+          "In my experience, agents are too eager to build and thus tend to overbuild when nobody sets the scope. The agent must state scope and estimated time for each size, and I choose."
         ],
         "prompt": "- Before a nontrivial build or multi-step change, ask me to choose minimal, balanced, or hardened complexity. Ask at the end of the brainstorm, once you understand what I want, and before you write the spec or plan. Do not ask at the start of the conversation.\n- Recommend one option and state its expected scope and time before starting. Default to balanced when I ask for a recommendation, but wait for my choice before implementation.\n- Do not turn a scaffold, setup, or small workflow change into production infrastructure unless I explicitly choose hardened complexity."
       },
@@ -234,7 +234,7 @@
         "id": "decision-record",
         "title": "Decision record",
         "paragraphs": [
-          "Every decision is written down with who made it. I had this created to clearly distinguish which decision was mine and an agent's. This is so that I can think about how I think (metacognition), and what factors were true then and what were different now that made me decide differently, or make me keep a decision that I almost changed."
+          "Every decision is written down with who made it. I had this created to clearly distinguish which decision was mine and which was an agent's. This is so that I can think about how I think (metacognition), and what factors were true then and what's different now that made me decide differently, or made me keep a decision that I almost changed."
         ],
         "prompt": "- Locked by Aedwon. Do not change it. If you think it is wrong, say so and wait for his answer.\n- Decided on delegation. An agent decided it because Aedwon asked the agent to decide. Treat it as the working answer. Aedwon may revise it. You may propose a change with a reason, but do not change it silently.\n- Open. Not decided. Do not invent an answer inside a deliverable. Present options with costs and a recommendation, then record the answer."
       },
@@ -295,7 +295,7 @@
     "id": "where-to-paste",
     "title": "Where to paste",
     "paragraphs": [
-      "Start with company policy. It works in any chat app. If you're confident with your agents and lazy enough, just tell your agents to adopt the things I've written in this site LOL."
+      "Start with company policy. It works in any chat app. If you're confident with your agents and lazy enough, just tell your agents to adopt the things I've written on this site LOL."
     ],
     "head": [
       "Tool",
