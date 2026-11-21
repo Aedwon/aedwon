@@ -1,0 +1,441 @@
+{
+  "title": "How I work with agents",
+  "line": "My rules and workflow change often.",
+  "snapshot": {
+    "text": "Snapshot of November 21, 2026.",
+    "iso": "2026-11-21"
+  },
+  "copyAll": "Copy for my agent",
+  "mindset": {
+    "id": "mindset",
+    "title": "Mindset",
+    "paragraphs": [
+      "I'm the executive. One lead manages the workers, cheaper workers do it, and an outside auditor checks it. I write to agents the way I'd message people who work for me. The rules live in files, so that any vendor or model provider's model can follow them."
+    ]
+  },
+  "treatment": {
+    "id": "treatment",
+    "title": "Treatment",
+    "paragraphs": [
+      "Agents give options, recommendations, and their costs (pros and cons, time to build) - and I decide. I only check what a user would see (UI/UX), and I don't read the code. Nothing is done without proof/verification though. And every mistake gets fixed in the process-improvement process."
+    ]
+  },
+  "setup": {
+    "label": "Who works for whom",
+    "parts": [
+      {
+        "id": "company-policy",
+        "title": "Company policy (global rules)",
+        "paragraphs": [
+          "I keep one file of rules that every agent reads first, in every project.",
+          "This is my setup of how I want agents to talk to me. I do not like getting bombarded with unnecessary details that are only meant for other agents. As the executive, you're supposed to stay on top of things, because you could get lost in the details and lose sight of the bigger picture."
+        ],
+        "prompt": "- Under 150 words unless I ask for depth.\n- Answer what I asked, then stop. Do not implement without my explicit signal to do so.\n- A reason only when it changes my decision. If it does not, cut it.\n- A bare list beats a paragraph per item.\n- Push back when I'm wrong or have a misconception, plainly.\n- Options come with costs and a recommendation. I pick.\n- When you are wrong, one sentence, then move on. No ceremony.\n- Open the file before describing what is in it. Most errors are you describing something from memory that the file already answers.\n- Surface uncertainty instead of guessing.\n- Treat me as an executive making decisions: include the outcome, material tradeoffs, and what needs my decision."
+      },
+      {
+        "id": "project-playbook",
+        "title": "Project playbook (project-specific rules)",
+        "paragraphs": [
+          "Each project has its own scaffolding. The project rules win when it disagrees with the global rules."
+        ],
+        "prompt": "- Always read AGENTS.md first and other project scaffolding files. Ground yourself on my preferences for each project before starting any task.\n- Project-specific instructions override global user preferences when they conflict.\n- When that happens, follow the project-specific instruction and briefly note the override only if it materially affects the result."
+      },
+      {
+        "id": "the-org-chart",
+        "title": "The org chart",
+        "paragraphs": [
+          "I talk to one lead. Cheaper models do the bulk work. The best model is wasted on running tests. It names layers by the work, not the model, so I can change vendors.",
+          "We have limited usage, so this delegation layer is a usage-saving mechanism."
+        ],
+        "prompt": "I talk to one lead. Work is delegated down these layers.\n\n- Advisor, above the lead. Escalation from the lead and a second opinion on hard calls: design, rulings, subtle debugging, security. Advises; the lead still owns the conversation and final acceptance.\n- Lead, the main thread. Conversation with me, design, rulings, debugging reasoning, review of every subagent result, trivial one-file reads or one-line edits.\n- Implementation. Writing or changing code, scripts, tests and workflows.\n- Bulk. Test suites, lint and typecheck runs, mechanical edits, broad crawling, reading or summarizing more than a couple of files, reviewing generated output, checking results.\n\nWorkers get a written brief, do one job, return a short summary (pass or fail, errors, files touched). Keep raw logs and file dumps out of the main context.\n\nEscalation goes up one layer, never to an auditor. If a bulk result is unclear, contradictory, or needs judgment, move it to the implementation layer. If an implementation fails review, fails its tests twice, or needs judgment, the lead takes it over. Say in one line what was escalated and why. Do not accept a weak result to save usage.",
+        "lines": [
+          "Advisor models -> Fable 5.2, 6/6.2 Astra",
+          "Lead models -> Opus 5.5, 4 Neon",
+          "Implementation models -> Sonnet 5.5, 4 Hydrogen, 6.1/6.2 Sol",
+          "Bulk models -> Haiku 5.5, 3.8 Flash, 6 Luna"
+        ]
+      },
+      {
+        "id": "codex",
+        "title": "Codex",
+        "paragraphs": [
+          "Codex never leads. I don't like how it talks, and it burns usage so much more when I use it as its own orchestrator. It's good as a worker and as the auditor. UI work goes to Sonnet 5.5, which follows my UI boards more closely."
+        ]
+      },
+      {
+        "id": "tools",
+        "title": "Tools",
+        "paragraphs": [
+          "I use models in their native harnesses. The labs tune these models to work best with their own harness, so it makes sense to configure them there.",
+          "T3Code holds all of them in one window. I also like T3Code because it works like an email inbox where the latest thing that needs your attention goes to the very top regardless of projects. This works for me well because I work on multiple projects."
+        ]
+      }
+    ],
+    "picture": {
+      "nodes": [
+        {
+          "id": "advisor",
+          "label": "Advisor",
+          "grid": [
+            2,
+            1
+          ],
+          "to": "the-org-chart"
+        },
+        {
+          "id": "policy",
+          "label": "Company policy",
+          "grid": [
+            1,
+            1
+          ],
+          "to": "company-policy"
+        },
+        {
+          "id": "playbook",
+          "label": "Project playbook",
+          "grid": [
+            1,
+            3
+          ],
+          "to": "project-playbook"
+        },
+        {
+          "id": "aedwon",
+          "label": "Aedwon",
+          "grid": [
+            1,
+            2
+          ],
+          "to": "mindset"
+        },
+        {
+          "id": "lead",
+          "label": "Lead",
+          "grid": [
+            2,
+            2
+          ],
+          "to": "the-org-chart"
+        },
+        {
+          "id": "implementation",
+          "label": "Implementation",
+          "grid": [
+            3,
+            1
+          ],
+          "to": "the-org-chart"
+        },
+        {
+          "id": "bulk",
+          "label": "Bulk",
+          "grid": [
+            3,
+            3
+          ],
+          "to": "the-org-chart"
+        },
+        {
+          "id": "auditor",
+          "label": "Auditor",
+          "sub": "Another vendor",
+          "outside": true,
+          "grid": [
+            2,
+            3
+          ],
+          "to": "outside-audit"
+        }
+      ],
+      "edges": [
+        {
+          "from": "aedwon",
+          "to": "lead",
+          "kind": "talks",
+          "ends": "both"
+        },
+        {
+          "from": "policy",
+          "to": "lead",
+          "kind": "feeds",
+          "ends": "to"
+        },
+        {
+          "from": "playbook",
+          "to": "lead",
+          "kind": "feeds",
+          "ends": "to"
+        },
+        {
+          "from": "lead",
+          "to": "advisor",
+          "kind": "asks",
+          "ends": "both"
+        },
+        {
+          "from": "lead",
+          "to": "implementation",
+          "kind": "delegates",
+          "ends": "both"
+        },
+        {
+          "from": "lead",
+          "to": "bulk",
+          "kind": "delegates",
+          "ends": "both"
+        },
+        {
+          "from": "lead",
+          "to": "auditor",
+          "kind": "calls",
+          "ends": "both",
+          "optional": true
+        }
+      ],
+      "extras": [
+        "the-org-chart",
+        "codex",
+        "tools"
+      ]
+    }
+  },
+  "task": {
+    "label": "What happens to a task",
+    "parts": [
+      {
+        "id": "top-down-approach",
+        "title": "Top-down approach",
+        "paragraphs": [
+          "Work starts with a brainstorm, before anything is written or built. This is where I make sure my intent lands, and that the model I talk to and I are on the same page. It asks me questions one at a time until I approve the design. I use the Superpowers plugin for this.",
+          "Then it goes top-down. The agent writes a spec, I approve the plain-language part, then it plans and builds. In my experience, work drifts when it's built straight from one plan."
+        ],
+        "prompt": "1. Recover the current context, clarify the intended outcome, and agree on scope.\n2. Brainstorm alternatives and write the spec.\n3. Review and refine the spec for completeness, consistency, and simplicity. Put every consequential scope, behavior, cost, risk, and maintenance decision in its plain-language approval section. Put technical detail in a separate agent section that agrees with it. Explain how completion will be judged.\n4. I approve the plain-language spec section.\n5. The agent writes the implementation plan, reviews it against the spec, and fixes gaps before execution.\n6. Implement within the approved scope. Report the outcome and any remaining limitation honestly.\n\nThere is no separate human implementation-plan approval. A material change to the spec returns to me as a specific revision."
+      },
+      {
+        "id": "scope-before-work",
+        "title": "Scope before work",
+        "paragraphs": [
+          "At the end of the brainstorm, the agent asks how much to build. I pick minimal, balanced or hardened.",
+          "In my experience, agents are too eager to build and thus tend to overbuild when nobody sets the scope. It must state scope and estimated time for each size, and I choose."
+        ],
+        "prompt": "- Before a nontrivial build or multi-step change, ask me to choose minimal, balanced, or hardened complexity. Ask at the end of the brainstorm, once you understand what I want, and before you write the spec or plan. Do not ask at the start of the conversation.\n- Recommend one option and state its expected scope and time before starting. Default to balanced when I ask for a recommendation, but wait for my choice before implementation.\n- Do not turn a scaffold, setup, or small workflow change into production infrastructure unless I explicitly choose hardened complexity."
+      },
+      {
+        "id": "standards-before-work",
+        "title": "Standards before work",
+        "paragraphs": [
+          "Before design or build work, the agent names every field the work touches and finds the proven standards of each one.",
+          "In my experience, telling an agent to do good work gets me the average. On a site for an interior design studio, no agent used the 60-30-10 rule until I brought it up. So the standards that apply now go into the spec, and the ones worth keeping go into a library."
+        ],
+        "prompt": "Before design or build work, name the fields the work touches, not only software, and apply their proven standards. Telling an agent to \"do it well\" is not a standard.\n\n- Cite the standards that apply in the spec, with sources, in a short \"Standards applied\" section.\n- Keep standards sheets from past work in one folder, with a front page that lists the sheets that exist and the fields that still need one. Read the sheets that fit. If the work touches a field with no sheet, write the sheet before the spec. Add a rule when you find one worth keeping. The sheets are a reference, not a gate.\n- For high-stakes work, have a second agent look for standards the spec missed.\n- When I name a standard you missed, add it to the library."
+      },
+      {
+        "id": "decision-record",
+        "title": "Decision record",
+        "paragraphs": [
+          "Every decision is written down with who made it. I had this created to clearly distinguish which decision was mine and an agent's. This is so that I can think about how I think (metacognition), and what factors were true then and what were different now that made me decide differently, or make me keep a decision that I almost changed."
+        ],
+        "prompt": "- Locked by Aedwon. Do not change it. If you think it is wrong, say so and wait for his answer.\n- Decided on delegation. An agent decided it because Aedwon asked the agent to decide. Treat it as the working answer. Aedwon may revise it. You may propose a change with a reason, but do not change it silently.\n- Open. Not decided. Do not invent an answer inside a deliverable. Present options with costs and a recommendation, then record the answer."
+      },
+      {
+        "id": "proof-before-done",
+        "title": "Proof before \"done\"",
+        "paragraphs": [
+          "An agent can't say it's done without pasting the output that proves it. I don't read the code, so that proof is what I go by. I had this rule made after one agent reported zero new issues when there were nine."
+        ],
+        "prompt": "Verify, do not relay. The first background implementor run in this project reported zero new analyzer issues when there were nine. Paste the actual output into your report. A claim of a clean run without the output behind it is worth nothing, and if it turns out to be wrong it costs more than the failure would have."
+      },
+      {
+        "id": "outside-audit",
+        "title": "Outside audit",
+        "paragraphs": [
+          "A model from another vendor reviews the work that matters most. It doesn't fix anything. It's optional, and the lead can call it at any level, from the plan of plans to an implementation plan to the finished build.",
+          "Models from one vendor share blind spots because each vendor pre-trains and post-trains their models differently.",
+          "The auditor only reports, so the builder can't grade its own work."
+        ],
+        "prompt": "Audit sits outside the chain. Use a model from a different vendor for adversarial review, red-teaming and audits at planned points, chosen for high-stakes results (answer keys, legal facts, payments, security). It is a different vendor, so it catches blind spots the other layers share. Never use it to fix or implement."
+      },
+      {
+        "id": "who-may-sign-what",
+        "title": "Who may sign what",
+        "paragraphs": [
+          "Agents can commit and push finished work without asking me. Anything destructive or public waits for my approval. I don't need to approve routine work, but I want the final say on anything I can't undo."
+        ],
+        "prompt": "- You may commit and push without asking once the task is done and you have verified it, including creating the branch needed for that push.\n- You may open, update, and merge pull requests without asking to reconcile local and remote state, once checks pass and you have verified the result against the current remote state.\n- Otherwise, do not make a destructive or external change unless I explicitly approve that specific action. This includes merging other pull requests; deleting branches; updating issues or other pull requests; deleting data; publishing; and changing external systems.\n- Approving a plan, conflict resolution, prototype, handoff, or progress report does not approve a later change."
+      },
+      {
+        "id": "process-improvement",
+        "title": "Process improvement",
+        "paragraphs": [
+          "When I correct the same kind of thing twice, the agent logs my exact words and fixes the cause, so it can't come back. I had this made because I kept repeating the same corrections. Telling an agent to be more careful doesn't work, so the fix has to be a corrected instruction, a required step, or a check."
+        ],
+        "prompt": "When I find work unsatisfactory, fix the work first. Then make sure a repeated or costly failure cannot return.\n\n- When to log. Log an entry when I reject or correct the same kind of thing a second time, when a failure cost real time or money, or when I say \"log this\". A first, cheap correction needs only the fix.\n- What an entry holds. My exact words (if they are not recorded, say so; do not reconstruct them), what was wrong, why it got through, and the fix. \"Be more careful\" is not a fix.\n- Choosing the fix. Use the lightest fix that works. First correct the instruction that caused it. Then a required step. A check comes last, only where it is reliable.\n- Tooling needs my approval. Do not build a script, linter, library or other tooling from a correction without asking me first and stating its size.\n- Keep it small. A project holds at most 12 written rules and required steps together. Before adding one, merge or retire another.\n- Keep rules and entries in one file in the project. Do not keep rules in agent memory alone."
+      }
+    ],
+    "picture": {
+      "line": [
+        "top-down-approach",
+        "scope-before-work",
+        "standards-before-work",
+        "decision-record",
+        "proof-before-done",
+        "who-may-sign-what",
+        "process-improvement"
+      ],
+      "optional": [
+        {
+          "id": "outside-audit",
+          "sub": "Optional"
+        }
+      ]
+    }
+  },
+  "paste": {
+    "id": "where-to-paste",
+    "title": "Where to paste",
+    "paragraphs": [
+      "Start with company policy. It works in any chat app. If you're confident with your agents and lazy enough, just tell your agents to adopt the things I've written in this site LOL."
+    ],
+    "head": [
+      "Tool",
+      "For every chat",
+      "For one project"
+    ],
+    "rows": [
+      [
+        "[Claude app](https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features)",
+        "Your initials, Settings, Your Claude, Instructions",
+        "Open the project, then [Set project instructions](https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects)"
+      ],
+      [
+        "[ChatGPT](https://help.openai.com/en/articles/8096356-chatgpt-custom-instructions)",
+        "Settings, Personalization",
+        "The project's menu, [Project settings](https://help.openai.com/en/articles/10169521-projects-in-chatgpt)"
+      ],
+      [
+        "[Gemini app](https://support.google.com/gemini/answer/16598625?hl=en)",
+        "Menu, Settings, Personal Intelligence, Instructions for Gemini",
+        "None found"
+      ],
+      [
+        "[Claude Code](https://code.claude.com/docs/en/memory)",
+        "~/.claude/CLAUDE.md",
+        "CLAUDE.md in the project folder"
+      ],
+      [
+        "[Gemini CLI](https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/cli/gemini-md.md) and [Antigravity](https://antigravity.google/docs/rules)",
+        "~/.gemini/GEMINI.md",
+        "GEMINI.md or AGENTS.md in the project folder"
+      ],
+      [
+        "[Codex](https://learn.chatgpt.com/docs/agent-configuration/agents-md)",
+        "~/.codex/AGENTS.md",
+        "AGENTS.md in the project folder"
+      ]
+    ]
+  },
+  "beforeAfter": {
+    "id": "before-and-after",
+    "title": "Before and after",
+    "paragraphs": [
+      "One model, one website, eight minutes apart. In between, it read my rules. 390 words became 143. 44 code terms became none."
+    ],
+    "items": [
+      {
+        "type": "quote",
+        "text": "for 4, can you wire up the backend of the website for me? how quick would that take"
+      },
+      {
+        "type": "reply",
+        "text": "### Item 3 Complete: Commits on `main`\n\nYour working tree on `main` is now clean (not pushed). I organized the work into 3 commits:\n\n1. `[hash]` `chore(control): add local worker mode setting, lockfile, and design docs` (7 files: pre-existing local-control-runtime config, `uv.lock`, and 2026-10-16 design docs).\n2. `[hash]` `docs: specify and plan foundations, data collection, and display upgrade` (11 files: `SUBAGENTS.md`, specs, decision log, critical path, and stage plans).\n3. `[hash]` `feat(bot): harden foundations, analytics, passive telemetry, display, and durability` (111 files: Stages 0 through 6 bot code, migrations `0008` through `0011`, `scripts/verify.py`, `docs/commands.md`, and tests).\n\n---\n\n### Item 4: Website Backend Status and Effort\n\nGood news: **the website read backend is already wired.**\n\nI inspected your live local web worktree at [[bot]-wt-local-web-hosting-r1](#) (branch `ops/local-web-hosting-r1`):\n\n- [guild-state.js](#) already passes `row.snapshot_json` straight through to Control, including the live `schema_version: 2` analytics ranges, new v2 counters, and coverage metadata.\n- [control-analytics.js](#) already reads `snapshot.analytics.ranges` and renders the 6 range buttons (`1d`, `3d`, `7d`, `2w`, `1m`, `All time`) and SVG activity line chart.\n\nWhat is **not** wired yet on the website side:\n\n1. **Control Analytics display of v2 fields (frontend + `web-tests/`):** [control-analytics.js](#) only shows the original 7 v1 stat rows and combines them into one line. Wiring it to show the new v2 metrics already in the payload (tickets reopened, distinct closed, open backlog, median close time, published anonymous messages, human messages, voice minutes, and coverage notices) plus syncing [docs/commands.md](#) into `docs-site/` is **very quick (roughly 10 to 15 minutes)**.\n2. **Remote passive telemetry controls (website API + bot action, optional):** Right now `api/_lib/actions.js` and `api/_lib/page-save.js` only toggle `analytics` on/off and set the weekly report channel. If you also want to configure `/setup telemetry` (opt-in toggle, allowlist mode, allowed/excluded channels) from the browser instead of Discord, adding that action across `api/_lib/` and the bot's `control_plane` executor adds **roughly another 10 to 15 minutes**.\n\nOne important note before I touch the website: your live local web LaunchAgent (`com.[me].[bot]-web`) runs out of [[bot]-wt-local-web-hosting-r1](#) (`ops/local-web-hosting-r1`), which currently has uncommitted web edits on it, while `web/[bot]-site-production` is the Vercel production branch per [AGENTS.md](#).\n\nLet me know:\n- Do you want **just (1) v2 analytics display + command docs sync**, or **(1) + (2) browser controls for passive telemetry** as well?\n- Should I apply it in your live local web worktree (`ops/local-web-hosting-r1`), or on a clean branch off `web/[bot]-site-production`?"
+      },
+      {
+        "type": "quote",
+        "text": "wait pause, can you find the global instructions for Claude, I want you to inherit it so you can talk to me like how I want Claude talking to me. please thank you"
+      },
+      {
+        "type": "quote",
+        "text": "can you tell me again, with your new talking rules, the current state of the website? to tell you also, I'm planning to improve the UI/UX to follow the design system, i just hadn't had the time until now"
+      },
+      {
+        "type": "reply",
+        "text": "Your live local web server runs from your local hosting branch, not the Vercel production branch. That worktree has 26 uncommitted files from earlier local hosting and navigation polish work.\n\nCurrent website state:\n- The web backend already serves the bot's live v2 analytics snapshot with all six time ranges and coverage metadata.\n- The Analytics page already shows the six range buttons and a combined activity chart.\n- The Analytics page does not yet show the new v2 counters, passive message and voice totals, or coverage notices.\n- Control cannot yet change passive telemetry settings from the browser.\n- The website command guide does not yet include the bot's updated slash commands.\n\nWhen you are ready for the UI refresh, I will show options in a visual companion first. I will also ask you to pick complexity before we start any edits."
+      }
+    ]
+  },
+  "oneTask": {
+    "id": "one-task",
+    "title": "One task",
+    "paragraphs": [
+      "A Discord bot, 53 minutes, Gemini leading."
+    ],
+    "steps": [
+      {
+        "lead": "Ask.",
+        "text": "Two screenshots and one question.",
+        "quote": "currently they're useless, was this ever fixed in the latest ver?"
+      },
+      {
+        "lead": "Scope.",
+        "text": "Three sizes offered. I picked hardened.",
+        "quote": "go hardened, use codex it has a lot of usage left."
+      },
+      {
+        "lead": "Delegate.",
+        "text": "A spec, a plan, then Codex built it."
+      },
+      {
+        "lead": "Check.",
+        "text": "A second Codex found four bugs."
+      },
+      {
+        "lead": "Review.",
+        "text": "It told me how to test it."
+      },
+      {
+        "lead": "Sign off.",
+        "text": "It asked before it committed.",
+        "quote": "yes please commit"
+      }
+    ]
+  },
+  "rulesGrew": {
+    "id": "how-the-rules-grew",
+    "title": "How the rules grew",
+    "items": [
+      {
+        "lead": "April.",
+        "text": "Plan first, then wait for me."
+      },
+      {
+        "lead": "August.",
+        "text": "Model layers. A contract for workers."
+      },
+      {
+        "lead": "September.",
+        "text": "One rule file for every vendor. Gemini dropped.",
+        "quote": "delete any provider-specific rules so that work is consistent regardless of the harness or model used"
+      },
+      {
+        "lead": "October.",
+        "text": "Opus leads again.",
+        "quote": "why a sonnet orchestrator? you're supposed to be the orchestrator"
+      },
+      {
+        "lead": "November 5.",
+        "text": "A mistake must end in a check or a rule.",
+        "quote": "can you add a process improvement process (if you get what i mean) in main please. agents have to contribute to it every time i find their work unsatisfactory"
+      },
+      {
+        "lead": "November 12.",
+        "text": "UI work stops going to Codex.",
+        "quote": "also if it's UI, never use codex"
+      },
+      {
+        "lead": "November 19.",
+        "text": "Gemini returns, as lead."
+      }
+    ]
+  }
+}
