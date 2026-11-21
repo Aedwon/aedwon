@@ -272,7 +272,7 @@ describe("exemptions", () => {
 
 describe("severity", () => {
   it("only the named rules can be errors", () => {
-    const errors = ["contrast", "overflow-x", "eyebrow", "heading-numbering", "gradient-surface", "glow", "infinite-animation", "exemption-unknown"];
+    const errors = ["contrast", "overflow-x", "eyebrow", "heading-numbering", "glow", "exemption-unknown"];
     const bad = [
       el({ tag: "p", text: "Tiny faint", fontSize: 9, fontWeight: 300, mono: true, color: [200, 200, 200, 1], borders: sides(2, "dashed"), radius: 22, interactive: true, rect: { x: 0, y: 0, w: 100, h: 44 } }),
     ];
@@ -327,7 +327,7 @@ describe("glow", () => {
 
 describe("gradient-surface", () => {
   it("fails on a gradient background", () => {
-    expect(find("gradient-surface", snap([el({ bgImage: "gradient", bgImageRaw: "linear-gradient(red, blue)" })])).severity).toBe("error");
+    expect(find("gradient-surface", snap([el({ bgImage: "gradient", bgImageRaw: "linear-gradient(red, blue)" })])).severity).toBe("warn");
   });
   it("passes flat fills and photo backgrounds", () => {
     expect(find("gradient-surface", snap([el({ bgOwn: [10, 10, 10, 1] }), el({ bgImage: "image" })]))).toBeNull();
@@ -427,7 +427,7 @@ describe("light-weight", () => {
 describe("infinite-animation", () => {
   const loop = { name: "pulse", duration: 1500, delay: 0, iterations: "infinite" };
   it("fails on an infinite animation", () => {
-    expect(find("infinite-animation", snap([el({ animations: [loop] })])).severity).toBe("error");
+    expect(find("infinite-animation", snap([el({ animations: [loop] })])).severity).toBe("warn");
   });
   it("fails on a measured loop, and ignores a loop declared only in a hover rule", () => {
     const m = snap([el()], { settle: { settleMs: 0, infiniteRunning: [{ infinite: true, name: "bob", duration: 2000, selector: "div.card" }] } });

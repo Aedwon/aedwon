@@ -1,8 +1,8 @@
 // Pure rules for the design check. Input is the snapshot from collect.mjs.
 // No browser code here. Every rule returns a finding or null:
 //   { id, severity: "error" | "warn", message, count, examples: string[] }
-// Only contrast, overflow-x, eyebrow, heading-numbering, gradient-surface, glow,
-// infinite-animation and an unknown exemption id are errors. Everything else warns.
+// Only contrast, overflow-x, eyebrow, heading-numbering, glow and an unknown
+// exemption id are errors. Everything else warns.
 // Thresholds marked "suggested" are not from a standard. See
 // docs/design-principles.md for the standards and his taste.
 
@@ -447,7 +447,7 @@ rule("gradient-surface", (snap) => {
   const items = els.length
     ? els.map((e) => describe(e, e.bgImageRaw.slice(0, 40)))
     : liveCss(v).filter((r) => /gradient/.test(r.backgroundImage || "")).map((r) => `${r.selector} ${r.backgroundImage.slice(0, 40)}`);
-  return finding("gradient-surface", "error", "Gradient used as a surface or wash. His projects use flat fills.", items);
+  return finding("gradient-surface", "warn", "Gradient used as a surface or wash. His projects use flat fills.", items);
 });
 
 function isAccentBar(e) {
@@ -562,7 +562,7 @@ rule("infinite-animation", (snap) => {
     if (!sig.has(i.name) && !loading.test(i.selector || "") && !loading.test(i.name || "") && !/signature/.test(i.selector || "")) found.set(i.name || i.selector, `${i.selector} ${i.name}`);
   }
   const items = [...found.values()];
-  return finding("infinite-animation", "error", "Animation that loops forever, outside a loading state and the one allowed signature animation.", items);
+  return finding("infinite-animation", "warn", "Animation that loops forever, outside a loading state and the one allowed signature animation.", items);
 });
 
 rule("duration-band", (snap) => {
