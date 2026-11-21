@@ -20,8 +20,16 @@ Run these before showing the work they name. Each came from an entry below.
 1. **Page copy gets a word budget and a count.** Before showing copy for any page, state a budget for the words a visitor reads, count the draft against it, and report both numbers. Count only what the visitor reads. Leave out copyable prompts, quoted exhibits and notes for the builder. Keep builder notes and evidence out of the copy itself. Use at most one quote per part. Work examples may carry more, since he asked for his exact quotes there. The default budget is 60 words per part. When the copy moves into a content file in this repo, a check must enforce the budget, and this step and rule 4 can then retire.
 2. **Agree the structure of one part before writing them all.** Before drafting copy for a page with repeated parts, show one part in full and get his answer on its structure, meaning which lines it holds and in what order. Write the rest only after that.
 3. **Check a revision against what he already approved.** Before showing a new or shortened draft, list the decisions he approved earlier for that work and confirm the draft still carries each one. Name any it drops and why. For work that spans a session, keep those decisions in a file, not only in the chat.
+4. **Trace one real task before describing how he works.** Walk one real task from his first message to his sign-off and list each step in the order it happened. The description must carry every step, in that order. Steps that come from a plugin or a habit count, even when no rule file states them.
 
 ## Entries
+
+### Workflow copy left out brainstorming and ordered parts by category (Nov 21)
+
+- **His words.** "hmm i noticed there's no brainstorming step? the part where I make sure the intent i have lands, and that the model i talk to and I are on the same page." Then "also shouldn't audit be further down? we should present this info with how things actually flow".
+- **What was wrong.** The page copy had no brainstorming step, although every piece of his work starts with one. It also grouped parts by kind (rulebook, staff, gates), so the outside audit sat before the scope choice and the spec.
+- **Why the process let it through.** The agent built the list of parts from his rule files. Brainstorming comes from a plugin, so no rule file named it and the list missed it. The grouping came from an earlier content map, and nobody checked it against the order of a real task.
+- **The fix.** Required step 4 above.
 
 ### The short rewrite dropped the company frame (Nov 21)
 
