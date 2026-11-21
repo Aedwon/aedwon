@@ -101,7 +101,7 @@ describe("helpers", () => {
   });
   it("has one rule per id and no duplicates", () => {
     expect(new Set(RULE_IDS).size).toBe(RULE_IDS.length);
-    expect(RULE_IDS.length).toBeGreaterThanOrEqual(30);
+    expect(RULE_IDS.length).toBeGreaterThanOrEqual(20);
   });
   it("runRules returns no findings for an empty clean page", () => {
     expect(runRules(snap([el({ tag: "p", text: "Hello there" })]))).toEqual([]);
@@ -142,7 +142,7 @@ describe("min-text-size", () => {
 describe("budget-font-sizes", () => {
   it("fails with 11 distinct sizes, warns with 9", () => {
     const sizes = (n) => Array.from({ length: n }, (_, i) => el({ tag: "p", text: "x", fontSize: 12 + i * 3 }));
-    expect(find("budget-font-sizes", snap(sizes(11))).severity).toBe("error");
+    expect(find("budget-font-sizes", snap(sizes(11))).severity).toBe("warn");
     expect(find("budget-font-sizes", snap(sizes(9))).severity).toBe("warn");
   });
   it("fails on half-pixel noise, passes on a short scale", () => {
@@ -156,7 +156,7 @@ describe("budget-font-sizes", () => {
 describe("budget-font-families", () => {
   it("fails with three text families", () => {
     const els = ["A", "B", "C"].map((f) => el({ tag: "p", text: "x", fontFamily: f }));
-    expect(find("budget-font-families", snap(els)).severity).toBe("error");
+    expect(find("budget-font-families", snap(els)).severity).toBe("warn");
   });
   it("passes with two text families and one monospace", () => {
     const els = [el({ tag: "p", text: "x", fontFamily: "A" }), el({ tag: "p", text: "x", fontFamily: "B" }), el({ tag: "p", text: "x", fontFamily: "M", mono: true })];
@@ -167,10 +167,10 @@ describe("budget-font-families", () => {
 describe("budget-radii", () => {
   const boxed = (r) => el({ radius: r, bgOwn: [240, 240, 240, 1], rect: { x: 0, y: 0, w: 300, h: 200 } });
   it("fails on radii one pixel apart", () => {
-    expect(find("budget-radii", snap([boxed(12), boxed(13), boxed(14)])).severity).toBe("error");
+    expect(find("budget-radii", snap([boxed(12), boxed(13), boxed(14)])).severity).toBe("warn");
   });
   it("fails with nine distinct radii", () => {
-    expect(find("budget-radii", snap([4, 8, 12, 16, 20, 24, 28, 32, 36].map(boxed))).severity).toBe("error");
+    expect(find("budget-radii", snap([4, 8, 12, 16, 20, 24, 28, 32, 36].map(boxed))).severity).toBe("warn");
   });
   it("passes a short scale and ignores fully round shapes", () => {
     const round = el({ radius: 99, bgOwn: [0, 0, 0, 1], rect: { x: 0, y: 0, w: 10, h: 10 } });
@@ -181,26 +181,17 @@ describe("budget-radii", () => {
 describe("budget-border-widths", () => {
   const b = (w) => el({ borders: sides(w) });
   it("fails with five widths", () => {
-    expect(find("budget-border-widths", snap([0.5, 1, 1.5, 2, 3].map(b))).severity).toBe("error");
+    expect(find("budget-border-widths", snap([0.5, 1, 1.5, 2, 3].map(b))).severity).toBe("warn");
   });
   it("passes with 1 and 2", () => {
     expect(find("budget-border-widths", snap([b(1), b(2)]))).toBeNull();
   });
 });
 
-describe("budget-border-styles", () => {
-  it("warns on solid plus dashed", () => {
-    expect(find("budget-border-styles", snap([el({ borders: sides(1, "solid") }), el({ borders: sides(1, "dashed") })])).severity).toBe("warn");
-  });
-  it("passes on solid only", () => {
-    expect(find("budget-border-styles", snap([el({ borders: sides(1, "solid") })]))).toBeNull();
-  });
-});
-
 describe("budget-shadows", () => {
   const sh = (n) => Array.from({ length: n }, (_, i) => el({ boxShadow: `rgba(0, 0, 0, 0.1) 0px ${i + 1}px 8px 0px` }));
   it("fails with six distinct shadows, warns with four", () => {
-    expect(find("budget-shadows", snap(sh(6))).severity).toBe("error");
+    expect(find("budget-shadows", snap(sh(6))).severity).toBe("warn");
     expect(find("budget-shadows", snap(sh(4))).severity).toBe("warn");
   });
   it("passes with three", () => {
@@ -212,7 +203,7 @@ describe("accent-hues", () => {
   const colored = (c, n = 2) => Array.from({ length: n }, () => el({ tag: "p", text: "x", color: c }));
   it("fails with two accent families", () => {
     const f = find("accent-hues", snap([...colored([255, 179, 71, 1]), ...colored([94, 240, 196, 1])]));
-    expect(f.severity).toBe("error");
+    expect(f.severity).toBe("warn");
     expect(f.count).toBe(2);
   });
   it("passes with one accent, neutral tints and a status color", () => {
@@ -237,7 +228,7 @@ describe("accent-hues with status tokens", () => {
   });
   it("still counts them without a token file, and says why", () => {
     const f = find("accent-hues", page());
-    expect(f.severity).toBe("error");
+    expect(f.severity).toBe("warn");
     expect(f.message).toContain("cannot be told apart");
   });
   it("still counts a non-status color that the token file defines", () => {
@@ -279,14 +270,49 @@ describe("exemptions", () => {
   });
 });
 
+describe("severity", () => {
+  it("only the named rules can be errors", () => {
+    const errors = ["contrast", "overflow-x", "eyebrow", "heading-numbering", "gradient-surface", "glow", "infinite-animation", "exemption-unknown"];
+    const bad = [
+      el({ tag: "p", text: "Tiny faint", fontSize: 9, fontWeight: 300, mono: true, color: [200, 200, 200, 1], borders: sides(2, "dashed"), radius: 22, interactive: true, rect: { x: 0, y: 0, w: 100, h: 44 } }),
+    ];
+    const s = snap(bad, { cssRules: [{ selector: ".a:hover", media: "", mediaActive: true, matches: 1, transform: "scale(1.5)" }] });
+    for (const f of runRules(s)) if (f.severity === "error") expect(errors).toContain(f.id);
+  });
+});
+
+describe("stylesheet rules count only when rendered", () => {
+  const glowRule = (over) => ({ selector: ".card:hover", media: "", mediaActive: true, matches: 1, boxShadow: "0 0 20px rgba(255,170,60,.5)", ...over });
+  it("counts a live state rule", () => {
+    expect(find("glow", snap([el()], { cssRules: [glowRule({})] }))).not.toBeNull();
+  });
+  it("skips a rule whose selector matches nothing", () => {
+    expect(find("glow", snap([el()], { cssRules: [glowRule({ matches: 0 })] }))).toBeNull();
+  });
+  it("skips a rule inside an inactive media query", () => {
+    expect(find("glow", snap([el()], { cssRules: [glowRule({ media: "(min-width: 3000px)", mediaActive: false })] }))).toBeNull();
+    const hover = { selector: ".card:hover", media: "(prefers-reduced-motion: no-preference)", mediaActive: false, matches: 1, transform: "scale(1.5)" };
+    expect(find("hover-scale", snap([el()], { cssRules: [hover] }))).toBeNull();
+  });
+  it("budget-shadows ignores stylesheet rules", () => {
+    const rules = Array.from({ length: 6 }, (_, i) => glowRule({ boxShadow: `0 ${i + 1}px 8px rgba(0,0,0,.1)` }));
+    expect(find("budget-shadows", snap([el()], { cssRules: rules }))).toBeNull();
+  });
+});
+
 describe("glow", () => {
+  it("does not flag a zero-blur ring", () => {
+    expect(find("glow", snap([el({ boxShadow: "rgba(255, 170, 60, 0.4) 0px 0px 0px 3px" })]))).toBeNull();
+    const s = snap([el()], { cssRules: [{ selector: ".a:focus", media: "", mediaActive: true, matches: 1, boxShadow: "0 0 0 2px rgba(255,170,60,.6)" }] });
+    expect(find("glow", s)).toBeNull();
+  });
   it("fails on a colored shadow", () => {
     const f = find("glow", snap([el({ boxShadow: "rgba(255, 170, 60, 0.3) 0px 18px 60px 0px" })]));
     expect(f.severity).toBe("error");
   });
   it("fails on a colored drop-shadow filter and on a colored state rule", () => {
     expect(find("glow", snap([el({ tag: "path", filter: "drop-shadow(rgba(255, 179, 71, 0.85) 0px 0px 7px)" })]))).not.toBeNull();
-    const s = snap([el()], { cssRules: [{ selector: ".node.on", media: "", matches: 0, boxShadow: "0 0 0 1px rgba(255,179,71,.5)" }] });
+    const s = snap([el()], { cssRules: [{ selector: ".node.on", media: "", matches: 1, boxShadow: "0 0 18px rgba(255,179,71,.5)" }] });
     expect(find("glow", s).examples[0]).toContain("state rule");
   });
   it("warns on a large neutral blur at rest and passes the same on a popover", () => {
@@ -308,15 +334,6 @@ describe("gradient-surface", () => {
   });
 });
 
-describe("border-thick", () => {
-  it("fails on a 2px border", () => {
-    expect(find("border-thick", snap([el({ borders: sides(2) })])).severity).toBe("error");
-  });
-  it("passes 1px borders and a 2px checkbox ring", () => {
-    expect(find("border-thick", snap([el({ borders: sides(1) }), el({ tag: "input", borders: sides(2) })]))).toBeNull();
-  });
-});
-
 describe("accent-bar", () => {
   const bar = () => el({ radius: 8, borders: [NONE, NONE, NONE, { w: 4, style: "solid", color: [255, 179, 71, 1] }] });
   it("fails on a left-bar callout", () => {
@@ -325,14 +342,11 @@ describe("accent-bar", () => {
   it("passes a full 1px border", () => {
     expect(find("accent-bar", snap([el({ radius: 8, borders: sides(1) })]))).toBeNull();
   });
-  it("does not double count in border-thick", () => {
-    expect(find("border-thick", snap([bar()]))).toBeNull();
-  });
 });
 
 describe("border-dashed", () => {
   it("fails on a dashed border and a dotted border", () => {
-    expect(find("border-dashed", snap([el({ borders: sides(1, "dashed") })])).severity).toBe("error");
+    expect(find("border-dashed", snap([el({ borders: sides(1, "dashed") })])).severity).toBe("warn");
     expect(find("border-dashed", snap([el({ borders: sides(1, "dotted") })]))).not.toBeNull();
   });
   it("passes solid borders", () => {
@@ -343,7 +357,7 @@ describe("border-dashed", () => {
 describe("pill-shape", () => {
   const rect = { x: 0, y: 0, w: 160, h: 44 };
   it("fails on a pill button", () => {
-    expect(find("pill-shape", snap([el({ tag: "button", text: "Copy", interactive: true, radius: 22, rect })])).severity).toBe("error");
+    expect(find("pill-shape", snap([el({ tag: "button", text: "Copy", interactive: true, radius: 22, rect })])).severity).toBe("warn");
   });
   it("fails on a pill label with a border", () => {
     const label = el({ tag: "span", text: "Connected state", radius: 18, borders: sides(1), rect: { x: 0, y: 0, w: 140, h: 36 } });
@@ -357,21 +371,6 @@ describe("pill-shape", () => {
       el({ tag: "button", interactive: true, radius: 23, rect: { x: 0, y: 0, w: 46, h: 46 } }),
     ];
     expect(find("pill-shape", snap(ok))).toBeNull();
-  });
-});
-
-describe("card-in-card", () => {
-  const card = (over) => el({ borders: sides(1), radius: 12, rect: { x: 0, y: 0, w: 300, h: 200 }, ...over });
-  it("fails when a bordered box sits inside another", () => {
-    const outer = card({});
-    const inner = card({ parent: 0 });
-    expect(find("card-in-card", snap([outer, inner])).count).toBe(1);
-  });
-  it("passes sibling cards and a card holding a button", () => {
-    const a = card({});
-    const b = card({});
-    const btn = el({ tag: "button", interactive: true, parent: 0, borders: sides(1), radius: 8, rect: { x: 0, y: 0, w: 200, h: 60 } });
-    expect(find("card-in-card", snap([a, b, btn]))).toBeNull();
   });
 });
 
@@ -407,25 +406,6 @@ describe("heading-numbering", () => {
   });
 });
 
-describe("uppercase-label", () => {
-  it("fails on uppercase transform, typed caps, and wide tracking", () => {
-    expect(find("uppercase-label", snap([el({ tag: "span", text: "Label", textTransform: "uppercase" })])).severity).toBe("error");
-    expect(find("uppercase-label", snap([el({ tag: "span", text: "LABEL TEXT" })]))).not.toBeNull();
-    expect(find("uppercase-label", snap([el({ tag: "span", text: "Label", letterSpacingEm: 0.12 })]))).not.toBeNull();
-  });
-  it("ignores hex color codes, numbers and unit values", () => {
-    for (const t of ["#FFFFFF", "#0B7A68", "100PX", "1.5REM", "2024", "12,000"]) {
-      expect(find("uppercase-label", snap([el({ tag: "span", text: t, textTransform: "uppercase" })]))).toBeNull();
-    }
-    expect(find("uppercase-label", snap([el({ tag: "span", text: "FFFFFF TEXT" })]))).not.toBeNull();
-  });
-  it("passes sentence case, short acronyms, code, and tight tracking", () => {
-    for (const e of [el({ tag: "span", text: "Label" }), el({ tag: "span", text: "API" }), el({ tag: "span", text: "Label", letterSpacingEm: -0.02 }), el({ tag: "code", text: "GET", textTransform: "uppercase", inCode: true })]) {
-      expect(find("uppercase-label", snap([e]))).toBeNull();
-    }
-  });
-});
-
 describe("mono-outside-code", () => {
   it("warns on monospace body text", () => {
     expect(find("mono-outside-code", snap([el({ tag: "p", text: "A subtitle", mono: true, fontFamily: "Menlo" })])).severity).toBe("warn");
@@ -449,11 +429,11 @@ describe("infinite-animation", () => {
   it("fails on an infinite animation", () => {
     expect(find("infinite-animation", snap([el({ animations: [loop] })])).severity).toBe("error");
   });
-  it("fails on a declared and a measured loop", () => {
-    const s = snap([el()], { cssRules: [{ selector: ".dot", media: "", matches: 1, animationName: "glow", animationIterationCount: "infinite" }] });
-    expect(find("infinite-animation", s)).not.toBeNull();
+  it("fails on a measured loop, and ignores a loop declared only in a hover rule", () => {
     const m = snap([el()], { settle: { settleMs: 0, infiniteRunning: [{ infinite: true, name: "bob", duration: 2000, selector: "div.card" }] } });
     expect(find("infinite-animation", m)).not.toBeNull();
+    const s = snap([el()], { cssRules: [{ selector: ".dot:hover", media: "", mediaActive: true, matches: 1, animationName: "glow", animationIterationCount: "infinite" }] });
+    expect(find("infinite-animation", s)).toBeNull();
   });
   it("passes a loading spinner and the one signature animation", () => {
     expect(find("infinite-animation", snap([el({ cls: "spinner", animations: [{ ...loop, name: "spin" }] })]))).toBeNull();
@@ -464,8 +444,8 @@ describe("infinite-animation", () => {
 
 describe("duration-band", () => {
   const t = (d) => ({ property: "opacity", duration: d, delay: 0, easing: "ease" });
-  it("fails above 700 ms, warns between 500 and 700 ms, warns below 70 ms", () => {
-    expect(find("duration-band", snap([el({ transitions: [t(900)] })])).severity).toBe("error");
+  it("warns above 500 ms and below 70 ms", () => {
+    expect(find("duration-band", snap([el({ transitions: [t(900)] })])).severity).toBe("warn");
     expect(find("duration-band", snap([el({ transitions: [t(600)] })])).severity).toBe("warn");
     expect(find("duration-band", snap([el({ transitions: [t(40)] })])).severity).toBe("warn");
   });
@@ -475,14 +455,14 @@ describe("duration-band", () => {
     expect(find("duration-band", snap([sig]))).toBeNull();
   });
   it("reads declared keyframe animations", () => {
-    const s = snap([el()], { cssRules: [{ selector: ".ring", media: "", matches: 0, animationName: "ring", animationDuration: "0.9s" }] });
-    expect(find("duration-band", s).severity).toBe("error");
+    const s = snap([el()], { cssRules: [{ selector: ".ring", media: "", matches: 1, animationName: "ring", animationDuration: "0.9s" }] });
+    expect(find("duration-band", s).severity).toBe("warn");
   });
 });
 
 describe("entrance-length", () => {
   it("fails when motion runs past 1500 ms and warns past 600 ms", () => {
-    expect(find("entrance-length", snap([el()], { settle: { settleMs: 5000, infiniteRunning: [] } })).severity).toBe("error");
+    expect(find("entrance-length", snap([el()], { settle: { settleMs: 5000, infiniteRunning: [] } })).severity).toBe("warn");
     expect(find("entrance-length", snap([el()], { settle: { settleMs: 900, infiniteRunning: [] } })).severity).toBe("warn");
   });
   it("passes a quick settle", () => {
@@ -493,7 +473,7 @@ describe("entrance-length", () => {
 describe("hover-scale", () => {
   const r = (selector, transform) => ({ selector, media: "", matches: 1, transform });
   it("fails on hover scale, selected scale and hover lift above 2px", () => {
-    expect(find("hover-scale", snap([el()], { cssRules: [r(".card:hover", "scale(1.05)")] })).severity).toBe("error");
+    expect(find("hover-scale", snap([el()], { cssRules: [r(".card:hover", "scale(1.05)")] })).severity).toBe("warn");
     expect(find("hover-scale", snap([el()], { cssRules: [r(".node.on", "scale(1.045)")] }))).not.toBeNull();
     expect(find("hover-scale", snap([el()], { cssRules: [r(".card:hover", "translateY(-6px)")] }))).not.toBeNull();
   });
@@ -519,7 +499,7 @@ describe("overflow-x", () => {
 
 describe("target-size", () => {
   it("fails on a 16px icon button", () => {
-    expect(find("target-size", snap([el({ tag: "button", interactive: true, rect: { x: 0, y: 0, w: 16, h: 16 } })])).severity).toBe("error");
+    expect(find("target-size", snap([el({ tag: "button", interactive: true, rect: { x: 0, y: 0, w: 16, h: 16 } })])).severity).toBe("warn");
   });
   it("passes 24px and larger, and inline links", () => {
     expect(find("target-size", snap([el({ tag: "button", interactive: true, rect: { x: 0, y: 0, w: 24, h: 24 } })]))).toBeNull();
@@ -536,70 +516,13 @@ describe("target-size-touch", () => {
   });
 });
 
-describe("token rules", () => {
-  const tokens = parseTokens(`
-    :root {
-      --ink: #111113; --paper: #fcfcfb;
-      --radius-card: 12px; --radius-ctl: 8px;
-      --text-body: 1rem; --text-title: 28px;
-      --space-2: 8px; --space-4: 16px;
-    }`);
-  it("parses colors and lengths by name", () => {
-    expect(tokens.colors.length).toBe(2);
-    expect(tokens.lengths.radii).toEqual([12, 8]);
-    expect(tokens.lengths.fontSizes).toEqual([16, 28]);
-    expect(tokens.lengths.spacing).toEqual([8, 16]);
-  });
-  it("does nothing without a token file", () => {
-    expect(find("token-colors", snap([el({ tag: "p", text: "x", color: [1, 2, 3, 1] })]))).toBeNull();
-  });
-  it("token-colors fails on an undefined color and passes a defined one", () => {
-    expect(find("token-colors", snap([el({ tag: "p", text: "x", color: [200, 30, 30, 1] })]), { tokens }).severity).toBe("error");
-    expect(find("token-colors", snap([el({ tag: "p", text: "x", color: [17, 17, 19, 1] })]), { tokens })).toBeNull();
-  });
-  it("token-radii fails on an undefined radius and passes a defined one", () => {
-    const box = (r) => el({ radius: r, bgOwn: [240, 240, 240, 1], rect: { x: 0, y: 0, w: 300, h: 200 } });
-    expect(find("token-radii", snap([box(14)]), { tokens }).severity).toBe("error");
-    expect(find("token-radii", snap([box(12)]), { tokens })).toBeNull();
-  });
-  it("token-font-sizes fails on an undefined size and passes a defined one", () => {
-    expect(find("token-font-sizes", snap([el({ tag: "p", text: "x", fontSize: 17 })]), { tokens }).severity).toBe("error");
-    expect(find("token-font-sizes", snap([el({ tag: "p", text: "x", fontSize: 16 })]), { tokens })).toBeNull();
-  });
-  it("token-spacing warns on an undefined gap and passes a defined one", () => {
-    const sp = (p) => el({ spacing: { padding: [p, p, p, p], margin: [0, 0, 0, 0], gap: [0, 0] } });
-    expect(find("token-spacing", snap([sp(13)]), { tokens }).severity).toBe("warn");
-    expect(find("token-spacing", snap([sp(16)]), { tokens })).toBeNull();
-  });
-});
-
-describe("disclosure-inconsistent", () => {
-  const item = (over) => el({ tag: "button", cls: "node", interactive: false, text: "Short", ...over });
-  it("fails when some items hide detail and others show it at rest", () => {
-    const hides = [item({ hiddenDetailChars: 200, restChars: 10 }), item({ hiddenDetailChars: 150, restChars: 12 })];
-    const shows = [item({ restChars: 120 })];
-    expect(find("disclosure-inconsistent", snap([...hides, ...shows])).severity).toBe("warn");
-  });
-  it("fails when only some items of a family are interactive", () => {
-    const els = [item({ interactive: true }), item({ interactive: true }), item({ interactive: false })];
-    expect(find("disclosure-inconsistent", snap(els)).examples[0]).toContain("interactive");
-  });
-  it("passes a family that all behaves the same", () => {
-    const els = [item({ interactive: true }), item({ interactive: true }), item({ interactive: true })];
-    expect(find("disclosure-inconsistent", snap(els))).toBeNull();
-    const hidden = [item({ hiddenDetailChars: 90 }), item({ hiddenDetailChars: 80 }), item({ hiddenDetailChars: 70 })];
-    expect(find("disclosure-inconsistent", snap(hidden))).toBeNull();
-  });
-});
-
 describe("coverage", () => {
   it("every rule id has a test group in this file", () => {
     const wanted = [
-      "contrast", "min-text-size", "budget-font-sizes", "budget-font-families", "budget-radii", "budget-border-widths", "budget-border-styles",
-      "budget-shadows", "accent-hues", "glow", "gradient-surface", "border-thick", "accent-bar", "border-dashed", "pill-shape", "card-in-card",
-      "eyebrow", "heading-numbering", "uppercase-label", "mono-outside-code", "light-weight", "infinite-animation", "duration-band",
-      "entrance-length", "hover-scale", "overflow-x", "target-size", "target-size-touch", "token-colors", "token-radii", "token-font-sizes",
-      "token-spacing", "disclosure-inconsistent",
+      "contrast", "min-text-size", "budget-font-sizes", "budget-font-families", "budget-radii", "budget-border-widths", "budget-shadows",
+      "accent-hues", "glow", "gradient-surface", "accent-bar", "border-dashed", "pill-shape", "eyebrow", "heading-numbering",
+      "mono-outside-code", "light-weight", "infinite-animation", "duration-band", "entrance-length", "hover-scale", "overflow-x",
+      "target-size", "target-size-touch",
     ];
     expect([...RULE_IDS].sort()).toEqual([...wanted].sort());
   });

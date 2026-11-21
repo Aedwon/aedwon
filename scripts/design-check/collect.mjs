@@ -377,7 +377,15 @@ function measurePage() {
 
   // Stylesheet scan: states and keyframes that are not on screen at rest
   const cssRules = [];
-  function walkRules(rules, media) {
+  const STATE_CLASSES = /\.(on|off|active|selected|current|focused|is-active|open|arrive|pop|cur|hi|show|shown|done|past|pre|gone)(?![\w-])/g;
+  function mediaIsActive(list) {
+    try {
+      return list.every((t) => !t || window.matchMedia(t).matches);
+    } catch {
+      return true;
+    }
+  }
+  function walkRules(rules, mediaList) {
     for (const rule of rules) {
       if (rule.type === 1) {
         const s = rule.style;
@@ -396,21 +404,25 @@ function measurePage() {
         if (Object.keys(props).length) {
           let matches = 0;
           try {
-            matches = document.querySelectorAll(rule.selectorText.replace(/::?(before|after|hover|focus|active|focus-visible|focus-within)/g, "")).length;
+            // Match the element the rule styles: drop pseudo-classes, pseudo-elements and state classes.
+            const base = rule.selectorText
+              .replace(/::?(before|after|hover|focus|active|focus-visible|focus-within)/g, "")
+              .replace(STATE_CLASSES, "");
+            matches = document.querySelectorAll(base).length;
           } catch {
             matches = 0;
           }
-          cssRules.push({ selector: rule.selectorText, media, matches, ...props });
+          cssRules.push({ selector: rule.selectorText, media: mediaList.join(" and "), mediaActive: mediaIsActive(mediaList), matches, ...props });
         }
       } else if (rule.cssRules) {
-        const m = rule.media ? rule.media.mediaText : media;
-        walkRules(rule.cssRules, m || media);
+        const next = rule.media ? [...mediaList, rule.media.mediaText] : mediaList;
+        walkRules(rule.cssRules, next);
       }
     }
   }
   for (const sheet of document.styleSheets) {
     try {
-      walkRules(sheet.cssRules, "");
+      walkRules(sheet.cssRules, sheet.media && sheet.media.mediaText ? [sheet.media.mediaText] : []);
     } catch {
       // cross-origin sheet
     }

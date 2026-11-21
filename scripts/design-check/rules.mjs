@@ -1,8 +1,10 @@
 // Pure rules for the design check. Input is the snapshot from collect.mjs.
 // No browser code here. Every rule returns a finding or null:
 //   { id, severity: "error" | "warn", message, count, examples: string[] }
+// Only contrast, overflow-x, eyebrow, heading-numbering, gradient-surface, glow,
+// infinite-animation and an unknown exemption id are errors. Everything else warns.
 // Thresholds marked "suggested" are not from a standard. See
-// docs/design-principles.md section 8 for which numbers are sourced.
+// docs/design-principles.md for the standards and his taste.
 
 export const THRESHOLDS = {
   contrastText: 4.5, // WCAG 2.0 AA 1.4.3
@@ -11,34 +13,25 @@ export const THRESHOLDS = {
   largeBoldPx: 18.66, // 14pt bold
   minTextPx: 12, // suggested
   fontSizesWarn: 8, // suggested
-  fontSizesError: 10, // his largest locked scale (Kanlungan)
   radiiWarn: 5, // suggested
-  radiiError: 8, // suggested, his largest scale has 8 sizes plus full
   borderWidthsWarn: 3, // suggested
-  borderWidthsError: 4, // suggested
   shadowsWarn: 3, // suggested
-  shadowsError: 5, // suggested
   maxNonMonoFamilies: 2, // suggested
   maxMonoFamilies: 1, // suggested
-  maxBorderPx: 1, // his projects: 1px, with 2px for focus and selection only
   glowBlurPx: 24, // suggested
   chromaMin: 0.12, // suggested: below this a color counts as neutral
   hueSpread: 30, // suggested cluster width in degrees
   durationWarnMs: 500, // NN/G ceiling
-  durationErrorMs: 700, // Carbon's longest token
   durationFloorMs: 70, // Carbon's shortest token
   entranceWarnMs: 600, // suggested
-  entranceErrorMs: 1500, // suggested
   targetMinPx: 24, // WCAG 2.2 2.5.8
   targetTouchPx: 44, // Apple HIG default, suggested as a floor on touch
   hoverScaleMax: 1.02, // suggested
   hoverTranslateMaxPx: 2, // suggested
-  letterSpacingMaxEm: 0.08, // suggested
   eyebrowMaxWords: 5, // suggested
   eyebrowMaxChars: 40, // suggested
   eyebrowGapPx: 32, // suggested
   lightWeight: 400, // Apple HIG: avoid light weights
-  disclosureTextDelta: 20, // suggested
   radiusNearPx: 1, // suggested: two radii this close are not a deliberate scale
   radiusNearPairsError: 2, // suggested
   fontNearPx: 0.5, // suggested: half-pixel sizes next to each other are not a scale
@@ -174,7 +167,7 @@ export function parseShadowLayer(layer) {
   const color = parseColorString(layer);
   const inset = /\binset\b/.test(layer);
   const stripped = layer.replace(/rgba?\([^)]*\)/g, " ").replace(/#[0-9a-f]{3,8}\b/gi, " ");
-  const nums = (stripped.match(/-?\d*\.?\d+(?=px)/g) || []).map(Number);
+  const nums = (stripped.match(/-?\d*\.?\d+(?:px)?/g) || []).map(parseFloat);
   const [x = 0, y = 0, blur = 0, spread = 0] = nums;
   return { x, y, blur, spread, color, inset };
 }
@@ -192,20 +185,13 @@ function dropShadows(filter) {
   return out;
 }
 
-function median(nums) {
-  if (!nums.length) return 0;
-  const s = [...nums].sort((a, b) => a - b);
-  const mid = Math.floor(s.length / 2);
-  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
-}
-
-// Text that is only a hex color code, a number or a unit value is data, not a label.
-export function isDataText(text) {
-  const t = (text || "").trim();
-  return /^#[0-9a-f]{3,8}$/i.test(t) || /^[+-]?[\d.,\s]+[a-z%]{0,3}$/i.test(t);
-}
-
 const STATUS_RE = /(^|[\s_-])(success|error|danger|warning|warn|status|valid|invalid|ok|fail|failed|alert|positive|negative|destructive)([\s_-]|$)/i;
+
+// Stylesheet rules count only when their selector matches something on the page
+// (state classes such as .on are ignored when matching) and their media query is active.
+function liveCss(v) {
+  return (v.cssRules || []).filter((r) => r.mediaActive !== false && r.matches > 0);
+}
 
 function isFloating(e) {
   if (e.position === "fixed") return true;
@@ -222,10 +208,6 @@ function isFullRadius(e, v) {
 function hasPaint(e) {
   const border = (e.borders || []).some((b) => b.w > 0 && b.style !== "none" && (b.color ? b.color[3] > 0 : true));
   return border || (e.bgOwn && e.bgOwn[3] > 0.02) || !!e.bgImage || !!e.boxShadow;
-}
-
-function sidesWith(e, pred) {
-  return (e.borders || []).filter(pred).length;
 }
 
 // ---------- rules ----------
@@ -264,7 +246,7 @@ rule("min-text-size", (snap) => {
       if (size < THRESHOLDS.minTextPx) bad.push({ e, size, vp: v.name });
     }
   }
-  return finding("min-text-size", "error", `Text smaller than ${THRESHOLDS.minTextPx}px as rendered.`, bad, (b) =>
+  return finding("min-text-size", "warn", `Text smaller than ${THRESHOLDS.minTextPx}px as rendered.`, bad, (b) =>
     describe(b.e, `${b.size.toFixed(1)}px at ${b.vp}`),
   );
 });
@@ -282,11 +264,10 @@ rule("budget-font-sizes", (snap) => {
   const tooMany = n > THRESHOLDS.fontSizesWarn;
   const noisy = pairs >= THRESHOLDS.fontNearPairsWarn;
   if (!tooMany && !noisy) return null;
-  const severity = n > THRESHOLDS.fontSizesError ? "error" : "warn";
   return {
     id: "budget-font-sizes",
-    severity,
-    message: `${n} distinct font sizes, ${pairs} pairs within ${THRESHOLDS.fontNearPx}px of each other. Budget is ${THRESHOLDS.fontSizesWarn} sizes (warn) and ${THRESHOLDS.fontSizesError} (error).`,
+    severity: "warn",
+    message: `${n} distinct font sizes, ${pairs} pairs within ${THRESHOLDS.fontNearPx}px of each other. Budget is ${THRESHOLDS.fontSizesWarn} sizes.`,
     count: n,
     examples: [list.join(", ") + " px"],
   };
@@ -301,7 +282,7 @@ rule("budget-font-families", (snap) => {
   if (!over) return null;
   return {
     id: "budget-font-families",
-    severity: "error",
+    severity: "warn",
     message: `${plain.size} text families and ${mono.size} monospace. Budget is ${THRESHOLDS.maxNonMonoFamilies} and ${THRESHOLDS.maxMonoFamilies}.`,
     count: plain.size + mono.size,
     examples: [[...plain, ...mono].join(", ")],
@@ -326,8 +307,8 @@ rule("budget-radii", (snap) => {
   if (n <= THRESHOLDS.radiiWarn && !noisy) return null;
   return {
     id: "budget-radii",
-    severity: n > THRESHOLDS.radiiError || noisy ? "error" : "warn",
-    message: `${n} distinct corner radii, not counting fully round shapes, and ${pairs} pairs only ${THRESHOLDS.radiusNearPx}px apart. Budget is ${THRESHOLDS.radiiWarn} (warn), ${THRESHOLDS.radiiError} or ${THRESHOLDS.radiusNearPairsError} near pairs (error).`,
+    severity: "warn",
+    message: `${n} distinct corner radii, not counting fully round shapes, and ${pairs} pairs only ${THRESHOLDS.radiusNearPx}px apart. Budget is ${THRESHOLDS.radiiWarn}.`,
     count: n,
     examples: [list.join(", ") + " px"],
   };
@@ -344,27 +325,10 @@ rule("budget-border-widths", (snap) => {
   if (n <= THRESHOLDS.borderWidthsWarn) return null;
   return {
     id: "budget-border-widths",
-    severity: n > THRESHOLDS.borderWidthsError ? "error" : "warn",
-    message: `${n} distinct border widths. Budget is ${THRESHOLDS.borderWidthsWarn} (warn) and ${THRESHOLDS.borderWidthsError} (error).`,
+    severity: "warn",
+    message: `${n} distinct border widths. Budget is ${THRESHOLDS.borderWidthsWarn}.`,
     count: n,
     examples: [[...set].sort((a, b) => a - b).join(", ") + " px"],
-  };
-});
-
-rule("budget-border-styles", (snap) => {
-  const v = desktop(snap);
-  const set = new Set();
-  for (const e of v.elements) {
-    if (!e.visible || e.tag === "line" || e.tag === "path") continue;
-    for (const b of e.borders || []) if (b.w > 0 && b.style !== "none") set.add(b.style);
-  }
-  if (set.size <= 1) return null;
-  return {
-    id: "budget-border-styles",
-    severity: "warn",
-    message: "More than one border style on the page. His projects use solid only.",
-    count: set.size,
-    examples: [[...set].join(", ")],
   };
 });
 
@@ -377,15 +341,12 @@ rule("budget-shadows", (snap) => {
     if (e.boxShadow) set.add(norm(e.boxShadow));
     for (const d of dropShadows(e.filter)) set.add("drop:" + JSON.stringify(d));
   }
-  for (const r of v.cssRules || []) {
-    if (r.boxShadow && r.boxShadow !== "none") set.add(norm(r.boxShadow));
-  }
   const n = set.size;
   if (n <= THRESHOLDS.shadowsWarn) return null;
   return {
     id: "budget-shadows",
-    severity: n > THRESHOLDS.shadowsError ? "error" : "warn",
-    message: `${n} distinct shadow definitions, counting stylesheet states. Budget is ${THRESHOLDS.shadowsWarn} (warn) and ${THRESHOLDS.shadowsError} (error).`,
+    severity: "warn",
+    message: `${n} distinct shadows on rendered elements. Budget is ${THRESHOLDS.shadowsWarn}.`,
     count: n,
     examples: [...set].slice(0, 3).map((s) => (s.length > 70 ? s.slice(0, 70) + "..." : s)),
   };
@@ -435,7 +396,7 @@ rule("accent-hues", (snap, opts) => {
     : " Without a token file (--tokens), status colors cannot be told apart from accents, so only status-like class names are skipped.";
   return finding(
     "accent-hues",
-    "error",
+    "warn",
     `${real.length} chromatic hue families outside status colors. His projects use one accent, or none.${note}`,
     real,
     (c) => {
@@ -452,18 +413,18 @@ rule("glow", (snap) => {
     if (!e.visible) continue;
     const layers = [...parseShadows(e.boxShadow), ...dropShadows(e.filter)];
     for (const l of layers) {
-      if (l.inset) continue;
+      if (l.inset || l.blur === 0) continue; // zero blur is a ring, not a glow
       const chromatic = isChromatic(l.color);
       const bigResting = !chromatic && l.blur >= THRESHOLDS.glowBlurPx && !isFloating(e);
       if (chromatic) items.push({ where: "at rest", what: describe(e, `shadow ${l.blur}px blur, rgb(${l.color.slice(0, 3).map(Math.round)})`), severity: "error" });
       else if (bigResting) items.push({ where: "at rest", what: describe(e, `${l.blur}px blur shadow on a resting element`), severity: "warn" });
     }
   }
-  for (const r of v.cssRules || []) {
+  for (const r of liveCss(v)) {
     const values = [r.boxShadow, r.filter].filter(Boolean);
     for (const val of values) {
       const layers = [...parseShadows(r.boxShadow === val ? val : ""), ...dropShadows(r.filter === val ? val : "")];
-      if (layers.some((l) => !l.inset && isChromatic(l.color))) {
+      if (layers.some((l) => !l.inset && l.blur > 0 && isChromatic(l.color))) {
         items.push({ where: "in a state rule", what: `${r.selector} ${val.slice(0, 50)}`, severity: "error" });
         break;
       }
@@ -485,25 +446,8 @@ rule("gradient-surface", (snap) => {
   const els = v.elements.filter((e) => e.visible && e.bgImage === "gradient");
   const items = els.length
     ? els.map((e) => describe(e, e.bgImageRaw.slice(0, 40)))
-    : (v.cssRules || []).filter((r) => /gradient/.test(r.backgroundImage || "")).map((r) => `${r.selector} ${r.backgroundImage.slice(0, 40)}`);
+    : liveCss(v).filter((r) => /gradient/.test(r.backgroundImage || "")).map((r) => `${r.selector} ${r.backgroundImage.slice(0, 40)}`);
   return finding("gradient-surface", "error", "Gradient used as a surface or wash. His projects use flat fills.", items);
-});
-
-rule("border-thick", (snap) => {
-  const v = desktop(snap);
-  const bad = [];
-  for (const e of v.elements) {
-    if (!e.visible) continue;
-    if (["input", "select", "textarea"].includes(e.tag) || ["checkbox", "radio", "switch"].includes(e.role)) continue;
-    if (["path", "line", "circle", "rect", "polyline", "polygon", "svg"].includes(e.tag)) continue;
-    const thick = (e.borders || []).filter((b) => b.w > THRESHOLDS.maxBorderPx + 0.01 && b.style !== "none");
-    if (!thick.length) continue;
-    if (isAccentBar(e)) continue;
-    bad.push({ e, w: Math.max(...thick.map((b) => b.w)) });
-  }
-  return finding("border-thick", "error", `Border thicker than ${THRESHOLDS.maxBorderPx}px on a resting element. His projects reserve 2px for focus and selection.`, bad, (b) =>
-    describe(b.e, `${b.w}px`),
-  );
 });
 
 function isAccentBar(e) {
@@ -516,7 +460,7 @@ function isAccentBar(e) {
 rule("accent-bar", (snap) => {
   const v = desktop(snap);
   const bad = v.elements.filter((e) => e.visible && isAccentBar(e));
-  return finding("accent-bar", "error", "Colored bar on one edge of a rounded block (the left-border callout).", bad, (e) => describe(e));
+  return finding("accent-bar", "warn", "Colored bar on one edge of a rounded block (the left-border callout).", bad, (e) => describe(e));
 });
 
 rule("border-dashed", (snap) => {
@@ -527,7 +471,7 @@ rule("border-dashed", (snap) => {
       !["path", "line", "circle", "rect", "polyline", "polygon", "svg"].includes(e.tag) &&
       (e.borders || []).some((b) => b.w > 0 && (b.style === "dashed" || b.style === "dotted")),
   );
-  return finding("border-dashed", "error", "Dashed or dotted border. His interface borders are solid.", bad, (e) => describe(e));
+  return finding("border-dashed", "warn", "Dashed or dotted border. His interface borders are solid.", bad, (e) => describe(e));
 });
 
 rule("pill-shape", (snap) => {
@@ -547,37 +491,9 @@ rule("pill-shape", (snap) => {
     if (label && h <= 24) continue; // small tag
     bad.push({ e, w, h });
   }
-  return finding("pill-shape", "error", "Pill-shaped button or label (radius of half the height or more).", bad, (b) =>
+  return finding("pill-shape", "warn", "Pill-shaped button or label (radius of half the height or more).", bad, (b) =>
     describe(b.e, `${Math.round(b.w)}x${Math.round(b.h)}, radius ${b.e.radius}`),
   );
-});
-
-rule("card-in-card", (snap) => {
-  const v = desktop(snap);
-  const isBox = (e) => {
-    if (!e.visible || e.pseudoOf !== undefined || e.interactive) return false;
-    if (["svg", "path", "line", "circle", "rect", "text", "tspan", "input", "select", "textarea", "td", "th", "tr", "table", "html", "body"].includes(e.tag)) return false;
-    const { w, h } = cssSize(v, e);
-    if (w < 120 || h < 48) return false;
-    if (e.rect.w >= v.innerWidth * 0.95) return false;
-    const solidSides = sidesWith(e, (b) => b.w >= 1 && b.style !== "none" && (!b.color || b.color[3] >= 0.05));
-    const fill = e.bgOwn && e.bgOwn[3] >= 0.03;
-    return solidSides >= 3 || (fill && e.radius > 0);
-  };
-  const boxes = v.elements.map(isBox);
-  const bad = [];
-  v.elements.forEach((e, i) => {
-    if (!boxes[i]) return;
-    let p = e.parent;
-    while (p !== null && p !== undefined) {
-      if (boxes[p]) {
-        bad.push({ e, outer: v.elements[p] });
-        return;
-      }
-      p = v.elements[p].parent;
-    }
-  });
-  return finding("card-in-card", "error", "Bordered or filled container inside another one.", bad, (b) => `${describe(b.e)} inside ${describe(b.outer)}`);
 });
 
 rule("eyebrow", (snap) => {
@@ -610,18 +526,6 @@ rule("heading-numbering", (snap) => {
   return finding("heading-numbering", "error", "Numbered heading or part title outside a real ordered list.", bad, (b) => `"${b.h.text.slice(0, 30)}" (${b.why})`);
 });
 
-rule("uppercase-label", (snap) => {
-  const v = desktop(snap);
-  const bad = textEls(v).filter((e) => {
-    if (e.inCode || isDataText(e.text)) return false;
-    const shout = /[A-Z]{4,}/.test(e.text) && e.text === e.text.toUpperCase() && /[A-Z]/.test(e.text);
-    return e.textTransform === "uppercase" || shout || e.letterSpacingEm >= THRESHOLDS.letterSpacingMaxEm;
-  });
-  return finding("uppercase-label", "error", "Uppercase or widely spaced label. His projects use sentence case.", bad, (e) =>
-    describe(e, e.textTransform === "uppercase" ? "uppercase" : e.letterSpacingEm >= THRESHOLDS.letterSpacingMaxEm ? `tracking ${e.letterSpacingEm}em` : "all caps text"),
-  );
-});
-
 rule("mono-outside-code", (snap) => {
   const v = desktop(snap);
   const bad = textEls(v).filter((e) => e.mono && !e.inCode);
@@ -639,7 +543,7 @@ function signatureName(snap) {
   const v = desktop(snap);
   const names = new Set();
   for (const e of v.elements) if (e.attrs && e.attrs.dataSignature) for (const a of e.animations) names.add(a.name);
-  for (const r of v.cssRules || []) if (/\.signature\b|\[data-signature\]/.test(r.selector) && r.animationName) names.add(r.animationName);
+  for (const r of liveCss(v)) if (/\.signature\b|\[data-signature\]/.test(r.selector) && r.animationName) names.add(r.animationName);
   return names;
 }
 
@@ -653,11 +557,7 @@ rule("infinite-animation", (snap) => {
       if (a.iterations === "infinite" && !sig.has(a.name) && !loading.test(e.cls || "") && !loading.test(a.name)) found.set(a.name, describe(e, a.name));
     }
   }
-  for (const r of v.cssRules || []) {
-    if (/infinite/.test(r.animationIterationCount || "") && !/\.signature\b|\[data-signature\]/.test(r.selector) && !loading.test(r.selector) && !loading.test(r.animationName || "")) {
-      found.set(r.animationName || r.selector, `${r.selector} ${r.animationName || ""}`);
-    }
-  }
+  // Loops declared only in hover or state rules are not running at rest, so they are not counted.
   for (const i of (v.settle && v.settle.infiniteRunning) || []) {
     if (!sig.has(i.name) && !loading.test(i.selector || "") && !loading.test(i.name || "") && !/signature/.test(i.selector || "")) found.set(i.name || i.selector, `${i.selector} ${i.name}`);
   }
@@ -674,7 +574,7 @@ rule("duration-band", (snap) => {
     for (const t of e.transitions) items.push({ d: t.duration, what: describe(e, `transition ${t.property} ${t.duration}ms`) });
     for (const a of e.animations) if (!sig.has(a.name) && a.iterations !== "infinite") items.push({ d: a.duration, what: describe(e, `animation ${a.name} ${a.duration}ms`) });
   }
-  for (const r of v.cssRules || []) {
+  for (const r of liveCss(v)) {
     if (!r.animationDuration || /\.signature\b|\[data-signature\]/.test(r.selector)) continue;
     for (const d of r.animationDuration.split(",")) {
       const ms = d.trim().endsWith("ms") ? parseFloat(d) : parseFloat(d) * 1000;
@@ -687,11 +587,10 @@ rule("duration-band", (snap) => {
   const tooShort = uniq.filter((i) => i.d > 0 && i.d < THRESHOLDS.durationFloorMs);
   const all = [...tooLong, ...tooShort];
   if (!all.length) return null;
-  const errors = tooLong.filter((i) => i.d > THRESHOLDS.durationErrorMs);
   return {
     id: "duration-band",
-    severity: errors.length ? "error" : "warn",
-    message: `Motion outside ${THRESHOLDS.durationFloorMs} to ${THRESHOLDS.durationWarnMs} ms (error above ${THRESHOLDS.durationErrorMs} ms). His UI motion is 120 to 300 ms.`,
+    severity: "warn",
+    message: `Motion outside ${THRESHOLDS.durationFloorMs} to ${THRESHOLDS.durationWarnMs} ms. His UI motion is 120 to 300 ms.`,
     count: all.length,
     examples: all.slice(0, 3).map((i) => i.what),
   };
@@ -703,8 +602,8 @@ rule("entrance-length", (snap) => {
   if (ms <= THRESHOLDS.entranceWarnMs) return null;
   return {
     id: "entrance-length",
-    severity: ms > THRESHOLDS.entranceErrorMs ? "error" : "warn",
-    message: `Page motion kept running for ${ms} ms after load (measured up to 6000 ms). Warn above ${THRESHOLDS.entranceWarnMs} ms, error above ${THRESHOLDS.entranceErrorMs} ms.`,
+    severity: "warn",
+    message: `Page motion kept running for ${ms} ms after load (measured up to 6000 ms). Budget is ${THRESHOLDS.entranceWarnMs} ms.`,
     count: 1,
     examples: [`${ms} ms`],
   };
@@ -739,7 +638,7 @@ const STATE_SELECTOR_RE = /:hover|:focus|:active|\.(on|active|selected|current|f
 rule("hover-scale", (snap) => {
   const v = desktop(snap);
   const bad = [];
-  for (const r of v.cssRules || []) {
+  for (const r of liveCss(v)) {
     if (!STATE_SELECTOR_RE.test(r.selector)) continue;
     if (/prefers-reduced-motion/.test(r.media || "")) continue;
     const t = `${r.transform || ""} ${r.scale ? "scale(" + r.scale.split(" ")[0] + ")" : ""}`;
@@ -747,7 +646,7 @@ rule("hover-scale", (snap) => {
     const moves = /:hover|:focus|:active/.test(r.selector) ? translateOf(t).filter((n) => n > THRESHOLDS.hoverTranslateMaxPx) : [];
     if (scales.length || moves.length) bad.push({ r, what: scales.length ? `scale ${Math.max(...scales)}` : `move ${Math.max(...moves)}px` });
   }
-  return finding("hover-scale", "error", "Hover, focus or selected state that scales parts above 1.02 or moves them more than 2px.", bad, (b) => `${b.r.selector} (${b.what})`);
+  return finding("hover-scale", "warn", "Hover, focus or selected state that scales parts above 1.02 or moves them more than 2px.", bad, (b) => `${b.r.selector} (${b.what})`);
 });
 
 rule("overflow-x", (snap) => {
@@ -773,7 +672,7 @@ rule("target-size", (snap) => {
       if (e.rect.w < THRESHOLDS.targetMinPx || e.rect.h < THRESHOLDS.targetMinPx) bad.push({ e, v });
     }
   }
-  return finding("target-size", "error", `Interactive target under ${THRESHOLDS.targetMinPx} by ${THRESHOLDS.targetMinPx} px as rendered (WCAG 2.2 2.5.8).`, bad, (b) =>
+  return finding("target-size", "warn", `Interactive target under ${THRESHOLDS.targetMinPx} by ${THRESHOLDS.targetMinPx} px as rendered (WCAG 2.2 2.5.8).`, bad, (b) =>
     describe(b.e, `${Math.round(b.e.rect.w)}x${Math.round(b.e.rect.h)} at ${b.v.name}`),
   );
 });
@@ -795,141 +694,31 @@ export function parseTokens(cssText) {
   const css = cssText.replace(/\/\*[\s\S]*?\*\//g, "");
   const colors = [];
   const statusColors = [];
-  const lengths = { all: [], radii: [], fontSizes: [], spacing: [] };
   const re = /--([\w-]+)\s*:\s*([^;}]+)/g;
   let m;
   while ((m = re.exec(css))) {
     const name = m[1];
     const value = m[2].trim();
-    const color = parseColorString(value);
-    const isStatus = STATUS_TOKEN_RE.test(name);
-    if (color && /^(#|rgb)/i.test(value)) {
-      colors.push(color.slice(0, 3));
-      if (isStatus) statusColors.push(color.slice(0, 3));
-      continue;
-    }
+    let color = null;
+    if (/^(#|rgb)/i.test(value)) color = parseColorString(value);
     const hsl = value.match(/^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%/i);
     if (hsl) {
       const h = parseFloat(hsl[1]) / 360;
-      const s = parseFloat(hsl[2]) / 100;
+      const sat = parseFloat(hsl[2]) / 100;
       const l = parseFloat(hsl[3]) / 100;
       const f = (n) => {
         const k = (n + h * 12) % 12;
-        const a = s * Math.min(l, 1 - l);
+        const a = sat * Math.min(l, 1 - l);
         return Math.round((l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))) * 255);
       };
-      colors.push([f(0), f(8), f(4)]);
-      if (isStatus) statusColors.push([f(0), f(8), f(4)]);
-      continue;
+      color = [f(0), f(8), f(4)];
     }
-    const len = value.match(/^(-?[\d.]+)(px|rem|em)$/);
-    if (len) {
-      const px = parseFloat(len[1]) * (len[2] === "px" ? 1 : 16);
-      lengths.all.push(px);
-      if (/radius|rounded|corner/i.test(name)) lengths.radii.push(px);
-      if (/font|text|type|(^|-)fs(-|$)|size/i.test(name) && !/space|spacing|gap|pad|margin/i.test(name)) lengths.fontSizes.push(px);
-      if (/space|spacing|gap|pad|margin|inset|gutter/i.test(name)) lengths.spacing.push(px);
-    }
+    if (!color) continue;
+    colors.push(color.slice(0, 3));
+    if (STATUS_TOKEN_RE.test(name)) statusColors.push(color.slice(0, 3));
   }
-  return { colors, statusColors, lengths };
+  return { colors, statusColors };
 }
-
-function near(set, value, tol) {
-  return set.some((t) => Math.abs(t - value) <= tol);
-}
-
-rule("token-colors", (snap, opts) => {
-  if (!opts || !opts.tokens) return null;
-  const v = desktop(snap);
-  const allowed = opts.tokens.colors;
-  const missing = new Map();
-  const check = (c, e) => {
-    if (!c || (c[3] ?? 1) < 0.02) return;
-    const hit = allowed.some((t) => Math.abs(t[0] - c[0]) <= 2 && Math.abs(t[1] - c[1]) <= 2 && Math.abs(t[2] - c[2]) <= 2);
-    if (hit) return;
-    const key = `rgb(${c.slice(0, 3).map(Math.round).join(",")})`;
-    if (!missing.has(key)) missing.set(key, { n: 0, e });
-    missing.get(key).n++;
-  };
-  for (const e of v.elements) {
-    if (!e.visible) continue;
-    if (e.textLen > 0) check(e.color, e);
-    check(e.bgOwn, e);
-    for (const b of e.borders || []) if (b.w > 0 && b.style !== "none") check(b.color, e);
-  }
-  const items = [...missing.entries()];
-  return finding("token-colors", "error", "Colors on the page that the token file does not define.", items, ([k, m]) => `${k} on ${m.n} elements, e.g. ${describe(m.e)}`);
-});
-
-function lengthRule(id, label, pick, tokenKey, severity) {
-  rule(id, (snap, opts) => {
-    if (!opts || !opts.tokens) return null;
-    const v = desktop(snap);
-    const specific = opts.tokens.lengths[tokenKey];
-    const allowed = [0, ...(specific.length ? specific : opts.tokens.lengths.all)];
-    const missing = new Map();
-    for (const e of v.elements) {
-      if (!e.visible) continue;
-      for (const val of pick(e, v)) {
-        if (!(val > 0)) continue;
-        if (near(allowed, val, 0.5)) continue;
-        const k = Math.round(val * 10) / 10;
-        if (!missing.has(k)) missing.set(k, { n: 0, e });
-        missing.get(k).n++;
-      }
-    }
-    return finding(id, severity, `${label} on the page that the token file does not define.`, [...missing.entries()].sort((a, b) => b[1].n - a[1].n), ([k, m]) => `${k}px on ${m.n} elements, e.g. ${describe(m.e)}`);
-  });
-}
-lengthRule("token-radii", "Corner radii", (e, v) => (e.radius > 0 && hasPaint(e) && !isFullRadius(e, v) ? [e.radius] : []), "radii", "error");
-lengthRule("token-font-sizes", "Font sizes", (e) => (e.textLen > 0 ? [e.fontSize] : []), "fontSizes", "error");
-lengthRule("token-spacing", "Spacing values (padding, margin, gap)", (e) => [...e.spacing.padding, ...e.spacing.margin.filter((m) => m > 0), ...e.spacing.gap], "spacing", "warn");
-
-// ---------- disclosure ----------
-
-const STATE_CLASS_RE = /^(on|off|active|open|selected|current|cur|pre|gone|done|hi|show|shown|hidden|focus|focused|hover|disabled|is-.*|has-.*|click|arrive|pop|past)$/i;
-
-function familyKey(e) {
-  const tokens = (e.cls || "").trim().split(/\s+/).filter((c) => c && !STATE_CLASS_RE.test(c));
-  if (tokens.length) return `${e.tag}.${tokens[0]}`;
-  if (["li", "article", "details"].includes(e.tag)) return e.tag;
-  return null;
-}
-
-rule("disclosure-inconsistent", (snap) => {
-  const v = desktop(snap);
-  const groups = new Map();
-  for (const e of v.elements) {
-    if (!e.visible || e.pseudoOf !== undefined || e.restChars <= 0) continue;
-    const key = familyKey(e);
-    if (!key) continue;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(e);
-  }
-  const bad = [];
-  for (const [key, members] of groups) {
-    if (members.length < 3) continue;
-    const reveals = (e) => e.hiddenDetailChars > 0 || e.attrs.ariaExpanded || e.attrs.ariaControls || e.attrs.ariaHaspopup || e.tag === "details" || e.attrs.title;
-    const R = members.filter(reveals);
-    const O = members.filter((e) => !reveals(e));
-    if (R.length && O.length) {
-      const showAtRest = median(O.map((e) => e.restChars));
-      const revealAtRest = median(R.map((e) => e.restChars));
-      if (showAtRest > revealAtRest + THRESHOLDS.disclosureTextDelta) {
-        bad.push(`${key}: ${R.length} of ${members.length} hide detail until interaction, ${O.length} show longer text at rest`);
-        continue;
-      }
-    }
-    const I = members.filter((e) => e.interactive);
-    if (I.length && I.length < members.length) bad.push(`${key}: ${I.length} of ${members.length} are interactive, the rest are not`);
-  }
-  return finding(
-    "disclosure-inconsistent",
-    "warn",
-    "Elements of the same kind reveal detail in different ways. Click-driven panels that open from script are not seen, so the eye still decides.",
-    bad,
-  );
-});
 
 // ---------- exemptions ----------
 
