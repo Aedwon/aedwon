@@ -21,8 +21,16 @@ Run these before showing the work they name. Each came from an entry below.
 2. **Agree the structure of one part before writing them all.** Before drafting copy for a page with repeated parts, show one part in full and get his answer on its structure, meaning which lines it holds and in what order. Write the rest only after that.
 3. **Check a revision against what he already approved.** Before showing a new or shortened draft, list the decisions he approved earlier for that work and confirm the draft still carries each one. Name any it drops and why. For work that spans a session, keep those decisions in a file, not only in the chat.
 4. **Trace one real task before describing how he works.** Walk one real task from his first message to his sign-off and list each step in the order it happened. The description must carry every step, in that order. Steps that come from a plugin or a habit count, even when no rule file states them.
+5. **A recommendation about look or motion ships with a working demo.** Never recommend a visual, layout or motion idea in words alone, and never ask him to pick from a description. Build the recommendation as a live sample first, view it, then show it with the recommendation. If the sample is not ready, say it is being built and ask nothing until it is. References from other sites support the sample. They do not replace it.
 
 ## Entries
+
+### Recommended a mix of motions without showing it (Nov 21)
+
+- **His words.** "show me your recommendation. how many times is this, you recommend a mix but never actually show me"
+- **What was wrong.** The agent showed four clips of other sites, then recommended combining three of their motion ideas on his page, and asked which clips felt right. The combination itself existed only as a sentence. He had already said "show me" earlier the same day, about the page layout.
+- **Why the process let it through.** Rule 1 says to start from references and then build one live page, but nothing said a recommendation needs its own demo. The agent treated the references as the demo. This repeats the first entry in this file, so the fix moves up from a written rule to a required step.
+- **The fix.** Required step 5 above.
 
 ### Workflow copy left out brainstorming and ordered parts by category (Nov 21)
 
