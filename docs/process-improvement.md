@@ -11,7 +11,7 @@ Design taste lives in `docs/design-principles.md`. Read it before any design wor
 
 ## Required steps
 
-1. **Lock shape and facts first.** Before drafting repeated copy or drawing a diagram, confirm one part's structure and every connection in plain sentences. Keep his approved decisions in the spec and check each revision against them.
+1. **Lock shape and facts first.** Before drafting repeated copy or drawing a diagram, confirm one part's structure and every connection in plain sentences. Keep his approved decisions in the spec and check each revision against them. The lead also decides how detail is revealed and states it in the brief. It is not left to the builder.
 2. **Count visitor words.** State a budget (60 words per part by default, leaving out prompts, quotes and builder notes) and report the count before showing copy.
 3. **Show, do not describe.** A look or motion proposal is a live sample he can see, viewed and critiqued by the agent first. After a rejection, collect what he dislikes before building again.
 4. **Check before showing.** Run the design check, fix its errors, and review once against `docs/design-principles.md`.

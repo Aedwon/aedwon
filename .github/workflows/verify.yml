@@ -130,6 +130,7 @@ jobs:
           assert_contains "sitemap canonical origin" "$SITEMAP_BODY" "https://www.aedwon.site"
           assert_not_contains "sitemap thin PSO placeholder" "$SITEMAP_BODY" "/projects/pso-scoring-model"
           assert_not_contains "sitemap thin Genshin placeholder" "$SITEMAP_BODY" "/projects/gi-damage-calculator"
+          assert_not_contains "sitemap workflow page" "$SITEMAP_BODY" "/workflow"
 
           ROBOTS_BODY=$(curl -fsS http://127.0.0.1:3000/robots.txt)
           assert_contains "robots sitemap" "$ROBOTS_BODY" "Sitemap: https://www.aedwon.site/sitemap.xml"
@@ -191,6 +192,9 @@ jobs:
 
           LOGO_TOOL_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/logo-cropper)
           assert_regex "logo tool noindex" "$LOGO_TOOL_HTML" '<meta name="robots" content="[^"]*noindex'
+
+          WORKFLOW_HTML=$(curl -fsS -H "Accept: text/html" http://127.0.0.1:3000/workflow)
+          assert_regex "workflow page noindex" "$WORKFLOW_HTML" '<meta name="robots" content="[^"]*noindex'
 
           OG_HEADERS=$(curl -sSI http://127.0.0.1:3000/opengraph-image | tr -d '\r')
           assert_regex "Open Graph image content-type" "$OG_HEADERS" '^content-type: image/png'

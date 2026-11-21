@@ -4,6 +4,13 @@ The incident history behind the rules and steps in [`docs/process-improvement.md
 
 ## Entries
 
+### Dropdown parts on the workflow page (Nov 21)
+
+- **His words.** "the way these dropdowns appear is badly designed"
+- **What was wrong.** A part's detail opened far from the box he clicked, under an unrelated row of boxes. The boxes looked like form dropdowns and only some of them were clickable. Opening one pushed the whole page down.
+- **Why it got through.** The lead's brief left the disclosure pattern to the builder. The design check measures a page at rest, so it cannot see where a panel opens.
+- **The fix.** Required step 1 now says the lead decides how detail is revealed and states it in the brief. The page was rebuilt as a reading layout: every part is a normal section, only long prompts collapse, and the pictures link to the sections.
+
 ### Process machinery outgrew the task (Nov 21)
 
 - **His words.** "perhaps, in the endeavor of making things good here, we are committing an anti-pattern ourselves?"
