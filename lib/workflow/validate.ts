@@ -33,6 +33,7 @@ export function workflowProblems(input: unknown): string[] {
     const s = p[k];
     if (!isRec(s)) out.push(`${k} must be an object`);
     else {
+      str(s.id, `${k}.id`);
       str(s.title, `${k}.title`);
       strs(s.paragraphs, `${k}.paragraphs`);
     }
@@ -63,9 +64,15 @@ export function workflowProblems(input: unknown): string[] {
 
   const setupParts = checkParts(p.setup, "setup");
   const taskParts = checkParts(p.task, "task");
-  const ids = [...setupParts, ...taskParts].map((x) => x.id);
+  const sectionIds: string[] = [];
+  for (const k of ["mindset", "treatment", "paste", "beforeAfter", "oneTask", "rulesGrew"] as const) {
+    const sec = p[k];
+    if (isRec(sec) && typeof sec.id === "string") sectionIds.push(sec.id);
+    else out.push(`${k}.id must be a string`);
+  }
+  const ids = [...sectionIds, ...setupParts.map((x) => x.id), ...taskParts.map((x) => x.id)];
   ids.forEach((id, i) => {
-    if (ids.indexOf(id) !== i) out.push(`part id "${id}" is used twice`);
+    if (ids.indexOf(id) !== i) out.push(`section id "${id}" is used twice`);
   });
 
   if (isRec(p.setup)) {
@@ -83,14 +90,15 @@ export function workflowProblems(input: unknown): string[] {
           if (nodeIds.has(n.id)) out.push(`${w}.id is used twice`);
           nodeIds.add(n.id);
         }
-        if (n.part !== undefined && !setupParts.some((x) => x.id === n.part)) {
-          out.push(`${w}.part "${String(n.part)}" is not a setup part`);
-        }
+        if (typeof n.to !== "string" || !ids.includes(n.to)) out.push(`${w}.to must name a section on the page`);
         const g = n.grid;
         if (!Array.isArray(g) || g.length !== 2 || !g.every((x) => Number.isInteger(x) && x >= 1)) {
           out.push(`${w}.grid must be [column, row]`);
         }
       });
+      if (!Array.isArray(pic.extras) || !pic.extras.every((x) => setupParts.some((q) => q.id === x))) {
+        out.push("setup.picture.extras must list setup part ids");
+      }
       pic.edges.forEach((e, i) => {
         const w = `setup.picture.edges[${i}]`;
         if (!isRec(e)) return out.push(`${w} must be an object`);

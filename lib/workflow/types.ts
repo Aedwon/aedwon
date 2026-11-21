@@ -11,8 +11,8 @@ export interface OrgNode {
   id: string;
   label: string;
   sub?: string;
-  /** Id of the part this node opens. Nodes without one are plain boxes. */
-  part?: string;
+  /** Id of the section this box links to. */
+  to: string;
   /** Sits outside the chain. */
   outside?: boolean;
   /** [column, row] on the wide layout, 1-based. */
@@ -35,7 +35,7 @@ export interface PartGroupContent {
 }
 
 export interface SetupContent extends PartGroupContent {
-  picture: { nodes: OrgNode[]; edges: OrgEdge[] };
+  picture: { nodes: OrgNode[]; edges: OrgEdge[]; /** Setup parts drawn as boxes with no connections. */ extras: string[] };
 }
 
 export interface TaskContent extends PartGroupContent {
@@ -58,16 +58,17 @@ export interface WorkflowPage {
   line: string;
   snapshot: { text: string; iso: string };
   copyAll: string;
-  mindset: { title: string; paragraphs: string[] };
-  treatment: { title: string; paragraphs: string[] };
+  mindset: { id: string; title: string; paragraphs: string[] };
+  treatment: { id: string; title: string; paragraphs: string[] };
   setup: SetupContent;
   task: TaskContent;
-  paste: { title: string; paragraphs: string[]; head: string[]; rows: string[][] };
+  paste: { id: string; title: string; paragraphs: string[]; head: string[]; rows: string[][] };
   beforeAfter: {
+    id: string;
     title: string;
     paragraphs: string[];
     items: { type: "quote" | "reply"; text: string }[];
   };
-  oneTask: { title: string; paragraphs: string[]; steps: LeadItem[] };
-  rulesGrew: { title: string; items: LeadItem[] };
+  oneTask: { id: string; title: string; paragraphs: string[]; steps: LeadItem[] };
+  rulesGrew: { id: string; title: string; items: LeadItem[] };
 }

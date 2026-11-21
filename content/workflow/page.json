@@ -7,12 +7,14 @@
   },
   "copyAll": "Copy for my agent",
   "mindset": {
+    "id": "mindset",
     "title": "Mindset",
     "paragraphs": [
       "I'm the executive. One lead manages the workers, cheaper workers do it, and an outside auditor checks it. I write to agents the way I'd message people who work for me. The rules live in files, so that any vendor or model provider's model can follow them."
     ]
   },
   "treatment": {
+    "id": "treatment",
     "title": "Treatment",
     "paragraphs": [
       "Agents give options, recommendations, and their costs (pros and cons, time to build) - and I decide. I only check what a user would see (UI/UX), and I don't read the code. Nothing is done without proof/verification though. And every mistake gets fixed in the process-improvement process."
@@ -77,25 +79,26 @@
           "grid": [
             2,
             1
-          ]
+          ],
+          "to": "the-org-chart"
         },
         {
           "id": "policy",
           "label": "Company policy",
-          "part": "company-policy",
           "grid": [
             1,
             1
-          ]
+          ],
+          "to": "company-policy"
         },
         {
           "id": "playbook",
           "label": "Project playbook",
-          "part": "project-playbook",
           "grid": [
             1,
             3
-          ]
+          ],
+          "to": "project-playbook"
         },
         {
           "id": "aedwon",
@@ -103,7 +106,8 @@
           "grid": [
             1,
             2
-          ]
+          ],
+          "to": "mindset"
         },
         {
           "id": "lead",
@@ -111,7 +115,8 @@
           "grid": [
             2,
             2
-          ]
+          ],
+          "to": "the-org-chart"
         },
         {
           "id": "implementation",
@@ -119,7 +124,8 @@
           "grid": [
             3,
             1
-          ]
+          ],
+          "to": "the-org-chart"
         },
         {
           "id": "bulk",
@@ -127,7 +133,8 @@
           "grid": [
             3,
             3
-          ]
+          ],
+          "to": "the-org-chart"
         },
         {
           "id": "auditor",
@@ -137,7 +144,8 @@
           "grid": [
             2,
             3
-          ]
+          ],
+          "to": "outside-audit"
         }
       ],
       "edges": [
@@ -184,6 +192,11 @@
           "ends": "both",
           "optional": true
         }
+      ],
+      "extras": [
+        "the-org-chart",
+        "codex",
+        "tools"
       ]
     }
   },
@@ -279,6 +292,7 @@
     }
   },
   "paste": {
+    "id": "where-to-paste",
     "title": "Where to paste",
     "paragraphs": [
       "Start with company policy. It works in any chat app. If you're confident with your agents and lazy enough, just tell your agents to adopt the things I've written in this site LOL."
@@ -322,6 +336,7 @@
     ]
   },
   "beforeAfter": {
+    "id": "before-and-after",
     "title": "Before and after",
     "paragraphs": [
       "One model, one website, eight minutes apart. In between, it read my rules. 390 words became 143. 44 code terms became none."
@@ -350,6 +365,7 @@
     ]
   },
   "oneTask": {
+    "id": "one-task",
     "title": "One task",
     "paragraphs": [
       "A Discord bot, 53 minutes, Gemini leading."
@@ -385,6 +401,7 @@
     ]
   },
   "rulesGrew": {
+    "id": "how-the-rules-grew",
     "title": "How the rules grew",
     "items": [
       {
