@@ -90,7 +90,6 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
   const bandInnerRef = useRef<HTMLDivElement>(null);
   const filterRowRef = useRef<HTMLDivElement>(null);
   const qdRef = useRef<HTMLDivElement>(null);
-  const qHintRef = useRef<HTMLSpanElement>(null);
   const capRef = useRef<HTMLDivElement>(null);
   const capNRef = useRef<HTMLSpanElement>(null);
   const capNameRef = useRef<HTMLSpanElement>(null);
@@ -636,7 +635,6 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
       qdRef.current.style.opacity = qOn ? '1' : '0';
       qdRef.current.style.translate = `0 ${qOn ? '0px' : '10px'}`;
     }
-    if (qHintRef.current) qHintRef.current.style.opacity = s.q.length > 0 ? '0' : '1';
     if (ixRef.current) ixRef.current.style.pointerEvents = k > 0.5 ? 'auto' : 'none';
     // caption follows whatever is in focus; it re-enters softly when that changes
     // on the way back the caption waits until the wall has landed, then fades in for whatever is in focus
@@ -862,7 +860,6 @@ const WallIndex2 = forwardRef<WallIndex2Handle, WallIndex2Props>(function WallIn
               <span style={{ fontSize: 34, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: '56px', whiteSpace: 'pre' }}>{q}<span className="v3caret" /></span>
               <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-label)' }}>{countInfo.vis === 1 ? '1 project · esc to clear' : countInfo.vis + ' projects · esc to clear'}</span>
             </div>
-            <span ref={qHintRef} style={{ position: 'absolute', right: 0, top: 22, fontFamily: "'Geist Mono', monospace", fontSize: 12, color: 'var(--text-tertiary)' }}>type to find</span>
           </div>
 
           {/* column heads: click one to sort by it, again to go back */}
