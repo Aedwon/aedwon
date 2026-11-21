@@ -104,7 +104,8 @@ Before writing or revising any portfolio copy, project descriptions, or stats, c
 ## Process improvement
 
 - Every agent reads [`docs/process-improvement.md`](docs/process-improvement.md) at the start of a session, including its active written rules.
-- When Aedwon rejects or corrects work, write the entry there in the same turn, before continuing with anything else.
+- When Aedwon rejects or corrects work, write the entry in `docs/process-improvement-archive.md` in the same turn, before continuing with anything else.
+- Read [`docs/design-principles.md`](docs/design-principles.md) before any design work.
 
 ## Project Content and the Local Studio
 
