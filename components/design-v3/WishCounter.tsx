@@ -51,6 +51,10 @@ function pityColor(pity: number, soft: number) {
   return pity < soft ? 'var(--status-live)' : 'var(--status-wip)';
 }
 
+function pityText(pity: number, soft: number) {
+  return pity < soft ? 'var(--status-live-text)' : 'var(--status-wip-text)';
+}
+
 export default function WishCounter({ compact = false }: { compact?: boolean }) {
   const [banner, setBanner] = useState<GenshinBannerType>('character');
   const spec = BANNERS.find((b) => b.id === banner)!;
@@ -105,14 +109,14 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
           {stats.lastFiveStar && (
             <div style={{ ...card, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: compact ? 'column' : 'row', alignItems: compact ? 'stretch' : 'stretch', justifyContent: 'space-between', height: compact ? 400 : 300, background: 'radial-gradient(90% 120% at 82% 40%, color-mix(in srgb, var(--status-wip) 20%, transparent) 0%, transparent 62%), radial-gradient(circle, var(--line-hairline-2) 1px, transparent 1.6px) 0 0 / 22px 22px, var(--surface-media)' }}>
               <div style={{ padding: compact ? '20px 20px 0' : '32px 0 32px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: compact ? 14 : 24, position: 'relative', zIndex: 1, flex: '0 1 52%' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, ...label, color: 'var(--status-wip)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, ...label, color: 'var(--status-wip-text)' }}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 2.5l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.7 5.9 21.1l1.4-6.8L2.2 9.6l6.9-.8z" /></svg>
                   Latest 5-star
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <span style={{ fontSize: compact ? 34 : 54, fontWeight: 600, letterSpacing: '-0.045em', lineHeight: 1.02, color: 'var(--text-primary)' }}>{stats.lastFiveStar.name}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px 0 6px', borderRadius: 99, background: 'var(--surface-sunken)', border: '1px solid var(--line-hairline-2)', fontSize: 14, color: stats.lastFiveStar.pity === null ? 'var(--text-tertiary)' : pityColor(stats.lastFiveStar.pity, spec.soft) }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px 0 6px', borderRadius: 99, background: 'var(--surface-sunken)', border: '1px solid var(--line-hairline-2)', fontSize: 14, color: stats.lastFiveStar.pity === null ? 'var(--text-label)' : pityText(stats.lastFiveStar.pity, spec.soft) }}>
                       <Item name={fate} size={22} />
                       {stats.lastFiveStar.pity === null ? '-' : stats.lastFiveStar.pity}
                     </span>
@@ -198,7 +202,7 @@ export default function WishCounter({ compact = false }: { compact?: boolean }) 
                   <Art name={h.name} kind="icon" size={36} style={{ borderRadius: 99, flex: 'none', background: 'var(--surface-sunken)' }} />
                   {h.name}
                 </span>
-                <span style={{ fontSize: 13, textAlign: compact ? 'right' : 'left', color: h.pity === null ? 'var(--text-tertiary)' : pityColor(h.pity, spec.soft) }}>
+                <span style={{ fontSize: 13, textAlign: compact ? 'right' : 'left', color: h.pity === null ? 'var(--text-label)' : pityText(h.pity, spec.soft) }}>
                   {h.pity === null ? '-' : h.pity}
                 </span>
                 <span style={{ ...mono, fontSize: 12.5, color: 'var(--text-label)', textAlign: 'right', gridColumn: compact ? '1 / -1' : undefined }}>{fmtDate.format(new Date(h.time))}</span>

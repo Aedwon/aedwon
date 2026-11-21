@@ -362,7 +362,7 @@ function BookPage({ page, side = 'right', onGo, onNextVol, clock, form, onField,
       )}
 
       {/* running head and folio */}
-      {!is('tech') && <span style={{ position: 'absolute', left: 40, right: 40, bottom: 20, display: 'flex', justifyContent: sd === 'left' ? 'flex-start' : 'flex-end', gap: 12, fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-placeholder)' }}>{footText}</span>}
+      {!is('tech') && <span style={{ position: 'absolute', left: 40, right: 40, bottom: 20, display: 'flex', justifyContent: sd === 'left' ? 'flex-start' : 'flex-end', gap: 12, fontFamily: MONO, fontSize: 10.5, color: 'var(--paper-meta)' }}>{footText}</span>}
       {/* the gutter: paper curves into the spine */}
       <span
         aria-hidden
