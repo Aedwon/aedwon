@@ -19,8 +19,16 @@ Run these before showing the work they name. Each came from an entry below.
 
 1. **Page copy gets a word budget and a count.** Before showing copy for any page, state a budget for the words a visitor reads, count the draft against it, and report both numbers. Count only what the visitor reads. Leave out copyable prompts, quoted exhibits and notes for the builder. Keep builder notes and evidence out of the copy itself. Use at most one quote per part. Work examples may carry more, since he asked for his exact quotes there. The default budget is 60 words per part. When the copy moves into a content file in this repo, a check must enforce the budget, and this step and rule 4 can then retire.
 2. **Agree the structure of one part before writing them all.** Before drafting copy for a page with repeated parts, show one part in full and get his answer on its structure, meaning which lines it holds and in what order. Write the rest only after that.
+3. **Check a revision against what he already approved.** Before showing a new or shortened draft, list the decisions he approved earlier for that work and confirm the draft still carries each one. Name any it drops and why. For work that spans a session, keep those decisions in a file, not only in the chat.
 
 ## Entries
+
+### The short rewrite dropped the company frame (Nov 21)
+
+- **His words.** "also sorry please add the things I asked you to add at the beginning, for ex. there's no mention that i run my orchestration like i'd run a company, or some other fundamental things with how I treat work"
+- **What was wrong.** Earlier in the session he said he writes to agents as if they were people in his own company, and the agent accepted that as the idea that organizes the page. The shortened copy kept the part names (company policy, org chart) but never stated the idea. It also left out the tools he works in, which he asked for in his first message.
+- **Why the process let it through.** The approved decisions lived only in the chat. The rewrite was checked against a word budget and nothing else, so cutting for length removed an approved decision without anyone noticing.
+- **The fix.** Required step 3 above. The workflow page's decisions go into its spec, which is the file that step reads.
 
 ### Workflow page copy was too wordy (Nov 21)
 
